@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
+import 'package:quotation/screens/dday_accept_invite_screen.dart';
 import 'package:quotation/screens/dday_edit_screen.dart';
 import 'package:quotation/screens/dday_widget_decorate_screen.dart';
+import 'package:quotation/screens/together_room_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -43,8 +46,18 @@ class _DdayScreenState extends State<DdayScreen> {
     );
   }
 
+  Future<void> _openRoom(DdayItem item) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => TogetherRoomScreen(roomId: item.id),
+      ),
+    );
+  }
+
   Future<void> _onMenuSelected(String action, DdayItem item) async {
     switch (action) {
+      case 'open':
+        await _openRoom(item);
       case 'edit':
         await _openEditor(existing: item);
       case 'pin':
@@ -62,7 +75,11 @@ class _DdayScreenState extends State<DdayScreen> {
       color: const Color(0xFFF7F9FC),
       child: SafeArea(
         child: ListenableBuilder(
-          listenable: Listenable.merge([ddayController, localeController]),
+          listenable: Listenable.merge([
+            ddayController,
+            localeController,
+            characterController,
+          ]),
           builder: (context, _) {
             final t = AppStrings.current;
             final items = ddayController.items;
@@ -74,7 +91,7 @@ class _DdayScreenState extends State<DdayScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 18, 12, 4),
                   child: Row(
                     children: [
-                      Icon(Icons.calendar_month_rounded, color: palette.accent),
+                      Icon(Icons.groups_rounded, color: palette.accent),
                       const SizedBox(width: 8),
                       Text(
                         t.ddayTitle,
@@ -85,6 +102,22 @@ class _DdayScreenState extends State<DdayScreen> {
                         ),
                       ),
                       const Spacer(),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  const DdayAcceptInviteScreen(),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.qr_code_rounded,
+                          size: 24,
+                          color: palette.accent,
+                        ),
+                        tooltip: t.ddayInviteEnterCodeMenu,
+                      ),
                       IconButton(
                         onPressed: () {
                           Navigator.of(context).push(
@@ -133,7 +166,8 @@ class _DdayScreenState extends State<DdayScreen> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
-                            builder: (_) => const DdayWidgetDecorateScreen(),
+                            builder: (_) =>
+                                const DdayWidgetDecorateScreen(),
                           ),
                         );
                       },
@@ -192,7 +226,7 @@ class _DdayScreenState extends State<DdayScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.event_available_outlined,
+                                Icons.groups_outlined,
                                 size: 42,
                                 color: palette.accent.withValues(alpha: 0.55),
                               ),
@@ -230,11 +264,12 @@ class _DdayScreenState extends State<DdayScreen> {
                           itemBuilder: (context, index) {
                             final item = items[index];
                             final colors = _cardColors(item.iconKind, index);
-                            return _DdayCard(
+                            return _TogetherRoomCard(
                               item: item,
                               background: colors.$1,
                               border: colors.$2,
-                              countdown: colors.$3,
+                              accent: colors.$3,
+                              onOpen: () => _openRoom(item),
                               onMenuSelected: (action) =>
                                   _onMenuSelected(action, item),
                             );
@@ -280,36 +315,27 @@ class _DdayScreenState extends State<DdayScreen> {
   };
 }
 
-class _DdayCard extends StatelessWidget {
-  const _DdayCard({
+class _TogetherRoomCard extends StatelessWidget {
+  const _TogetherRoomCard({
     required this.item,
     required this.background,
     required this.border,
-    required this.countdown,
+    required this.accent,
+    required this.onOpen,
     required this.onMenuSelected,
   });
 
   final DdayItem item;
   final Color background;
   final Color border;
-  final Color countdown;
+  final Color accent;
+  final VoidCallback onOpen;
   final ValueChanged<String> onMenuSelected;
-
-  String _formatDate(DateTime date) {
-    if (localeController.isKorean) {
-      const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
-      final w = weekdays[date.weekday - 1];
-      return '${date.year}. ${date.month.toString().padLeft(2, '0')}. '
-          '${date.day.toString().padLeft(2, '0')} ($w)';
-    }
-    return '${date.year}. ${date.month.toString().padLeft(2, '0')}. '
-        '${date.day.toString().padLeft(2, '0')}';
-  }
 
   @override
   Widget build(BuildContext context) {
     final t = AppStrings.current;
-    final displayDate = item.repeatYearly ? item.effectiveDate : item.targetDate;
+    final cheer = item.latestCheer?.trim();
 
     return DashedBorder(
       color: border,
@@ -319,104 +345,122 @@ class _DdayCard extends StatelessWidget {
       radius: 18,
       padding: EdgeInsets.zero,
       backgroundColor: background,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 14, 4, 14),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.75),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: DdayPixelIcon(kind: item.iconKind, size: 36),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onOpen,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 4, 14),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.75),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: DdayPixelIcon(kind: item.iconKind, size: 36),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Flexible(
-                        child: Text(
-                          item.title,
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              item.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTheme.body.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF2C3340),
+                              ),
+                            ),
+                          ),
+                          if (item.hasFriend) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: accent.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                t.ddayDuoBadge,
+                                style: AppTheme.body.copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: accent,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item.hasFriend
+                            ? t.togetherFriendCountLabel(item.friendCount)
+                            : t.togetherSoloFriends,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTheme.body.copyWith(
+                          fontSize: 12,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                      if (cheer != null && cheer.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          cheer,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTheme.body.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF2C3340),
-                          ),
-                        ),
-                      ),
-                      if (item.hasFriend) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: countdown.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            t.ddayDuoBadge,
-                            style: AppTheme.body.copyWith(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                              color: countdown,
-                            ),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: accent,
                           ),
                         ),
                       ],
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatDate(displayDate),
-                    style: AppTheme.body.copyWith(
-                      fontSize: 12,
-                      color: AppColors.muted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              item.label(korean: localeController.isKorean),
-              style: AppTheme.pixel.copyWith(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: countdown,
-                height: 1.1,
-              ),
-            ),
-            PopupMenuButton<String>(
-              onSelected: onMenuSelected,
-              padding: EdgeInsets.zero,
-              icon: const Icon(
-                Icons.more_vert_rounded,
-                color: Color(0xFF9AA3B2),
-              ),
-              itemBuilder: (context) => [
-                PopupMenuItem(value: 'edit', child: Text(t.ddayEdit)),
-                PopupMenuItem(
-                  value: 'pin',
-                  child: Text(
-                    item.pinnedForWidget
-                        ? t.ddayPinnedWidget
-                        : t.ddayPinWidget,
-                  ),
                 ),
-                PopupMenuItem(value: 'delete', child: Text(t.delete)),
+                PopupMenuButton<String>(
+                  onSelected: onMenuSelected,
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.more_vert_rounded,
+                    color: Color(0xFF9AA3B2),
+                  ),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'open',
+                      child: Text(t.togetherOpenRoom),
+                    ),
+                    PopupMenuItem(value: 'edit', child: Text(t.ddayEdit)),
+                    PopupMenuItem(
+                      value: 'pin',
+                      child: Text(
+                        item.pinnedForWidget
+                            ? t.ddayPinnedWidget
+                            : t.ddayPinWidget,
+                      ),
+                    ),
+                    PopupMenuItem(value: 'delete', child: Text(t.delete)),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

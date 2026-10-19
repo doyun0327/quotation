@@ -17,6 +17,7 @@ class DdayItem {
     this.pinnedForWidget = false,
     this.friends = const [],
     this.cloudOwnerUid,
+    this.latestCheer,
   });
 
   final String id;
@@ -26,12 +27,15 @@ class DdayItem {
   final bool repeatYearly;
   final bool pinnedForWidget;
 
-  /// Accepted friends for this D-Day (max [DdayInviteLimits.maxFriends]).
+  /// Accepted friends for this room (max [DdayInviteLimits.maxFriends]).
   /// Populated only from cloud membership — never from local picker.
   final List<DdayFriendMember> friends;
 
-  /// Owner uid when this D-Day came from / is synced with cloud.
+  /// Owner uid when this room came from / is synced with cloud.
   final String? cloudOwnerUid;
+
+  /// Latest cheer text from the shared room (for list + home widget).
+  final String? latestCheer;
 
   DdayIconKind get iconKind => DdayIconKind.byId(iconId);
 
@@ -78,6 +82,7 @@ class DdayItem {
         'pinnedForWidget': pinnedForWidget,
         'friends': friends.map((e) => e.toJson()).toList(),
         if (cloudOwnerUid != null) 'cloudOwnerUid': cloudOwnerUid,
+        if (latestCheer != null) 'latestCheer': latestCheer,
       };
 
   factory DdayItem.fromJson(Map<String, dynamic> json) {
@@ -105,6 +110,7 @@ class DdayItem {
       pinnedForWidget: json['pinnedForWidget'] as bool? ?? false,
       friends: friends,
       cloudOwnerUid: json['cloudOwnerUid'] as String?,
+      latestCheer: json['latestCheer'] as String?,
     );
   }
 
@@ -118,6 +124,8 @@ class DdayItem {
     bool clearFriends = false,
     String? cloudOwnerUid,
     bool clearCloudOwner = false,
+    String? latestCheer,
+    bool clearLatestCheer = false,
   }) {
     return DdayItem(
       id: id,
@@ -129,6 +137,8 @@ class DdayItem {
       friends: clearFriends ? const [] : (friends ?? this.friends),
       cloudOwnerUid:
           clearCloudOwner ? null : (cloudOwnerUid ?? this.cloudOwnerUid),
+      latestCheer:
+          clearLatestCheer ? null : (latestCheer ?? this.latestCheer),
     );
   }
 }
@@ -151,7 +161,12 @@ class DdayController extends ChangeNotifier {
 
   List<DdayItem> get items {
     final sorted = [..._items];
-    sorted.sort((a, b) => a.daysLeft.compareTo(b.daysLeft));
+    sorted.sort((a, b) {
+      if (a.pinnedForWidget != b.pinnedForWidget) {
+        return a.pinnedForWidget ? -1 : 1;
+      }
+      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+    });
     return List.unmodifiable(sorted);
   }
 
@@ -211,6 +226,7 @@ class DdayController extends ChangeNotifier {
     int? meY,
     int? friendX,
     int? friendY,
+    bool fromCloud = false,
   }) async {
     var changed = false;
     if (meX != null) {
@@ -253,6 +269,9 @@ class DdayController extends ChangeNotifier {
       }),
     );
     notifyListeners();
+    if (!fromCloud) {
+      unawaited(DdayCloudSync.pushSharedLayout());
+    }
   }
 
   int _clampX(int value) => value.clamp(duoOffsetMinX, duoOffsetMaxX).toInt();
@@ -318,6 +337,7 @@ class DdayController extends ChangeNotifier {
     required String ddayId,
     required List<DdayFriendMember> friends,
     String? cloudOwnerUid,
+    String? latestCheer,
   }) async {
     final index = _items.indexWhere((e) => e.id == ddayId);
     if (index < 0) return;
@@ -328,10 +348,17 @@ class DdayController extends ChangeNotifier {
           return cur.friends[i].uid == next[i].uid &&
               cur.friends[i].characterId == next[i].characterId;
         }).every((e) => e);
-    if (sameFriends && cur.cloudOwnerUid == cloudOwnerUid) return;
+    final sameCheer = (cur.latestCheer ?? '') == (latestCheer ?? '');
+    if (sameFriends &&
+        cur.cloudOwnerUid == cloudOwnerUid &&
+        sameCheer) {
+      return;
+    }
     _items[index] = cur.copyWith(
       friends: next,
       cloudOwnerUid: cloudOwnerUid,
+      latestCheer: latestCheer,
+      clearLatestCheer: latestCheer == null,
     );
     await _persist();
   }

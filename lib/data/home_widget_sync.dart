@@ -160,15 +160,18 @@ abstract final class HomeWidgetSync {
       await HomeWidget.saveWidgetData<String>(keyDdayDuoPose, 'handhold');
       return;
     }
+    final cheer = item.latestCheer?.trim();
+    final label = (cheer != null && cheer.isNotEmpty)
+        ? cheer
+        : (localeController.isKorean ? '같이' : 'Together');
+    final subtitle = item.hasFriend
+        ? (localeController.isKorean
+            ? '친구 ${item.friendCount}명과 함께'
+            : 'With ${item.friendCount} friends')
+        : (localeController.isKorean ? '친구를 초대해 보세요' : 'Invite a friend');
     await HomeWidget.saveWidgetData<String>(keyDdayTitle, item.title);
-    await HomeWidget.saveWidgetData<String>(
-      keyDdayLabel,
-      item.label(korean: localeController.isKorean),
-    );
-    await HomeWidget.saveWidgetData<String>(
-      keyDdayDate,
-      _formatDdayDate(item.effectiveDate),
-    );
+    await HomeWidget.saveWidgetData<String>(keyDdayLabel, label);
+    await HomeWidget.saveWidgetData<String>(keyDdayDate, subtitle);
     await HomeWidget.saveWidgetData<String>(keyDdayIconId, item.iconId);
     await HomeWidget.saveWidgetData<String>(keyDdayCharMe, meId);
     await HomeWidget.saveWidgetData<String>(
@@ -176,19 +179,6 @@ abstract final class HomeWidgetSync {
       item.hasFriend ? (item.friendCharacterId ?? '').trim() : '',
     );
     await HomeWidget.saveWidgetData<String>(keyDdayDuoPose, 'handhold');
-  }
-
-  static String _formatDdayDate(DateTime date) {
-    if (localeController.isKorean) {
-      const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
-      final w = weekdays[date.weekday - 1];
-      return '${date.year}. ${date.month.toString().padLeft(2, '0')}. '
-          '${date.day.toString().padLeft(2, '0')} ($w)';
-    }
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final w = weekdays[date.weekday - 1];
-    return '${date.year}. ${date.month.toString().padLeft(2, '0')}. '
-        '${date.day.toString().padLeft(2, '0')} ($w)';
   }
 
   static Future<void> syncThemeOnly() async {

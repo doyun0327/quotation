@@ -27,6 +27,35 @@ class DdayInviteRepository {
 
   static String? get _uid => FirebaseAuth.instance.currentUser?.uid;
 
+  /// Ensures the host has a membership doc so cheers/layout sync work before
+  /// any friend joins.
+  static Future<void> ensureHostMembership(String ddayId) async {
+    final uid = _uid;
+    if (uid == null) throw StateError('not_signed_in');
+    final ref = _db.collection('dday_memberships').doc(ddayId);
+    final snap = await ref.get();
+    if (snap.exists) return;
+
+    final ddaySnap = await _db.collection('ddays').doc(ddayId).get();
+    final ownerUid = ddaySnap.data()?['ownerUid'] as String?;
+    if (ownerUid != null && ownerUid != uid) {
+      throw StateError('not_host');
+    }
+
+    await UserProfileSync.upsertCurrentUser();
+    await ref.set(
+      {
+        'hostUid': uid,
+        'hostCharacterId': characterController.character.id,
+        'members': <Map<String, dynamic>>[],
+        'guestUids': <String>[],
+        'maxGuests': DdayInviteLimits.maxFriends,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+  }
+
   /// Upsert cloud dday owned by current user, then create/reuse a pending invite.
   static Future<DdayInviteResult> createOrGetInvite({
     required String ddayId,

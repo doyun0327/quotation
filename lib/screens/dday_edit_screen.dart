@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/l10n/app_strings.dart';
@@ -21,16 +20,12 @@ class DdayEditScreen extends StatefulWidget {
 
 class _DdayEditScreenState extends State<DdayEditScreen> {
   late final TextEditingController _titleCtrl;
-  late DateTime _date;
-  late bool _repeatYearly;
   late DdayIconKind _icon;
 
   static const _bg = Color(0xFFF3F7FD);
   static const _labelBlue = Color(0xFF4A7FD4);
   static const _cardBorder = Color(0xFFE4ECF7);
   static const _pink = Color(0xFFFF8FB5);
-  static const _sky = Color(0xFF7EB6FF);
-  static const _yellow = Color(0xFFFFD56A);
   static const _mint = Color(0xFF7DCFB6);
   static const _btnBlue = Color(0xFF5B8DEF);
 
@@ -39,44 +34,13 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
     super.initState();
     final existing = widget.existing;
     _titleCtrl = TextEditingController(text: existing?.title ?? '');
-    _date = existing?.targetDate ?? DateTime.now();
-    _repeatYearly = existing?.repeatYearly ?? true;
-    _icon = existing?.iconKind ?? DdayIconKind.cake;
+    _icon = existing?.iconKind ?? DdayIconKind.heart;
   }
 
   @override
   void dispose() {
     _titleCtrl.dispose();
     super.dispose();
-  }
-
-  String _formatDate(DateTime date) {
-    final locale = localeController.language.id;
-    if (localeController.isKorean) {
-      const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
-      final w = weekdays[date.weekday - 1];
-      return '${date.year}. ${date.month.toString().padLeft(2, '0')}. '
-          '${date.day.toString().padLeft(2, '0')} ($w)';
-    }
-    return DateFormat.yMMMEd(locale).format(date);
-  }
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(primary: _btnBlue),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) setState(() => _date = picked);
   }
 
   Future<void> _save() async {
@@ -89,20 +53,21 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
     }
 
     final existing = widget.existing;
+    // Date/repeat are hidden — rooms are cheer spaces, not countdowns.
+    final roomDate = DateTime.now();
     if (existing == null) {
       await ddayController.add(
         title: title,
-        targetDate: _date,
+        targetDate: roomDate,
         iconId: _icon.id,
-        repeatYearly: _repeatYearly,
+        repeatYearly: false,
       );
     } else {
       await ddayController.update(
         existing.copyWith(
           title: title,
-          targetDate: DateTime(_date.year, _date.month, _date.day),
           iconId: _icon.id,
-          repeatYearly: _repeatYearly,
+          repeatYearly: false,
         ),
       );
     }
@@ -266,81 +231,6 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 14),
-                      _SectionCard(
-                        iconColor: _sky,
-                        label: t.ddayPickDate,
-                        labelColor: _labelBlue,
-                        child: Material(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          child: InkWell(
-                            onTap: _pickDate,
-                            borderRadius: BorderRadius.circular(14),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 14,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: _cardBorder),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_month_rounded,
-                                    color: accent,
-                                    size: 22,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      _formatDate(_date),
-                                      textAlign: TextAlign.center,
-                                      style: AppTheme.body.copyWith(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w700,
-                                        color: const Color(0xFF2C3340),
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.chevron_right_rounded,
-                                    color: accent.withValues(alpha: 0.7),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      _SectionCard(
-                        iconColor: _yellow,
-                        label: t.ddayRepeat,
-                        labelColor: _labelBlue,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: _RepeatChip(
-                                selected: !_repeatYearly,
-                                label: t.ddayRepeatNone,
-                                onTap: () =>
-                                    setState(() => _repeatYearly = false),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _RepeatChip(
-                                selected: _repeatYearly,
-                                label: t.ddayRepeatYearly,
-                                onTap: () =>
-                                    setState(() => _repeatYearly = true),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                       if (widget.existing != null) ...[
                         const SizedBox(height: 14),
                         _SectionCard(
@@ -482,61 +372,3 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-class _RepeatChip extends StatelessWidget {
-  const _RepeatChip({
-    required this.selected,
-    required this.label,
-    required this.onTap,
-  });
-
-  final bool selected;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final border = selected ? const Color(0xFF8FB4F0) : const Color(0xFFE0E6EF);
-    final bg = selected ? const Color(0xFFEFF5FF) : Colors.white;
-    final fg = selected ? const Color(0xFF4A7FD4) : AppColors.muted;
-
-    return Material(
-      color: bg,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: border, width: selected ? 1.4 : 1),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                selected
-                    ? Icons.radio_button_checked_rounded
-                    : Icons.radio_button_off_rounded,
-                size: 18,
-                color: fg,
-              ),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  label,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTheme.body.copyWith(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: fg,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

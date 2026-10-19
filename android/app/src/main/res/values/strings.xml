@@ -2,10 +2,10 @@
 <resources>
     <string name="app_name">Daily Word</string>
     <string name="widget_description">홈 화면의 캐릭터와 말풍선 문장을 보여줍니다</string>
-    <string name="dday_widget_description">선택한 디데이를 아이콘·이름·D-Day·날짜로 보여줍니다</string>
-    <string name="dday_widget_label">디데이</string>
-    <string name="dday_widget_empty_title">디데이를 추가해 보세요</string>
-    <string name="dday_widget_empty_date">앱에서 디데이를 만들면 여기에 표시돼요</string>
+    <string name="dday_widget_description">친구와 같이 꾸민 응원 위젯을 보여줍니다</string>
+    <string name="dday_widget_label">같이</string>
+    <string name="dday_widget_empty_title">같이 방을 만들어 보세요</string>
+    <string name="dday_widget_empty_date">친구와 응원 문구를 남기면 여기에 표시돼요</string>
     <string name="dday_widget_configure_title">캐릭터 위치 조절</string>
     <string name="dday_widget_configure_subtitle">홈 위젯과 같은 화면이에요. 캐릭터를 끌면 위젯에 바로 반영돼요.</string>
     <string name="dday_widget_configure_apply">완료</string>

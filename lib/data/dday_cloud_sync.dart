@@ -90,6 +90,11 @@ class DdayCloudSync {
       },
       SetOptions(merge: true),
     );
+    try {
+      await DdayInviteRepository.ensureHostMembership(item.id);
+    } catch (e) {
+      debugPrint('ensureHostMembership after pushDday: $e');
+    }
   }
 
   static Future<void> pullMemberships() async {
@@ -148,6 +153,7 @@ class DdayCloudSync {
         .where((m) => m.uid.isNotEmpty)
         .take(DdayInviteLimits.maxFriends)
         .toList();
+    final latestCheer = (data['latestCheer'] as String?)?.trim();
 
     // Friends shown to me: if I'm host → guests; if I'm guest → host + other guests.
     final List<DdayFriendMember> friendsForMe;
@@ -163,7 +169,7 @@ class DdayCloudSync {
     final hasLocal = ddayController.items.any((e) => e.id == ddayId);
 
     if (!hasLocal) {
-      // Guest may not have the dday locally — pull from cloud.
+      // Guest may not have the room locally — pull from cloud.
       final ddaySnap = await _db.collection('ddays').doc(ddayId).get();
       final dday = ddaySnap.data();
       if (dday == null) return;
@@ -171,12 +177,15 @@ class DdayCloudSync {
       await ddayController.upsertFromCloud(
         DdayItem(
           id: ddayId,
-          title: dday['title'] as String? ?? 'D-Day',
+          title: dday['title'] as String? ?? 'Together',
           targetDate: target,
           iconId: dday['iconId'] as String? ?? 'heart',
           repeatYearly: dday['repeatYearly'] as bool? ?? false,
           cloudOwnerUid: hostUid,
           friends: friendsForMe,
+          latestCheer: (latestCheer == null || latestCheer.isEmpty)
+              ? null
+              : latestCheer,
         ),
       );
     } else {
@@ -184,7 +193,81 @@ class DdayCloudSync {
         ddayId: ddayId,
         friends: friendsForMe,
         cloudOwnerUid: hostUid,
+        latestCheer: (latestCheer == null || latestCheer.isEmpty)
+            ? null
+            : latestCheer,
       );
+    }
+
+    await _applySharedLayout(data, myUid == hostUid);
+  }
+
+  /// Host-centric layout → viewer-relative me/friend offsets.
+  static Future<void> _applySharedLayout(
+    Map<String, dynamic> data,
+    bool iAmHost,
+  ) async {
+    if (!data.containsKey('layoutHostX') &&
+        !data.containsKey('layoutGuestX')) {
+      return;
+    }
+    final hostX = (data['layoutHostX'] as num?)?.toInt() ?? 0;
+    final hostY = (data['layoutHostY'] as num?)?.toInt() ?? 0;
+    final guestX = (data['layoutGuestX'] as num?)?.toInt() ?? 0;
+    final guestY = (data['layoutGuestY'] as num?)?.toInt() ?? 0;
+    if (iAmHost) {
+      await ddayController.setDuoOffsets(
+        meX: hostX,
+        meY: hostY,
+        friendX: guestX,
+        friendY: guestY,
+        fromCloud: true,
+      );
+    } else {
+      await ddayController.setDuoOffsets(
+        meX: guestX,
+        meY: guestY,
+        friendX: hostX,
+        friendY: hostY,
+        fromCloud: true,
+      );
+    }
+  }
+
+  /// Push current duo offsets as shared host/guest layout for the widget room.
+  static Future<void> pushSharedLayout() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final item = ddayController.widgetDday;
+    if (uid == null || item == null) return;
+
+    try {
+      await DdayInviteRepository.ensureHostMembership(item.id);
+    } catch (_) {}
+
+    final iAmHost = item.cloudOwnerUid == null || item.cloudOwnerUid == uid;
+    final hostX =
+        iAmHost ? ddayController.duoMeOffsetX : ddayController.duoFriendOffsetX;
+    final hostY =
+        iAmHost ? ddayController.duoMeOffsetY : ddayController.duoFriendOffsetY;
+    final guestX =
+        iAmHost ? ddayController.duoFriendOffsetX : ddayController.duoMeOffsetX;
+    final guestY =
+        iAmHost ? ddayController.duoFriendOffsetY : ddayController.duoMeOffsetY;
+
+    try {
+      await _db.collection('dday_memberships').doc(item.id).set(
+        {
+          'layoutHostX': hostX,
+          'layoutHostY': hostY,
+          'layoutGuestX': guestX,
+          'layoutGuestY': guestY,
+          'layoutUpdatedBy': uid,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('pushSharedLayout: $e');
     }
   }
 

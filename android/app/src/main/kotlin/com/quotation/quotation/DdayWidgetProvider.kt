@@ -40,7 +40,12 @@ class DdayWidgetProvider : HomeWidgetProvider() {
                 } else {
                   title
                 }
-            val displayLabel = if (title.isBlank()) "D-Day" else label.ifBlank { "D-Day" }
+            val displayLabel =
+                if (title.isBlank()) {
+                  context.getString(R.string.dday_widget_label)
+                } else {
+                  label.ifBlank { context.getString(R.string.dday_widget_label) }
+                }
             val displayDate =
                 if (title.isBlank()) {
                   context.getString(R.string.dday_widget_empty_date)

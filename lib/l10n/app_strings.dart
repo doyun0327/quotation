@@ -10,72 +10,72 @@ class AppStrings {
   static AppStrings get current => AppStrings(localeController.language);
 
   String get homeTab => _ko ? '홈' : 'Home';
-  String get ddayTab => _ko ? '디데이' : 'D-Day';
+  String get ddayTab => _ko ? '같이' : 'Together';
   String get archiveTab => _ko ? '보관함' : 'Archive';
   String get settingsTab => _ko ? '설정' : 'Settings';
 
-  String get ddayTitle => _ko ? '디데이' : 'D-Day';
+  String get ddayTitle => _ko ? '같이' : 'Together';
   String get ddayHint => _ko
-      ? '기억하고 싶은 소중한 날들을 모아보세요'
-      : 'Collect the precious days you want to remember';
+      ? '친구와 같은 방에서 캐릭터를 공유하고, 위젯을 꾸미며 응원 문구를 남겨요'
+      : 'Share a room with friends — characters, widget, and cheers together';
   String get ddayEmptyTitle =>
-      _ko ? '아직 디데이가 없어요' : 'No D-Days yet';
+      _ko ? '아직 같이 방이 없어요' : 'No rooms yet';
   String get ddayEmptyHint => _ko
-      ? '+ 버튼으로 첫 디데이를 만들어 보세요'
-      : 'Tap + to create your first D-Day';
-  String get ddayAdd => _ko ? '디데이 추가' : 'Add D-Day';
-  String get ddayEdit => _ko ? '디데이 수정' : 'Edit D-Day';
+      ? '+ 버튼으로 방을 만들거나, 초대 코드로 참여해 보세요'
+      : 'Tap + to create a room, or join with an invite code';
+  String get ddayAdd => _ko ? '방 만들기' : 'Create room';
+  String get ddayEdit => _ko ? '방 수정' : 'Edit room';
   String get ddayAddSubtitle => _ko
-      ? '기억하고 싶은 날을 등록해 보세요'
-      : 'Save a day you want to remember';
-  String get ddayWhatDay => _ko ? '어떤 날인가요?' : 'What day is it?';
+      ? '친구들과 응원할 방 이름을 정해 보세요'
+      : 'Name a room to cheer with friends';
+  String get ddayWhatDay => _ko ? '방 이름' : 'Room name';
   String get ddayPickIcon => _ko ? '아이콘을 골라 주세요' : 'Choose an icon';
   String get ddayTitlePlaceholder =>
-      _ko ? '예: 내 생일, 여행, 시험' : 'e.g. Birthday, trip, exam';
-  String get ddayTitleHint => _ko ? '제목 (예: 우리 기념일)' : 'Title';
+      _ko ? '예: 우리 팀, 스터디 방' : 'e.g. Our team, study buddies';
+  String get ddayTitleHint => _ko ? '방 이름' : 'Room name';
   String get ddayTitleRequired =>
-      _ko ? '제목을 입력해 주세요' : 'Please enter a title';
+      _ko ? '방 이름을 입력해 주세요' : 'Please enter a room name';
   String get ddayPickDate =>
       _ko ? '날짜를 선택해 주세요' : 'Please select a date';
   String get ddayDate => _ko ? '날짜' : 'Date';
   String get ddayRepeat => _ko ? '반복 설정' : 'Repeat';
   String get ddayRepeatNone => _ko ? '반복 안 함' : 'Does not repeat';
   String get ddayRepeatYearly => _ko ? '매년 반복' : 'Every year';
-  String get ddaySave => _ko ? '디데이 저장' : 'Save D-Day';
+  String get ddaySave => _ko ? '방 저장' : 'Save room';
   String get ddayPinWidget => _ko ? '위젯에 표시' : 'Show on widget';
   String get ddayPinnedWidget => _ko ? '위젯에 표시 중' : 'On widget';
-  String get ddayDuoBadge => _ko ? '친구와 함께' : 'With friends';
+  String get ddayDuoBadge => _ko ? '같이' : 'Together';
   String get ddayDuoTestSection =>
-      _ko ? '디데이 위젯 꾸미기' : 'D-Day widget style';
+      _ko ? '같이 위젯 꾸미기' : 'Together widget';
   String get ddayDuoTestUpdatedToast =>
-      _ko ? '홈 화면 디데이 위젯에 반영했어요' : 'Applied to the D-Day home widget';
+      _ko ? '홈 화면 같이 위젯에 반영했어요' : 'Applied to the Together home widget';
   String get ddayDuoDecorateOpen => _ko ? '위젯 꾸미기' : 'Customize widget';
   String get ddayDuoDecorateTitle =>
-      _ko ? '디데이 위젯 꾸미기' : 'Customize D-Day widget';
+      _ko ? '같이 위젯 꾸미기' : 'Customize Together widget';
   String get ddayDuoDecorateSubtitle => _ko
-      ? '미리보기에서 캐릭터를 끌어서 위치를 정하고, 홈 위젯에 바로 반영해요'
-      : 'Drag characters in the preview — changes sync to the home widget';
+      ? '같은 방 친구와 캐릭터 위치를 함께 맞추고, 홈 위젯에 바로 반영해요'
+      : 'Place characters with room friends — changes sync to the home widget';
   String get ddayDuoDecoratePreview => _ko ? '미리보기' : 'Preview';
   String get ddayDuoDecorateDragHint => _ko
       ? '캐릭터를 상하좌우로 끌어 위치를 정해 보세요'
       : 'Drag characters freely to place them';
   String get ddayDuoDecorateMenuHint => _ko
-      ? '홈 화면 디데이 위젯 미리보기 · 꾸미기'
-      : 'Preview and customize the D-Day home widget';
+      ? '친구와 함께 꾸미는 응원 위젯'
+      : 'Cheer widget you decorate with friends';
   String get ddayDuoDecorateDone => _ko ? '완료' : 'Done';
-  String get ddayDuoDecorateSampleTitle => _ko ? '내 생일' : 'My birthday';
+  String get ddayDuoDecorateSampleTitle => _ko ? '우리 방' : 'Our room';
   String get ddayDecorateSoloHint => _ko
-      ? '친구가 초대를 수락하면 듀오 위젯으로 바뀌어요'
-      : 'Duo widget appears after a friend accepts your invite';
+      ? '친구가 초대를 수락하면 같이 위젯으로 바뀌어요'
+      : 'Together widget appears after a friend accepts your invite';
   String get ddayDecorateInviteHint => _ko
-      ? '디데이 편집에서 친구를 초대해 보세요'
-      : 'Invite friends from the D-Day edit screen';
+      ? '방에서 친구를 초대해 보세요'
+      : 'Invite friends from the room';
 
   String get ddayInviteTitle => _ko ? '친구 초대' : 'Invite friends';
   String get ddayInviteOpen => _ko ? '초대 코드·링크 만들기' : 'Create invite';
   String ddayInviteSubtitle(int max) => _ko
-      ? '초대를 수락한 친구만 위젯에 나와요. 최대 $max명까지 가능해요.'
-      : 'Only friends who accept appear on the widget. Up to $max.';
+      ? '초대를 수락한 친구만 같은 방에 들어와요. 최대 $max명까지 가능해요.'
+      : 'Only friends who accept join the room. Up to $max.';
   String ddayInviteFriendCount(int n, int max) =>
       _ko ? '친구 $n / $max명' : 'Friends $n / $max';
   String get ddayInviteCodeLabel => _ko ? '초대 코드' : 'Invite code';
@@ -83,8 +83,8 @@ class AppStrings {
   String get ddayInviteCodeCopied => _ko ? '코드를 복사했어요' : 'Code copied';
   String get ddayInviteShare => _ko ? '초대 링크 공유' : 'Share invite link';
   String ddayInviteShareText(String title, String code, String url) => _ko
-      ? '「$title」 디데이에 초대해요!\n코드: $code\n$url'
-      : 'Join my D-Day "$title"!\nCode: $code\n$url';
+      ? '「$title」 같이 방에 초대해요!\n코드: $code\n$url'
+      : 'Join my Together room "$title"!\nCode: $code\n$url';
   String ddayInviteSlotsLeft(int n) =>
       _ko ? '남은 자리 $n명' : '$n spots left';
   String get ddayInviteFull =>
@@ -100,11 +100,11 @@ class AppStrings {
   String get ddayInviteRetry => _ko ? '다시 시도' : 'Retry';
   String get ddayInviteAcceptTitle => _ko ? '초대 코드 입력' : 'Enter invite code';
   String ddayInviteAcceptSubtitle(int max) => _ko
-      ? '친구가 보낸 6자리 코드를 입력하세요. 디데이당 최대 $max명.'
-      : 'Enter the 6-digit code. Up to $max friends per D-Day.';
+      ? '친구가 보낸 6자리 코드를 입력하세요. 방당 최대 $max명.'
+      : 'Enter the 6-digit code. Up to $max friends per room.';
   String get ddayInviteAcceptAction => _ko ? '초대 수락' : 'Accept invite';
   String get ddayInviteAcceptSuccess =>
-      _ko ? '초대를 수락했어요! 위젯에 반영돼요' : 'Joined! It will show on the widget';
+      _ko ? '같은 방에 참여했어요! 위젯에 반영돼요' : 'Joined the room! It will show on the widget';
   String get ddayInviteAcceptFailed =>
       _ko ? '수락에 실패했어요' : 'Could not accept invite';
   String get ddayInviteNotFound =>
@@ -117,6 +117,28 @@ class AppStrings {
       _ko ? '코드는 6자리예요' : 'Code must be 6 characters';
   String get ddayInviteEnterCodeMenu =>
       _ko ? '초대 코드로 참여' : 'Join with invite code';
+
+  String get togetherOpenRoom => _ko ? '방 열기' : 'Open room';
+  String get togetherCheerTitle => _ko ? '응원 문구' : 'Cheers';
+  String get togetherCheerHint => _ko
+      ? '같은 방 친구에게 짧은 응원을 남겨 보세요'
+      : 'Leave a short cheer for friends in this room';
+  String get togetherCheerPlaceholder =>
+      _ko ? '예: 오늘도 화이팅!' : 'e.g. You got this today!';
+  String get togetherCheerSend => _ko ? '남기기' : 'Send';
+  String get togetherCheerEmpty =>
+      _ko ? '아직 응원이 없어요. 첫 문구를 남겨 보세요' : 'No cheers yet — write the first one';
+  String get togetherCheerNeedLogin =>
+      _ko ? '응원을 남기려면 Google로 로그인해 주세요' : 'Sign in with Google to cheer';
+  String get togetherCheerFailed =>
+      _ko ? '응원을 남기지 못했어요' : 'Could not send cheer';
+  String get togetherFriendsLabel => _ko ? '같은 방 친구' : 'Friends in room';
+  String get togetherSoloFriends =>
+      _ko ? '아직 친구가 없어요. 초대해 보세요' : 'No friends yet — invite someone';
+  String get togetherLatestCheerFallback =>
+      _ko ? '응원을 남겨 보세요' : 'Leave a cheer';
+  String togetherFriendCountLabel(int n) =>
+      _ko ? '친구 $n명' : '$n friends';
   String get save => _ko ? '저장' : 'Save';
   String get delete => _ko ? '삭제' : 'Delete';
 

@@ -25,7 +25,7 @@ class PixelBottomNav extends StatelessWidget {
         final t = AppStrings.current;
         final items = [
           (Icons.home_outlined, Icons.home_rounded, t.homeTab),
-          (Icons.event_outlined, Icons.event_rounded, t.ddayTab),
+          (Icons.groups_outlined, Icons.groups_rounded, t.ddayTab),
           (Icons.favorite_border_rounded, Icons.favorite_rounded, t.archiveTab),
           (Icons.settings_outlined, Icons.settings_rounded, t.settingsTab),
         ];
