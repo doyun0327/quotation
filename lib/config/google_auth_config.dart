@@ -1,23 +1,15 @@
-/// Google Cloud Console OAuth (same project for Android + Web clients):
+/// Web OAuth client ID for Google `idToken` → Firebase Auth.
+/// Project: `dearly-cf730`
 ///
-/// 1. APIs & Services → OAuth consent screen
-///    - If status is "Testing", add your Google account under Test users
-/// 2. Credentials → Create OAuth client ID
-///    - Android
-///      package: `com.quotation.quotation`
-///      SHA-1:  `11:09:9B:F0:34:CE:72:A0:28:FC:21:6D:CC:1E:A5:DE:C9:EE:C1:E2`
-///      SHA-256:`3B:6D:11:9B:34:9E:69:66:83:1A:0C:6A:F7:07:D1:9A:28:B8:80:8E:19:21:29:86:13:B5:2C:CC:57:1D:1A:1E`
-///    - Web application → paste that Client ID into [serverClientId]
-///      (must be the *Web* client, not the Android client)
-///
-/// Or at build time:
-/// `flutter run --dart-define=GOOGLE_SERVER_CLIENT_ID=xxxx.apps.googleusercontent.com`
+/// App signing (this repo): `android/app/dearly-debug.jks`
+/// Package: `com.quotation.quotation`
+/// SHA-1:  `6E:31:0B:53:73:5B:12:D3:43:ED:50:02:8F:CB:4B:FC:54:C2:3F:5E`
+/// SHA-256:`D7:4D:08:45:3A:BF:27:CB:DA:78:F8:DC:0B:B9:24:4C:86:05:20:86:C2:49:75:7D:33:CE:7F:A4:A5:78:FE:16`
 abstract final class GoogleAuthConfig {
   static const String serverClientId = String.fromEnvironment(
     'GOOGLE_SERVER_CLIENT_ID',
-    // Web OAuth client ID from the same GCP project as the Android client.
     defaultValue:
-        '204379279129-vo3qsc9bptaphodhfrbi438jfn4drbku.apps.googleusercontent.com',
+        '313256890607-q02od35jq32g1lp2atr7ou0oi2feqs0g.apps.googleusercontent.com',
   );
 
   static bool get isConfigured => serverClientId.trim().isNotEmpty;

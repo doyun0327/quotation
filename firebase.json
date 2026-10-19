@@ -1,14 +1,47 @@
 {
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "hosting": {
     "public": "docs",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/invite/**",
+        "destination": "/invite/index.html"
+      }
+    ],
     "headers": [
       {
         "source": "**/*.html",
         "headers": [
-          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
         ]
       }
     ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "dearly-cf730",
+          "appId": "1:313256890607:android:ad9644a1e06ed358994b1a",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "dearly-cf730",
+          "configurations": {
+            "android": "1:313256890607:android:ad9644a1e06ed358994b1a",
+            "web": "1:313256890607:web:5d6a759eaf255d62994b1a"
+          }
+        }
+      }
+    }
   }
 }

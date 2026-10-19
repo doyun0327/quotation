@@ -30,6 +30,23 @@
             <intent-filter>
                 <action android:name="es.antonborri.home_widget.action.LAUNCH" />
             </intent-filter>
+            <!-- App-scheme invite: dearly://invite/{code} -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="dearly" android:host="invite" />
+            </intent-filter>
+            <!-- HTTPS invite landing (Firebase Hosting) -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="dearly-cf730.web.app"
+                    android:pathPrefix="/invite" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -54,6 +71,18 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/daily_word_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".DdayWidgetProvider"
+            android:exported="true"
+            android:label="@string/dday_widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dday_widget_info" />
         </receiver>
 
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />

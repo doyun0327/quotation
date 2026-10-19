@@ -1,6 +1,12 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:quotation/config/google_auth_config.dart';
+import 'package:quotation/data/dday_cloud_sync.dart';
+import 'package:quotation/data/user_profile_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthUser {
@@ -9,12 +15,24 @@ class AuthUser {
     required this.email,
     this.displayName,
     this.photoUrl,
+    this.firebaseLinked = false,
   });
 
   final String id;
   final String email;
   final String? displayName;
   final String? photoUrl;
+  final bool firebaseLinked;
+
+  factory AuthUser.fromFirebase(User user) {
+    return AuthUser(
+      id: user.uid,
+      email: user.email ?? '',
+      displayName: user.displayName,
+      photoUrl: user.photoURL,
+      firebaseLinked: true,
+    );
+  }
 
   factory AuthUser.fromGoogle(GoogleSignInAccount account) {
     return AuthUser(
@@ -22,15 +40,9 @@ class AuthUser {
       email: account.email,
       displayName: account.displayName,
       photoUrl: account.photoUrl,
+      firebaseLinked: false,
     );
   }
-
-  Map<String, String> toPrefs() => {
-        'id': id,
-        'email': email,
-        if (displayName != null) 'displayName': displayName!,
-        if (photoUrl != null) 'photoUrl': photoUrl!,
-      };
 
   static AuthUser? fromPrefs(SharedPreferences prefs) {
     final id = prefs.getString(_prefsId);
@@ -41,6 +53,7 @@ class AuthUser {
       email: email,
       displayName: prefs.getString(_prefsName),
       photoUrl: prefs.getString(_prefsPhoto),
+      firebaseLinked: prefs.getString(_prefsFirebase) == '1',
     );
   }
 }
@@ -49,7 +62,9 @@ const _prefsId = 'auth_google_id';
 const _prefsEmail = 'auth_google_email';
 const _prefsName = 'auth_google_name';
 const _prefsPhoto = 'auth_google_photo';
+const _prefsFirebase = 'auth_firebase_linked';
 
+/// In-app native Google account picker only — no Custom Tabs / Firebase web page.
 class AuthController extends ChangeNotifier {
   AuthUser? _user;
   bool _busy = false;
@@ -57,6 +72,7 @@ class AuthController extends ChangeNotifier {
   String? _lastError;
   String? _lastErrorDetail;
   GoogleSignIn? _googleSignIn;
+  StreamSubscription<User?>? _authSub;
 
   AuthUser? get user => _user;
   bool get isSignedIn => _user != null;
@@ -66,11 +82,11 @@ class AuthController extends ChangeNotifier {
   String? get lastErrorDetail => _lastErrorDetail;
 
   GoogleSignIn get _client {
-    // Local profile login only needs the Android OAuth client (package + SHA-1).
-    // Passing a mismatched Web serverClientId commonly breaks Android with
-    // DEVELOPER_ERROR / "canceled", so we omit it unless explicitly required later.
     return _googleSignIn ??= GoogleSignIn(
       scopes: const <String>['email', 'profile'],
+      // Web client from Firebase Auth → Google (for idToken → Firebase).
+      // Native account sheet stays in-app; does not open dearly-cf730 web page.
+      serverClientId: GoogleAuthConfig.serverClientId,
     );
   }
 
@@ -81,17 +97,37 @@ class AuthController extends ChangeNotifier {
     _user = AuthUser.fromPrefs(prefs);
     notifyListeners();
 
+    _authSub = FirebaseAuth.instance.authStateChanges().listen((fbUser) async {
+      if (fbUser != null) {
+        await _setUser(AuthUser.fromFirebase(fbUser));
+        unawaited(DdayCloudSync.start());
+      }
+    });
+
     try {
-      final existing = await _client.signInSilently();
-      if (existing != null) {
-        await _setUser(AuthUser.fromGoogle(existing));
+      final existingFb = FirebaseAuth.instance.currentUser;
+      if (existingFb != null) {
+        await _setUser(AuthUser.fromFirebase(existingFb));
+        unawaited(DdayCloudSync.start());
+      } else {
+        final googleUser = await _client.signInSilently().timeout(
+          const Duration(seconds: 5),
+        );
+        if (googleUser != null) {
+          await _linkFirebase(googleUser);
+        }
       }
     } catch (e) {
-      debugPrint('Google silent sign-in: $e');
+      debugPrint('Auth init: $e');
     }
 
     _ready = true;
     notifyListeners();
+  }
+
+  Future<bool> ensureFirebaseSession() async {
+    if (FirebaseAuth.instance.currentUser != null) return true;
+    return signIn();
   }
 
   Future<bool> signIn() async {
@@ -104,15 +140,24 @@ class AuthController extends ChangeNotifier {
     try {
       if (!_ready) await initialize();
 
+      // Force account picker in the native Google UI (still in-app sheet).
+      try {
+        await _client.signOut();
+      } catch (_) {}
+
       final account = await _client.signIn();
       if (account == null) {
         _lastError = 'canceled';
         return false;
       }
-      await _setUser(AuthUser.fromGoogle(account));
+
+      final linked = await _linkFirebase(account);
+      if (!linked) {
+        // Profile still saved so settings login isn't a hard failure.
+        await _setUser(AuthUser.fromGoogle(account));
+      }
       return true;
     } on PlatformException catch (e) {
-      // ApiException 10 = DEVELOPER_ERROR (SHA-1 / package / OAuth client).
       final code = e.code;
       final message = e.message ?? '';
       _lastErrorDetail = '$code $message'.trim();
@@ -138,15 +183,46 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  /// Exchange Google tokens for Firebase session (no browser).
+  Future<bool> _linkFirebase(GoogleSignInAccount account) async {
+    final auth = await account.authentication;
+    if (auth.idToken == null && auth.accessToken == null) {
+      debugPrint('Google auth missing tokens');
+      return false;
+    }
+    try {
+      final credential = GoogleAuthProvider.credential(
+        accessToken: auth.accessToken,
+        idToken: auth.idToken,
+      );
+      final result =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final fbUser = result.user;
+      if (fbUser == null) return false;
+      await _setUser(AuthUser.fromFirebase(fbUser));
+      await UserProfileSync.upsertCurrentUser();
+      await DdayCloudSync.start();
+      return true;
+    } catch (e) {
+      debugPrint('Firebase credential sign-in failed: $e');
+      _lastErrorDetail = e.toString();
+      return false;
+    }
+  }
+
   Future<void> signOut() async {
     if (_busy) return;
     _busy = true;
     notifyListeners();
     try {
-      await _client.signOut();
-      await _client.disconnect();
+      await DdayCloudSync.stop();
+      await FirebaseAuth.instance.signOut();
+      try {
+        await _client.signOut();
+        await _client.disconnect();
+      } catch (_) {}
     } catch (e) {
-      debugPrint('Google sign-out: $e');
+      debugPrint('sign-out: $e');
     }
     await _clearUser();
     _busy = false;
@@ -158,6 +234,7 @@ class AuthController extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefsId, user.id);
     await prefs.setString(_prefsEmail, user.email);
+    await prefs.setString(_prefsFirebase, user.firebaseLinked ? '1' : '0');
     if (user.displayName != null) {
       await prefs.setString(_prefsName, user.displayName!);
     } else {
@@ -178,7 +255,14 @@ class AuthController extends ChangeNotifier {
     await prefs.remove(_prefsEmail);
     await prefs.remove(_prefsName);
     await prefs.remove(_prefsPhoto);
+    await prefs.remove(_prefsFirebase);
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
   }
 }
 

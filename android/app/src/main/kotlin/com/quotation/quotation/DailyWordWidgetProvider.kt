@@ -73,7 +73,11 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
             val windowBar = readColor(widgetData, "themeWindowBar", DEFAULT_WINDOW_BAR)
 
             setTextViewText(R.id.widget_quote, quoteText)
-            setImageViewResource(R.id.widget_character, R.drawable.character)
+            val characterId = widgetData.getString("characterId", "basic")
+            val characterRes =
+                if (characterId == "bul") R.drawable.character_bul
+                else R.drawable.character
+            setImageViewResource(R.id.widget_character, characterRes)
             setInt(R.id.widget_window_bar, "setBackgroundColor", windowBar)
             setInt(R.id.widget_chrome_1, "setBackgroundColor", 0xFFFFFFFF.toInt())
             setInt(R.id.widget_chrome_2, "setBackgroundColor", 0xFFFFFFFF.toInt())

@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "dday_invites",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "code", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "dday_invites",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ddayId", "order": "ASCENDING" },
+        { "fieldPath": "hostUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

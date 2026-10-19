@@ -25,6 +25,7 @@ class PixelBottomNav extends StatelessWidget {
         final t = AppStrings.current;
         final items = [
           (Icons.home_outlined, Icons.home_rounded, t.homeTab),
+          (Icons.event_outlined, Icons.event_rounded, t.ddayTab),
           (Icons.favorite_border_rounded, Icons.favorite_rounded, t.archiveTab),
           (Icons.settings_outlined, Icons.settings_rounded, t.settingsTab),
         ];
@@ -53,7 +54,7 @@ class PixelBottomNav extends StatelessWidget {
                               currentIndex == i ? items[i].$2 : items[i].$1,
                               size: 24,
                               color: currentIndex == i
-                                  ? (i == 1 ? AppColors.heart : palette.accent)
+                                  ? (i == 2 ? AppColors.heart : palette.accent)
                                   : AppColors.muted,
                             ),
                             const SizedBox(height: 4),
@@ -63,7 +64,7 @@ class PixelBottomNav extends StatelessWidget {
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: currentIndex == i
-                                    ? (i == 1 ? AppColors.heart : palette.accent)
+                                    ? (i == 2 ? AppColors.heart : palette.accent)
                                     : AppColors.muted,
                               ),
                             ),

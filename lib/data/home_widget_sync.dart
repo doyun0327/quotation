@@ -3,15 +3,20 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:quotation/data/character_controller.dart';
+import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/theme_controller.dart';
+import 'package:quotation/theme/visual_style_controller.dart';
 
 /// Mirrors the home-screen speech-bubble quote + theme onto the Android widget.
 abstract final class HomeWidgetSync {
   static const androidProviderName = 'DailyWordWidgetProvider';
+  static const androidDdayProviderName = 'DdayWidgetProvider';
 
   static const keyQuoteId = 'quoteId';
   static const keyQuoteText = 'quoteText';
@@ -22,6 +27,19 @@ abstract final class HomeWidgetSync {
   static const keyThemeAccent = 'themeAccent';
   static const keyThemeBorder = 'themeBorder';
   static const keyThemeWindowBar = 'themeWindowBar';
+  static const keyDdayTitle = 'ddayTitle';
+  static const keyDdayLabel = 'ddayLabel';
+  static const keyDdayDate = 'ddayDate';
+  static const keyDdayIconId = 'ddayIconId';
+  static const keyDdayCharMe = 'ddayCharMe';
+  static const keyDdayCharFriend = 'ddayCharFriend';
+  static const keyDdayDuoPose = 'ddayDuoPose';
+  static const keyDdayMeOffsetX = 'ddayMeOffsetX';
+  static const keyDdayMeOffsetY = 'ddayMeOffsetY';
+  static const keyDdayFriendOffsetX = 'ddayFriendOffsetX';
+  static const keyDdayFriendOffsetY = 'ddayFriendOffsetY';
+  static const keyVisualStyle = 'visualStyle';
+  static const keyCharacterId = 'characterId';
 
   static Future<void> initialize() async {
     if (!_isAndroid) return;
@@ -35,6 +53,7 @@ abstract final class HomeWidgetSync {
         selectionController.selectMainCategory(preferred);
       }
       await syncFromHome();
+      await syncDday();
     } catch (_) {
       // Widget sync is best-effort; never block app start.
     }
@@ -65,6 +84,7 @@ abstract final class HomeWidgetSync {
         jsonEncode(poolTexts),
       );
       await _saveTheme(palette);
+      await _saveCharacter();
       await HomeWidget.updateWidget(
         name: androidProviderName,
         androidName: androidProviderName,
@@ -72,6 +92,103 @@ abstract final class HomeWidgetSync {
     } catch (_) {
       // Ignore when widget is unavailable.
     }
+  }
+
+  static Future<void> syncCharacter() async {
+    if (!_isAndroid) return;
+    try {
+      await _saveCharacter();
+      await HomeWidget.updateWidget(
+        name: androidProviderName,
+        androidName: androidProviderName,
+      );
+      // D-Day widget also shows my character.
+      await syncDday();
+    } catch (_) {}
+  }
+
+  static Future<void> _saveCharacter() async {
+    await HomeWidget.saveWidgetData<String>(
+      keyCharacterId,
+      characterController.character.id,
+    );
+  }
+
+  static Future<void> syncDday() async {
+    if (!_isAndroid) return;
+    try {
+      // Pick up offsets changed from the home-widget ⚙ screen.
+      await ddayController.reloadOffsetsFromPrefs();
+      await _saveDday();
+      await HomeWidget.updateWidget(
+        name: androidDdayProviderName,
+        androidName: androidDdayProviderName,
+      );
+    } catch (_) {}
+  }
+
+  static Future<void> _saveDday() async {
+    final item = ddayController.widgetDday;
+    final meId = characterController.character.id;
+    await HomeWidget.saveWidgetData<String>(
+      keyVisualStyle,
+      visualStyleController.style.id,
+    );
+    await HomeWidget.saveWidgetData<int>(
+      keyDdayMeOffsetX,
+      ddayController.duoMeOffsetX,
+    );
+    await HomeWidget.saveWidgetData<int>(
+      keyDdayMeOffsetY,
+      ddayController.duoMeOffsetY,
+    );
+    await HomeWidget.saveWidgetData<int>(
+      keyDdayFriendOffsetX,
+      ddayController.duoFriendOffsetX,
+    );
+    await HomeWidget.saveWidgetData<int>(
+      keyDdayFriendOffsetY,
+      ddayController.duoFriendOffsetY,
+    );
+    if (item == null) {
+      await HomeWidget.saveWidgetData<String>(keyDdayTitle, '');
+      await HomeWidget.saveWidgetData<String>(keyDdayLabel, '');
+      await HomeWidget.saveWidgetData<String>(keyDdayDate, '');
+      await HomeWidget.saveWidgetData<String>(keyDdayIconId, '');
+      await HomeWidget.saveWidgetData<String>(keyDdayCharMe, meId);
+      await HomeWidget.saveWidgetData<String>(keyDdayCharFriend, '');
+      await HomeWidget.saveWidgetData<String>(keyDdayDuoPose, 'handhold');
+      return;
+    }
+    await HomeWidget.saveWidgetData<String>(keyDdayTitle, item.title);
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayLabel,
+      item.label(korean: localeController.isKorean),
+    );
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayDate,
+      _formatDdayDate(item.effectiveDate),
+    );
+    await HomeWidget.saveWidgetData<String>(keyDdayIconId, item.iconId);
+    await HomeWidget.saveWidgetData<String>(keyDdayCharMe, meId);
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayCharFriend,
+      item.hasFriend ? (item.friendCharacterId ?? '').trim() : '',
+    );
+    await HomeWidget.saveWidgetData<String>(keyDdayDuoPose, 'handhold');
+  }
+
+  static String _formatDdayDate(DateTime date) {
+    if (localeController.isKorean) {
+      const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
+      final w = weekdays[date.weekday - 1];
+      return '${date.year}. ${date.month.toString().padLeft(2, '0')}. '
+          '${date.day.toString().padLeft(2, '0')} ($w)';
+    }
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final w = weekdays[date.weekday - 1];
+    return '${date.year}. ${date.month.toString().padLeft(2, '0')}. '
+        '${date.day.toString().padLeft(2, '0')} ($w)';
   }
 
   static Future<void> syncThemeOnly() async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/archive_controller.dart';
+import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/quote_repository.dart';
@@ -105,6 +106,7 @@ class HomeScreen extends StatelessWidget {
           selectionController,
           localeController,
           membershipController,
+          characterController,
         ]),
         builder: (context, _) {
           final bubble = selectionController.bubbleQuote;
@@ -231,7 +233,7 @@ class _CharacterHero extends StatelessWidget {
               alignment: Alignment.centerLeft,
               widthFactor: 0.94,
               child: Image.asset(
-                'assets/images/character.png',
+                characterController.assetPath,
                 height: 148,
                 filterQuality: visualStyleController.isClean
                     ? FilterQuality.medium
