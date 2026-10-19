@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/widget_configure_title"
+        android:textColor="#1F2A37"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/widget_configure_subtitle"
+        android:textColor="#8A93A6"
+        android:textSize="13sp" />
+
+    <RadioGroup
+        android:id="@+id/category_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp">
+
+        <RadioButton
+            android:id="@+id/category_comfort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:text="@string/widget_category_comfort" />
+
+        <RadioButton
+            android:id="@+id/category_faith"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:text="@string/widget_category_faith" />
+
+        <RadioButton
+            android:id="@+id/category_literature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:text="@string/widget_category_literature" />
+
+        <RadioButton
+            android:id="@+id/category_daily"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:text="@string/widget_category_daily" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/widget_configure_add" />
+</LinearLayout>

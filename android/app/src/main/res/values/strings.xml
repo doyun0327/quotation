@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Daily Word</string>
+    <string name="widget_description">홈 화면의 캐릭터와 말풍선 문장을 보여줍니다</string>
+    <string name="widget_character_cd">캐릭터</string>
+    <string name="widget_placeholder_quote">앱을 열면 오늘의 문장이 여기에 보여요</string>
+    <string name="widget_default_category">Daily Word</string>
+    <string name="widget_configure_title">위젯 문장 카테고리</string>
+    <string name="widget_configure_subtitle">앱을 열면 홈 화면 말풍선과 같은 문장이 위젯에 동기화됩니다. 아래에서 따라갈 카테고리를 고르세요.</string>
+    <string name="widget_configure_add">위젯 추가</string>
+    <string name="widget_category_comfort">위로와 응원</string>
+    <string name="widget_category_faith">종교와 지혜</string>
+    <string name="widget_category_literature">명언과 문학</string>
+    <string name="widget_category_daily">행복한 일상</string>
+</resources>

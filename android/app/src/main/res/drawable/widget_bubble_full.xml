@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Continuous rounded bubble + soft left-bottom tail (matches Flutter SpeechBubble). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="168dp"
+    android:height="110dp"
+    android:viewportWidth="168"
+    android:viewportHeight="110">
+    <!-- Soft shadow -->
+    <path
+        android:fillColor="#14000000"
+        android:pathData="M14,3
+            H154
+            Q166,3 166,15
+            V82
+            Q166,94 154,94
+            H40
+            C30,95 18,100 10,108
+            C12,100 16,95 20,94
+            H14
+            Q2,94 2,82
+            V15
+            Q2,3 14,3
+            Z" />
+    <!-- Body + tail fill -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,0
+            H156
+            Q168,0 168,12
+            V80
+            Q168,92 156,92
+            H38
+            C28,93 16,98 8,106
+            C10,98 14,93 18,92
+            H12
+            Q0,92 0,80
+            V12
+            Q0,0 12,0
+            Z" />
+    <!-- Border -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M12,0.75
+            H156
+            Q167.25,0.75 167.25,12
+            V80
+            Q167.25,91.25 156,91.25
+            H38
+            C28.5,92.2 17,97 9.2,104.5
+            C11,97.5 14.5,92.5 18.5,91.25
+            H12
+            Q0.75,91.25 0.75,80
+            V12
+            Q0.75,0.75 12,0.75
+            Z"
+        android:strokeWidth="1.5"
+        android:strokeColor="#B8C0CE" />
+</vector>

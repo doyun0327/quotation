@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:clipChildren="false"
+    android:padding="2dp">
+
+    <ImageView
+        android:id="@+id/widget_character"
+        android:layout_width="112dp"
+        android:layout_height="148dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="@string/widget_character_cd"
+        android:scaleType="fitEnd"
+        android:src="@drawable/character" />
+
+    <!-- Overlap onto the character so the tail sits near the head -->
+    <FrameLayout
+        android:id="@+id/widget_bubble_stack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/widget_character"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="-14dp"
+        android:layout_marginTop="-10dp"
+        android:layout_toEndOf="@id/widget_character">
+
+        <ImageView
+            android:id="@+id/widget_bubble_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="14dp">
+
+            <LinearLayout
+                android:id="@+id/widget_window_bar"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:background="#BFD4F5"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal"
+                android:paddingEnd="6dp">
+
+                <TextView
+                    android:id="@+id/widget_chrome_1"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginStart="4dp"
+                    android:background="#FFFFFF"
+                    android:gravity="center"
+                    android:text="_"
+                    android:textColor="#8A93A3"
+                    android:textSize="6sp" />
+
+                <TextView
+                    android:id="@+id/widget_chrome_2"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginStart="4dp"
+                    android:background="#FFFFFF"
+                    android:gravity="center"
+                    android:text="□"
+                    android:textColor="#8A93A3"
+                    android:textSize="5sp" />
+
+                <TextView
+                    android:id="@+id/widget_chrome_3"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginStart="4dp"
+                    android:background="#FFFFFF"
+                    android:gravity="center"
+                    android:text="×"
+                    android:textColor="#8A93A3"
+                    android:textSize="6sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/widget_quote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="5"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp"
+                android:textColor="#2C3340"
+                android:textSize="13sp"
+                tools:text="오늘도 잘하고 있어." />
+        </LinearLayout>
+    </FrameLayout>
+</RelativeLayout>

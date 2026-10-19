@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.quotation.quotation.DailyWordWidgetConfigureActivity"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/daily_word_widget"
+    android:minWidth="280dp"
+    android:minHeight="150dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:previewImage="@drawable/character"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="3600000"
+    android:widgetCategory="home_screen" />
