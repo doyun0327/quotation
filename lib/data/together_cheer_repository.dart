@@ -1,97 +1,121 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quotation/data/dday_cloud_sync.dart';
+import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
+import 'package:quotation/data/home_widget_sync.dart';
 
+/// Single cheer text for a Together room (one per room).
 class TogetherCheer {
   const TogetherCheer({
-    required this.id,
-    required this.authorUid,
     required this.text,
-    required this.createdAt,
+    this.authorUid,
     this.authorName,
+    this.updatedAt,
   });
 
-  final String id;
-  final String authorUid;
   final String text;
-  final DateTime createdAt;
+  final String? authorUid;
   final String? authorName;
+  final DateTime? updatedAt;
 
-  factory TogetherCheer.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data() ?? {};
+  static TogetherCheer? fromMembership(Map<String, dynamic>? data) {
+    if (data == null) return null;
+    final text = (data['latestCheer'] as String?)?.trim() ?? '';
+    if (text.isEmpty) return null;
     return TogetherCheer(
-      id: doc.id,
-      authorUid: data['authorUid'] as String? ?? '',
-      text: (data['text'] as String? ?? '').trim(),
-      authorName: data['authorName'] as String?,
-      createdAt:
-          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      text: text,
+      authorUid: data['latestCheerAuthorUid'] as String?,
+      authorName: data['latestCheerAuthorName'] as String?,
+      updatedAt: (data['latestCheerAt'] as Timestamp?)?.toDate(),
     );
   }
 }
 
-/// Cheer messages for a Together room (backed by ddayId membership).
+class TogetherCheerPostResult {
+  const TogetherCheerPostResult({required this.ok, this.errorCode});
+
+  final bool ok;
+  final String? errorCode;
+}
+
+/// One cheer message per room, stored on `dday_memberships/{roomId}`.
 abstract final class TogetherCheerRepository {
   static final _db = FirebaseFirestore.instance;
 
-  static CollectionReference<Map<String, dynamic>> _cheers(String roomId) =>
-      _db.collection('dday_memberships').doc(roomId).collection('cheers');
-
-  static Stream<List<TogetherCheer>> watch(String roomId) {
-    return _cheers(roomId)
-        .orderBy('createdAt', descending: true)
-        .limit(40)
-        .snapshots()
-        .map(
-          (snap) => snap.docs
-              .map(TogetherCheer.fromDoc)
-              .where((c) => c.text.isNotEmpty)
-              .toList(),
+  static Stream<TogetherCheer?> watch(String roomId) {
+    return _db.collection('dday_memberships').doc(roomId).snapshots().map(
+          (snap) => TogetherCheer.fromMembership(snap.data()),
         );
   }
 
-  static Future<bool> post({
+  /// Replaces the room's single cheer text.
+  static Future<TogetherCheerPostResult> save({
     required String roomId,
     required String text,
   }) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return false;
+    if (user == null) {
+      return const TogetherCheerPostResult(ok: false, errorCode: 'not_signed_in');
+    }
     final trimmed = text.trim();
-    if (trimmed.isEmpty || trimmed.length > 80) return false;
+    if (trimmed.isEmpty || trimmed.length > 80) {
+      return const TogetherCheerPostResult(ok: false, errorCode: 'invalid_text');
+    }
 
     try {
-      try {
-        await DdayInviteRepository.ensureHostMembership(roomId);
-      } catch (_) {
-        // Guests already have membership; ignore not_host.
+      final roomMatches = ddayController.items.where((e) => e.id == roomId);
+      final room = roomMatches.isEmpty ? null : roomMatches.first;
+      if (room != null) {
+        await DdayCloudSync.pushDday(room);
       }
+      await DdayInviteRepository.ensureHostMembership(roomId);
+
       final now = FieldValue.serverTimestamp();
       final authorName = user.displayName?.trim();
-      await _cheers(roomId).add({
-        'authorUid': user.uid,
-        'authorName': (authorName == null || authorName.isEmpty)
-            ? null
-            : authorName,
-        'text': trimmed,
-        'createdAt': now,
-      });
+      final payload = <String, dynamic>{
+        'latestCheer': trimmed,
+        'latestCheerAuthorUid': user.uid,
+        'latestCheerAt': now,
+        'updatedAt': now,
+      };
+      if (authorName != null && authorName.isNotEmpty) {
+        payload['latestCheerAuthorName'] = authorName;
+      } else {
+        payload['latestCheerAuthorName'] = FieldValue.delete();
+      }
+
       await _db.collection('dday_memberships').doc(roomId).set(
-        {
-          'latestCheer': trimmed,
-          'latestCheerAuthorUid': user.uid,
-          'latestCheerAuthorName': (authorName == null || authorName.isEmpty)
-              ? null
-              : authorName,
-          'latestCheerAt': now,
-          'updatedAt': now,
-        },
-        SetOptions(merge: true),
+            payload,
+            SetOptions(merge: true),
+          );
+
+      await ddayController.applyFriendsFromCloud(
+        ddayId: roomId,
+        friends: room?.friends ?? const [],
+        cloudOwnerUid: room?.cloudOwnerUid,
+        latestCheer: trimmed,
       );
-      return true;
+      await HomeWidgetSync.syncDday();
+
+      return const TogetherCheerPostResult(ok: true);
     } catch (e) {
-      debugPrint('TogetherCheerRepository.post: $e');
-      return false;
+      debugPrint('TogetherCheerRepository.save: $e');
+      final msg = e.toString();
+      if (msg.contains('permission-denied')) {
+        return const TogetherCheerPostResult(
+          ok: false,
+          errorCode: 'permission',
+        );
+      }
+      if (msg.contains('not_signed_in')) {
+        return const TogetherCheerPostResult(
+          ok: false,
+          errorCode: 'not_signed_in',
+        );
+      }
+      return const TogetherCheerPostResult(ok: false, errorCode: 'failed');
     }
   }
 }

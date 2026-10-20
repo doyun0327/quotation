@@ -199,60 +199,114 @@ class DdayCloudSync {
       );
     }
 
-    await _applySharedLayout(data, myUid == hostUid);
+    await _applySharedLayout(ddayId, data, myUid == hostUid);
   }
 
   /// Host-centric layout → viewer-relative me/friend offsets.
   static Future<void> _applySharedLayout(
+    String roomId,
     Map<String, dynamic> data,
     bool iAmHost,
   ) async {
     if (!data.containsKey('layoutHostX') &&
-        !data.containsKey('layoutGuestX')) {
+        !data.containsKey('layoutGuestX') &&
+        !data.containsKey('layoutCharScale') &&
+        !data.containsKey('layoutShape') &&
+        !data.containsKey('layoutWidgetSize') &&
+        !data.containsKey('layoutBgColor') &&
+        !data.containsKey('layoutBgOpacity') &&
+        !data.containsKey('layoutTextColor') &&
+        !data.containsKey('layoutTextX')) {
       return;
     }
     final hostX = (data['layoutHostX'] as num?)?.toInt() ?? 0;
     final hostY = (data['layoutHostY'] as num?)?.toInt() ?? 0;
     final guestX = (data['layoutGuestX'] as num?)?.toInt() ?? 0;
     final guestY = (data['layoutGuestY'] as num?)?.toInt() ?? 0;
+    final textX = (data['layoutTextX'] as num?)?.toInt();
+    final textY = (data['layoutTextY'] as num?)?.toInt();
+    final charScale = (data['layoutCharScale'] as num?)?.toInt();
+    final textScale = (data['layoutTextScale'] as num?)?.toInt();
+    final bgColor = (data['layoutBgColor'] as num?)?.toInt();
+    final bgOpacity = (data['layoutBgOpacity'] as num?)?.toInt();
+    final textColor = (data['layoutTextColor'] as num?)?.toInt();
+    final shapeId = data['layoutShape'] as String?;
+    final shape =
+        shapeId == null ? null : TogetherWidgetShape.byId(shapeId);
+    final sizeId = data['layoutWidgetSize'] as String?;
+    final widgetSize =
+        sizeId == null ? null : TogetherWidgetSize.byId(sizeId);
     if (iAmHost) {
       await ddayController.setDuoOffsets(
+        roomId: roomId,
         meX: hostX,
         meY: hostY,
         friendX: guestX,
         friendY: guestY,
+        textX: textX,
+        textY: textY,
+        charScale: charScale,
+        textScale: textScale,
+        bgColor: bgColor,
+        bgOpacity: bgOpacity,
+        textColor: textColor,
+        shape: shape,
+        widgetSize: widgetSize,
         fromCloud: true,
       );
     } else {
       await ddayController.setDuoOffsets(
+        roomId: roomId,
         meX: guestX,
         meY: guestY,
         friendX: hostX,
         friendY: hostY,
+        textX: textX,
+        textY: textY,
+        charScale: charScale,
+        textScale: textScale,
+        bgColor: bgColor,
+        bgOpacity: bgOpacity,
+        textColor: textColor,
+        shape: shape,
+        widgetSize: widgetSize,
         fromCloud: true,
       );
     }
   }
 
-  /// Push current duo offsets as shared host/guest layout for the widget room.
-  static Future<void> pushSharedLayout() async {
+  /// Push duo offsets as shared host/guest layout for a room.
+  static Future<void> pushSharedLayout({String? roomId}) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    final item = ddayController.widgetDday;
+    DdayItem? item = ddayController.widgetDday;
+    if (roomId != null) {
+      final matches = ddayController.items.where((e) => e.id == roomId);
+      item = matches.isEmpty ? null : matches.first;
+    }
     if (uid == null || item == null) return;
 
     try {
       await DdayInviteRepository.ensureHostMembership(item.id);
     } catch (_) {}
 
+    final meX = ddayController.meOffsetXForRoom(item.id);
+    final meY = ddayController.meOffsetYForRoom(item.id);
+    final friendX = ddayController.friendOffsetXForRoom(item.id);
+    final friendY = ddayController.friendOffsetYForRoom(item.id);
+    final textX = ddayController.textOffsetXForRoom(item.id);
+    final textY = ddayController.textOffsetYForRoom(item.id);
+    final charScale = ddayController.charScaleForRoom(item.id);
+    final textScale = ddayController.textScaleForRoom(item.id);
+    final bgColor = ddayController.bgColorForRoom(item.id);
+    final bgOpacity = ddayController.bgOpacityForRoom(item.id);
+    final textColor = ddayController.textColorForRoom(item.id);
+    const shape = TogetherWidgetShape.square;
+    final widgetSize = ddayController.widgetSizeForRoom(item.id);
     final iAmHost = item.cloudOwnerUid == null || item.cloudOwnerUid == uid;
-    final hostX =
-        iAmHost ? ddayController.duoMeOffsetX : ddayController.duoFriendOffsetX;
-    final hostY =
-        iAmHost ? ddayController.duoMeOffsetY : ddayController.duoFriendOffsetY;
-    final guestX =
-        iAmHost ? ddayController.duoFriendOffsetX : ddayController.duoMeOffsetX;
-    final guestY =
-        iAmHost ? ddayController.duoFriendOffsetY : ddayController.duoMeOffsetY;
+    final hostX = iAmHost ? meX : friendX;
+    final hostY = iAmHost ? meY : friendY;
+    final guestX = iAmHost ? friendX : meX;
+    final guestY = iAmHost ? friendY : meY;
 
     try {
       await _db.collection('dday_memberships').doc(item.id).set(
@@ -261,6 +315,15 @@ class DdayCloudSync {
           'layoutHostY': hostY,
           'layoutGuestX': guestX,
           'layoutGuestY': guestY,
+          'layoutTextX': textX,
+          'layoutTextY': textY,
+          'layoutCharScale': charScale,
+          'layoutTextScale': textScale,
+          'layoutBgColor': bgColor,
+          'layoutBgOpacity': bgOpacity,
+          'layoutTextColor': textColor,
+          'layoutShape': shape.id,
+          'layoutWidgetSize': widgetSize.id,
           'layoutUpdatedBy': uid,
           'updatedAt': FieldValue.serverTimestamp(),
         },

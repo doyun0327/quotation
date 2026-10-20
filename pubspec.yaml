@@ -30,6 +30,10 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
 
+# Avoid shared_preferences_android 2.5.0 release crash (R8/JNI NoSuchMethodError → white screen).
+dependency_overrides:
+  shared_preferences_android: 2.4.21
+
 flutter:
   uses-material-design: true
 

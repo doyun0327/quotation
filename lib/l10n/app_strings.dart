@@ -21,8 +21,8 @@ class AppStrings {
   String get ddayEmptyTitle =>
       _ko ? '아직 같이 방이 없어요' : 'No rooms yet';
   String get ddayEmptyHint => _ko
-      ? '+ 버튼으로 방을 만들거나, 초대 코드로 참여해 보세요'
-      : 'Tap + to create a room, or join with an invite code';
+      ? '방을 만들거나, 상단 초대 코드로 참여해 보세요'
+      : 'Create a room, or join with an invite code above';
   String get ddayAdd => _ko ? '방 만들기' : 'Create room';
   String get ddayEdit => _ko ? '방 수정' : 'Edit room';
   String get ddayAddSubtitle => _ko
@@ -57,12 +57,12 @@ class AppStrings {
       : 'Place characters with room friends — changes sync to the home widget';
   String get ddayDuoDecoratePreview => _ko ? '미리보기' : 'Preview';
   String get ddayDuoDecorateDragHint => _ko
-      ? '캐릭터를 상하좌우로 끌어 위치를 정해 보세요'
-      : 'Drag characters freely to place them';
+      ? '캐릭터와 문구를 상하좌우로 끌어 위치를 정해 보세요'
+      : 'Drag characters and text freely to place them';
   String get ddayDuoDecorateMenuHint => _ko
       ? '친구와 함께 꾸미는 응원 위젯'
       : 'Cheer widget you decorate with friends';
-  String get ddayDuoDecorateDone => _ko ? '완료' : 'Done';
+  String get ddayDuoDecorateDone => _ko ? '홈에 적용' : 'Apply to home';
   String get ddayDuoDecorateSampleTitle => _ko ? '우리 방' : 'Our room';
   String get ddayDecorateSoloHint => _ko
       ? '친구가 초대를 수락하면 같이 위젯으로 바뀌어요'
@@ -70,6 +70,49 @@ class AppStrings {
   String get ddayDecorateInviteHint => _ko
       ? '방에서 친구를 초대해 보세요'
       : 'Invite friends from the room';
+  String get ddayDecorateShapeLabel => _ko ? '모양' : 'Shape';
+  String get ddayDecorateSizeLabel => _ko ? '위젯 크기' : 'Widget size';
+  String get ddayDecorateBgLabel => _ko ? '배경색' : 'Background';
+  String get ddayDecorateTextColorLabel => _ko ? '글자색' : 'Text color';
+  String get ddayDecorateTransparent => _ko ? '투명' : 'Transparent';
+  String get ddayDecoratePickColor => _ko ? '색 고르기' : 'Pick a color';
+  String get ddayDecoratePickColorDone => _ko ? '이 색으로 적용' : 'Use this color';
+  String get ddayDecoratePaletteHue => _ko ? '색조' : 'Hue';
+  String get ddayDecoratePalettePresets => _ko ? '팔레트' : 'Palette';
+  String get ddayDecorateMoreColors => _ko ? '더 고르기' : 'More colors';
+  String get ddayDecorateCharScaleLabel => _ko ? '캐릭터 크기' : 'Character size';
+  String get ddayDecorateTextScaleLabel => _ko ? '글자 크기' : 'Text size';
+  String ddayDecorateShapeName(String id) {
+    switch (id) {
+      case 'circle':
+        return _ko ? '동그라미' : 'Circle';
+      case 'square':
+        return _ko ? '정사각형' : 'Square';
+      case 'portrait':
+        return _ko ? '세로 네모' : 'Portrait';
+      case 'landscape':
+      default:
+        return _ko ? '가로 네모' : 'Landscape';
+    }
+  }
+
+  String ddayDecorateSizeName(String id) {
+    switch (id) {
+      case 's33':
+      case 'sq':
+        return '3×3';
+      case 's43':
+      case 'xl':
+        return '4×3';
+      case 's32':
+      case 'm':
+        return '3×2';
+      case 's42':
+      case 'l':
+      default:
+        return '4×2';
+    }
+  }
 
   String get ddayInviteTitle => _ko ? '친구 초대' : 'Invite friends';
   String get ddayInviteOpen => _ko ? '초대 코드·링크 만들기' : 'Create invite';
@@ -119,19 +162,32 @@ class AppStrings {
       _ko ? '초대 코드로 참여' : 'Join with invite code';
 
   String get togetherOpenRoom => _ko ? '방 열기' : 'Open room';
-  String get togetherCheerTitle => _ko ? '응원 문구' : 'Cheers';
+  String get togetherCheerTitle => _ko ? '응원 문구' : 'Cheer';
   String get togetherCheerHint => _ko
-      ? '같은 방 친구에게 짧은 응원을 남겨 보세요'
-      : 'Leave a short cheer for friends in this room';
+      ? '문구를 눌러 수정할 수 있어요. 방마다 하나 · 위젯에 바로 반영돼요'
+      : 'Tap the cheer to edit. One per room — syncs to the widget';
   String get togetherCheerPlaceholder =>
       _ko ? '예: 오늘도 화이팅!' : 'e.g. You got this today!';
-  String get togetherCheerSend => _ko ? '남기기' : 'Send';
+  String get togetherCheerSend => _ko ? '저장' : 'Save';
+  String get togetherCheerLoggingIn => _ko ? '로그인 중…' : 'Signing in…';
+  String get togetherCheerCancel => _ko ? '취소' : 'Cancel';
   String get togetherCheerEmpty =>
-      _ko ? '아직 응원이 없어요. 첫 문구를 남겨 보세요' : 'No cheers yet — write the first one';
+      _ko ? '탭해서 응원 문구를 적어 보세요' : 'Tap to write a cheer';
+  String get togetherCheerTapHint =>
+      _ko ? '탭해서 수정' : 'Tap to edit';
   String get togetherCheerNeedLogin =>
       _ko ? '응원을 남기려면 Google로 로그인해 주세요' : 'Sign in with Google to cheer';
   String get togetherCheerFailed =>
       _ko ? '응원을 남기지 못했어요' : 'Could not send cheer';
+  String get togetherCheerPermission => _ko
+      ? 'Google 로그인 후 다시 시도해 주세요'
+      : 'No permission to cheer. Sign in with Google and try again';
+  String get togetherWidgetPinnedToast => _ko
+      ? '홈 화면 추가 창이 열렸어요. 추가를 눌러 주세요'
+      : 'Add-to-home sheet opened — tap Add to place the widget';
+  String get togetherWidgetSyncToast => _ko
+      ? '홈 화면 같이 위젯에 수정 내용을 반영했어요'
+      : 'Updated the Together widget on your home screen';
   String get togetherFriendsLabel => _ko ? '같은 방 친구' : 'Friends in room';
   String get togetherSoloFriends =>
       _ko ? '아직 친구가 없어요. 초대해 보세요' : 'No friends yet — invite someone';

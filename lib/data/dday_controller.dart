@@ -143,15 +143,190 @@ class DdayItem {
   }
 }
 
+enum TogetherWidgetShape {
+  circle('circle'),
+  landscape('landscape'),
+  square('square'),
+  portrait('portrait');
+
+  const TogetherWidgetShape(this.id);
+  final String id;
+
+  static TogetherWidgetShape byId(String? id) {
+    // Shape picker removed — always rounded rectangle ("둥근 네모").
+    return TogetherWidgetShape.square;
+  }
+}
+
+/// Home-screen cell span. Canvas dp is shared with Android via screen width.
+enum TogetherWidgetSize {
+  s33('s33', cellsW: 3, cellsH: 3),
+  s42('s42', cellsW: 4, cellsH: 2),
+  s43('s43', cellsW: 4, cellsH: 3),
+  s32('s32', cellsW: 3, cellsH: 2);
+
+  const TogetherWidgetSize(this.id, {required this.cellsW, required this.cellsH});
+  final String id;
+  final int cellsW;
+  final int cellsH;
+
+  /// Android docs minimum (launcher often allocates more — we fill the host).
+  static double spanDp(int cells) => 70.0 * cells - 30.0;
+
+  /// Approximate 4-column home cell so in-app preview matches a filled widget.
+  static double cellDpForWidth(double screenWidth) =>
+      (screenWidth / 4.0).clamp(80.0, 110.0);
+
+  double boxWFor(double cellDp) => cellDp * cellsW;
+  double boxHFor(double cellDp) => cellDp * cellsH;
+
+  double get boxW => boxWFor(88);
+  double get boxH => boxHFor(88);
+
+  /// Character base scale vs 4×2.
+  double get charFactor => (cellsW / 4.0).clamp(0.7, 1.2);
+
+  static TogetherWidgetSize byId(String? id) {
+    switch (id) {
+      case 's33':
+      case 'sq':
+      case 's22':
+      case 's':
+        return TogetherWidgetSize.s33;
+      case 's43':
+      case 'xl':
+      case 's24':
+        return TogetherWidgetSize.s43;
+      case 's32':
+      case 'm':
+      case 's23':
+      case 'tall':
+        return TogetherWidgetSize.s32;
+      case 's42':
+      case 'l':
+      default:
+        return TogetherWidgetSize.s42;
+    }
+  }
+}
+
+class _RoomOffsets {
+  const _RoomOffsets({
+    this.meX = 0,
+    this.meY = 0,
+    this.friendX = 0,
+    this.friendY = 0,
+    this.textX = 0,
+    this.textY = 0,
+    this.charScale = 100,
+    this.textScale = 100,
+    this.bgColor = 0xFFFFF3E8,
+    this.bgOpacity = 100,
+    this.textColor = 0xFFF26B8A,
+    this.shape = 'square',
+    this.widgetSize = 's42',
+  });
+
+  final int meX;
+  final int meY;
+  final int friendX;
+  final int friendY;
+  final int textX;
+  final int textY;
+  final int charScale;
+  final int textScale;
+  final int bgColor;
+  final int bgOpacity;
+  final int textColor;
+  final String shape;
+  final String widgetSize;
+
+  Map<String, dynamic> toJson() => {
+        'meX': meX,
+        'meY': meY,
+        'friendX': friendX,
+        'friendY': friendY,
+        'textX': textX,
+        'textY': textY,
+        'charScale': charScale,
+        'textScale': textScale,
+        'bgColor': bgColor,
+        'bgOpacity': bgOpacity,
+        'textColor': textColor,
+        'shape': shape,
+        'widgetSize': widgetSize,
+      };
+
+  factory _RoomOffsets.fromJson(Map<String, dynamic> json) {
+    return _RoomOffsets(
+      meX: json['meX'] as int? ?? 0,
+      meY: json['meY'] as int? ?? 0,
+      friendX: json['friendX'] as int? ?? 0,
+      friendY: json['friendY'] as int? ?? 0,
+      textX: json['textX'] as int? ?? 0,
+      textY: json['textY'] as int? ?? 0,
+      charScale: json['charScale'] as int? ?? 100,
+      textScale: json['textScale'] as int? ?? 100,
+      bgColor: json['bgColor'] as int? ?? 0xFFFFF3E8,
+      bgOpacity: json['bgOpacity'] as int? ?? 100,
+      textColor: json['textColor'] as int? ?? 0xFFF26B8A,
+      shape: 'square',
+      widgetSize: json['widgetSize'] as String? ?? 's42',
+    );
+  }
+
+  _RoomOffsets copyWith({
+    int? meX,
+    int? meY,
+    int? friendX,
+    int? friendY,
+    int? textX,
+    int? textY,
+    int? charScale,
+    int? textScale,
+    int? bgColor,
+    int? bgOpacity,
+    int? textColor,
+    String? shape,
+    String? widgetSize,
+  }) {
+    return _RoomOffsets(
+      meX: meX ?? this.meX,
+      meY: meY ?? this.meY,
+      friendX: friendX ?? this.friendX,
+      friendY: friendY ?? this.friendY,
+      textX: textX ?? this.textX,
+      textY: textY ?? this.textY,
+      charScale: charScale ?? this.charScale,
+      textScale: textScale ?? this.textScale,
+      bgColor: bgColor ?? this.bgColor,
+      bgOpacity: bgOpacity ?? this.bgOpacity,
+      textColor: textColor ?? this.textColor,
+      shape: shape ?? this.shape,
+      widgetSize: widgetSize ?? this.widgetSize,
+    );
+  }
+}
+
 class DdayController extends ChangeNotifier {
   static const _prefsKey = 'dday_items_v1';
-  static const _offsetsPrefsKey = 'dday_duo_offsets_v2';
+  static const _offsetsPrefsKey = 'dday_duo_offsets_v3';
+  static const _legacyOffsetsPrefsKey = 'dday_duo_offsets_v2';
   static const duoOffsetMinX = -220;
   static const duoOffsetMaxX = 220;
   static const duoOffsetMinY = -80;
   static const duoOffsetMaxY = 120;
+  static const textOffsetMinX = -120;
+  static const textOffsetMaxX = 120;
+  static const textOffsetMinY = -80;
+  static const textOffsetMaxY = 80;
+  static const scaleMin = 60;
+  static const bgOpacityMin = 20;
+  static const bgOpacityMax = 100;
+  static const scaleMax = 160;
 
   final List<DdayItem> _items = [];
+  final Map<String, _RoomOffsets> _roomOffsets = {};
   bool _loaded = false;
 
   int _duoMeOffsetX = 0;
@@ -195,7 +370,8 @@ class DdayController extends ChangeNotifier {
         _items.add(DdayItem.fromJson(Map<String, dynamic>.from(entry as Map)));
       }
     }
-    _readOffsets(prefs.getString(_offsetsPrefsKey));
+    await _loadRoomOffsets(prefs);
+    _applyActiveOffsetsFromPinned();
     _loaded = true;
     notifyListeners();
   }
@@ -204,78 +380,181 @@ class DdayController extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final before =
         '$_duoMeOffsetX,$_duoMeOffsetY,$_duoFriendOffsetX,$_duoFriendOffsetY';
-    _readOffsets(prefs.getString(_offsetsPrefsKey));
+    await _loadRoomOffsets(prefs);
+    _applyActiveOffsetsFromPinned();
     final after =
         '$_duoMeOffsetX,$_duoMeOffsetY,$_duoFriendOffsetX,$_duoFriendOffsetY';
     if (before != after) notifyListeners();
   }
 
-  void _readOffsets(String? offsetsRaw) {
-    if (offsetsRaw == null || offsetsRaw.isEmpty) return;
+  Future<void> _loadRoomOffsets(SharedPreferences prefs) async {
+    _roomOffsets.clear();
+    final raw = prefs.getString(_offsetsPrefsKey);
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final map = Map<String, dynamic>.from(jsonDecode(raw) as Map);
+        final rooms = map['rooms'];
+        if (rooms is Map) {
+          for (final entry in rooms.entries) {
+            _roomOffsets[entry.key.toString()] = _RoomOffsets.fromJson(
+              Map<String, dynamic>.from(entry.value as Map),
+            );
+          }
+          return;
+        }
+      } catch (_) {}
+    }
+
+    // Migrate legacy global offsets → pinned/first room.
+    final legacy = prefs.getString(_legacyOffsetsPrefsKey);
+    if (legacy == null || legacy.isEmpty) return;
     try {
-      final map = Map<String, dynamic>.from(jsonDecode(offsetsRaw) as Map);
-      _duoMeOffsetX = _clampX(map['meX'] as int? ?? 0);
-      _duoMeOffsetY = _clampY(map['meY'] as int? ?? 0);
-      _duoFriendOffsetX = _clampX(map['friendX'] as int? ?? 0);
-      _duoFriendOffsetY = _clampY(map['friendY'] as int? ?? 0);
+      final map = Map<String, dynamic>.from(jsonDecode(legacy) as Map);
+      final offsets = _RoomOffsets(
+        meX: _clampX(map['meX'] as int? ?? 0),
+        meY: _clampY(map['meY'] as int? ?? 0),
+        friendX: _clampX(map['friendX'] as int? ?? 0),
+        friendY: _clampY(map['friendY'] as int? ?? 0),
+      );
+      final targetId = widgetDday?.id;
+      if (targetId != null) {
+        _roomOffsets[targetId] = offsets;
+        await _persistRoomOffsets();
+      }
     } catch (_) {}
   }
 
-  Future<void> setDuoOffsets({
-    int? meX,
-    int? meY,
-    int? friendX,
-    int? friendY,
-    bool fromCloud = false,
-  }) async {
-    var changed = false;
-    if (meX != null) {
-      final next = _clampX(meX);
-      if (next != _duoMeOffsetX) {
-        _duoMeOffsetX = next;
-        changed = true;
-      }
-    }
-    if (meY != null) {
-      final next = _clampY(meY);
-      if (next != _duoMeOffsetY) {
-        _duoMeOffsetY = next;
-        changed = true;
-      }
-    }
-    if (friendX != null) {
-      final next = _clampX(friendX);
-      if (next != _duoFriendOffsetX) {
-        _duoFriendOffsetX = next;
-        changed = true;
-      }
-    }
-    if (friendY != null) {
-      final next = _clampY(friendY);
-      if (next != _duoFriendOffsetY) {
-        _duoFriendOffsetY = next;
-        changed = true;
-      }
-    }
-    if (!changed) return;
+  void _applyActiveOffsetsFromPinned() {
+    final id = widgetDday?.id;
+    final o = id == null ? const _RoomOffsets() : _offsetsForRoom(id);
+    _duoMeOffsetX = o.meX;
+    _duoMeOffsetY = o.meY;
+    _duoFriendOffsetX = o.friendX;
+    _duoFriendOffsetY = o.friendY;
+  }
+
+  _RoomOffsets _offsetsForRoom(String roomId) {
+    final o = _roomOffsets[roomId];
+    if (o == null) return const _RoomOffsets();
+    return _RoomOffsets(
+      meX: _clampX(o.meX),
+      meY: _clampY(o.meY),
+      friendX: _clampX(o.friendX),
+      friendY: _clampY(o.friendY),
+      textX: _clampTextX(o.textX),
+      textY: _clampTextY(o.textY),
+      charScale: _clampScale(o.charScale),
+      textScale: _clampScale(o.textScale),
+      bgColor: o.bgColor,
+      bgOpacity: _clampBgOpacity(o.bgOpacity),
+      textColor: o.textColor,
+      shape: TogetherWidgetShape.byId(o.shape).id,
+      widgetSize: TogetherWidgetSize.byId(o.widgetSize).id,
+    );
+  }
+
+  int meOffsetXForRoom(String roomId) => _offsetsForRoom(roomId).meX;
+  int meOffsetYForRoom(String roomId) => _offsetsForRoom(roomId).meY;
+  int friendOffsetXForRoom(String roomId) => _offsetsForRoom(roomId).friendX;
+  int friendOffsetYForRoom(String roomId) => _offsetsForRoom(roomId).friendY;
+  int textOffsetXForRoom(String roomId) => _offsetsForRoom(roomId).textX;
+  int textOffsetYForRoom(String roomId) => _offsetsForRoom(roomId).textY;
+  int charScaleForRoom(String roomId) => _offsetsForRoom(roomId).charScale;
+  int textScaleForRoom(String roomId) => _offsetsForRoom(roomId).textScale;
+  int bgColorForRoom(String roomId) => _offsetsForRoom(roomId).bgColor;
+  int bgOpacityForRoom(String roomId) => _offsetsForRoom(roomId).bgOpacity;
+  int textColorForRoom(String roomId) => _offsetsForRoom(roomId).textColor;
+  TogetherWidgetShape shapeForRoom(String roomId) =>
+      TogetherWidgetShape.byId(_offsetsForRoom(roomId).shape);
+  TogetherWidgetSize widgetSizeForRoom(String roomId) =>
+      TogetherWidgetSize.byId(_offsetsForRoom(roomId).widgetSize);
+
+  Future<void> _persistRoomOffsets() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       _offsetsPrefsKey,
       jsonEncode({
-        'meX': _duoMeOffsetX,
-        'meY': _duoMeOffsetY,
-        'friendX': _duoFriendOffsetX,
-        'friendY': _duoFriendOffsetY,
+        'rooms': {
+          for (final e in _roomOffsets.entries) e.key: e.value.toJson(),
+        },
       }),
     );
+  }
+
+  Future<void> setDuoOffsets({
+    String? roomId,
+    int? meX,
+    int? meY,
+    int? friendX,
+    int? friendY,
+    int? textX,
+    int? textY,
+    int? charScale,
+    int? textScale,
+    int? bgColor,
+    int? bgOpacity,
+    int? textColor,
+    TogetherWidgetShape? shape,
+    TogetherWidgetSize? widgetSize,
+    bool fromCloud = false,
+  }) async {
+    final targetId = roomId ?? widgetDday?.id;
+    if (targetId == null) return;
+
+    final cur = _offsetsForRoom(targetId);
+    final next = cur.copyWith(
+      meX: meX == null ? null : _clampX(meX),
+      meY: meY == null ? null : _clampY(meY),
+      friendX: friendX == null ? null : _clampX(friendX),
+      friendY: friendY == null ? null : _clampY(friendY),
+      textX: textX == null ? null : _clampTextX(textX),
+      textY: textY == null ? null : _clampTextY(textY),
+      charScale: charScale == null ? null : _clampScale(charScale),
+      textScale: textScale == null ? null : _clampScale(textScale),
+      bgColor: bgColor,
+      bgOpacity: bgOpacity == null ? null : _clampBgOpacity(bgOpacity),
+      textColor: textColor,
+      shape: shape?.id,
+      widgetSize: widgetSize?.id,
+    );
+    final same = cur.meX == next.meX &&
+        cur.meY == next.meY &&
+        cur.friendX == next.friendX &&
+        cur.friendY == next.friendY &&
+        cur.textX == next.textX &&
+        cur.textY == next.textY &&
+        cur.charScale == next.charScale &&
+        cur.textScale == next.textScale &&
+        cur.bgColor == next.bgColor &&
+        cur.bgOpacity == next.bgOpacity &&
+        cur.textColor == next.textColor &&
+        cur.shape == next.shape &&
+        cur.widgetSize == next.widgetSize;
+    if (same) return;
+
+    _roomOffsets[targetId] = next;
+    if (widgetDday?.id == targetId) {
+      _duoMeOffsetX = next.meX;
+      _duoMeOffsetY = next.meY;
+      _duoFriendOffsetX = next.friendX;
+      _duoFriendOffsetY = next.friendY;
+    }
+    await _persistRoomOffsets();
     notifyListeners();
     if (!fromCloud) {
-      unawaited(DdayCloudSync.pushSharedLayout());
+      unawaited(DdayCloudSync.pushSharedLayout(roomId: targetId));
     }
   }
 
   int _clampX(int value) => value.clamp(duoOffsetMinX, duoOffsetMaxX).toInt();
   int _clampY(int value) => value.clamp(duoOffsetMinY, duoOffsetMaxY).toInt();
+  int _clampTextX(int value) =>
+      value.clamp(textOffsetMinX, textOffsetMaxX).toInt();
+  int _clampTextY(int value) =>
+      value.clamp(textOffsetMinY, textOffsetMaxY).toInt();
+  int _clampScale(int value) => value.clamp(scaleMin, scaleMax).toInt();
+  int _clampBgOpacity(int value) =>
+      value.clamp(bgOpacityMin, bgOpacityMax).toInt();
 
   Future<void> add({
     required String title,
@@ -317,7 +596,13 @@ class DdayController extends ChangeNotifier {
       final item = _items[i];
       _items[i] = item.copyWith(pinnedForWidget: item.id == id);
     }
+    _applyActiveOffsetsFromPinned();
     await _persist();
+  }
+
+  /// Pin room for home widget and make its layout the active one.
+  Future<void> applyRoomToHomeWidget(String roomId) async {
+    await pinForWidget(roomId);
   }
 
   Future<void> upsertFromCloud(DdayItem item) async {

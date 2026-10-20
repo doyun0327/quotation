@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 3×3 -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/dday_widget_description"
+    android:initialLayout="@layout/dday_widget"
+    android:minHeight="180dp"
+    android:minWidth="180dp"
+    android:previewLayout="@layout/dday_widget_preview"
+    android:resizeMode="none"
+    android:targetCellHeight="3"
+    android:targetCellWidth="3"
+    android:updatePeriodMillis="3600000"
+    android:widgetCategory="home_screen" />

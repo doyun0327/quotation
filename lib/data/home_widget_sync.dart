@@ -1,22 +1,57 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
-import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
-
 /// Mirrors the home-screen speech-bubble quote + theme onto the Android widget.
 abstract final class HomeWidgetSync {
   static const androidProviderName = 'DailyWordWidgetProvider';
   static const androidDdayProviderName = 'DdayWidgetProvider';
+
+  /// Chip id → Android provider (3×3 / 4×2 / 4×3 / 3×2).
+  static const _ddayProviders = <({String key, String name, String qualified})>[
+    (
+      key: 's33',
+      name: 'DdayWidgetProviderSq',
+      qualified: 'com.quotation.quotation.DdayWidgetProviderSq',
+    ),
+    (
+      key: 's42',
+      name: 'DdayWidgetProvider',
+      qualified: 'com.quotation.quotation.DdayWidgetProvider',
+    ),
+    (
+      key: 's43',
+      name: 'DdayWidgetProviderXl',
+      qualified: 'com.quotation.quotation.DdayWidgetProviderXl',
+    ),
+    (
+      key: 's32',
+      name: 'DdayWidgetProviderM',
+      qualified: 'com.quotation.quotation.DdayWidgetProviderM',
+    ),
+    // Legacy receivers — still refresh if left on the home screen.
+    (
+      key: 'legacy_s',
+      name: 'DdayWidgetProviderS',
+      qualified: 'com.quotation.quotation.DdayWidgetProviderS',
+    ),
+    (
+      key: 'legacy_tall',
+      name: 'DdayWidgetProviderTall',
+      qualified: 'com.quotation.quotation.DdayWidgetProviderTall',
+    ),
+  ];
 
   static const keyQuoteId = 'quoteId';
   static const keyQuoteText = 'quoteText';
@@ -38,8 +73,45 @@ abstract final class HomeWidgetSync {
   static const keyDdayMeOffsetY = 'ddayMeOffsetY';
   static const keyDdayFriendOffsetX = 'ddayFriendOffsetX';
   static const keyDdayFriendOffsetY = 'ddayFriendOffsetY';
+  static const keyDdayTextOffsetX = 'ddayTextOffsetX';
+  static const keyDdayTextOffsetY = 'ddayTextOffsetY';
+  static const keyDdayCharScale = 'ddayCharScale';
+  static const keyDdayTextScale = 'ddayTextScale';
+  static const keyDdayBgColor = 'ddayBgColor';
+  static const keyDdayBgOpacity = 'ddayBgOpacity';
+  static const keyDdayTextColor = 'ddayTextColor';
+  static const keyDdayShape = 'ddayShape';
+  static const keyDdayWidgetSize = 'ddayWidgetSize';
+  static const keyDdayScreenWidthDp = 'ddayScreenWidthDp';
   static const keyVisualStyle = 'visualStyle';
   static const keyCharacterId = 'characterId';
+  static const _pinChannel = MethodChannel('com.quotation.quotation/widget_pin');
+
+  /// Pin provider = size chip (3×3 / 4×2 / 4×3 / 3×2).
+  static ({String key, String name, String qualified}) _providerForSize(
+    TogetherWidgetSize size,
+  ) {
+    return _ddayProviders.firstWhere(
+      (p) => p.key == size.id,
+      orElse: () => _ddayProviders.firstWhere((p) => p.key == 's42'),
+    );
+  }
+
+  static TogetherWidgetSize _currentWidgetSize() {
+    final roomId = ddayController.widgetDday?.id;
+    if (roomId == null) return TogetherWidgetSize.s42;
+    return ddayController.widgetSizeForRoom(roomId);
+  }
+
+  /// Logical screen width shared with Android so preview & home use the same cellDp.
+  static int _screenWidthDp() {
+    final views = WidgetsBinding.instance.platformDispatcher.views;
+    if (views.isEmpty) return 360;
+    final view = views.first;
+    final w = view.physicalSize.width / view.devicePixelRatio;
+    if (w.isFinite && w > 0) return w.round();
+    return 360;
+  }
 
   static Future<void> initialize() async {
     if (!_isAndroid) return;
@@ -114,22 +186,134 @@ abstract final class HomeWidgetSync {
     );
   }
 
-  static Future<void> syncDday() async {
+  static Future<void> syncDday({bool reloadFromPrefs = true}) async {
     if (!_isAndroid) return;
     try {
       // Pick up offsets changed from the home-widget ⚙ screen.
-      await ddayController.reloadOffsetsFromPrefs();
+      if (reloadFromPrefs) {
+        await ddayController.reloadOffsetsFromPrefs();
+      }
       await _saveDday();
-      await HomeWidget.updateWidget(
-        name: androidDdayProviderName,
-        androidName: androidDdayProviderName,
-      );
+      await _updateAllDdayWidgets();
     } catch (_) {}
+  }
+
+  static Future<void> _updateAllDdayWidgets() async {
+    for (final p in _ddayProviders) {
+      try {
+        await HomeWidget.updateWidget(
+          name: p.name,
+          androidName: p.name,
+          qualifiedAndroidName: p.qualified,
+        );
+      } catch (_) {}
+    }
+  }
+
+  /// Sync data to existing Together widgets. Only asks to pin when none are installed.
+  /// Returns `true` when a pin request was shown; `false` when an existing widget was updated
+  /// (or pin is unsupported).
+  ///
+  /// Pin dialog is shown ASAP (light preview). Heavy widget redraw runs in the background
+  /// so "홈에 적용" no longer waits several seconds before the add sheet appears.
+  static Future<bool> syncAndOfferPinTogetherWidget() async {
+    if (!_isAndroid) return false;
+    try {
+      // Persist prefs first (fast) so a newly pinned widget has data.
+      await _saveDday();
+
+      final alreadyInstalled = await _hasTogetherWidgetInstalled();
+      if (alreadyInstalled) {
+        unawaited(syncDday(reloadFromPrefs: false));
+        return false;
+      }
+
+      // Show add sheet immediately — do not wait for bitmap/font widget rebuild.
+      final pinned = await _requestPinTogetherWidgetFast();
+      unawaited(syncDday(reloadFromPrefs: false));
+      return pinned;
+    } catch (e) {
+      debugPrint('syncAndOfferPinTogetherWidget: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> _requestPinTogetherWidgetFast() async {
+    final size = _currentWidgetSize();
+    final provider = _providerForSize(size);
+    try {
+      final ok = await _pinChannel.invokeMethod<bool>(
+        'pinTogetherWidget',
+        <String, dynamic>{'size': size.id},
+      );
+      if (ok == true) return true;
+    } catch (e) {
+      debugPrint('pinTogetherWidget channel: $e');
+    }
+    try {
+      final supported =
+          await HomeWidget.isRequestPinWidgetSupported() ?? false;
+      if (!supported) return false;
+      await HomeWidget.requestPinWidget(
+        name: provider.name,
+        androidName: provider.name,
+        qualifiedAndroidName: provider.qualified,
+      );
+      return true;
+    } catch (e) {
+      debugPrint('requestPinWidget: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> _hasTogetherWidgetInstalled() async {
+    final size = _currentWidgetSize();
+    final provider = _providerForSize(size);
+    final wanted = provider.qualified;
+    final shortName = provider.name;
+    try {
+      final installed = await HomeWidget.getInstalledWidgets();
+      for (final info in installed) {
+        final className = info.androidClassName ?? '';
+        if (className == wanted ||
+            className.endsWith('.$shortName') ||
+            className == shortName) {
+          return true;
+        }
+      }
+    } catch (e) {
+      debugPrint('getInstalledWidgets: $e');
+    }
+    return false;
   }
 
   static Future<void> _saveDday() async {
     final item = ddayController.widgetDday;
     final meId = characterController.character.id;
+    final roomId = item?.id;
+    final charScale =
+        roomId == null ? 100 : ddayController.charScaleForRoom(roomId);
+    final textScale =
+        roomId == null ? 100 : ddayController.textScaleForRoom(roomId);
+    final bgColor =
+        roomId == null ? 0xFFFFF3E8 : ddayController.bgColorForRoom(roomId);
+    final bgOpacity =
+        roomId == null ? 100 : ddayController.bgOpacityForRoom(roomId);
+    final textColor =
+        roomId == null ? 0xFFF26B8A : ddayController.textColorForRoom(roomId);
+    const shape = TogetherWidgetShape.square;
+    final widgetSize = roomId == null
+        ? TogetherWidgetSize.s42
+        : ddayController.widgetSizeForRoom(roomId);
+    final textOffsetX =
+        roomId == null ? 0 : ddayController.textOffsetXForRoom(roomId);
+    final textOffsetY =
+        roomId == null ? 0 : ddayController.textOffsetYForRoom(roomId);
+    // Same screen width the app preview uses → identical cellDp on the home widget.
+    await HomeWidget.saveWidgetData<int>(
+      keyDdayScreenWidthDp,
+      _screenWidthDp(),
+    );
     await HomeWidget.saveWidgetData<String>(
       keyVisualStyle,
       visualStyleController.style.id,
@@ -150,7 +334,23 @@ abstract final class HomeWidgetSync {
       keyDdayFriendOffsetY,
       ddayController.duoFriendOffsetY,
     );
+    await HomeWidget.saveWidgetData<int>(keyDdayTextOffsetX, textOffsetX);
+    await HomeWidget.saveWidgetData<int>(keyDdayTextOffsetY, textOffsetY);
+    await HomeWidget.saveWidgetData<int>(keyDdayCharScale, charScale);
+    await HomeWidget.saveWidgetData<int>(keyDdayTextScale, textScale);
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayBgColor,
+      _hex(Color(bgColor)),
+    );
+    await HomeWidget.saveWidgetData<int>(keyDdayBgOpacity, bgOpacity);
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayTextColor,
+      _hex(Color(textColor)),
+    );
+    await HomeWidget.saveWidgetData<String>(keyDdayShape, shape.id);
+    await HomeWidget.saveWidgetData<String>(keyDdayWidgetSize, widgetSize.id);
     if (item == null) {
+      // Title/date kept empty — widget shows cheer text only.
       await HomeWidget.saveWidgetData<String>(keyDdayTitle, '');
       await HomeWidget.saveWidgetData<String>(keyDdayLabel, '');
       await HomeWidget.saveWidgetData<String>(keyDdayDate, '');
@@ -161,17 +361,10 @@ abstract final class HomeWidgetSync {
       return;
     }
     final cheer = item.latestCheer?.trim();
-    final label = (cheer != null && cheer.isNotEmpty)
-        ? cheer
-        : (localeController.isKorean ? '같이' : 'Together');
-    final subtitle = item.hasFriend
-        ? (localeController.isKorean
-            ? '친구 ${item.friendCount}명과 함께'
-            : 'With ${item.friendCount} friends')
-        : (localeController.isKorean ? '친구를 초대해 보세요' : 'Invite a friend');
-    await HomeWidget.saveWidgetData<String>(keyDdayTitle, item.title);
+    final label = (cheer != null && cheer.isNotEmpty) ? cheer : '';
+    await HomeWidget.saveWidgetData<String>(keyDdayTitle, '');
     await HomeWidget.saveWidgetData<String>(keyDdayLabel, label);
-    await HomeWidget.saveWidgetData<String>(keyDdayDate, subtitle);
+    await HomeWidget.saveWidgetData<String>(keyDdayDate, '');
     await HomeWidget.saveWidgetData<String>(keyDdayIconId, item.iconId);
     await HomeWidget.saveWidgetData<String>(keyDdayCharMe, meId);
     await HomeWidget.saveWidgetData<String>(

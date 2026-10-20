@@ -3,12 +3,13 @@ package com.quotation.quotation
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
-import android.view.View
+import android.os.Bundle
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
-class DdayWidgetProvider : HomeWidgetProvider() {
+/** Legacy / fallback receiver (2×2). Prefer size-specific subclasses when pinning. */
+open class DdayWidgetProvider : HomeWidgetProvider() {
   override fun onUpdate(
       context: Context,
       appWidgetManager: AppWidgetManager,
@@ -16,111 +17,128 @@ class DdayWidgetProvider : HomeWidgetProvider() {
       widgetData: SharedPreferences,
   ) {
     appWidgetIds.forEach { widgetId ->
-      val views =
-          RemoteViews(context.packageName, R.layout.dday_widget).apply {
-            val launchIntent =
-                HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
-            setOnClickPendingIntent(R.id.dday_solo_group, launchIntent)
-            setOnClickPendingIntent(R.id.dday_duo_group, launchIntent)
-
-            val title = widgetData.getString("ddayTitle", null).orEmpty()
-            val label = widgetData.getString("ddayLabel", null).orEmpty()
-            val date = widgetData.getString("ddayDate", null).orEmpty()
-            val meId = widgetData.getString("ddayCharMe", "basic").orEmpty()
-            val friendId = widgetData.getString("ddayCharFriend", null).orEmpty()
-            val style = widgetData.getString("visualStyle", "pixel").orEmpty()
-            val meOffsetX = readInt(widgetData, "ddayMeOffsetX", 0)
-            val meOffsetY = readInt(widgetData, "ddayMeOffsetY", 0)
-            val friendOffsetX = readInt(widgetData, "ddayFriendOffsetX", 0)
-            val friendOffsetY = readInt(widgetData, "ddayFriendOffsetY", 0)
-
-            val displayTitle =
-                if (title.isBlank()) {
-                  context.getString(R.string.dday_widget_empty_title)
-                } else {
-                  title
-                }
-            val displayLabel =
-                if (title.isBlank()) {
-                  context.getString(R.string.dday_widget_label)
-                } else {
-                  label.ifBlank { context.getString(R.string.dday_widget_label) }
-                }
-            val displayDate =
-                if (title.isBlank()) {
-                  context.getString(R.string.dday_widget_empty_date)
-                } else {
-                  date
-                }
-
-            setTextViewText(R.id.dday_solo_title, displayTitle)
-            setTextViewText(R.id.dday_solo_label, displayLabel)
-            setTextViewText(R.id.dday_solo_date, displayDate)
-            setTextViewText(R.id.dday_duo_title, displayTitle)
-            setTextViewText(R.id.dday_duo_label, displayLabel)
-            setTextViewText(R.id.dday_duo_date, displayDate)
-
-            applyCharacterMode(
-                context = context,
-                meId = meId.ifBlank { "basic" },
-                friendId = if (title.isBlank()) "" else friendId,
-                style = style.ifBlank { "pixel" },
-                meOffsetX = meOffsetX,
-                meOffsetY = meOffsetY,
-                friendOffsetX = friendOffsetX,
-                friendOffsetY = friendOffsetY,
-            )
-          }
-
-      appWidgetManager.updateAppWidget(widgetId, views)
+      updateOne(context, appWidgetManager, widgetId, widgetData)
     }
   }
 
-  private fun RemoteViews.applyCharacterMode(
+  override fun onAppWidgetOptionsChanged(
       context: Context,
-      meId: String,
-      friendId: String,
-      style: String,
-      meOffsetX: Int,
-      meOffsetY: Int,
-      friendOffsetX: Int,
-      friendOffsetY: Int,
+      appWidgetManager: AppWidgetManager,
+      appWidgetId: Int,
+      newOptions: Bundle,
   ) {
-    val meRes = DdayWidgetVisuals.drawableFor(meId)
-    val hasFriend = friendId.isNotBlank()
+    super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+    onUpdate(context, appWidgetManager, intArrayOf(appWidgetId))
+  }
 
-    if (!hasFriend) {
-      setViewVisibility(R.id.dday_solo_group, View.VISIBLE)
-      setViewVisibility(R.id.dday_duo_group, View.GONE)
-      setImageViewResource(R.id.dday_solo_me, meRes)
-      return
+  private fun updateOne(
+      context: Context,
+      appWidgetManager: AppWidgetManager,
+      widgetId: Int,
+      widgetData: SharedPreferences,
+  ) {
+    val shape = readShape(widgetData)
+    val sizeId = readSize(widgetData)
+    val screenWidthDp = readInt(widgetData, "ddayScreenWidthDp", 0).let { saved ->
+      if (saved > 0) {
+        saved
+      } else {
+        val metrics = context.resources.displayMetrics
+        (metrics.widthPixels / metrics.density).toInt().coerceAtLeast(320)
+      }
     }
+    // Fill the launcher-allocated cell (not the 70×n−30 minimum).
+    val (canvasW, canvasH) =
+        DdayWidgetVisuals.hostSizeDp(
+            appWidgetManager,
+            widgetId,
+            sizeId,
+            screenWidthDp,
+        )
 
-    val friendRes = DdayWidgetVisuals.drawableFor(friendId)
-    setViewVisibility(R.id.dday_solo_group, View.GONE)
-    setViewVisibility(R.id.dday_duo_group, View.VISIBLE)
-    setImageViewResource(R.id.dday_duo_me, meRes)
-    setImageViewResource(R.id.dday_duo_friend, friendRes)
+    val label = readString(widgetData, "ddayLabel")
+    val meId = readString(widgetData, "ddayCharMe").ifBlank { "basic" }
+    val friendId = readString(widgetData, "ddayCharFriend")
+    val style = readString(widgetData, "visualStyle").ifBlank { "pixel" }
+    val meOffsetX = readInt(widgetData, "ddayMeOffsetX", 0)
+    val meOffsetY = readInt(widgetData, "ddayMeOffsetY", 0)
+    val friendOffsetX = readInt(widgetData, "ddayFriendOffsetX", 0)
+    val friendOffsetY = readInt(widgetData, "ddayFriendOffsetY", 0)
+    val textOffsetX = readInt(widgetData, "ddayTextOffsetX", 0)
+    val textOffsetY = readInt(widgetData, "ddayTextOffsetY", 0)
+    val charScale = readInt(widgetData, "ddayCharScale", 100).coerceIn(60, 160)
+    val textScale = readInt(widgetData, "ddayTextScale", 100).coerceIn(60, 160)
+    val bgColor =
+        DdayWidgetVisuals.parseArgb(readString(widgetData, "ddayBgColor").ifBlank { null })
+    val bgOpacity = readInt(widgetData, "ddayBgOpacity", 100).coerceIn(20, 100)
+    val textColor =
+        DdayWidgetVisuals.parseArgb(
+            readString(widgetData, "ddayTextColor").ifBlank { null },
+            default = 0xFFF26B8A.toInt(),
+        )
+    val isPixel = style != "clean"
 
-    val heart =
-        if (style == "clean") {
-          DdayWidgetVisuals.buildCleanHeartBitmap(context)
-        } else {
-          DdayWidgetVisuals.buildPixelHeartBitmap(context)
+    val composite =
+        DdayWidgetVisuals.buildTogetherWidgetBitmap(
+            context = context,
+            shape = shape,
+            widthDp = canvasW,
+            heightDp = canvasH,
+            bgColorArgb = bgColor,
+            bgOpacity = bgOpacity,
+            textColorArgb = textColor,
+            isPixel = isPixel,
+            label = label,
+            textScale = textScale,
+            textOffsetX = textOffsetX,
+            textOffsetY = textOffsetY,
+            meId = meId,
+            friendId = friendId,
+            meOffsetX = meOffsetX,
+            meOffsetY = meOffsetY,
+            friendOffsetX = friendOffsetX,
+            friendOffsetY = friendOffsetY,
+            charScale = charScale,
+            sizeCharFactor = DdayWidgetVisuals.charFactor(sizeId),
+        )
+
+    val views =
+        RemoteViews(context.packageName, R.layout.dday_widget).apply {
+          val launchIntent =
+              HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
+          setOnClickPendingIntent(R.id.dday_widget_root, launchIntent)
+          setOnClickPendingIntent(R.id.dday_composite, launchIntent)
+          setImageViewBitmap(R.id.dday_composite, composite)
         }
-    setImageViewBitmap(R.id.dday_duo_heart, heart)
 
-    val density = context.resources.displayMetrics.density
-    // Positive Y from the app means "up" on the preview.
-    setFloat(R.id.dday_duo_me, "setTranslationX", meOffsetX * density)
-    setFloat(R.id.dday_duo_me, "setTranslationY", -meOffsetY * density)
-    setFloat(R.id.dday_duo_friend, "setTranslationX", friendOffsetX * density)
-    setFloat(R.id.dday_duo_friend, "setTranslationY", -friendOffsetY * density)
+    appWidgetManager.updateAppWidget(widgetId, views)
+  }
+
+  private fun readShape(prefs: SharedPreferences): String {
+    // Shape picker removed — always rounded rectangle.
+    return "square"
+  }
+
+  private fun readSize(prefs: SharedPreferences): String {
+    val raw = readString(prefs, "ddayWidgetSize")
+    return when (raw) {
+      "s33", "sq", "s22", "s",
+      "s42", "l",
+      "s43", "xl", "s24",
+      "s32", "m", "s23", "tall",
+      -> raw
+      else -> "s42"
+    }
+  }
+
+  private fun readString(prefs: SharedPreferences, key: String): String {
+    return prefs.getString(key, null)
+        ?: prefs.getString("flutter.$key", null).orEmpty()
   }
 
   private fun readInt(prefs: SharedPreferences, key: String, default: Int): Int {
     return try {
-      when (val raw = prefs.all[key]) {
+      when (val raw = prefs.all[key] ?: prefs.all["flutter.$key"]) {
         is Int -> raw
         is Long -> raw.toInt()
         is String -> raw.toIntOrNull() ?: default

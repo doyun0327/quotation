@@ -4,8 +4,15 @@
     <string name="widget_description">홈 화면의 캐릭터와 말풍선 문장을 보여줍니다</string>
     <string name="dday_widget_description">친구와 같이 꾸민 응원 위젯을 보여줍니다</string>
     <string name="dday_widget_label">같이</string>
-    <string name="dday_widget_empty_title">같이 방을 만들어 보세요</string>
-    <string name="dday_widget_empty_date">친구와 응원 문구를 남기면 여기에 표시돼요</string>
+    <string name="dday_widget_label_s">같이 2×2</string>
+    <string name="dday_widget_label_m">같이 3×2</string>
+    <string name="dday_widget_label_l">같이 4×2</string>
+    <string name="dday_widget_label_xl">같이 4×3</string>
+    <string name="dday_widget_label_sq">같이 3×3</string>
+    <string name="dday_widget_label_tall">같이 2×3</string>
+    <string name="dday_widget_pin_hint">홈 화면에 추가</string>
+    <string name="dday_widget_empty_title">같이</string>
+    <string name="dday_widget_empty_date"></string>
     <string name="dday_widget_configure_title">캐릭터 위치 조절</string>
     <string name="dday_widget_configure_subtitle">홈 위젯과 같은 화면이에요. 캐릭터를 끌면 위젯에 바로 반영돼요.</string>
     <string name="dday_widget_configure_apply">완료</string>

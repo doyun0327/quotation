@@ -33,8 +33,22 @@ class DdayInviteRepository {
     final uid = _uid;
     if (uid == null) throw StateError('not_signed_in');
     final ref = _db.collection('dday_memberships').doc(ddayId);
-    final snap = await ref.get();
-    if (snap.exists) return;
+
+    try {
+      final snap = await ref.get();
+      if (snap.exists) {
+        final hostUid = snap.data()?['hostUid'] as String? ?? '';
+        final guestUids = (snap.data()?['guestUids'] as List<dynamic>? ?? [])
+            .map((e) => e.toString())
+            .toList();
+        if (hostUid == uid || guestUids.contains(uid)) return;
+        throw StateError('not_member');
+      }
+    } catch (e) {
+      // Missing-doc get used to fail under old rules — fall through to create.
+      if (e is StateError) rethrow;
+      debugPrint('ensureHostMembership get: $e');
+    }
 
     final ddaySnap = await _db.collection('ddays').doc(ddayId).get();
     final ownerUid = ddaySnap.data()?['ownerUid'] as String?;

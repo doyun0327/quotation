@@ -6,12 +6,10 @@ import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/dday_accept_invite_screen.dart';
 import 'package:quotation/screens/dday_edit_screen.dart';
-import 'package:quotation/screens/dday_widget_decorate_screen.dart';
 import 'package:quotation/screens/together_room_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:quotation/widgets/dashed_border.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 
 class DdayScreen extends StatefulWidget {
@@ -38,11 +36,9 @@ class _DdayScreenState extends State<DdayScreen> {
     HomeWidgetSync.syncDday();
   }
 
-  Future<void> _openEditor({DdayItem? existing}) async {
+  Future<void> _openEditor() async {
     await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (_) => DdayEditScreen(existing: existing),
-      ),
+      MaterialPageRoute(builder: (_) => const DdayEditScreen()),
     );
   }
 
@@ -54,16 +50,34 @@ class _DdayScreenState extends State<DdayScreen> {
     );
   }
 
-  Future<void> _onMenuSelected(String action, DdayItem item) async {
-    switch (action) {
-      case 'open':
-        await _openRoom(item);
-      case 'edit':
-        await _openEditor(existing: item);
-      case 'pin':
-        await ddayController.pinForWidget(item.id);
-      case 'delete':
-        await ddayController.remove(item.id);
+  Future<void> _confirmDelete(DdayItem item) async {
+    final t = AppStrings.current;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(t.delete),
+          content: Text(
+            localeController.isKorean
+                ? '「${item.title}」 방을 삭제할까요?'
+                : 'Delete room "${item.title}"?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(localeController.isKorean ? '취소' : 'Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(t.delete),
+            ),
+          ],
+        );
+      },
+    );
+    if (ok == true) {
+      await ddayController.remove(item.id);
+      await HomeWidgetSync.syncDday();
     }
   }
 
@@ -118,36 +132,11 @@ class _DdayScreenState extends State<DdayScreen> {
                         ),
                         tooltip: t.ddayInviteEnterCodeMenu,
                       ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) =>
-                                  const DdayWidgetDecorateScreen(),
-                            ),
-                          );
-                        },
-                        icon: Icon(
-                          Icons.widgets_outlined,
-                          size: 24,
-                          color: palette.accent,
-                        ),
-                        tooltip: t.ddayDuoDecorateOpen,
-                      ),
-                      IconButton(
-                        onPressed: () => _openEditor(),
-                        icon: Icon(
-                          Icons.add_rounded,
-                          size: 28,
-                          color: palette.accent,
-                        ),
-                        tooltip: t.ddayAdd,
-                      ),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
                   child: Text(
                     t.ddayHint,
                     style: AppTheme.body.copyWith(
@@ -156,122 +145,81 @@ class _DdayScreenState extends State<DdayScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-                  child: Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) =>
-                                const DdayWidgetDecorateScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: palette.accent.withValues(alpha: 0.28),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.widgets_outlined,
-                              color: palette.accent,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    t.ddayDuoDecorateOpen,
-                                    style: AppTheme.body.copyWith(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF2C3340),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    t.ddayDuoDecorateMenuHint,
-                                    style: AppTheme.body.copyWith(
-                                      fontSize: 12,
-                                      color: AppColors.muted,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Icon(
-                              Icons.chevron_right_rounded,
-                              color: palette.accent.withValues(alpha: 0.7),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: items.isEmpty
                       ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.groups_outlined,
-                                size: 42,
-                                color: palette.accent.withValues(alpha: 0.55),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                t.ddayEmptyTitle,
-                                style: AppTheme.body.copyWith(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 28),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.groups_outlined,
+                                  size: 42,
+                                  color:
+                                      palette.accent.withValues(alpha: 0.55),
                                 ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                t.ddayEmptyHint,
-                                textAlign: TextAlign.center,
-                                style: AppTheme.body.copyWith(
-                                  fontSize: 12,
-                                  color: AppColors.muted,
+                                const SizedBox(height: 12),
+                                Text(
+                                  t.ddayEmptyTitle,
+                                  style: AppTheme.body.copyWith(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 18),
-                              FilledButton.icon(
-                                onPressed: () => _openEditor(),
-                                icon: const Icon(Icons.add_rounded),
-                                label: Text(t.ddayAdd),
-                              ),
-                            ],
+                                const SizedBox(height: 6),
+                                Text(
+                                  t.ddayEmptyHint,
+                                  textAlign: TextAlign.center,
+                                  style: AppTheme.body.copyWith(
+                                    fontSize: 12,
+                                    color: AppColors.muted,
+                                  ),
+                                ),
+                                const SizedBox(height: 18),
+                                FilledButton.icon(
+                                  onPressed: _openEditor,
+                                  icon: const Icon(Icons.add_rounded),
+                                  label: Text(t.ddayAdd),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: palette.accent,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         )
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                          itemCount: items.length,
+                          itemCount: items.length + 1,
                           separatorBuilder: (_, _) =>
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 12),
                           itemBuilder: (context, index) {
+                            if (index == items.length) {
+                              return OutlinedButton.icon(
+                                onPressed: _openEditor,
+                                icon: const Icon(Icons.add_rounded),
+                                label: Text(t.ddayAdd),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: palette.accent,
+                                  side: BorderSide(
+                                    color:
+                                        palette.accent.withValues(alpha: 0.35),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                              );
+                            }
                             final item = items[index];
-                            final colors = _cardColors(item.iconKind, index);
                             return _TogetherRoomCard(
                               item: item,
-                              background: colors.$1,
-                              border: colors.$2,
-                              accent: colors.$3,
                               onOpen: () => _openRoom(item),
-                              onMenuSelected: (action) =>
-                                  _onMenuSelected(action, item),
+                              onDelete: () => _confirmDelete(item),
                             );
                           },
                         ),
@@ -285,132 +233,93 @@ class _DdayScreenState extends State<DdayScreen> {
   }
 }
 
-(Color, Color, Color) _cardColors(DdayIconKind kind, int index) {
-  return switch (kind) {
-    DdayIconKind.cake || DdayIconKind.heart || DdayIconKind.baby => (
-        const Color(0xFFFFF5F8),
-        const Color(0xFFF5B8C8),
-        const Color(0xFFE85A7A),
-      ),
-    DdayIconKind.plane || DdayIconKind.star || DdayIconKind.pen => (
-        const Color(0xFFF3F8FF),
-        const Color(0xFFA8C8F0),
-        const Color(0xFF4A8FE8),
-      ),
-    DdayIconKind.tree || DdayIconKind.sport || DdayIconKind.cat => (
-        const Color(0xFFF6FFF4),
-        const Color(0xFFB5E0B0),
-        const Color(0xFF4CAF70),
-      ),
-    DdayIconKind.dog ||
-    DdayIconKind.notebook ||
-    DdayIconKind.medal ||
-    DdayIconKind.home ||
-    DdayIconKind.wine =>
-      (
-        const Color(0xFFFFF9F0),
-        const Color(0xFFF0D0A0),
-        const Color(0xFFE09A3E),
-      ),
-  };
-}
-
 class _TogetherRoomCard extends StatelessWidget {
   const _TogetherRoomCard({
     required this.item,
-    required this.background,
-    required this.border,
-    required this.accent,
     required this.onOpen,
-    required this.onMenuSelected,
+    required this.onDelete,
   });
 
   final DdayItem item;
-  final Color background;
-  final Color border;
-  final Color accent;
   final VoidCallback onOpen;
-  final ValueChanged<String> onMenuSelected;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     final t = AppStrings.current;
+    final palette = context.palette;
     final cheer = item.latestCheer?.trim();
 
-    return DashedBorder(
-      color: border,
-      strokeWidth: 1.5,
-      dashLength: 5,
-      gapLength: 3,
-      radius: 18,
-      padding: EdgeInsets.zero,
-      backgroundColor: background,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: onOpen,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 4, 14),
-            child: Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: DdayPixelIcon(kind: item.iconKind, size: 36),
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onOpen,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 14, 6, 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE4ECF7)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: palette.accent.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
+                child: DdayPixelIcon(kind: item.iconKind, size: 34),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            item.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTheme.body.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF2C3340),
+                            ),
+                          ),
+                        ),
+                        if (item.hasFriend) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: palette.accent.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             child: Text(
-                              item.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              t.ddayDuoBadge,
                               style: AppTheme.body.copyWith(
-                                fontSize: 16,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF2C3340),
+                                color: palette.accent,
                               ),
                             ),
                           ),
-                          if (item.hasFriend) ...[
-                            const SizedBox(width: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: accent.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                t.ddayDuoBadge,
-                                style: AppTheme.body.copyWith(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w800,
-                                  color: accent,
-                                ),
-                              ),
-                            ),
-                          ],
                         ],
-                      ),
+                      ],
+                    ),
+                    if (item.hasFriend) ...[
                       const SizedBox(height: 4),
                       Text(
-                        item.hasFriend
-                            ? t.togetherFriendCountLabel(item.friendCount)
-                            : t.togetherSoloFriends,
+                        t.togetherFriendCountLabel(item.friendCount),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTheme.body.copyWith(
@@ -418,48 +327,37 @@ class _TogetherRoomCard extends StatelessWidget {
                           color: AppColors.muted,
                         ),
                       ),
-                      if (cheer != null && cheer.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          cheer,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTheme.body.copyWith(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: accent,
-                          ),
-                        ),
-                      ],
                     ],
-                  ),
-                ),
-                PopupMenuButton<String>(
-                  onSelected: onMenuSelected,
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(
-                    Icons.more_vert_rounded,
-                    color: Color(0xFF9AA3B2),
-                  ),
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'open',
-                      child: Text(t.togetherOpenRoom),
-                    ),
-                    PopupMenuItem(value: 'edit', child: Text(t.ddayEdit)),
-                    PopupMenuItem(
-                      value: 'pin',
-                      child: Text(
-                        item.pinnedForWidget
-                            ? t.ddayPinnedWidget
-                            : t.ddayPinWidget,
+                    if (cheer != null && cheer.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        cheer,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTheme.body.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: palette.accent,
+                        ),
                       ),
-                    ),
-                    PopupMenuItem(value: 'delete', child: Text(t.delete)),
+                    ],
                   ],
                 ),
-              ],
-            ),
+              ),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'delete') onDelete();
+                },
+                padding: EdgeInsets.zero,
+                icon: const Icon(
+                  Icons.more_vert_rounded,
+                  color: Color(0xFF9AA3B2),
+                ),
+                itemBuilder: (context) => [
+                  PopupMenuItem(value: 'delete', child: Text(t.delete)),
+                ],
+              ),
+            ],
           ),
         ),
       ),

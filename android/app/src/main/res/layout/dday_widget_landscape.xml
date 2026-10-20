@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dday_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <FrameLayout
+        android:id="@+id/dday_canvas"
+        android:layout_width="280dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:background="@drawable/dday_widget_duo_frame"
+        android:clipChildren="true"
+        android:clipToPadding="true">
+
+        <ImageView
+            android:id="@+id/dday_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:scaleType="fitXY" />
+
+        <FrameLayout
+            android:id="@+id/dday_stage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false">
+
+            <ImageView
+                android:id="@+id/dday_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                tools:src="@android:color/transparent" />
+
+            <ImageView
+                android:id="@+id/dday_heart"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="40dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/dday_me"
+                android:layout_width="72dp"
+                android:layout_height="96dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/character"
+                android:transformPivotX="36dp"
+                android:transformPivotY="96dp" />
+
+            <ImageView
+                android:id="@+id/dday_friend"
+                android:layout_width="72dp"
+                android:layout_height="96dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="4dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/character_bul"
+                android:transformPivotX="36dp"
+                android:transformPivotY="96dp"
+                android:visibility="gone" />
+        </FrameLayout>
+    </FrameLayout>
+</FrameLayout>

@@ -8,7 +8,6 @@ import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/character_select_screen.dart';
 import 'package:quotation/screens/dday_accept_invite_screen.dart';
-import 'package:quotation/screens/dday_widget_decorate_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -297,33 +296,8 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 18),
                       SettingsSection(
-                        title: t.ddayDuoTestSection,
+                        title: t.ddayTitle,
                         children: [
-                          SettingsItem(
-                            icon: Icons.brush_outlined,
-                            title: t.ddayDuoDecorateOpen,
-                            subtitle: t.ddayDuoDecorateSubtitle,
-                            iconColor: palette.accent,
-                            trailing: SettingsOutlineButton(
-                              label: t.ddayDuoDecorateOpen,
-                              onPressed: () async {
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) =>
-                                        const DdayWidgetDecorateScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            onTap: () async {
-                              await Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) =>
-                                      const DdayWidgetDecorateScreen(),
-                                ),
-                              );
-                            },
-                          ),
                           SettingsItem(
                             icon: Icons.qr_code_rounded,
                             title: t.ddayInviteEnterCodeMenu,
