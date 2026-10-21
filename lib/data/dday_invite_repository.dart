@@ -163,7 +163,7 @@ class DdayInviteRepository {
     ).join();
   }
 
-  /// Accept invite by 6-char code. Up to [DdayInviteLimits.maxFriends] guests.
+  /// Accept invite by 6-char code.
   static Future<String> acceptInviteByCode(String rawCode) async {
     final uid = _uid;
     if (uid == null) throw StateError('not_signed_in');
@@ -223,9 +223,6 @@ class DdayInviteRepository {
             .toList();
         if (guestUids.contains(uid) || members.any((m) => m['uid'] == uid)) {
           return; // already joined
-        }
-        if (members.length >= DdayInviteLimits.maxFriends) {
-          throw StateError('friends_full');
         }
       }
 

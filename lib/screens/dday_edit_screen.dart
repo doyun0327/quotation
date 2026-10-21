@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/dday_controller.dart';
-import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/dday_invite_screen.dart';
@@ -241,9 +240,7 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                t.ddayInviteSubtitle(
-                                  DdayInviteLimits.maxFriends,
-                                ),
+                                t.ddayInviteSubtitle,
                                 style: AppTheme.body.copyWith(
                                   fontSize: 12,
                                   color: AppColors.muted,
@@ -253,7 +250,6 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                               Text(
                                 t.ddayInviteFriendCount(
                                   widget.existing!.friendCount,
-                                  DdayInviteLimits.maxFriends,
                                 ),
                                 style: AppTheme.body.copyWith(
                                   fontSize: 13,

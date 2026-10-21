@@ -4,6 +4,8 @@
     android:id="@+id/dday_widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipChildren="true"
+    android:clipToPadding="true"
     android:padding="0dp">
 
     <ImageView

@@ -18,6 +18,7 @@ import android.util.TypedValue
 import androidx.core.content.res.ResourcesCompat
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /** Shared drawables/bitmaps for the D-Day home widget. */
 object DdayWidgetVisuals {
@@ -39,6 +40,21 @@ object DdayWidgetVisuals {
 
   /** Android docs minimum: 70 × cells − 30. */
   fun spanDp(cells: Int): Int = 70 * cells - 30
+
+  /**
+   * One UI cell span. Same formula as Flutter [TogetherWidgetSize.homeSize]
+   * (360dp phone: 4×2 = 301×202, 3×2 = 221×202).
+   */
+  fun launcherSpanDp(cells: Int, horizontal: Boolean, screenWidthDp: Int): Float {
+    val screen = screenWidthDp.coerceIn(320, 480).toFloat()
+    val raw =
+        if (horizontal) {
+          screen * (80 * cells - 19) / 360f
+        } else {
+          screen * (111 * cells - 20) / 360f
+        }
+    return raw.coerceAtLeast(8f)
+  }
 
   /**
    * Launcher round-clips every app widget to this radius (API 31+).
@@ -64,42 +80,63 @@ object DdayWidgetVisuals {
     return (cellsW / 4f).coerceIn(0.7f, 1.2f)
   }
 
-  /**
-   * Fallback canvas when launcher options are missing.
-   * Uses screen-width / 4 cell (typical 4-column home) so the widget fills
-   * like One UI — not the tiny 70×n−30 minimum.
-   */
+  /** Fallback when the launcher has not reported a size yet. Default 4×2. */
   fun previewSizeDp(
       shape: String,
       sizeId: String = "s42",
       screenWidthDp: Int = 360,
-  ): Pair<Int, Int> {
+  ): Pair<Float, Float> {
     val (cellsW, cellsH) = cellsForSize(sizeId)
-    val cell = (screenWidthDp / 4).coerceIn(80, 110)
-    return (cell * cellsW).coerceAtLeast(8) to (cell * cellsH).coerceAtLeast(8)
+    return launcherSpanDp(cellsW, true, screenWidthDp) to
+        launcherSpanDp(cellsH, false, screenWidthDp)
   }
 
   /**
-   * Actual host size from [AppWidgetManager] options — fill the cell.
-   * Falls back to [previewSizeDp] when options are not ready yet.
+   * Actual host size from launcher options (portrait: minW × maxH).
+   * Falls back to [previewSizeDp] when options are not ready.
    */
   fun hostSizeDp(
+      context: Context,
       appWidgetManager: android.appwidget.AppWidgetManager,
       widgetId: Int,
       sizeId: String,
       screenWidthDp: Int,
-  ): Pair<Int, Int> {
+  ): Pair<Float, Float> {
     val fallback = previewSizeDp("square", sizeId, screenWidthDp)
     val options = appWidgetManager.getAppWidgetOptions(widgetId) ?: return fallback
+    val portrait =
+        context.resources.configuration.orientation ==
+            android.content.res.Configuration.ORIENTATION_PORTRAIT
     val minW = options.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
     val maxW = options.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 0)
     val minH = options.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
     val maxH = options.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0)
-    // Prefer the larger reported size so Samsung/One UI cells are filled edge-to-edge.
-    val w = max(minW, maxW)
-    val h = max(minH, maxH)
-    if (w <= 0 || h <= 0) return fallback
-    return w.coerceAtLeast(8) to h.coerceAtLeast(8)
+    val targetW = if (portrait) (if (minW > 0) minW else maxW) else (if (maxW > 0) maxW else minW)
+    val targetH = if (portrait) (if (maxH > 0) maxH else minH) else (if (minH > 0) minH else maxH)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      val sizes =
+          options.getParcelableArrayList<android.util.SizeF>(
+              android.appwidget.AppWidgetManager.OPTION_APPWIDGET_SIZES,
+          )
+      if (!sizes.isNullOrEmpty()) {
+        val size =
+            if (targetW > 0 && targetH > 0) {
+              sizes.minBy {
+                kotlin.math.abs(it.width - targetW) + kotlin.math.abs(it.height - targetH)
+              }
+            } else {
+              sizes.first()
+            }
+        if (size.width >= 8f && size.height >= 8f) return size.width to size.height
+      }
+    }
+    if (targetW <= 0 || targetH <= 0) return fallback
+    return targetW.toFloat() to targetH.toFloat()
+  }
+
+  fun systemWidgetCornerDp(context: Context): Int {
+    val density = context.resources.displayMetrics.density.coerceAtLeast(0.5f)
+    return (systemWidgetCornerPx(context) / density).toInt().coerceIn(12, 40)
   }
 
   /**
@@ -109,10 +146,11 @@ object DdayWidgetVisuals {
   fun buildTogetherWidgetBitmap(
       context: Context,
       shape: String,
-      widthDp: Int,
-      heightDp: Int,
-      bgColorArgb: Int,
+      widthDp: Float,
+      heightDp: Float,
+      bgColorArgb: Int = 0,
       bgOpacity: Int = 100,
+      bgAssetPath: String? = null,
       textColorArgb: Int = 0xFFF26B8A.toInt(),
       isPixel: Boolean,
       label: String,
@@ -126,74 +164,40 @@ object DdayWidgetVisuals {
       friendOffsetX: Int,
       friendOffsetY: Int,
       charScale: Int,
+      friendScale: Int,
       sizeCharFactor: Float,
   ): Bitmap {
     val density = context.resources.displayMetrics.density
-    val w = dp(context, widthDp).coerceAtLeast(8)
-    val h = dp(context, heightDp).coerceAtLeast(8)
+    val w = px(context, widthDp).coerceAtLeast(8)
+    val h = px(context, heightDp).coerceAtLeast(8)
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
 
-    val strokeDp = if (isPixel) 2f else 1.5f
-    val strokePx = strokeDp * density
-    // Prefer alpha baked into ARGB (transparent swatch). Legacy: bgOpacity %.
-    val bakedAlpha = (bgColorArgb ushr 24) and 0xFF
-    val alpha =
-        when {
-          bakedAlpha == 0 -> 0
-          bakedAlpha in 1..254 -> bakedAlpha
-          else -> ((bgOpacity.coerceIn(0, 100) / 100f) * 255f).toInt().coerceIn(0, 255)
-        }
-    val fillArgb = (bgColorArgb and 0x00FFFFFF) or (alpha shl 24)
-    val borderBase = borderColorForBg(bgColorArgb or -0x1000000)
-    val borderAlpha = if (alpha == 0) 0x66 else alpha.coerceAtLeast(90)
-    val borderArgb = (borderBase and 0x00FFFFFF) or (borderAlpha shl 24)
-
-    val fillPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-          color = fillArgb
-          style = Paint.Style.FILL
-          isAntiAlias = !isPixel
-        }
-    val borderFillPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-          color = borderArgb
-          style = Paint.Style.FILL
-          isAntiAlias = !isPixel
-        }
-    // Launcher round-clips the host. Draw a full-bleed RECT for the border color
-    // so One UI's clip creates the outer curve — never fight it with our own radius.
-    val hostCorner =
-        min(systemWidgetCornerPx(context), min(w, h) / 2f).coerceAtLeast(0f)
-    val innerInset = strokePx.coerceAtLeast(density)
-    val innerRect =
-        RectF(
-            innerInset,
-            innerInset,
-            w - innerInset,
-            h - innerInset,
-        )
-    val innerCorner = (hostCorner - innerInset).coerceAtLeast(0f)
-
-    if (alpha == 0) {
-      val ring =
-          Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = borderArgb
-            style = Paint.Style.STROKE
-            strokeWidth = strokePx
+    // No border. Image theme when set; otherwise transparent.
+    val pixelCorner =
+        systemWidgetCornerPx(context).coerceAtMost(min(w, h) / 2f).coerceAtLeast(0f)
+    val cardRect = RectF(0f, 0f, w.toFloat(), h.toFloat())
+    val themeBmp = decodeFlutterAsset(context, bgAssetPath)
+    if (themeBmp != null) {
+      val clipPath =
+          Path().apply {
+            addRoundRect(cardRect, pixelCorner, pixelCorner, Path.Direction.CW)
+          }
+      canvas.save()
+      canvas.clipPath(clipPath)
+      val paint =
+          Paint().apply {
+            isFilterBitmap = !isPixel
             isAntiAlias = !isPixel
           }
-      val mid = strokePx / 2f
-      val midR = (hostCorner - mid).coerceAtLeast(0f)
-      canvas.drawRoundRect(RectF(mid, mid, w - mid, h - mid), midR, midR, ring)
-    } else {
-      // Border color fills the bitmap; host rounds the outer edge.
-      canvas.drawColor(borderArgb)
-      canvas.drawRoundRect(innerRect, innerCorner, innerCorner, fillPaint)
+      // Stretch the image to the widget. No solid color behind it.
+      canvas.drawBitmap(themeBmp, null, Rect(0, 0, w, h), paint)
+      canvas.restore()
+      themeBmp.recycle()
     }
 
     val clipPath = Path()
-    clipPath.addRoundRect(innerRect, innerCorner, innerCorner, Path.Direction.CW)
+    clipPath.addRoundRect(cardRect, pixelCorner, pixelCorner, Path.Direction.CW)
 
     val originX = 0f
     val originY = 0f
@@ -203,11 +207,16 @@ object DdayWidgetVisuals {
     canvas.save()
     canvas.clipPath(clipPath)
 
-    val scale = (charScale / 100f).coerceIn(0.6f, 1.6f)
-    val charWDp = (72f * sizeCharFactor * scale).toInt().coerceAtLeast(20)
-    val charHDp = (96f * sizeCharFactor * scale).toInt().coerceAtLeast(28)
-    val charW = (charWDp * density).toInt().coerceAtLeast(8)
-    val charH = (charHDp * density).toInt().coerceAtLeast(8)
+    val meScale = (charScale / 100f).coerceIn(0.6f, 1.6f)
+    val frScale = (friendScale / 100f).coerceIn(0.6f, 1.6f)
+    val meWDp = (72f * sizeCharFactor * meScale).toInt().coerceAtLeast(20)
+    val meHDp = (96f * sizeCharFactor * meScale).toInt().coerceAtLeast(28)
+    val meW = (meWDp * density).toInt().coerceAtLeast(8)
+    val meH = (meHDp * density).toInt().coerceAtLeast(8)
+    val friendWDp = (72f * sizeCharFactor * frScale).toInt().coerceAtLeast(20)
+    val friendHDp = (96f * sizeCharFactor * frScale).toInt().coerceAtLeast(28)
+    val friendW = (friendWDp * density).toInt().coerceAtLeast(8)
+    val friendH = (friendHDp * density).toInt().coerceAtLeast(8)
     val charPaint =
         Paint().apply {
           isFilterBitmap = !isPixel
@@ -216,14 +225,21 @@ object DdayWidgetVisuals {
 
     val trimmed = label.trim()
     if (trimmed.isNotEmpty()) {
-      val maxLabelDp = (widthDp - 32).coerceAtLeast(48)
+      val cornerDp = systemWidgetCornerDp(context).toFloat()
+      val insetX = max(cornerDp, 16f)
+      val insetY = max(cornerDp, 12f)
+      val maxLabelPx =
+          (contentW - insetX * density * 2f).roundToInt().coerceAtLeast(32)
+      val maxLabelHeightPx =
+          (contentH - insetY * density * 2f).roundToInt().coerceAtLeast(1)
       val labelBmp =
           buildLabelBitmap(
               context = context,
               text = trimmed,
               textScale = textScale,
               isPixel = isPixel,
-              maxWidthDp = maxLabelDp,
+              maxWidthPx = maxLabelPx,
+              maxHeightPx = maxLabelHeightPx,
               textColorArgb = textColorArgb,
           )
       val lx = originX + (contentW - labelBmp.width) / 2f + textOffsetX * density
@@ -233,30 +249,25 @@ object DdayWidgetVisuals {
     }
 
     val hasFriend = friendId.isNotBlank()
-    if (hasFriend) {
-      val heart =
-          if (isPixel) {
-            buildPixelHeartBitmap(context, sizeDp = 16)
-          } else {
-            buildCleanHeartBitmap(context, sizeDp = 14)
-          }
-      // Flutter Align center + Offset(-40, 0) for the heart widget's top-left.
-      val hx = originX + contentW / 2f - 40f * density - heart.width / 2f
-      val hy = originY + contentH / 2f - heart.height / 2f
-      canvas.drawBitmap(heart, hx, hy, null)
-      heart.recycle()
-    }
 
     val meBmp =
         characterBitmap(
             context = context,
             characterId = meId,
-            widthDp = charWDp,
-            heightDp = charHDp,
+            widthDp = meWDp,
+            heightDp = meHDp,
             isPixel = isPixel,
         )
-    val meLeft = originX + (4f + meOffsetX) * density
-    val meTop = originY + contentH - meOffsetY * density - charH
+    val meLeft =
+        (originX + (4f + meOffsetX) * density).coerceIn(
+            originX,
+            (originX + contentW - meW).coerceAtLeast(originX),
+        )
+    val meTop =
+        (originY + contentH - meOffsetY * density - meH).coerceIn(
+            originY,
+            (originY + contentH - meH).coerceAtLeast(originY),
+        )
     canvas.drawBitmap(meBmp, meLeft, meTop, charPaint)
     meBmp.recycle()
 
@@ -265,13 +276,21 @@ object DdayWidgetVisuals {
           characterBitmap(
               context = context,
               characterId = friendId,
-              widthDp = charWDp,
-              heightDp = charHDp,
+              widthDp = friendWDp,
+              heightDp = friendHDp,
               isPixel = isPixel,
           )
-      // Flutter: right: 4 - friendX
-      val friendLeft = originX + contentW - (4f - friendOffsetX) * density - charW
-      val friendTop = originY + contentH - friendOffsetY * density - charH
+      // Flutter: right: 4 - friendX. Keep the sprite inside the background.
+      val friendLeft =
+          (originX + contentW - (4f - friendOffsetX) * density - friendW).coerceIn(
+              originX,
+              (originX + contentW - friendW).coerceAtLeast(originX),
+          )
+      val friendTop =
+          (originY + contentH - friendOffsetY * density - friendH).coerceIn(
+              originY,
+              (originY + contentH - friendH).coerceAtLeast(originY),
+          )
       canvas.drawBitmap(friendBmp, friendLeft, friendTop, charPaint)
       friendBmp.recycle()
     }
@@ -286,11 +305,13 @@ object DdayWidgetVisuals {
       text: String,
       textScale: Int,
       isPixel: Boolean,
-      maxWidthDp: Int,
+      maxWidthPx: Int,
+      maxHeightPx: Int,
       textColorArgb: Int = 0xFFF26B8A.toInt(),
   ): Bitmap {
     val density = context.resources.displayMetrics.density
-    val maxWidth = (maxWidthDp * density).toInt().coerceAtLeast(32)
+    val maxWidth = maxWidthPx.coerceAtLeast(32)
+    val maxHeight = maxHeightPx.coerceAtLeast(1)
     val baseSp = if (isPixel) 16f else 22f
     val textSizePx = baseSp * (textScale / 100f) * density
     val face =
@@ -302,19 +323,35 @@ object DdayWidgetVisuals {
           typeface = face
           isAntiAlias = !isPixel
           isFilterBitmap = !isPixel
-          isFakeBoldText = !isPixel
+          // Galmuri has no bold face. Faux bold widens glyphs and wraps earlier than Flutter.
+          isFakeBoldText = false
+          if (!isPixel) letterSpacing = -0.1f / textSizePx
         }
+    val fontHeight = (paint.fontMetrics.descent - paint.fontMetrics.ascent).coerceAtLeast(1f)
+    val spacingAdd = textSizePx * 1.2f - fontHeight
+    // Newlines come from the Flutter preview. Do not wrap those lines again.
+    // StaticLayout.width is the constraint (16384), not the ink width — scale by the lines.
     val layout =
-        StaticLayout.Builder.obtain(text, 0, text.length, paint, maxWidth)
+        StaticLayout.Builder.obtain(text, 0, text.length, paint, 16384)
             .setAlignment(Layout.Alignment.ALIGN_CENTER)
-            .setMaxLines(3)
-            .setEllipsize(android.text.TextUtils.TruncateAt.END)
+            .setLineSpacing(spacingAdd, 1f)
             .setIncludePad(false)
             .build()
-    val width = maxWidth.coerceAtLeast(layout.width.coerceAtLeast(1))
-    val height = layout.height.coerceAtLeast(1)
+    var textWidth = 1f
+    for (i in 0 until layout.lineCount) {
+      textWidth = max(textWidth, layout.getLineWidth(i))
+    }
+    val scaleH = if (layout.height > maxHeight) maxHeight.toFloat() / layout.height else 1f
+    val scaleW = if (textWidth > maxWidth) maxWidth / textWidth else 1f
+    val scale = min(scaleH, scaleW)
+    val width = (textWidth * scale).roundToInt().coerceAtLeast(1)
+    val height = (layout.height * scale).roundToInt().coerceAtLeast(1)
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
+    // Center alignment sits in the 16384px layout, not at x=0. Shift the ink into the bitmap.
+    val inkLeft = (layout.width - textWidth) / 2f
+    canvas.translate(-inkLeft * scale, 0f)
+    canvas.scale(scale, scale)
     layout.draw(canvas)
     return bitmap
   }
@@ -399,6 +436,27 @@ object DdayWidgetVisuals {
     }
     android.util.Log.e("DdayWidget", "Pixel font missing; widget text will look non-pixel")
     return Typeface.DEFAULT
+  }
+
+  /** Load a Flutter asset (e.g. assets/images/…) from the APK AssetManager. */
+  fun decodeFlutterAsset(context: Context, assetPath: String?): Bitmap? {
+    if (assetPath.isNullOrBlank()) return null
+    val candidates =
+        listOf(
+            "flutter_assets/$assetPath",
+            assetPath,
+            assetPath.removePrefix("assets/").let { "flutter_assets/assets/$it" },
+        )
+    for (path in candidates) {
+      try {
+        context.assets.open(path).use { stream ->
+          return BitmapFactory.decodeStream(stream)
+        }
+      } catch (_: Exception) {
+        // try next
+      }
+    }
+    return null
   }
 
   fun parseArgb(hex: String?, default: Int = 0xFFFFF3E8.toInt()): Int {
@@ -538,6 +596,85 @@ object DdayWidgetVisuals {
         }
     canvas.drawPath(path, paint)
     return bitmap
+  }
+
+  /**
+   * Soft mosaic: equal-size square pixels, subtle shade noise (not a checker).
+   */
+  private fun drawPixelMosaicRoundRect(
+      canvas: Canvas,
+      rect: RectF,
+      cornerPx: Float,
+      fillArgb: Int,
+      density: Float,
+  ) {
+    val path =
+        Path().apply {
+          addRoundRect(rect, cornerPx, cornerPx, Path.Direction.CW)
+        }
+    canvas.save()
+    canvas.clipPath(path)
+
+    val a = (fillArgb ushr 24) and 0xFF
+    val r = (fillArgb ushr 16) and 0xFF
+    val g = (fillArgb ushr 8) and 0xFF
+    val b = fillArgb and 0xFF
+    fun mix(t: Float, toward: Int): Int {
+      val tr = (toward ushr 16) and 0xFF
+      val tg = (toward ushr 8) and 0xFF
+      val tb = toward and 0xFF
+      val nr = (r + (tr - r) * t).toInt().coerceIn(0, 255)
+      val ng = (g + (tg - g) * t).toInt().coerceIn(0, 255)
+      val nb = (b + (tb - b) * t).toInt().coerceIn(0, 255)
+      return (a shl 24) or (nr shl 16) or (ng shl 8) or nb
+    }
+    val shades =
+        intArrayOf(
+            mix(0.14f, 0xFFFFFFFF.toInt()),
+            mix(0.07f, 0xFFFFFFFF.toInt()),
+            fillArgb,
+            mix(0.10f, 0xFFE8D98A.toInt()),
+            mix(0.035f, 0xFF000000.toInt()),
+            mix(0.06f, 0xFF000000.toInt()),
+        )
+
+    val w = rect.width()
+    val h = rect.height()
+    var seed =
+        (fillArgb xor w.toInt() xor (h.toInt() shl 8)).let { if (it == 0) 0xA5A5 else it }
+    fun next(): Float {
+      seed = (1103515245 * seed + 12345) and 0x7fffffff
+      return seed / 2147483647f
+    }
+
+    val unit = (8f * density).coerceIn(4f, 18f)
+    val cols = kotlin.math.ceil(w / unit).toInt()
+    val rows = kotlin.math.ceil(h / unit).toInt()
+    val paint = Paint().apply { isAntiAlias = false }
+
+    for (row in 0 until rows) {
+      for (col in 0 until cols) {
+        val n = next()
+        val idx =
+            when {
+              n < 0.22f -> 0
+              n < 0.42f -> 1
+              n < 0.62f -> 2
+              n < 0.80f -> 3
+              n < 0.92f -> 4
+              else -> 5
+            }
+        paint.color = shades[idx]
+        val x = rect.left + col * unit
+        val y = rect.top + row * unit
+        canvas.drawRect(x, y, x + unit + 0.4f, y + unit + 0.4f, paint)
+      }
+    }
+    canvas.restore()
+  }
+
+  private fun px(context: Context, dp: Float): Int {
+    return (dp * context.resources.displayMetrics.density).roundToInt().coerceAtLeast(1)
   }
 
   private fun dp(context: Context, value: Int): Int {

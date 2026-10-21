@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
-import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/theme/app_colors.dart';
@@ -11,7 +10,7 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// Host screen: create invite code/link for a D-Day (up to 5 friends).
+/// Host screen: create an invite code and link for a D-Day.
 class DdayInviteScreen extends StatefulWidget {
   const DdayInviteScreen({super.key, required this.item});
 
@@ -99,9 +98,6 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
   Widget build(BuildContext context) {
     final t = AppStrings.current;
     final palette = context.palette;
-    final friends = widget.item.friends;
-    final slotsLeft = DdayInviteLimits.maxFriends - friends.length;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF3F7FD),
       appBar: AppBar(
@@ -129,13 +125,12 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
               .toList();
           final item = matches.isEmpty ? widget.item : matches.first;
           final liveFriends = item.friends;
-          final liveLeft = DdayInviteLimits.maxFriends - liveFriends.length;
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
             children: [
               Text(
-                t.ddayInviteSubtitle(DdayInviteLimits.maxFriends),
+                t.ddayInviteSubtitle,
                 style: AppTheme.body.copyWith(
                   fontSize: 13,
                   color: AppColors.muted,
@@ -151,10 +146,7 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                t.ddayInviteFriendCount(
-                  liveFriends.length,
-                  DdayInviteLimits.maxFriends,
-                ),
+                t.ddayInviteFriendCount(liveFriends.length),
                 style: AppTheme.body.copyWith(
                   fontSize: 13,
                   color: palette.accent,
@@ -248,38 +240,23 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                if (liveLeft <= 0)
-                  Text(
-                    t.ddayInviteFull,
-                    style: AppTheme.body.copyWith(color: AppColors.muted),
-                  )
-                else
-                  SizedBox(
-                    height: 52,
-                    child: FilledButton.icon(
-                      onPressed: _share,
-                      style: FilledButton.styleFrom(
-                        backgroundColor: palette.accent,
-                        shape: const StadiumBorder(),
-                      ),
-                      icon: const Icon(Icons.ios_share_rounded),
-                      label: Text(
-                        t.ddayInviteShare,
-                        style: AppTheme.body.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
+                SizedBox(
+                  height: 52,
+                  child: FilledButton.icon(
+                    onPressed: _share,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: palette.accent,
+                      shape: const StadiumBorder(),
+                    ),
+                    icon: const Icon(Icons.ios_share_rounded),
+                    label: Text(
+                      t.ddayInviteShare,
+                      style: AppTheme.body.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
                       ),
                     ),
-                  ),
-                const SizedBox(height: 10),
-                Text(
-                  t.ddayInviteSlotsLeft(slotsLeft < 0 ? liveLeft : liveLeft),
-                  textAlign: TextAlign.center,
-                  style: AppTheme.body.copyWith(
-                    fontSize: 12,
-                    color: AppColors.muted,
                   ),
                 ),
               ],

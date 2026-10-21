@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.RemoteViews
+import kotlin.math.roundToInt
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
@@ -50,11 +51,13 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     // Fill the launcher-allocated cell (not the 70×n−30 minimum).
     val (canvasW, canvasH) =
         DdayWidgetVisuals.hostSizeDp(
+            context,
             appWidgetManager,
             widgetId,
             sizeId,
             screenWidthDp,
         )
+    val cornerDp = DdayWidgetVisuals.systemWidgetCornerDp(context)
 
     val label = readString(widgetData, "ddayLabel")
     val meId = readString(widgetData, "ddayCharMe").ifBlank { "basic" }
@@ -67,10 +70,10 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val textOffsetX = readInt(widgetData, "ddayTextOffsetX", 0)
     val textOffsetY = readInt(widgetData, "ddayTextOffsetY", 0)
     val charScale = readInt(widgetData, "ddayCharScale", 100).coerceIn(60, 160)
+    val friendScale =
+        readInt(widgetData, "ddayFriendCharScale", charScale).coerceIn(60, 160)
     val textScale = readInt(widgetData, "ddayTextScale", 100).coerceIn(60, 160)
-    val bgColor =
-        DdayWidgetVisuals.parseArgb(readString(widgetData, "ddayBgColor").ifBlank { null })
-    val bgOpacity = readInt(widgetData, "ddayBgOpacity", 100).coerceIn(20, 100)
+    val bgAsset = readString(widgetData, "ddayBgAsset")
     val textColor =
         DdayWidgetVisuals.parseArgb(
             readString(widgetData, "ddayTextColor").ifBlank { null },
@@ -84,8 +87,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             shape = shape,
             widthDp = canvasW,
             heightDp = canvasH,
-            bgColorArgb = bgColor,
-            bgOpacity = bgOpacity,
+            bgAssetPath = bgAsset.ifBlank { null },
             textColorArgb = textColor,
             isPixel = isPixel,
             label = label,
@@ -99,6 +101,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             friendOffsetX = friendOffsetX,
             friendOffsetY = friendOffsetY,
             charScale = charScale,
+            friendScale = friendScale,
             sizeCharFactor = DdayWidgetVisuals.charFactor(sizeId),
         )
 
@@ -110,6 +113,23 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
           setOnClickPendingIntent(R.id.dday_composite, launchIntent)
           setImageViewBitmap(R.id.dday_composite, composite)
         }
+
+    // Let Flutter decorate preview use the same dp + corner as this host.
+    widgetData
+        .edit()
+        .putInt("ddayHostWidthDp", canvasW.roundToInt())
+        .putInt("ddayHostHeightDp", canvasH.roundToInt())
+        .putString("ddayHostWidthExact", canvasW.toString())
+        .putString("ddayHostHeightExact", canvasH.toString())
+        .putString("ddayHostSizeId", sizeId)
+        .putInt("ddayHostCornerDp", cornerDp)
+        .putInt("flutter.ddayHostWidthDp", canvasW.roundToInt())
+        .putInt("flutter.ddayHostHeightDp", canvasH.roundToInt())
+        .putString("flutter.ddayHostWidthExact", canvasW.toString())
+        .putString("flutter.ddayHostHeightExact", canvasH.toString())
+        .putString("flutter.ddayHostSizeId", sizeId)
+        .putInt("flutter.ddayHostCornerDp", cornerDp)
+        .apply()
 
     appWidgetManager.updateAppWidget(widgetId, views)
   }

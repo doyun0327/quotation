@@ -16,6 +16,8 @@ service cloud.firestore {
     }
 
     match /ddays/{ddayId} {
+      // Shared test room: any signed-in device (including anonymous) can join.
+      allow read, create, update: if signedIn() && ddayId == 'together-test-room';
       allow read: if signedIn();
       allow create: if signedIn()
         && request.resource.data.ownerUid == request.auth.uid;
@@ -40,6 +42,8 @@ service cloud.firestore {
     }
 
     match /dday_memberships/{ddayId} {
+      allow read, create, update: if signedIn() && ddayId == 'together-test-room';
+
       function isRoomMember() {
         return resource.data.hostUid == request.auth.uid
             || request.auth.uid in resource.data.guestUids;

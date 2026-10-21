@@ -4,6 +4,7 @@ import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/encouragement_notification_scheduler.dart';
 import 'package:quotation/data/membership_controller.dart';
+import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/character_select_screen.dart';
@@ -84,6 +85,7 @@ class SettingsScreen extends StatelessWidget {
         authController,
         characterController,
         ddayController,
+        togetherTestRoom,
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
@@ -296,12 +298,51 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 18),
                       SettingsSection(
+                        title: t.friendCharacterTitle,
+                        children: [
+                          SettingsItem(
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                togetherTestRoom.friendCharacter.assetPath,
+                                width: 42,
+                                height: 42,
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.medium,
+                              ),
+                            ),
+                            title: t.friendCharacterTitle,
+                            subtitle: t.friendCharacterSubtitle,
+                            trailing: Switch.adaptive(
+                              value: togetherTestRoom.enabled,
+                              activeTrackColor: palette.accent,
+                              onChanged: togetherTestRoom.busy
+                                  ? null
+                                  : (value) async {
+                                      final ok = await togetherTestRoom
+                                          .setEnabled(value);
+                                      if (!context.mounted) return;
+                                      _toast(
+                                        context,
+                                        ok
+                                            ? (value
+                                                ? t.friendCharacterOnToast
+                                                : t.friendCharacterOffToast)
+                                            : t.friendCharacterFailedToast,
+                                      );
+                                    },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      SettingsSection(
                         title: t.ddayTitle,
                         children: [
                           SettingsItem(
                             icon: Icons.qr_code_rounded,
                             title: t.ddayInviteEnterCodeMenu,
-                            subtitle: t.ddayInviteAcceptSubtitle(5),
+                            subtitle: t.ddayInviteAcceptSubtitle,
                             iconColor: palette.accent,
                             trailing: SettingsOutlineButton(
                               label: t.ddayInviteAcceptAction,

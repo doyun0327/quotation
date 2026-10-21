@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/widgets/pixel_color_tile.dart';
 
 /// Bottom sheet: pick a color from a palette board (+ optional transparent).
 Future<int?> showColorPaletteSheet(
@@ -8,18 +9,22 @@ Future<int?> showColorPaletteSheet(
   required int initialArgb,
   bool allowTransparent = false,
   String? title,
+  bool pixelStyle = false,
 }) {
   return showModalBottomSheet<int>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    backgroundColor: pixelStyle ? const Color(0xFFFFF8F0) : Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(pixelStyle ? 6 : 20),
+      ),
     ),
     builder: (ctx) => _ColorPaletteSheet(
       initialArgb: initialArgb,
       allowTransparent: allowTransparent,
       title: title,
+      pixelStyle: pixelStyle,
     ),
   );
 }
@@ -29,11 +34,13 @@ class _ColorPaletteSheet extends StatefulWidget {
     required this.initialArgb,
     required this.allowTransparent,
     this.title,
+    this.pixelStyle = false,
   });
 
   final int initialArgb;
   final bool allowTransparent;
   final String? title;
+  final bool pixelStyle;
 
   @override
   State<_ColorPaletteSheet> createState() => _ColorPaletteSheetState();
@@ -41,7 +48,81 @@ class _ColorPaletteSheet extends StatefulWidget {
 
 class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
   late int _selected;
-  late double _hue; // 0–360
+
+  /// Soft pastel rows for pixel widget bg (incl. cream tones from reference).
+  static const _pixelPresetRows = <List<int>>[
+    kPixelCreamShades,
+    [
+      0xFFFFFFFF,
+      0xFFFFF3E8,
+      0xFFFFE4EC,
+      0xFFFFD6E8,
+      0xFFF8BBD0,
+      0xFFF48FB1,
+      0xFFF26B8A,
+      0xFFE85A7A,
+    ],
+    [
+      0xFFE8F5E9,
+      0xFFC8E6C9,
+      0xFFA5D6A7,
+      0xFFC8F0E0,
+      0xFF81C784,
+      0xFF66BB6A,
+      0xFF43A047,
+      0xFF2E7D32,
+    ],
+    [
+      0xFFE3F2FD,
+      0xFFBBDEFB,
+      0xFFD4E5FF,
+      0xFF90CAF9,
+      0xFF64B5F6,
+      0xFF42A5F5,
+      0xFF1E88E5,
+      0xFF1565C0,
+    ],
+    [
+      0xFFF3E5F5,
+      0xFFE1BEE7,
+      0xFFCE93D8,
+      0xFFBA68C8,
+      0xFFAB47BC,
+      0xFF8E24AA,
+      0xFF6A1B9A,
+      0xFF4A148C,
+    ],
+    [
+      0xFFFFF8E1,
+      0xFFFFECB3,
+      0xFFFFE082,
+      0xFFFFD54F,
+      0xFFFFCA28,
+      0xFFFFB300,
+      0xFFFFA000,
+      0xFFFF6F00,
+    ],
+    [
+      0xFFEFEBE9,
+      0xFFD7CCC8,
+      0xFFBCAAA4,
+      0xFFA1887F,
+      0xFF8D6E63,
+      0xFF6D4C41,
+      0xFF5D4037,
+      0xFF3E2723,
+    ],
+    [
+      0xFFFAFAFA,
+      0xFFEEEEEE,
+      0xFFE0E0E0,
+      0xFFBDBDBD,
+      0xFF9E9E9E,
+      0xFF757575,
+      0xFF616161,
+      0xFF212121,
+    ],
+  ];
 
   static const _presetRows = <List<int>>[
     [
@@ -160,29 +241,6 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
   void initState() {
     super.initState();
     _selected = widget.initialArgb;
-    final hsl = HSLColor.fromColor(Color(_selected | 0xFF000000));
-    _hue = hsl.hue;
-  }
-
-  List<int> get _hueShades {
-    return List<int>.generate(8, (i) {
-      final t = i / 7;
-      final c = HSLColor.fromAHSL(
-        1,
-        _hue,
-        0.25 + 0.7 * (1 - (t - 0.5).abs() * 1.2).clamp(0.2, 1.0),
-        0.92 - t * 0.72,
-      ).toColor();
-      return _argb32(c);
-    });
-  }
-
-  static int _argb32(Color c) {
-    final a = (c.a * 255.0).round() & 0xff;
-    final r = (c.r * 255.0).round() & 0xff;
-    final g = (c.g * 255.0).round() & 0xff;
-    final b = (c.b * 255.0).round() & 0xff;
-    return (a << 24) | (r << 16) | (g << 8) | b;
   }
 
   Widget _swatch(int argb, {required bool transparent}) {
@@ -191,6 +249,15 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
         : _selected == argb ||
             ((_selected & 0x00FFFFFF) == (argb & 0x00FFFFFF) &&
                 (_selected & 0xFF000000) != 0);
+    if (widget.pixelStyle) {
+      return PixelColorTile(
+        argb: argb,
+        selected: selected,
+        transparent: transparent,
+        onTap: () =>
+            setState(() => _selected = transparent ? 0x00000000 : argb),
+      );
+    }
     return GestureDetector(
       onTap: () => setState(() => _selected = transparent ? 0x00000000 : argb),
       child: Container(
@@ -204,11 +271,7 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
             width: selected ? 2.5 : 1,
           ),
         ),
-        child: transparent
-            ? CustomPaint(painter: _CheckerPainter())
-            : (argb & 0x00FFFFFF) == 0x00FFFFFF
-                ? null
-                : null,
+        child: transparent ? CustomPaint(painter: _CheckerPainter()) : null,
       ),
     );
   }
@@ -217,6 +280,7 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
   Widget build(BuildContext context) {
     final t = AppStrings.current;
     final bottom = MediaQuery.paddingOf(context).bottom;
+    final rows = widget.pixelStyle ? _pixelPresetRows : _presetRows;
     return Padding(
       padding: EdgeInsets.fromLTRB(16, 12, 16, 16 + bottom),
       child: Column(
@@ -237,6 +301,7 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
           Text(
             widget.title ?? t.ddayDecoratePickColor,
             style: AppTheme.body.copyWith(
+              fontFamily: widget.pixelStyle ? 'Galmuri' : null,
               fontSize: 16,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF2C3340),
@@ -251,6 +316,7 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
                 Text(
                   t.ddayDecorateTransparent,
                   style: AppTheme.body.copyWith(
+                    fontFamily: widget.pixelStyle ? 'Galmuri' : null,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF5B6B8C),
@@ -260,53 +326,15 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
             ),
             const SizedBox(height: 14),
           ],
-          Text(
-            t.ddayDecoratePaletteHue,
-            style: AppTheme.body.copyWith(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF5B6B8C),
-            ),
-          ),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              trackHeight: 10,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
-            ),
-            child: Slider(
-              value: _hue,
-              min: 0,
-              max: 359,
-              activeColor: HSLColor.fromAHSL(1, _hue, 0.85, 0.55).toColor(),
-              inactiveColor: const Color(0xFFE8EEF6),
-              onChanged: (v) => setState(() => _hue = v),
-            ),
-          ),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final c in _hueShades) _swatch(c, transparent: false),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            t.ddayDecoratePalettePresets,
-            style: AppTheme.body.copyWith(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF5B6B8C),
-            ),
-          ),
-          const SizedBox(height: 8),
           ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(context).height * 0.36,
+              maxHeight: MediaQuery.sizeOf(context).height *
+                  (widget.pixelStyle ? 0.52 : 0.36),
             ),
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  for (final row in _presetRows) ...[
+                  for (final row in rows) ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -327,11 +355,17 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
               onPressed: () => Navigator.of(context).pop(_selected),
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFFF26B8A),
-                shape: const StadiumBorder(),
+                shape: widget.pixelStyle
+                    ? const RoundedRectangleBorder()
+                    : const StadiumBorder(),
+                side: widget.pixelStyle
+                    ? const BorderSide(color: Color(0xFF1A1A22), width: 2)
+                    : null,
               ),
               child: Text(
                 t.ddayDecoratePickColorDone,
                 style: AppTheme.body.copyWith(
+                  fontFamily: widget.pixelStyle ? 'Galmuri' : null,
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,

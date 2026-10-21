@@ -9,6 +9,8 @@ import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/selection_controller.dart';
+import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/theme_controller.dart';
@@ -76,18 +78,27 @@ abstract final class HomeWidgetSync {
   static const keyDdayTextOffsetX = 'ddayTextOffsetX';
   static const keyDdayTextOffsetY = 'ddayTextOffsetY';
   static const keyDdayCharScale = 'ddayCharScale';
+  static const keyDdayFriendCharScale = 'ddayFriendCharScale';
   static const keyDdayTextScale = 'ddayTextScale';
   static const keyDdayBgColor = 'ddayBgColor';
   static const keyDdayBgOpacity = 'ddayBgOpacity';
+  static const keyDdayBgTheme = 'ddayBgTheme';
+  static const keyDdayBgAsset = 'ddayBgAsset';
   static const keyDdayTextColor = 'ddayTextColor';
   static const keyDdayShape = 'ddayShape';
   static const keyDdayWidgetSize = 'ddayWidgetSize';
   static const keyDdayScreenWidthDp = 'ddayScreenWidthDp';
+  static const keyDdayHostWidthDp = 'ddayHostWidthDp';
+  static const keyDdayHostHeightDp = 'ddayHostHeightDp';
+  static const keyDdayHostWidthExact = 'ddayHostWidthExact';
+  static const keyDdayHostHeightExact = 'ddayHostHeightExact';
+  static const keyDdayHostSizeId = 'ddayHostSizeId';
+  static const keyDdayHostCornerDp = 'ddayHostCornerDp';
   static const keyVisualStyle = 'visualStyle';
   static const keyCharacterId = 'characterId';
   static const _pinChannel = MethodChannel('com.quotation.quotation/widget_pin');
 
-  /// Pin provider = size chip (3×3 / 4×2 / 4×3 / 3×2).
+  /// Pin provider = size chip (default 3×2).
   static ({String key, String name, String qualified}) _providerForSize(
     TogetherWidgetSize size,
   ) {
@@ -98,12 +109,9 @@ abstract final class HomeWidgetSync {
   }
 
   static TogetherWidgetSize _currentWidgetSize() {
-    final roomId = ddayController.widgetDday?.id;
-    if (roomId == null) return TogetherWidgetSize.s42;
-    return ddayController.widgetSizeForRoom(roomId);
+    return TogetherWidgetSize.s42;
   }
 
-  /// Logical screen width shared with Android so preview & home use the same cellDp.
   static int _screenWidthDp() {
     final views = WidgetsBinding.instance.platformDispatcher.views;
     if (views.isEmpty) return 360;
@@ -111,6 +119,42 @@ abstract final class HomeWidgetSync {
     final w = view.physicalSize.width / view.devicePixelRatio;
     if (w.isFinite && w > 0) return w.round();
     return 360;
+  }
+
+  /// Measured home-widget host size + corner (written by Android provider).
+  static Future<({Size size, TogetherWidgetSize forSize, double cornerDp})?>
+      loadHostPreviewSize() async {
+    if (!_isAndroid) return null;
+    try {
+      final exactW = double.tryParse(
+        await HomeWidget.getWidgetData<String>(keyDdayHostWidthExact) ?? '',
+      );
+      final exactH = double.tryParse(
+        await HomeWidget.getWidgetData<String>(keyDdayHostHeightExact) ?? '',
+      );
+      final w = exactW ??
+          (await HomeWidget.getWidgetData<int>(keyDdayHostWidthDp))?.toDouble();
+      final h = exactH ??
+          (await HomeWidget.getWidgetData<int>(keyDdayHostHeightDp))?.toDouble();
+      final id = await HomeWidget.getWidgetData<String>(keyDdayHostSizeId);
+      final corner = await HomeWidget.getWidgetData<int>(keyDdayHostCornerDp);
+      if (w == null || h == null || w < 40 || h < 40) return null;
+      final forSize = TogetherWidgetSize.byId(id);
+      final screen = _screenWidthDp().toDouble();
+      // Trust the launcher cell. A Pixel grid is not the Samsung 4×2 ratio.
+      if (w > screen * 1.25 || h > screen * 1.5) return null;
+      return (
+        size: Size(w, h),
+        forSize: forSize,
+        cornerDp: (corner ?? TogetherWidgetSize.defaultCornerDp.toInt())
+            .toDouble()
+            .clamp(12.0, 40.0)
+            .toDouble(),
+      );
+    } catch (e) {
+      debugPrint('loadHostPreviewSize: $e');
+      return null;
+    }
   }
 
   static Future<void> initialize() async {
@@ -293,18 +337,18 @@ abstract final class HomeWidgetSync {
     final roomId = item?.id;
     final charScale =
         roomId == null ? 100 : ddayController.charScaleForRoom(roomId);
+    final friendScale =
+        roomId == null ? 100 : ddayController.friendScaleForRoom(roomId);
     final textScale =
         roomId == null ? 100 : ddayController.textScaleForRoom(roomId);
-    final bgColor =
-        roomId == null ? 0xFFFFF3E8 : ddayController.bgColorForRoom(roomId);
-    final bgOpacity =
-        roomId == null ? 100 : ddayController.bgOpacityForRoom(roomId);
+    final bgThemeId = roomId == null
+        ? 'widget_background'
+        : ddayController.bgThemeForRoom(roomId);
+    final bgTheme = TogetherBgTheme.byId(bgThemeId);
     final textColor =
         roomId == null ? 0xFFF26B8A : ddayController.textColorForRoom(roomId);
     const shape = TogetherWidgetShape.square;
-    final widgetSize = roomId == null
-        ? TogetherWidgetSize.s42
-        : ddayController.widgetSizeForRoom(roomId);
+    final widgetSize = TogetherWidgetSize.s42;
     final textOffsetX =
         roomId == null ? 0 : ddayController.textOffsetXForRoom(roomId);
     final textOffsetY =
@@ -337,12 +381,13 @@ abstract final class HomeWidgetSync {
     await HomeWidget.saveWidgetData<int>(keyDdayTextOffsetX, textOffsetX);
     await HomeWidget.saveWidgetData<int>(keyDdayTextOffsetY, textOffsetY);
     await HomeWidget.saveWidgetData<int>(keyDdayCharScale, charScale);
+    await HomeWidget.saveWidgetData<int>(keyDdayFriendCharScale, friendScale);
     await HomeWidget.saveWidgetData<int>(keyDdayTextScale, textScale);
+    await HomeWidget.saveWidgetData<String>(keyDdayBgTheme, bgTheme.id);
     await HomeWidget.saveWidgetData<String>(
-      keyDdayBgColor,
-      _hex(Color(bgColor)),
+      keyDdayBgAsset,
+      bgTheme.assetPath,
     );
-    await HomeWidget.saveWidgetData<int>(keyDdayBgOpacity, bgOpacity);
     await HomeWidget.saveWidgetData<String>(
       keyDdayTextColor,
       _hex(Color(textColor)),
@@ -361,7 +406,23 @@ abstract final class HomeWidgetSync {
       return;
     }
     final cheer = item.latestCheer?.trim();
-    final label = (cheer != null && cheer.isNotEmpty) ? cheer : '';
+    final rawLabel = (cheer != null && cheer.isNotEmpty) ? cheer : '';
+    final host = await loadHostPreviewSize();
+    final box = host?.size ?? widgetSize.homeSize(_screenWidthDp().toDouble());
+    final corner = host?.cornerDp ?? TogetherWidgetSize.defaultCornerDp;
+    final inner = TogetherCheerLayout.innerSize(box.width, box.height, corner);
+    var label = rawLabel;
+    try {
+      label = TogetherCheerLayout.wrap(
+        text: rawLabel,
+        maxWidth: inner.width,
+        isPixel: visualStyleController.isPixel,
+        textScale: textScale.toDouble(),
+      );
+    } catch (e) {
+      debugPrint('cheer wrap: $e');
+      label = rawLabel;
+    }
     await HomeWidget.saveWidgetData<String>(keyDdayTitle, '');
     await HomeWidget.saveWidgetData<String>(keyDdayLabel, label);
     await HomeWidget.saveWidgetData<String>(keyDdayDate, '');

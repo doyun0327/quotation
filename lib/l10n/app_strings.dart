@@ -57,8 +57,8 @@ class AppStrings {
       : 'Place characters with room friends — changes sync to the home widget';
   String get ddayDuoDecoratePreview => _ko ? '미리보기' : 'Preview';
   String get ddayDuoDecorateDragHint => _ko
-      ? '캐릭터와 문구를 상하좌우로 끌어 위치를 정해 보세요'
-      : 'Drag characters and text freely to place them';
+      ? '캐릭터를 눌러 고른 뒤, 배경 안에서 끌어 옮기세요'
+      : 'Tap a character, then drag it inside the background';
   String get ddayDuoDecorateMenuHint => _ko
       ? '친구와 함께 꾸미는 응원 위젯'
       : 'Cheer widget you decorate with friends';
@@ -72,7 +72,9 @@ class AppStrings {
       : 'Invite friends from the room';
   String get ddayDecorateShapeLabel => _ko ? '모양' : 'Shape';
   String get ddayDecorateSizeLabel => _ko ? '위젯 크기' : 'Widget size';
-  String get ddayDecorateBgLabel => _ko ? '배경색' : 'Background';
+  String get ddayDecorateBgLabel => _ko ? '배경테마' : 'Background theme';
+
+  String get ddayDecorateBgNone => _ko ? '없음' : 'None';
   String get ddayDecorateTextColorLabel => _ko ? '글자색' : 'Text color';
   String get ddayDecorateTransparent => _ko ? '투명' : 'Transparent';
   String get ddayDecoratePickColor => _ko ? '색 고르기' : 'Pick a color';
@@ -81,6 +83,11 @@ class AppStrings {
   String get ddayDecoratePalettePresets => _ko ? '팔레트' : 'Palette';
   String get ddayDecorateMoreColors => _ko ? '더 고르기' : 'More colors';
   String get ddayDecorateCharScaleLabel => _ko ? '캐릭터 크기' : 'Character size';
+  String ddayDecorateCharScaleFor(String name) =>
+      _ko ? '$name 크기' : '$name size';
+  String ddayDecorateMeChip(String name) => _ko ? '나 · $name' : 'Me · $name';
+  String ddayDecorateFriendChip(String name) =>
+      _ko ? '친구 · $name' : 'Friend · $name';
   String get ddayDecorateTextScaleLabel => _ko ? '글자 크기' : 'Text size';
   String ddayDecorateShapeName(String id) {
     switch (id) {
@@ -116,11 +123,11 @@ class AppStrings {
 
   String get ddayInviteTitle => _ko ? '친구 초대' : 'Invite friends';
   String get ddayInviteOpen => _ko ? '초대 코드·링크 만들기' : 'Create invite';
-  String ddayInviteSubtitle(int max) => _ko
-      ? '초대를 수락한 친구만 같은 방에 들어와요. 최대 $max명까지 가능해요.'
-      : 'Only friends who accept join the room. Up to $max.';
-  String ddayInviteFriendCount(int n, int max) =>
-      _ko ? '친구 $n / $max명' : 'Friends $n / $max';
+  String get ddayInviteSubtitle => _ko
+      ? '초대를 수락한 친구만 같은 방에 들어와요.'
+      : 'Only friends who accept join the room.';
+  String ddayInviteFriendCount(int n) =>
+      _ko ? '친구 $n명' : 'Friends $n';
   String get ddayInviteCodeLabel => _ko ? '초대 코드' : 'Invite code';
   String get ddayInviteCopyCode => _ko ? '코드 복사' : 'Copy code';
   String get ddayInviteCodeCopied => _ko ? '코드를 복사했어요' : 'Code copied';
@@ -142,9 +149,9 @@ class AppStrings {
       _ko ? '초대를 만들지 못했어요. 잠시 후 다시 시도해 주세요' : 'Could not create invite. Try again shortly';
   String get ddayInviteRetry => _ko ? '다시 시도' : 'Retry';
   String get ddayInviteAcceptTitle => _ko ? '초대 코드 입력' : 'Enter invite code';
-  String ddayInviteAcceptSubtitle(int max) => _ko
-      ? '친구가 보낸 6자리 코드를 입력하세요. 방당 최대 $max명.'
-      : 'Enter the 6-digit code. Up to $max friends per room.';
+  String get ddayInviteAcceptSubtitle => _ko
+      ? '친구가 보낸 6자리 코드를 입력하세요.'
+      : 'Enter the 6-digit code from your friend.';
   String get ddayInviteAcceptAction => _ko ? '초대 수락' : 'Accept invite';
   String get ddayInviteAcceptSuccess =>
       _ko ? '같은 방에 참여했어요! 위젯에 반영돼요' : 'Joined the room! It will show on the widget';
@@ -229,6 +236,16 @@ class AppStrings {
       : 'You can change this anytime in Settings';
   String get characterSelectConfirm => _ko ? '이 캐릭터로 시작' : 'Start with this';
   String get characterChange => _ko ? '캐릭터 변경' : 'Change character';
+  String get friendCharacterTitle => _ko ? '친구 캐릭터' : 'Friend character';
+  String get friendCharacterSubtitle => _ko
+      ? '켜면 같은 방에 들어와요. 서로 고친 위젯이 양쪽 폰에 반영돼요'
+      : 'Turn on to join the same room. Edits show on both phones';
+  String get friendCharacterOnToast =>
+      _ko ? '같은 방에 들어왔어요' : 'Joined the shared room';
+  String get friendCharacterOffToast =>
+      _ko ? '방에서 나왔어요' : 'Left the shared room';
+  String get friendCharacterFailedToast =>
+      _ko ? '같은 방에 들어가지 못했어요' : 'Could not join the shared room';
   String characterName(String id) {
     switch (id) {
       case 'bul':

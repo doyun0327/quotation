@@ -116,7 +116,7 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
         children: [
           Text(
-            t.ddayInviteAcceptSubtitle(DdayInviteLimits.maxFriends),
+            t.ddayInviteAcceptSubtitle,
             style: AppTheme.body.copyWith(
               fontSize: 13,
               color: AppColors.muted,

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:quotation/config/google_auth_config.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
+import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -71,6 +72,7 @@ class AuthController extends ChangeNotifier {
   bool _ready = false;
   String? _lastError;
   String? _lastErrorDetail;
+  bool _startedCloud = false;
   GoogleSignIn? _googleSignIn;
   StreamSubscription<User?>? _authSub;
 
@@ -106,28 +108,45 @@ class AuthController extends ChangeNotifier {
 
     try {
       final existingFb = FirebaseAuth.instance.currentUser;
-      if (existingFb != null) {
+      if (existingFb != null && !existingFb.isAnonymous) {
         await _setUser(AuthUser.fromFirebase(existingFb));
-        unawaited(DdayCloudSync.start());
-      } else {
-        final googleUser = await _client.signInSilently().timeout(
-          const Duration(seconds: 5),
-        );
-        if (googleUser != null) {
-          await _linkFirebase(googleUser);
-        }
       }
+      await ensureAnonymous();
     } catch (e) {
       debugPrint('Auth init: $e');
+      await ensureAnonymous();
     }
 
     _ready = true;
     notifyListeners();
+    unawaited(togetherTestRoom.restoreIfEnabled());
   }
 
+  /// Test sessions skip the Google sheet and use anonymous Firebase auth.
   Future<bool> ensureFirebaseSession() async {
-    if (FirebaseAuth.instance.currentUser != null) return true;
-    return signIn();
+    return ensureAnonymous();
+  }
+
+  Future<bool> ensureAnonymous() async {
+    final current = FirebaseAuth.instance.currentUser;
+    if (current != null) {
+      if (!_startedCloud) {
+        _startedCloud = true;
+        unawaited(DdayCloudSync.start());
+      }
+      return true;
+    }
+    try {
+      await FirebaseAuth.instance.signInAnonymously();
+      _startedCloud = true;
+      unawaited(DdayCloudSync.start());
+      return true;
+    } catch (e) {
+      debugPrint('Anonymous sign-in: $e');
+      _lastError = 'failed';
+      _lastErrorDetail = e.toString();
+      return false;
+    }
   }
 
   Future<bool> signIn() async {

@@ -45,6 +45,7 @@ flutter:
     - assets/images/background/clean/clean_background4.png
     - assets/images/background/pixel/sky.png
     - assets/images/background/pixel/noeul.png
+    - assets/images/widgetbackground/
     - assets/quotes/ko/
     - assets/quotes/en/
 

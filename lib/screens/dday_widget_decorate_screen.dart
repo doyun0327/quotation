@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
-import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -30,29 +32,14 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   static const charW = 72.0;
   static const charH = 96.0;
 
-  /// Quick picks (first = transparent). Full palette via "더 고르기".
-  static const _bgQuick = <int>[
-    0x00000000, // transparent
-    0xFFFFF3E8,
-    0xFFFFE4EC,
-    0xFFE8F5E9,
-    0xFFE3F2FD,
-    0xFFFFF8E1,
-    0xFFF3E5F5,
-    0xFFFFFFFF,
-  ];
-
   static const _textQuick = <int>[
-    0xFFF26B8A,
-    0xFFE85A7A,
-    0xFFFF6F00,
-    0xFF2C3340,
-    0xFF5B6B8C,
-    0xFF3D8B6E,
-    0xFF5B7CFA,
-    0xFF9C27B0,
-    0xFF00BCD4,
+    0xFF000000,
     0xFFFFFFFF,
+    0xFF9E9E9E,
+    0xFFE53935,
+    0xFFFF9800,
+    0xFF43A047,
+    0xFF1E88E5,
   ];
 
   late double _meX;
@@ -61,22 +48,31 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   late double _friendY;
   late double _textX;
   late double _textY;
-  late int _charScale;
+  late int _meScale;
+  late int _friendScale;
   late int _textScale;
-  late int _bgColor;
+  _DecorateFocus _focus = _DecorateFocus.me;
+  bool _scaleMe = true;
+  late String _bgThemeId;
   late int _textColor;
   late TogetherWidgetSize _widgetSize;
+  Size? _hostSize;
+  Timer? _cheerPush;
+  TogetherWidgetSize? _hostForSize;
+  double _hostCornerDp = TogetherWidgetSize.defaultCornerDp;
   bool _dragging = false;
   bool _savingCheer = false;
-  bool _loggingIn = false;
+  final bool _loggingIn = false;
 
   final _cheerCtrl = TextEditingController();
+  final _dragTick = ValueNotifier<int>(0);
 
   static const _shape = TogetherWidgetShape.square;
 
   @override
   void initState() {
     super.initState();
+    unawaited(_loadHostSize());
     final id = widget.roomId;
     _meX = ddayController.meOffsetXForRoom(id).toDouble();
     _meY = ddayController.meOffsetYForRoom(id).toDouble();
@@ -84,30 +80,49 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _friendY = ddayController.friendOffsetYForRoom(id).toDouble();
     _textX = ddayController.textOffsetXForRoom(id).toDouble();
     _textY = ddayController.textOffsetYForRoom(id).toDouble();
-    _charScale = ddayController.charScaleForRoom(id);
+    _meScale = ddayController.charScaleForRoom(id);
+    _friendScale = ddayController.friendScaleForRoom(id);
     _textScale = ddayController.textScaleForRoom(id);
-    // Bake legacy opacity % into ARGB once (slider removed).
-    final rawBg = ddayController.bgColorForRoom(id);
-    final legacyOp = ddayController.bgOpacityForRoom(id);
-    if ((rawBg & 0xFF000000) != 0 && legacyOp < 100) {
-      final c = Color(rawBg).withValues(alpha: (legacyOp / 100).clamp(0.0, 1.0));
-      _bgColor = _colorToArgb(c);
-    } else {
-      _bgColor = rawBg;
-    }
+    _bgThemeId = ddayController.bgThemeForRoom(id);
     _textColor = ddayController.textColorForRoom(id);
-    _widgetSize = ddayController.widgetSizeForRoom(id);
+    _widgetSize = TogetherWidgetSize.s42;
+    _fitCharacters();
     final rooms = ddayController.items.where((e) => e.id == id);
     _cheerCtrl.text =
         rooms.isEmpty ? '' : (rooms.first.latestCheer?.trim() ?? '');
     _cheerCtrl.addListener(() {
       if (mounted) setState(() {});
+      _scheduleCheerPush();
+    });
+  }
+
+  Future<void> _loadHostSize() async {
+    try {
+      await HomeWidgetSync.syncDday();
+    } catch (_) {}
+    final host = await HomeWidgetSync.loadHostPreviewSize();
+    if (!mounted || host == null) return;
+    setState(() {
+      _hostSize = host.size;
+      _hostForSize = host.forSize;
+      _hostCornerDp = host.cornerDp;
+      _fitCharacters();
+    });
+  }
+
+  void _scheduleCheerPush() {
+    _cheerPush?.cancel();
+    _cheerPush = Timer(const Duration(milliseconds: 350), () async {
+      await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
+      await HomeWidgetSync.syncDday();
     });
   }
 
   @override
   void dispose() {
+    _cheerPush?.cancel();
     _cheerCtrl.dispose();
+    _dragTick.dispose();
     super.dispose();
   }
 
@@ -124,22 +139,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     if (text.isEmpty || text == existing) return true;
     if (_savingCheer || _loggingIn) return false;
 
-    final needsLogin = !authController.isSignedIn ||
-        authController.user?.firebaseLinked != true;
-    if (needsLogin) {
-      setState(() => _loggingIn = true);
-      final ok = await authController.ensureFirebaseSession();
+    final ok = await authController.ensureFirebaseSession();
+    if (!ok) {
       if (!mounted) return false;
-      setState(() => _loggingIn = false);
-      if (!ok) {
-        final message = authController.lastError == 'canceled'
-            ? t.googleLoginCanceled
-            : t.togetherCheerNeedLogin;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-        return false;
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(t.togetherCheerFailed)),
+      );
+      return false;
     }
 
     setState(() => _savingCheer = true);
@@ -163,6 +169,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   Future<void> _persist({bool applyToHome = false, bool toast = false}) async {
     if (applyToHome) {
+      _cheerPush?.cancel();
+      await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
+      await HomeWidgetSync.syncDday();
       final cheerOk = await _saveCheerIfNeeded();
       if (!cheerOk) return;
     }
@@ -174,9 +183,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       friendY: _friendY.round(),
       textX: _textX.round(),
       textY: _textY.round(),
-      charScale: _charScale,
+      charScale: _meScale,
+      friendScale: _friendScale,
       textScale: _textScale,
-      bgColor: _bgColor,
+      bgTheme: _bgThemeId,
       bgOpacity: 100,
       textColor: _textColor,
       shape: _shape,
@@ -206,46 +216,88 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     }
   }
 
+  double _spriteW(int scale) =>
+      charW * _widgetSize.charFactor * (scale / 100).clamp(0.6, 1.6);
+
+  double _spriteH(int scale) =>
+      charH * _widgetSize.charFactor * (scale / 100).clamp(0.6, 1.6);
+
+  Size get _previewSize => TogetherWidgetPreview.sizeForShape(
+        _shape,
+        _widgetSize,
+        _hostSize,
+        _hostForSize,
+      );
+
+  void _fitCharacters() {
+    final size = _previewSize;
+    final me = TogetherCharacterBounds.me(
+      x: _meX,
+      y: _meY,
+      width: size.width,
+      height: size.height,
+      charW: _spriteW(_meScale),
+      charH: _spriteH(_meScale),
+    );
+    final friend = TogetherCharacterBounds.friend(
+      x: _friendX,
+      y: _friendY,
+      width: size.width,
+      height: size.height,
+      charW: _spriteW(_friendScale),
+      charH: _spriteH(_friendScale),
+    );
+    _meX = me.x;
+    _meY = me.y;
+    _friendX = friend.x;
+    _friendY = friend.y;
+  }
+
   void _clampMe(double dx, double dy) {
-    setState(() {
-      _meX = (_meX + dx).clamp(
-        DdayController.duoOffsetMinX.toDouble(),
-        DdayController.duoOffsetMaxX.toDouble(),
-      );
-      _meY = (_meY + dy).clamp(
-        DdayController.duoOffsetMinY.toDouble(),
-        DdayController.duoOffsetMaxY.toDouble(),
-      );
-    });
-    _persist();
+    _meX += dx;
+    _meY += dy;
+    _fitCharacters();
+    _dragTick.value++;
   }
 
   void _clampFriend(double dx, double dy) {
+    _friendX += dx;
+    _friendY += dy;
+    _fitCharacters();
+    _dragTick.value++;
+  }
+
+  void _selectMe() {
+    if (_focus == _DecorateFocus.me) return;
     setState(() {
-      _friendX = (_friendX + dx).clamp(
-        DdayController.duoOffsetMinX.toDouble(),
-        DdayController.duoOffsetMaxX.toDouble(),
-      );
-      _friendY = (_friendY + dy).clamp(
-        DdayController.duoOffsetMinY.toDouble(),
-        DdayController.duoOffsetMaxY.toDouble(),
-      );
+      _focus = _DecorateFocus.me;
+      _scaleMe = true;
     });
-    _persist();
+  }
+
+  void _selectFriend() {
+    if (_focus == _DecorateFocus.friend) return;
+    setState(() {
+      _focus = _DecorateFocus.friend;
+      _scaleMe = false;
+    });
+  }
+
+  void _selectText() {
+    if (_focus == _DecorateFocus.text) return;
+    setState(() => _focus = _DecorateFocus.text);
   }
 
   void _clampText(double dx, double dy) {
-    setState(() {
-      _textX = (_textX + dx).clamp(
-        DdayController.textOffsetMinX.toDouble(),
-        DdayController.textOffsetMaxX.toDouble(),
-      );
-      _textY = (_textY + dy).clamp(
-        DdayController.textOffsetMinY.toDouble(),
-        DdayController.textOffsetMaxY.toDouble(),
-      );
-    });
-    _persist();
+    _textX = (_textX + dx).clamp(
+      DdayController.textOffsetMinX.toDouble(),
+      DdayController.textOffsetMaxX.toDouble(),
+    );
+    _textY = (_textY + dy).clamp(
+      DdayController.textOffsetMinY.toDouble(),
+      DdayController.textOffsetMaxY.toDouble(),
+    );
+    _dragTick.value++;
   }
 
   void _setDragging(bool value) {
@@ -292,13 +344,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           final liveLabel = draftCheer.isNotEmpty
               ? draftCheer
               : (live?.latestCheer?.trim() ?? '');
-          final cellDp = TogetherWidgetSize.cellDpForWidth(
-            MediaQuery.sizeOf(context).width,
-          );
           final previewSize = TogetherWidgetPreview.sizeForShape(
             _shape,
             _widgetSize,
-            cellDp,
+            _hostSize,
+            _hostForSize,
           );
           final isPixel = visualStyleController.isPixel;
           final charBase = _widgetSize.charFactor;
@@ -307,59 +357,89 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                 child: Column(
                   children: [
                     if (liveHasFriend) ...[
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          t.ddayInviteFriendCount(
-                            live?.friendCount ?? 0,
-                            DdayInviteLimits.maxFriends,
-                          ),
-                          style: AppTheme.body.copyWith(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: palette.accent,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            t.ddayInviteFriendCount(live?.friendCount ?? 0),
+                            style: AppTheme.body.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: palette.accent,
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 10),
                     ],
-                    // No FittedBox — must stay exact Android widget dp (70×n−30).
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Center(
-                        child: TogetherWidgetPreview(
-                          width: previewSize.width,
-                          height: previewSize.height,
-                          charW: charW * charBase,
-                          charH: charH * charBase,
-                          label: liveLabel,
-                          me: characterController.character,
-                          friend: liveHasFriend && liveFriendId != null
-                              ? AppCharacter.byId(liveFriendId)
-                              : null,
-                          meX: _meX,
-                          meY: _meY,
-                          friendX: _friendX,
-                          friendY: _friendY,
-                          textX: _textX,
-                          textY: _textY,
-                          isPixel: isPixel,
-                          charScale: _charScale,
-                          textScale: _textScale,
-                          bgColor: _bgColor,
-                          bgOpacity: 100,
-                          textColor: _textColor,
-                          shape: _shape,
-                          onMePan: _clampMe,
-                          onFriendPan: liveHasFriend ? _clampFriend : null,
-                          onTextPan: _clampText,
-                          onDragStart: () => _setDragging(true),
-                          onDragEnd: () => _setDragging(false),
-                        ),
+                    Center(
+                      child: ValueListenableBuilder<int>(
+                        valueListenable: _dragTick,
+                        builder: (context, _, _) {
+                          return TogetherWidgetPreview(
+                            width: previewSize.width,
+                            height: previewSize.height,
+                            charW: charW * charBase,
+                            charH: charH * charBase,
+                            label: liveLabel,
+                            me: characterController.character,
+                            friend: liveHasFriend && liveFriendId != null
+                                ? AppCharacter.byId(liveFriendId)
+                                : null,
+                            meX: _meX,
+                            meY: _meY,
+                            friendX: _friendX,
+                            friendY: _friendY,
+                            textX: _textX,
+                            textY: _textY,
+                            isPixel: isPixel,
+                            meScale: _meScale,
+                            friendScale: _friendScale,
+                            textScale: _textScale,
+                            bgColor: 0x00000000,
+                            bgOpacity: 100,
+                            bgAssetPath: () {
+                              final theme =
+                                  TogetherBgTheme.byId(_bgThemeId);
+                              return theme.isNone ? null : theme.assetPath;
+                            }(),
+                            textColor: _textColor,
+                            shape: _shape,
+                            cornerRadius: _hostCornerDp,
+                            onMePan: (_focus == _DecorateFocus.me ||
+                                    (!liveHasFriend &&
+                                        _focus != _DecorateFocus.text))
+                                ? _clampMe
+                                : null,
+                            onFriendPan: (liveHasFriend &&
+                                    _focus == _DecorateFocus.friend)
+                                ? _clampFriend
+                                : null,
+                            onTextPan: _focus == _DecorateFocus.text
+                                ? _clampText
+                                : null,
+                            onTextSelect: _selectText,
+                            onMeSelect: _selectMe,
+                            onFriendSelect:
+                                liveHasFriend ? _selectFriend : null,
+                            highlightMe: _focus == _DecorateFocus.me ||
+                                (!liveHasFriend &&
+                                    _focus != _DecorateFocus.text),
+                            highlightFriend: liveHasFriend &&
+                                _focus == _DecorateFocus.friend,
+                            highlightText: _focus == _DecorateFocus.text,
+                            onDragStart: () => _setDragging(true),
+                            onDragEnd: () {
+                              _setDragging(false);
+                              _persist();
+                            },
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -371,6 +451,26 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         color: AppColors.muted,
                       ),
                     ),
+                    if (liveHasFriend) ...[
+                      const SizedBox(height: 10),
+                      _CharacterPickRow(
+                        me: characterController.character,
+                        friend: AppCharacter.byId(liveFriendId),
+                        meLabel: t.ddayDecorateMeChip(
+                          t.characterName(characterController.character.id),
+                        ),
+                        friendLabel: t.ddayDecorateFriendChip(
+                          t.characterName(
+                            liveFriendId ?? characterController.character.id,
+                          ),
+                        ),
+                        selectedMe: _focus == _DecorateFocus.me,
+                        selectedFriend: _focus == _DecorateFocus.friend,
+                        accent: palette.accent,
+                        onMe: _selectMe,
+                        onFriend: _selectFriend,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -432,31 +532,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      t.ddayDecorateSizeLabel,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: palette.accent,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final size in TogetherWidgetSize.values)
-                          ChoiceChip(
-                            label: Text(t.ddayDecorateSizeName(size.id)),
-                            selected: _widgetSize == size,
-                            onSelected: (_) {
-                              setState(() => _widgetSize = size);
-                              _persist();
-                            },
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    Text(
                       t.ddayDecorateBgLabel,
                       style: AppTheme.body.copyWith(
                         fontSize: 14,
@@ -465,37 +540,49 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: [
-                        for (final c in _bgQuick)
-                          _ColorDot(
-                            argb: c,
-                            selected: _isSameColor(_bgColor, c),
-                            transparent: (c & 0xFF000000) == 0,
-                            accent: palette.accent,
+                    SizedBox(
+                      height: 72,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: TogetherBgTheme.all.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 10),
+                        itemBuilder: (context, index) {
+                          final theme = TogetherBgTheme.all[index];
+                          return GestureDetector(
                             onTap: () {
-                              setState(() => _bgColor = c);
+                              setState(() => _bgThemeId = theme.id);
                               _persist();
                             },
-                          ),
-                        _MoreColorsButton(
-                          accent: palette.accent,
-                          label: t.ddayDecorateMoreColors,
-                          onTap: () async {
-                            final picked = await showColorPaletteSheet(
-                              context,
-                              initialArgb: _bgColor,
-                              allowTransparent: true,
-                              title: t.ddayDecorateBgLabel,
-                            );
-                            if (picked == null || !mounted) return;
-                            setState(() => _bgColor = picked);
-                            _persist();
-                          },
-                        ),
-                      ],
+                            child: Container(
+                              width: 72,
+                              height: 72,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFE8EEF6),
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                              child: theme.isNone
+                                  ? Center(
+                                      child: Text(
+                                        t.ddayDecorateBgNone,
+                                        textAlign: TextAlign.center,
+                                        style: AppTheme.body.copyWith(
+                                          fontFamily: 'Galmuri',
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFF5B6B8C),
+                                        ),
+                                      ),
+                                    )
+                                  : Image.asset(
+                                      theme.assetPath,
+                                      fit: BoxFit.cover,
+                                      filterQuality: FilterQuality.none,
+                                      isAntiAlias: false,
+                                    ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: 18),
                     Text(
@@ -541,7 +628,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      t.ddayDecorateCharScaleLabel,
+                      t.ddayDecorateCharScaleFor(
+                        _scaleMe || !liveHasFriend
+                            ? t.ddayDecorateMeChip(
+                                t.characterName(
+                                  characterController.character.id,
+                                ),
+                              )
+                            : t.ddayDecorateFriendChip(
+                                t.characterName(liveFriendId ?? ''),
+                              ),
+                      ),
                       style: AppTheme.body.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
@@ -549,14 +646,23 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                     Slider(
-                      value: _charScale.toDouble(),
+                      value: (_scaleMe || !liveHasFriend ? _meScale : _friendScale)
+                          .toDouble(),
                       min: DdayController.scaleMin.toDouble(),
                       max: DdayController.scaleMax.toDouble(),
                       divisions:
                           DdayController.scaleMax - DdayController.scaleMin,
-                      label: '$_charScale%',
+                      label:
+                          '${_scaleMe || !liveHasFriend ? _meScale : _friendScale}%',
                       onChanged: (v) {
-                        setState(() => _charScale = v.round());
+                        setState(() {
+                          if (_scaleMe || !liveHasFriend) {
+                            _meScale = v.round();
+                          } else {
+                            _friendScale = v.round();
+                          }
+                          _fitCharacters();
+                        });
                       },
                       onChangeEnd: (_) => _persist(),
                     ),
@@ -622,19 +728,120 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     );
   }
 
-  static bool _isSameColor(int a, int b) {
-    final aClear = (a & 0xFF000000) == 0;
-    final bClear = (b & 0xFF000000) == 0;
-    if (aClear || bClear) return aClear && bClear;
-    return (a & 0x00FFFFFF) == (b & 0x00FFFFFF);
-  }
+}
 
-  static int _colorToArgb(Color c) {
-    final a = (c.a * 255.0).round() & 0xff;
-    final r = (c.r * 255.0).round() & 0xff;
-    final g = (c.g * 255.0).round() & 0xff;
-    final b = (c.b * 255.0).round() & 0xff;
-    return (a << 24) | (r << 16) | (g << 8) | b;
+enum _DecorateFocus { me, friend, text }
+
+class _CharacterPickRow extends StatelessWidget {
+  const _CharacterPickRow({
+    required this.me,
+    required this.friend,
+    required this.meLabel,
+    required this.friendLabel,
+    required this.selectedMe,
+    required this.selectedFriend,
+    required this.accent,
+    required this.onMe,
+    required this.onFriend,
+  });
+
+  final AppCharacter me;
+  final AppCharacter friend;
+  final String meLabel;
+  final String friendLabel;
+  final bool selectedMe;
+  final bool selectedFriend;
+  final Color accent;
+  final VoidCallback onMe;
+  final VoidCallback onFriend;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _CharacterPick(
+            character: me,
+            label: meLabel,
+            selected: selectedMe,
+            accent: accent,
+            onTap: onMe,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _CharacterPick(
+            character: friend,
+            label: friendLabel,
+            selected: selectedFriend,
+            accent: accent,
+            onTap: onFriend,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CharacterPick extends StatelessWidget {
+  const _CharacterPick({
+    required this.character,
+    required this.label,
+    required this.selected,
+    required this.accent,
+    required this.onTap,
+  });
+
+  final AppCharacter character;
+  final String label;
+  final bool selected;
+  final Color accent;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: selected ? const Color(0xFFFFF8D6) : Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(
+          color: selected ? accent : const Color(0xFFE0E0E0),
+          width: selected ? 2.5 : 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          child: Row(
+            children: [
+              Image.asset(
+                character.assetPath,
+                width: 28,
+                height: 36,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.none,
+                isAntiAlias: false,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.body.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF2C3340),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -662,21 +869,15 @@ class _ColorDot extends StatelessWidget {
         height: 36,
         decoration: BoxDecoration(
           color: transparent ? Colors.transparent : Color(argb),
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: selected ? accent : const Color(0xFFE0E0E0),
             width: selected ? 2.5 : 1,
           ),
-          boxShadow: !transparent && (argb & 0x00FFFFFF) == 0x00FFFFFF
-              ? const [
-                  BoxShadow(color: Color(0x22000000), blurRadius: 2),
-                ]
-              : null,
         ),
+        clipBehavior: Clip.hardEdge,
         child: transparent
-            ? ClipOval(
-                child: CustomPaint(painter: _MiniCheckerPainter()),
-              )
+            ? CustomPaint(painter: _MiniCheckerPainter())
             : null,
       ),
     );

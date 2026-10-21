@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui' show Size;
 
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
@@ -27,7 +28,7 @@ class DdayItem {
   final bool repeatYearly;
   final bool pinnedForWidget;
 
-  /// Accepted friends for this room (max [DdayInviteLimits.maxFriends]).
+  /// Accepted friends for this room.
   /// Populated only from cloud membership — never from local picker.
   final List<DdayFriendMember> friends;
 
@@ -92,7 +93,6 @@ class DdayItem {
       friends = friendsRaw
           .map((e) => DdayFriendMember.fromJson(Map<String, dynamic>.from(e as Map)))
           .where((m) => m.uid.isNotEmpty)
-          .take(DdayInviteLimits.maxFriends)
           .toList();
     } else {
       // Migrate old single-friend local preview field → ignore (must re-invite).
@@ -158,33 +158,39 @@ enum TogetherWidgetShape {
   }
 }
 
-/// Home-screen cell span. Canvas dp is shared with Android via screen width.
+/// Home-screen cell span. Default is 3×2 ([s32]).
 enum TogetherWidgetSize {
-  s33('s33', cellsW: 3, cellsH: 3),
+  s32('s32', cellsW: 3, cellsH: 2),
   s42('s42', cellsW: 4, cellsH: 2),
-  s43('s43', cellsW: 4, cellsH: 3),
-  s32('s32', cellsW: 3, cellsH: 2);
+  s33('s33', cellsW: 3, cellsH: 3),
+  s43('s43', cellsW: 4, cellsH: 3);
 
   const TogetherWidgetSize(this.id, {required this.cellsW, required this.cellsH});
   final String id;
   final int cellsW;
   final int cellsH;
 
-  /// Android docs minimum (launcher often allocates more — we fill the host).
+  /// Android App Widget min size: 70 × cells − 30.
   static double spanDp(int cells) => 70.0 * cells - 30.0;
 
-  /// Approximate 4-column home cell so in-app preview matches a filled widget.
-  static double cellDpForWidth(double screenWidth) =>
-      (screenWidth / 4.0).clamp(80.0, 110.0);
+  /// One UI cell span on a 360dp-wide phone (measured 4×2 = 301×202).
+  /// Scales with [screenWidthDp] so the preview matches the home widget.
+  Size homeSize(double screenWidthDp) {
+    final screen = screenWidthDp.clamp(320.0, 480.0);
+    return Size(
+      screen * (80 * cellsW - 19) / 360.0,
+      screen * (111 * cellsH - 20) / 360.0,
+    );
+  }
 
-  double boxWFor(double cellDp) => cellDp * cellsW;
-  double boxHFor(double cellDp) => cellDp * cellsH;
-
-  double get boxW => boxWFor(88);
-  double get boxH => boxHFor(88);
+  double get boxW => homeSize(360).width;
+  double get boxH => homeSize(360).height;
 
   /// Character base scale vs 4×2.
   double get charFactor => (cellsW / 4.0).clamp(0.7, 1.2);
+
+  /// One UI / Android 12 widget corner (dp) when host hasn't reported yet.
+  static const double defaultCornerDp = 28;
 
   static TogetherWidgetSize byId(String? id) {
     switch (id) {
@@ -197,13 +203,14 @@ enum TogetherWidgetSize {
       case 'xl':
       case 's24':
         return TogetherWidgetSize.s43;
+      case 's42':
+      case 'l':
+        return TogetherWidgetSize.s42;
       case 's32':
       case 'm':
       case 's23':
       case 'tall':
         return TogetherWidgetSize.s32;
-      case 's42':
-      case 'l':
       default:
         return TogetherWidgetSize.s42;
     }
@@ -219,9 +226,11 @@ class _RoomOffsets {
     this.textX = 0,
     this.textY = 0,
     this.charScale = 100,
+    this.friendScale = 100,
     this.textScale = 100,
     this.bgColor = 0xFFFFF3E8,
     this.bgOpacity = 100,
+    this.bgTheme = 'widget_background',
     this.textColor = 0xFFF26B8A,
     this.shape = 'square',
     this.widgetSize = 's42',
@@ -234,9 +243,11 @@ class _RoomOffsets {
   final int textX;
   final int textY;
   final int charScale;
+  final int friendScale;
   final int textScale;
   final int bgColor;
   final int bgOpacity;
+  final String bgTheme;
   final int textColor;
   final String shape;
   final String widgetSize;
@@ -249,9 +260,11 @@ class _RoomOffsets {
         'textX': textX,
         'textY': textY,
         'charScale': charScale,
+        'friendScale': friendScale,
         'textScale': textScale,
         'bgColor': bgColor,
         'bgOpacity': bgOpacity,
+        'bgTheme': bgTheme,
         'textColor': textColor,
         'shape': shape,
         'widgetSize': widgetSize,
@@ -266,9 +279,13 @@ class _RoomOffsets {
       textX: json['textX'] as int? ?? 0,
       textY: json['textY'] as int? ?? 0,
       charScale: json['charScale'] as int? ?? 100,
+      friendScale: (json['friendScale'] as num?)?.toInt() ??
+          json['charScale'] as int? ??
+          100,
       textScale: json['textScale'] as int? ?? 100,
       bgColor: json['bgColor'] as int? ?? 0xFFFFF3E8,
       bgOpacity: json['bgOpacity'] as int? ?? 100,
+      bgTheme: json['bgTheme'] as String? ?? 'widget_background',
       textColor: json['textColor'] as int? ?? 0xFFF26B8A,
       shape: 'square',
       widgetSize: json['widgetSize'] as String? ?? 's42',
@@ -283,9 +300,11 @@ class _RoomOffsets {
     int? textX,
     int? textY,
     int? charScale,
+    int? friendScale,
     int? textScale,
     int? bgColor,
     int? bgOpacity,
+    String? bgTheme,
     int? textColor,
     String? shape,
     String? widgetSize,
@@ -298,9 +317,11 @@ class _RoomOffsets {
       textX: textX ?? this.textX,
       textY: textY ?? this.textY,
       charScale: charScale ?? this.charScale,
+      friendScale: friendScale ?? this.friendScale,
       textScale: textScale ?? this.textScale,
       bgColor: bgColor ?? this.bgColor,
       bgOpacity: bgOpacity ?? this.bgOpacity,
+      bgTheme: bgTheme ?? this.bgTheme,
       textColor: textColor ?? this.textColor,
       shape: shape ?? this.shape,
       widgetSize: widgetSize ?? this.widgetSize,
@@ -312,10 +333,11 @@ class DdayController extends ChangeNotifier {
   static const _prefsKey = 'dday_items_v1';
   static const _offsetsPrefsKey = 'dday_duo_offsets_v3';
   static const _legacyOffsetsPrefsKey = 'dday_duo_offsets_v2';
-  static const duoOffsetMinX = -220;
-  static const duoOffsetMaxX = 220;
-  static const duoOffsetMinY = -80;
-  static const duoOffsetMaxY = 120;
+  static const duoOffsetMinX = -480;
+  static const duoOffsetMaxX = 480;
+  /// Feet stay inside the widget. The editor tightens this to the live background.
+  static const duoOffsetMinY = 0;
+  static const duoOffsetMaxY = 480;
   static const textOffsetMinX = -120;
   static const textOffsetMaxX = 120;
   static const textOffsetMinY = -80;
@@ -351,6 +373,9 @@ class DdayController extends ChangeNotifier {
   int get duoMeOffsetY => _duoMeOffsetY;
   int get duoFriendOffsetX => _duoFriendOffsetX;
   int get duoFriendOffsetY => _duoFriendOffsetY;
+
+  /// Rooms whose cheer was typed locally and must not be replaced by a stale cloud copy.
+  final Set<String> _localCheerIds = {};
 
   DdayItem? get widgetDday {
     final pinned = _items.where((e) => e.pinnedForWidget).toList();
@@ -444,9 +469,11 @@ class DdayController extends ChangeNotifier {
       textX: _clampTextX(o.textX),
       textY: _clampTextY(o.textY),
       charScale: _clampScale(o.charScale),
+      friendScale: _clampScale(o.friendScale),
       textScale: _clampScale(o.textScale),
       bgColor: o.bgColor,
       bgOpacity: _clampBgOpacity(o.bgOpacity),
+      bgTheme: o.bgTheme,
       textColor: o.textColor,
       shape: TogetherWidgetShape.byId(o.shape).id,
       widgetSize: TogetherWidgetSize.byId(o.widgetSize).id,
@@ -460,14 +487,15 @@ class DdayController extends ChangeNotifier {
   int textOffsetXForRoom(String roomId) => _offsetsForRoom(roomId).textX;
   int textOffsetYForRoom(String roomId) => _offsetsForRoom(roomId).textY;
   int charScaleForRoom(String roomId) => _offsetsForRoom(roomId).charScale;
+  int friendScaleForRoom(String roomId) => _offsetsForRoom(roomId).friendScale;
   int textScaleForRoom(String roomId) => _offsetsForRoom(roomId).textScale;
   int bgColorForRoom(String roomId) => _offsetsForRoom(roomId).bgColor;
   int bgOpacityForRoom(String roomId) => _offsetsForRoom(roomId).bgOpacity;
+  String bgThemeForRoom(String roomId) => _offsetsForRoom(roomId).bgTheme;
   int textColorForRoom(String roomId) => _offsetsForRoom(roomId).textColor;
   TogetherWidgetShape shapeForRoom(String roomId) =>
       TogetherWidgetShape.byId(_offsetsForRoom(roomId).shape);
-  TogetherWidgetSize widgetSizeForRoom(String roomId) =>
-      TogetherWidgetSize.byId(_offsetsForRoom(roomId).widgetSize);
+  TogetherWidgetSize widgetSizeForRoom(String roomId) => TogetherWidgetSize.s42;
 
   Future<void> _persistRoomOffsets() async {
     final prefs = await SharedPreferences.getInstance();
@@ -490,9 +518,11 @@ class DdayController extends ChangeNotifier {
     int? textX,
     int? textY,
     int? charScale,
+    int? friendScale,
     int? textScale,
     int? bgColor,
     int? bgOpacity,
+    String? bgTheme,
     int? textColor,
     TogetherWidgetShape? shape,
     TogetherWidgetSize? widgetSize,
@@ -510,9 +540,11 @@ class DdayController extends ChangeNotifier {
       textX: textX == null ? null : _clampTextX(textX),
       textY: textY == null ? null : _clampTextY(textY),
       charScale: charScale == null ? null : _clampScale(charScale),
+      friendScale: friendScale == null ? null : _clampScale(friendScale),
       textScale: textScale == null ? null : _clampScale(textScale),
       bgColor: bgColor,
       bgOpacity: bgOpacity == null ? null : _clampBgOpacity(bgOpacity),
+      bgTheme: bgTheme,
       textColor: textColor,
       shape: shape?.id,
       widgetSize: widgetSize?.id,
@@ -524,9 +556,11 @@ class DdayController extends ChangeNotifier {
         cur.textX == next.textX &&
         cur.textY == next.textY &&
         cur.charScale == next.charScale &&
+        cur.friendScale == next.friendScale &&
         cur.textScale == next.textScale &&
         cur.bgColor == next.bgColor &&
         cur.bgOpacity == next.bgOpacity &&
+        cur.bgTheme == next.bgTheme &&
         cur.textColor == next.textColor &&
         cur.shape == next.shape &&
         cur.widgetSize == next.widgetSize;
@@ -605,14 +639,49 @@ class DdayController extends ChangeNotifier {
     await pinForWidget(roomId);
   }
 
+  /// Keep the typed cheer on this device and on the home widget immediately.
+  Future<void> setRoomCheer(String roomId, String text) async {
+    final index = _items.indexWhere((e) => e.id == roomId);
+    if (index < 0) return;
+    final trimmed = text.trim();
+    final next = trimmed.isEmpty ? null : trimmed;
+    _localCheerIds.add(roomId);
+    final cur = _items[index];
+    final already =
+        (cur.latestCheer ?? '') == (next ?? '') && cur.pinnedForWidget;
+    if (!already) {
+      for (var i = 0; i < _items.length; i++) {
+        if (i == index) {
+          _items[i] = cur.copyWith(
+            latestCheer: next,
+            clearLatestCheer: next == null,
+            pinnedForWidget: true,
+          );
+        } else if (_items[i].pinnedForWidget) {
+          _items[i] = _items[i].copyWith(pinnedForWidget: false);
+        }
+      }
+      _applyActiveOffsetsFromPinned();
+      await _persist();
+      notifyListeners();
+    }
+  }
+
   Future<void> upsertFromCloud(DdayItem item) async {
     final index = _items.indexWhere((e) => e.id == item.id);
     if (index < 0) {
       _items.add(item);
     } else {
       final existing = _items[index];
+      final incoming = item.latestCheer?.trim();
+      final keepLocal = _localCheerIds.contains(item.id) ||
+          incoming == null ||
+          incoming.isEmpty;
       _items[index] = item.copyWith(
         pinnedForWidget: existing.pinnedForWidget,
+        latestCheer: keepLocal ? existing.latestCheer : incoming,
+        clearLatestCheer: keepLocal &&
+            (existing.latestCheer == null || existing.latestCheer!.isEmpty),
       );
     }
     await _persist();
@@ -626,14 +695,24 @@ class DdayController extends ChangeNotifier {
   }) async {
     final index = _items.indexWhere((e) => e.id == ddayId);
     if (index < 0) return;
-    final next = friends.take(DdayInviteLimits.maxFriends).toList();
+    final next = friends.toList();
     final cur = _items[index];
     final sameFriends = cur.friends.length == next.length &&
         List.generate(next.length, (i) {
           return cur.friends[i].uid == next[i].uid &&
               cur.friends[i].characterId == next[i].characterId;
         }).every((e) => e);
-    final sameCheer = (cur.latestCheer ?? '') == (latestCheer ?? '');
+    final incomingCheer = (latestCheer == null || latestCheer.trim().isEmpty)
+        ? null
+        : latestCheer.trim();
+    if (_localCheerIds.contains(ddayId) &&
+        (incomingCheer ?? '') == (cur.latestCheer ?? '')) {
+      _localCheerIds.remove(ddayId);
+    }
+    final nextCheer = (_localCheerIds.contains(ddayId) || incomingCheer == null)
+        ? cur.latestCheer
+        : incomingCheer;
+    final sameCheer = (cur.latestCheer ?? '') == (nextCheer ?? '');
     if (sameFriends &&
         cur.cloudOwnerUid == cloudOwnerUid &&
         sameCheer) {
@@ -642,8 +721,8 @@ class DdayController extends ChangeNotifier {
     _items[index] = cur.copyWith(
       friends: next,
       cloudOwnerUid: cloudOwnerUid,
-      latestCheer: latestCheer,
-      clearLatestCheer: latestCheer == null,
+      latestCheer: nextCheer,
+      clearLatestCheer: nextCheer == null,
     );
     await _persist();
   }

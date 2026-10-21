@@ -7,6 +7,7 @@ import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 
 /// Keeps local D-Days + membership friend lists in sync with Firestore.
@@ -151,9 +152,15 @@ class DdayCloudSync {
     final members = membersRaw
         .map((e) => DdayFriendMember.fromJson(Map<String, dynamic>.from(e as Map)))
         .where((m) => m.uid.isNotEmpty)
-        .take(DdayInviteLimits.maxFriends)
         .toList();
     final latestCheer = (data['latestCheer'] as String?)?.trim();
+
+    if (ddayId == TogetherTestRoom.roomId && !togetherTestRoom.enabled) {
+      if (ddayController.items.any((e) => e.id == ddayId)) {
+        await ddayController.remove(ddayId);
+      }
+      return;
+    }
 
     // Friends shown to me: if I'm host → guests; if I'm guest → host + other guests.
     final List<DdayFriendMember> friendsForMe;
@@ -163,8 +170,13 @@ class DdayCloudSync {
       friendsForMe = [
         DdayFriendMember(uid: hostUid, characterId: hostCharacterId),
         ...members.where((m) => m.uid != myUid),
-      ].take(DdayInviteLimits.maxFriends).toList();
+      ].toList();
     }
+    final shownFriends = (ddayId == TogetherTestRoom.roomId &&
+            friendsForMe.isEmpty &&
+            togetherTestRoom.enabled)
+        ? [TogetherTestRoom.placeholderFriend()]
+        : friendsForMe;
 
     final hasLocal = ddayController.items.any((e) => e.id == ddayId);
 
@@ -182,7 +194,7 @@ class DdayCloudSync {
           iconId: dday['iconId'] as String? ?? 'heart',
           repeatYearly: dday['repeatYearly'] as bool? ?? false,
           cloudOwnerUid: hostUid,
-          friends: friendsForMe,
+          friends: shownFriends,
           latestCheer: (latestCheer == null || latestCheer.isEmpty)
               ? null
               : latestCheer,
@@ -191,7 +203,7 @@ class DdayCloudSync {
     } else {
       await ddayController.applyFriendsFromCloud(
         ddayId: ddayId,
-        friends: friendsForMe,
+        friends: shownFriends,
         cloudOwnerUid: hostUid,
         latestCheer: (latestCheer == null || latestCheer.isEmpty)
             ? null
@@ -211,6 +223,8 @@ class DdayCloudSync {
     if (!data.containsKey('layoutHostX') &&
         !data.containsKey('layoutGuestX') &&
         !data.containsKey('layoutCharScale') &&
+        !data.containsKey('layoutHostScale') &&
+        !data.containsKey('layoutGuestScale') &&
         !data.containsKey('layoutShape') &&
         !data.containsKey('layoutWidgetSize') &&
         !data.containsKey('layoutBgColor') &&
@@ -225,10 +239,12 @@ class DdayCloudSync {
     final guestY = (data['layoutGuestY'] as num?)?.toInt() ?? 0;
     final textX = (data['layoutTextX'] as num?)?.toInt();
     final textY = (data['layoutTextY'] as num?)?.toInt();
-    final charScale = (data['layoutCharScale'] as num?)?.toInt();
+    final legacyScale = (data['layoutCharScale'] as num?)?.toInt();
+    final hostScale = (data['layoutHostScale'] as num?)?.toInt() ?? legacyScale;
+    final guestScale =
+        (data['layoutGuestScale'] as num?)?.toInt() ?? legacyScale;
     final textScale = (data['layoutTextScale'] as num?)?.toInt();
-    final bgColor = (data['layoutBgColor'] as num?)?.toInt();
-    final bgOpacity = (data['layoutBgOpacity'] as num?)?.toInt();
+    final bgTheme = data['layoutBgTheme'] as String?;
     final textColor = (data['layoutTextColor'] as num?)?.toInt();
     final shapeId = data['layoutShape'] as String?;
     final shape =
@@ -245,10 +261,10 @@ class DdayCloudSync {
         friendY: guestY,
         textX: textX,
         textY: textY,
-        charScale: charScale,
+        charScale: hostScale,
+        friendScale: guestScale,
         textScale: textScale,
-        bgColor: bgColor,
-        bgOpacity: bgOpacity,
+        bgTheme: bgTheme,
         textColor: textColor,
         shape: shape,
         widgetSize: widgetSize,
@@ -263,10 +279,10 @@ class DdayCloudSync {
         friendY: hostY,
         textX: textX,
         textY: textY,
-        charScale: charScale,
+        charScale: guestScale,
+        friendScale: hostScale,
         textScale: textScale,
-        bgColor: bgColor,
-        bgOpacity: bgOpacity,
+        bgTheme: bgTheme,
         textColor: textColor,
         shape: shape,
         widgetSize: widgetSize,
@@ -295,10 +311,10 @@ class DdayCloudSync {
     final friendY = ddayController.friendOffsetYForRoom(item.id);
     final textX = ddayController.textOffsetXForRoom(item.id);
     final textY = ddayController.textOffsetYForRoom(item.id);
-    final charScale = ddayController.charScaleForRoom(item.id);
+    final meScale = ddayController.charScaleForRoom(item.id);
+    final friendScale = ddayController.friendScaleForRoom(item.id);
     final textScale = ddayController.textScaleForRoom(item.id);
-    final bgColor = ddayController.bgColorForRoom(item.id);
-    final bgOpacity = ddayController.bgOpacityForRoom(item.id);
+    final bgTheme = ddayController.bgThemeForRoom(item.id);
     final textColor = ddayController.textColorForRoom(item.id);
     const shape = TogetherWidgetShape.square;
     final widgetSize = ddayController.widgetSizeForRoom(item.id);
@@ -307,6 +323,8 @@ class DdayCloudSync {
     final hostY = iAmHost ? meY : friendY;
     final guestX = iAmHost ? friendX : meX;
     final guestY = iAmHost ? friendY : meY;
+    final hostScale = iAmHost ? meScale : friendScale;
+    final guestScale = iAmHost ? friendScale : meScale;
 
     try {
       await _db.collection('dday_memberships').doc(item.id).set(
@@ -317,10 +335,11 @@ class DdayCloudSync {
           'layoutGuestY': guestY,
           'layoutTextX': textX,
           'layoutTextY': textY,
-          'layoutCharScale': charScale,
+          'layoutCharScale': hostScale,
+          'layoutHostScale': hostScale,
+          'layoutGuestScale': guestScale,
           'layoutTextScale': textScale,
-          'layoutBgColor': bgColor,
-          'layoutBgOpacity': bgOpacity,
+          'layoutBgTheme': bgTheme,
           'layoutTextColor': textColor,
           'layoutShape': shape.id,
           'layoutWidgetSize': widgetSize.id,

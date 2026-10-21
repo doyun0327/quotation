@@ -1,4 +1,4 @@
-/// A friend who accepted an invite for a specific D-Day (max 5 per D-Day).
+/// A friend who accepted an invite for a specific D-Day.
 class DdayFriendMember {
   const DdayFriendMember({
     required this.uid,
