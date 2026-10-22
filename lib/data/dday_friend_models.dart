@@ -26,7 +26,11 @@ class DdayFriendMember {
 }
 
 abstract final class DdayInviteLimits {
-  static const maxFriends = 5;
+  /// People in one room, including the host.
+  static const maxPeople = 10;
+
+  /// Friends besides the host.
+  static const maxFriends = maxPeople - 1;
   static const codeLength = 6;
   static const inviteTtl = Duration(days: 7);
 

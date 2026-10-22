@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/data/auth_controller.dart';
+import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/encouragement_notification_scheduler.dart';
@@ -11,6 +14,7 @@ import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/invite_deep_link.dart';
 import 'package:quotation/data/quote_repository.dart';
 import 'package:quotation/data/selection_controller.dart';
+import 'package:quotation/data/together_fcm.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/firebase_options.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -21,6 +25,8 @@ import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/font_scale_controller.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
+import 'package:quotation/widgets/bottom_banner_ad.dart';
+import 'package:quotation/widgets/nickname_dialog.dart';
 
 final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -39,13 +45,19 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    FirebaseMessaging.onBackgroundMessage(togetherFcmBackground);
   } catch (e) {
     debugPrint('Firebase.initializeApp: $e');
   }
 
   await visualStyleController.load();
   await characterController.load();
+  await localeController.load();
   await QuoteRepository.initialize();
+  localeController.addListener(() {
+    QuoteRepository.onLocaleChanged();
+    selectionController.syncAfterQuotesReady();
+  });
   await ddayController.load();
   selectionController.syncAfterQuotesReady();
   selectionController.addListener(HomeWidgetSync.syncFromHome);
@@ -58,7 +70,9 @@ Future<void> main() async {
 
   runApp(const QuotationApp());
 
+  unawaited(MobileAds.instance.initialize());
   unawaited(HomeWidgetSync.initialize());
+  unawaited(TogetherFcm.start(appNavigatorKey));
   unawaited(EncouragementNotificationScheduler.initialize());
   unawaited(authController.initialize());
   unawaited(InviteDeepLink.start(appNavigatorKey));
@@ -72,6 +86,34 @@ class QuotationApp extends StatefulWidget {
 }
 
 class _QuotationAppState extends State<QuotationApp> {
+  bool _askingNickname = false;
+
+  @override
+  void initState() {
+    super.initState();
+    authController.addListener(_maybeAskNickname);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeAskNickname());
+  }
+
+  @override
+  void dispose() {
+    authController.removeListener(_maybeAskNickname);
+    super.dispose();
+  }
+
+  Future<void> _maybeAskNickname() async {
+    if (!mounted || _askingNickname || !authController.isReady) return;
+    if (authController.nickname != null) return;
+    final navContext = appNavigatorKey.currentContext;
+    if (navContext == null) return;
+    _askingNickname = true;
+    await showNicknameDialog(navContext, requiredName: true);
+    _askingNickname = false;
+    if (mounted && authController.nickname == null) {
+      _maybeAskNickname();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -81,6 +123,7 @@ class _QuotationAppState extends State<QuotationApp> {
         fontScaleController,
         localeController,
         characterController,
+        membershipController,
       ]),
       builder: (context, _) {
         return MaterialApp(
@@ -91,16 +134,32 @@ class _QuotationAppState extends State<QuotationApp> {
           locale: Locale(localeController.language.id),
           builder: (context, child) {
             final media = MediaQuery.of(context);
+            final showAd = !membershipController.isPremium;
             return MediaQuery(
               data: media.copyWith(
                 textScaler: TextScaler.linear(fontScaleController.scale),
               ),
-              child: KeyedSubtree(
-                key: ValueKey(
-                  '${visualStyleController.style.id}_'
-                  '${characterController.character.id}',
-                ),
-                child: child ?? const SizedBox.shrink(),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: MediaQuery.removePadding(
+                      context: context,
+                      removeBottom: showAd,
+                      child: KeyedSubtree(
+                        key: ValueKey(
+                          '${visualStyleController.style.id}_'
+                          '${characterController.character.id}',
+                        ),
+                        child: child ?? const SizedBox.shrink(),
+                      ),
+                    ),
+                  ),
+                  if (showAd)
+                    const SafeArea(
+                      top: false,
+                      child: BottomBannerAd(),
+                    ),
+                ],
               ),
             );
           },

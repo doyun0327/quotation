@@ -78,6 +78,7 @@ abstract final class TogetherCheerRepository {
         'latestCheer': trimmed,
         'latestCheerAuthorUid': user.uid,
         'latestCheerAt': now,
+        'updatedBy': user.uid,
         'updatedAt': now,
       };
       if (authorName != null && authorName.isNotEmpty) {

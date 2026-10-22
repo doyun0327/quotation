@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/quote_repository.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 
 class SelectionController extends ChangeNotifier {
   SelectionController() {
@@ -29,12 +30,22 @@ class SelectionController extends ChangeNotifier {
 
   MainCategory get mainCategory => QuoteRepository.byId(_mainCategoryId);
 
-  List<Quote> get _fallbackBubble => const [
-        Quote(id: 'fallback', text: '오늘도 잘하고 있어.'),
+  List<Quote> get _fallbackBubble => [
+        Quote(
+          id: 'fallback',
+          text: localeController.isKorean
+              ? '오늘도 잘하고 있어.'
+              : "You're doing well today.",
+        ),
       ];
 
-  List<Quote> get _fallbackFortune => const [
-        Quote(id: 'fortune_fallback', text: '오늘도 좋은 일이 생길 거예요.'),
+  List<Quote> get _fallbackFortune => [
+        Quote(
+          id: 'fortune_fallback',
+          text: localeController.isKorean
+              ? '오늘도 좋은 일이 생길 거예요.'
+              : 'Something good is waiting today.',
+        ),
       ];
 
   /// Public pool used by the home widget hourly rotation.
@@ -43,8 +54,7 @@ class SelectionController extends ChangeNotifier {
   /// Quotes available for the speech bubble (respects free/premium).
   List<Quote> get _bubblePool {
     if (!membershipController.isPremium) {
-      final daily = QuoteRepository.byId(MembershipController.freeCategoryId)
-          .allQuotes;
+      final daily = QuoteRepository.dailyQuotesForLocale();
       return daily.isEmpty ? _fallbackBubble : daily;
     }
 
@@ -56,11 +66,11 @@ class SelectionController extends ChangeNotifier {
     return all.isEmpty ? _fallbackBubble : all;
   }
 
-  /// Fortune pool: free → daily only; premium → all categories.
+  /// Fortune pool. English uses the English quote files only.
+  /// Korean free uses daily files; Korean premium uses every category.
   List<Quote> get _fortunePool {
-    if (!membershipController.isPremium) {
-      final daily = QuoteRepository.byId(MembershipController.freeCategoryId)
-          .allQuotes;
+    if (!localeController.isKorean || !membershipController.isPremium) {
+      final daily = QuoteRepository.dailyQuotesForLocale();
       return daily.isEmpty ? _fallbackFortune : daily;
     }
 
@@ -113,7 +123,8 @@ class SelectionController extends ChangeNotifier {
     final dayKey = _todayKey;
     final membershipKey =
         membershipController.isPremium ? 'premium' : 'free';
-    final cacheKey = '$dayKey:$membershipKey';
+    final cacheKey =
+        '$dayKey:$membershipKey:${localeController.language.id}';
     if (_fortuneDayKey == cacheKey && _fortuneQuote != null) return;
 
     final pool = _fortunePool;

@@ -1,0 +1,2802 @@
+[
+  {
+    "id": 1,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 서로의 다름을 알아가려는 마음이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 2,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 작은 배려가 쌓여 만들어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 3,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 나누는 일은 서로의 세계를 조금씩 여는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 4,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 완벽한 사람보다 함께 성장할 사람을 만나는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 5,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "진심은 거창한 말보다 꾸준한 행동에서 드러난다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 6,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 이야기를 끝까지 들어 주는 것도 사랑이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 7,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 이기는 사람이 아니라 이해하려는 사람이 지켜 간다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 8,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "다정함은 평범한 하루를 특별하게 만든다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 9,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대를 바꾸기보다 서로를 알아가는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 10,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "작은 안부가 마음의 거리를 좁혀 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 11,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 사랑은 나다움을 잃지 않게 해 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 12,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "존중은 오래가는 관계의 바탕이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 13,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 표현하는 용기가 관계를 깊게 만든다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 14,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께 웃고 함께 쉬는 시간에도 깃든다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 15,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 경계를 존중하는 것이 배려다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 16,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "진심 어린 사과는 다시 가까워지는 시작이 될 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 17,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계에는 솔직함과 다정함이 함께 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 18,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 마음을 함부로 단정하지 않는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 19,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "함께 있는 시간만큼 서로를 이해하는 마음도 중요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 20,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 작은 약속을 지키는 데서 단단해진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 21,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "다른 의견이 있어도 서로를 존중할 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 22,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 매일 조금씩 선택하는 다정함이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 23,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "따뜻한 말 한마디가 오래 마음에 남는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 24,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 나누려면 먼저 귀를 열어야 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 25,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "건강한 사랑은 서로의 꿈을 응원한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 26,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 혼자 애쓰지 않아도 되는 관계다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 27,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대의 기쁨을 진심으로 기뻐하는 마음이 사랑이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 28,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로에게 편안한 사람이 되어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 29,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께 있을 때뿐 아니라 떨어져 있을 때의 믿음에도 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 30,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계의 깊이는 연락의 양보다 마음의 진실함에 달려 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 31,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 실수를 배움의 기회로 삼을 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 32,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "다정한 행동은 말보다 오래 기억되기도 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 33,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 관심을 기울이는 작은 순간들로 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 34,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "내 마음을 솔직하게 말하는 것도 나를 존중하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 35,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 속도를 인정한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 36,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "함께 웃을 수 있는 관계는 큰 선물이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 37,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 약한 부분을 조심스럽게 대하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 38,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 노력을 알아봐 주는 마음이 관계를 지킨다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 39,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "모든 갈등이 관계의 끝을 뜻하지는 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 40,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 확인하는 대화는 오해를 줄여 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 41,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 익숙해진 뒤에도 고마움을 표현하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 42,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계에는 가까움만큼 적당한 거리도 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 43,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "진짜 친밀함은 솔직해도 안전하다고 느끼는 데서 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 44,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로를 바꾸려 하기보다 이해하려고 노력하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 45,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 사랑은 자유와 책임을 함께 품는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 46,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대의 말을 기억해 주는 일은 마음을 기억하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 47,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 특별한 날보다 평범한 날에 자주 드러난다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 48,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 한 번의 큰 약속보다 반복되는 작은 신뢰로 만들어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 49,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 다름은 대화의 시작이 될 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 50,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 사람 곁에서는 나도 더 나은 사람이 되고 싶어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 51,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음이 다를 때는 추측보다 질문을 선택하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 52,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 관심을 강요하지 않고 마음을 나누는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 53,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로에게 고맙다고 말하는 습관을 만들자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 54,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계의 온도는 작은 표현으로 달라진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 55,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "진심은 상대를 이기려 하지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 56,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 서로의 기쁨과 슬픔에 자리를 내어 주는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 57,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "함께 성장하는 관계는 변화를 두려워하지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 58,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 약한 모습을 보여도 괜찮은 공간이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 59,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대의 마음을 듣는 데는 정답보다 인내가 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 60,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대를 소유하는 것이 아니라 존중하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 61,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 시간을 귀하게 여기는 마음이 관계를 깊게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 62,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "따뜻한 눈맞춤도 마음을 전하는 방법이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 63,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 서운함을 쌓아 두기보다 차분히 나눌 때 건강해진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 64,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 매번 완벽한 반응을 보이는 일이 아니다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 65,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로에게 다시 다가갈 기회를 남겨 두자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 66,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 함께 있을 때 마음이 편안하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 67,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대의 작은 변화를 알아보는 관심이 사랑이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 68,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 열되 나의 경계도 소중히 지키자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 69,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 서로의 이야기에 호기심을 잃지 않는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 70,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "다정함은 매일 연습할 수 있는 선택이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 71,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "믿음은 말과 행동이 일치할 때 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 72,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계에서 솔직함은 존중과 함께할 때 더 따뜻하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 73,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 감정을 틀렸다고 단정하지 않는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 74,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 성장을 응원하는 마음이 오래가는 사랑을 만든다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 75,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 혼자 참고 견디는 것만으로 유지되지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 76,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대에게 필요한 것이 조언인지 경청인지 물어보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 77,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "작은 약속을 지키는 일이 큰 믿음이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 78,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께 침묵해도 어색하지 않은 순간에도 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 79,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 차이를 없애기보다 조화롭게 살아가는 법을 배우자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 80,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 마음을 표현할수록 서로를 이해할 기회가 늘어난다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 81,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "진심 어린 칭찬은 상대의 좋은 점을 비춰 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 82,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 자유를 두려워하지 않는 마음이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 83,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 하루를 묻는 짧은 질문에도 애정이 담긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 84,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 갈등 뒤에도 존중을 잃지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 85,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대의 마음을 추측하기보다 직접 물어보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 86,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 힘든 날에 해결책보다 곁을 내어 주는 일일 때가 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 87,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계에는 말하는 용기와 듣는 겸손이 모두 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 88,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 노력을 당연하게 여기지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 89,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 사랑은 나의 목소리도 소중하게 여긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 90,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 한쪽의 희생만으로 건강해질 수 없다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 91,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께 만든 추억을 소중히 돌보는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 92,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 나누는 데 완벽한 문장은 필요하지 않다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 93,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 감정을 존중하면 대화가 안전해진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 94,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 작은 오해를 풀어 가며 깊어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 95,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 약속한 것을 기억하고 지키려는 노력이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 96,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로에게 편안한 침묵을 선물하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 97,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 삶을 좁히지 않고 넓혀 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 98,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "다정한 질문 하나가 긴 대화의 문을 연다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 99,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 장점뿐 아니라 불완전함도 현실적으로 바라보는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 100,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계의 신뢰는 시간이 아니라 일관성으로 쌓인다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 101,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 마음을 확인하는 일은 약함이 아니라 용기다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 102,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 작은 고마움을 자주 표현하는 습관이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 103,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 경계를 안전하게 지켜 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 104,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "함께 기뻐하고 함께 배우는 관계를 가꾸자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 105,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 서로를 당연하게 여기지 않는 마음이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 106,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계가 깊어질수록 솔직한 대화가 더 중요해진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 107,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로를 이해하려는 노력은 관계를 따뜻하게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 108,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 사람에게 좋은 마음을 숨기지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 109,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 말을 고치기 전에 이해하려는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 110,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로에게 필요한 휴식과 공간을 인정하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 111,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 함께 보낸 시간에 마음을 더할 때 깊어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 112,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "진심은 작은 배려로도 충분히 전해질 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 113,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께 미래를 꿈꾸면서 오늘을 돌보는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 114,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 성취를 경쟁으로 만들지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 115,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 표현하는 것은 관계를 위한 작은 다리다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 116,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 이야기를 기억해 주는 사람이 되어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 117,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 기분을 책임지는 것이 아니라 마음을 존중하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 118,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "건강한 관계에는 애정과 경계가 함께 존재한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 119,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계에서 이해받고 싶다면 이해하려는 마음부터 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 120,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 서로의 부족함을 비난보다 대화로 다루는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 121,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "작은 안부가 긴 하루의 위로가 될 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 122,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로에게 솔직할 수 있는 용기를 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 123,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대를 내 기준에 맞추지 않는 존중이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 124,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 장점을 말로 알려 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 125,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 잘못을 인정하고 다시 배우며 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 126,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 마음을 당연히 안다고 여기지 않는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 127,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 삶에 따뜻한 여백을 남긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 128,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 다름을 비난 대신 호기심으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 129,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 기념일뿐 아니라 아무 날의 배려에도 담긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 130,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음이 복잡할 때는 판단보다 질문을 먼저 하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 131,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 함께 웃는 기억만큼 어려움을 나누는 경험으로도 깊어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 132,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 감정을 가볍게 여기지 않는 것이 존중이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 133,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 사랑은 서로가 자기 자신으로 살아갈 수 있게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 134,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 가까이 다가가는 마음과 기다려 주는 마음을 함께 갖는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 135,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계의 소중함은 잃을까 두려워하는 것보다 잘 돌보는 데 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 136,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대의 작은 성장을 알아봐 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 137,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 약점을 무기로 사용하지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 138,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 대답을 서두르기보다 마음을 살피는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 139,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 기대를 말로 나누면 오해가 줄어든다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 140,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계에는 함께하는 시간과 각자의 시간이 모두 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 141,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "진심 어린 관심은 상대를 있는 그대로 보려는 노력이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 142,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 갈등이 없는 상태가 아니라 갈등을 존중하며 다루는 과정이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 143,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 기쁨을 축하하는 마음을 아끼지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 144,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 고마움과 미안함을 편하게 말할 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 145,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 마음을 얻는 기술보다 마음을 돌보는 태도다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 146,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로를 이해하는 데는 한 번의 대화보다 꾸준한 관심이 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 147,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 작은 친절이 반복될 때 믿음이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 148,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 꿈에 진심으로 귀 기울이는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 149,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 실수를 조롱하지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 150,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 나누는 사람에게는 솔직한 표현이 선물이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 151,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께 있을 때 더 나답게 느껴지는 관계다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 152,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 말에 귀 기울이는 시간이 관계를 지킨다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 153,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 불편한 주제도 존중하며 이야기할 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 154,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 모든 것을 알아야만 시작되는 것은 아니다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 155,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 감정을 인정하면 해결의 길도 보이기 시작한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 156,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계의 신뢰는 작은 진실을 지키는 데서 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 157,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 하루를 궁금해하는 마음이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 158,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 각자의 삶과 함께하는 삶을 모두 존중한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 159,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음이 상했을 때는 비난보다 감정을 설명해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 160,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 잘 듣고, 솔직히 말하고, 꾸준히 돌보는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 161,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로에게 고마움을 표현하는 일을 습관으로 만들자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 162,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 누가 옳은지보다 무엇을 이해해야 하는지 물을 때 나아진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 163,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대가 편안하게 거절할 수 있도록 존중하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 164,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 경계를 넘지 않으면서 가까워진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 165,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 전하는 작은 행동이 긴 설명보다 깊게 닿을 때가 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 166,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 성장을 응원하면서 나도 성장하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 167,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 마음을 확인하는 대화는 불안을 줄여 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 168,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 완벽한 사람이 아니라 함께 노력하는 사람들로 이루어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 169,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께한 일상을 소중히 기억하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 170,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 차이를 인정하면 관계에 숨 쉴 공간이 생긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 171,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "마음을 다치게 했다면 변명보다 이해와 사과를 먼저 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 172,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 친밀함과 자유를 함께 지켜 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 173,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대를 바꾸는 계획보다 서로를 이해하는 과정이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 174,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 이야기를 판단 없이 들어 주는 순간 친밀함이 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 175,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 작은 약속을 꾸준히 지킬 때 안정된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 176,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 감정을 숨기는 것이 아니라 안전하게 나누는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 177,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 서로의 성취를 함께 기뻐한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 178,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대가 중요하게 여기는 것을 기억해 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 179,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께 웃을 이유를 만들어 가는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 180,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계에서 다정함은 선택이고 존중은 기본이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 181,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 마음을 단정하지 말고 물어보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 182,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 갈등 속에서도 사람의 가치를 깎아내리지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 183,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 말에 담긴 마음을 이해하려는 노력이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 184,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로에게 기대를 말할 때는 부탁과 존중을 함께 담자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 185,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 한 사람만 맞추는 것이 아니라 함께 조율하는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 186,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대가 혼자만의 시간을 가질 권리도 존중한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 187,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 감사함을 표현하는 데 인색하지 않다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 188,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 약한 순간을 조심스럽게 대하는 것이 애정이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 189,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 거창한 약속보다 오늘의 행동으로 증명된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 190,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계의 평온함은 서로를 통제하지 않을 때 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 191,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 사랑은 내 마음을 말할 수 있는 용기를 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 192,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로를 이해하려는 마음은 오해를 풀어 가는 시작이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 193,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 함께하는 미래와 각자의 꿈을 모두 소중히 여긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 194,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 미안함을 말한 뒤 행동으로 달라지려 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 195,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "상대의 감정을 고치려 하지 말고 먼저 들어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 196,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 상대의 행복을 나의 방식으로 정하지 않는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 197,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "관계는 자주 표현하는 고마움으로 따뜻해진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 198,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "서로의 하루를 물어보고 진심으로 들어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 199,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "좋은 관계는 혼자서 모든 책임을 짊어지게 하지 않는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 200,
+    "category": "사랑과 관계",
+    "length": 1,
+    "text": "사랑은 서로의 불완전함을 핑계로 상처 주지 않는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 201,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 서로의 마음을 알아가려는 여정이다.\n서두르지 않고 묻고 들을 때 더 깊어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 202,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 완벽함으로 만들어지지 않는다.\n서로를 존중하려는 작은 노력으로 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 203,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "진심은 거창한 약속보다 꾸준한 행동에 담긴다.\n오늘의 작은 배려가 내일의 믿음이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 204,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 이야기를 끝까지 들어 주자.\n이해받는다는 느낌은 마음을 편안하게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 205,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대를 내 뜻대로 바꾸는 일이 아니다.\n서로의 다름을 알아가며 함께 자라는 일이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 206,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "작은 안부가 멀어진 마음을 이어 줄 수 있다.\n그 한마디가 당신을 생각했다는 표현이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 207,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 사랑은 나다움을 지워 버리지 않는다.\n오히려 내 모습 그대로 살아갈 용기를 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 208,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "존중은 관계를 지탱하는 조용한 힘이다.\n의견이 달라도 서로의 가치를 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 209,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 표현하는 일에는 용기가 필요하다.\n솔직한 한마디가 오해를 줄이고 가까움을 만든다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 210,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 특별한 날에만 드러나지 않는다.\n평범한 하루를 함께 돌보는 마음에도 담긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 211,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 경계를 지켜 주는 것은 거리가 아니다.\n안전하게 가까워질 수 있도록 돕는 배려다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 212,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "진심 어린 사과는 관계를 다시 살피는 시작이다.\n말뿐 아니라 달라진 행동으로 마음을 전하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 213,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계에는 솔직함과 다정함이 함께 필요하다.\n진실을 말하되 상대의 마음도 조심스럽게 대하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 214,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 마음을 함부로 단정하지 말자.\n질문하고 들어 주는 것이 이해의 첫걸음이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 215,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "함께 있는 시간만큼 마음을 기울이는 것도 중요하다.\n짧은 순간이라도 온전히 함께해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 216,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "작은 약속을 지키는 일이 신뢰를 만든다.\n믿음은 매일의 행동으로 차곡차곡 쌓인다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 217,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "다른 의견을 가진다고 사랑이 사라지는 것은 아니다.\n서로를 존중하며 대화할 방법을 찾아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 218,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 매일 선택하는 다정함이다.\n작은 관심을 꾸준히 건네며 관계를 돌보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 219,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "따뜻한 말 한마디는 오래 마음에 남는다.\n오늘 고마운 사람에게 그 말을 전해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 220,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 나누려면 귀를 열어야 한다.\n때로는 조언보다 조용한 경청이 더 큰 위로다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 221,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "건강한 사랑은 서로의 꿈을 응원한다.\n함께하되 각자의 가능성도 넓혀 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 222,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 한 사람만 애쓰는 관계가 아니다.\n서로가 마음을 보태며 함께 가꾸는 관계다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 223,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 기쁨을 진심으로 기뻐해 주자.\n함께 축하하는 마음이 사랑을 더 풍성하게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 224,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로에게 편안한 사람이 되어 주자.\n판단보다 이해를 먼저 건넬 수 있다면 좋겠다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 225,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑에는 가까움뿐 아니라 믿음도 필요하다.\n떨어져 있는 시간에도 서로의 삶을 존중하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 226,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계의 깊이는 연락 횟수만으로 정해지지 않는다.\n진심 어린 관심과 신뢰가 더 오래 남는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 227,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "실수는 서로를 알아갈 기회가 될 수 있다.\n비난보다 배움을 선택할 때 관계가 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 228,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "다정한 행동은 말보다 오래 기억되기도 한다.\n작은 배려로 마음을 전해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 229,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 관심을 기울이는 순간마다 자란다.\n상대가 소중히 여기는 것을 기억해 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 230,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "내 마음을 솔직하게 말하는 것도 자기 존중이다.\n나의 감정과 필요를 부드럽게 표현하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 231,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 서로의 속도를 인정한다.\n누구도 같은 방식으로 마음을 열 필요는 없다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 232,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "함께 웃을 수 있는 관계는 큰 선물이다.\n그 웃음을 당연하게 여기지 말고 함께 간직하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 233,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 약한 부분을 조심스럽게 대하자.\n신뢰는 서로의 취약함을 지켜 주는 데서 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 234,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 노력을 알아봐 주자.\n인정받는 마음은 관계에 따뜻함을 더한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 235,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "모든 갈등이 관계의 끝을 의미하지는 않는다.\n존중하며 풀어 가는 과정이 새로운 이해를 만들 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 236,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 확인하는 대화는 오해를 줄여 준다.\n추측으로 결론 내리기보다 직접 물어보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 237,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 익숙해진 뒤에도 고마움을 표현하는 일이다.\n가까운 사람일수록 다정한 말을 아끼지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 238,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계에는 친밀함만큼 적당한 거리도 필요하다.\n서로의 공간을 존중할 때 더 편안히 가까워진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 239,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "진짜 친밀함은 솔직해도 안전하다는 느낌에서 자란다.\n서로의 말을 비난 없이 들을 수 있도록 노력하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 240,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로를 바꾸려 하기보다 이해하려고 노력하자.\n다름을 인정하면 함께할 방법이 더 많이 보인다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 241,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 사랑은 자유와 책임을 함께 품는다.\n서로를 존중하고 약속을 지키며 관계를 돌보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 242,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 말을 기억해 주는 것은 마음을 기억하는 일이다.\n작은 이야기도 소중히 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 243,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 평범한 날에 더 자주 드러난다.\n함께하는 일상을 돌보는 행동이 마음을 보여 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 244,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "큰 약속보다 작은 신뢰를 꾸준히 쌓아 보자.\n매일 지키는 행동이 관계의 든든한 바탕이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 245,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 다름을 대화의 시작으로 삼자.\n새로운 관점은 서로를 더 잘 이해하게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 246,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 사람 곁에서는 더 나은 내가 되고 싶어진다.\n서로의 성장을 따뜻하게 응원해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 247,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음이 다를 때는 추측보다 질문을 선택하자.\n솔직한 대화가 오해가 자라는 틈을 줄여 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 248,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 관심을 강요하는 일이 아니다.\n자유롭게 마음을 나눌 수 있는 공간을 만들어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 249,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로에게 고맙다고 말하는 습관을 들이자.\n작은 감사가 관계의 온기를 지켜 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 250,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계의 온도는 작은 표현으로 달라진다.\n다정한 말과 행동을 아끼지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 251,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "진심은 상대를 이기려 하지 않는다.\n함께 이해할 길을 찾으려 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 252,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 서로의 기쁨과 슬픔에 자리를 내어 주는 일이다.\n좋은 날에도 힘든 날에도 마음을 나누자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 253,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "함께 성장하는 관계는 변화를 두려워하지 않는다.\n서로의 새로운 모습을 알아갈 여유를 갖자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 254,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 약한 모습을 보여도 괜찮은 공간이다.\n그 믿음을 지키기 위해 서로를 조심스럽게 대하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 255,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 마음을 듣는 데는 인내가 필요하다.\n바로 답을 찾기보다 먼저 이해해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 256,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 소유가 아니라 존중이다.\n곁에 머무는 선택이 서로의 자유를 지켜 주어야 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 257,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 시간을 귀하게 여기자.\n함께하는 순간에 마음을 기울이는 것이 중요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 258,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "따뜻한 눈맞춤도 마음을 전하는 방법이다.\n작은 순간에도 상대에게 온전히 집중해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 259,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서운함을 오래 쌓아 두지 말자.\n차분히 나누면 서로의 필요를 더 잘 알 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 260,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 언제나 완벽하게 반응하는 일이 아니다.\n실수한 뒤에도 배우고 다시 다가가는 마음이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 261,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로에게 다시 다가갈 기회를 남겨 두자.\n관계는 대화와 변화 속에서 회복될 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 262,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계에서는 마음이 편안해진다.\n있는 그대로 말해도 존중받는다는 믿음이 있기 때문이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 263,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 작은 변화를 알아보자.\n관심은 때로 말하지 않은 마음도 살피게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 264,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 열면서 나의 경계도 지키자.\n건강한 관계는 서로의 안전을 함께 소중히 여긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 265,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 이야기에 호기심을 잃지 않는 일이다.\n오래 함께해도 새롭게 알아갈 것이 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 266,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "다정함은 매일 연습할 수 있는 선택이다.\n작은 배려를 꾸준히 건네며 마음을 표현하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 267,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "믿음은 말과 행동이 일치할 때 자란다.\n약속을 지키고 어려울 때 솔직하게 이야기하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 268,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "솔직함은 존중과 함께할 때 따뜻해진다.\n진실을 말하되 상대의 마음을 함부로 다루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 269,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 감정을 틀렸다고 단정하지 말자.\n먼저 그 마음이 어떤 의미인지 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 270,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 성장을 응원하는 마음은 사랑을 깊게 한다.\n함께 배우고 각자의 가능성도 지지하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 271,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 한 사람의 인내만으로 유지되지 않는다.\n서로가 책임을 나누고 마음을 보태야 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 272,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대에게 필요한 것이 조언인지 경청인지 물어보자.\n원하는 방식으로 곁을 내어 주는 것도 배려다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 273,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "작은 약속을 지키는 일이 큰 믿음이 된다.\n일관된 행동으로 말의 진심을 보여 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 274,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 함께 침묵해도 편안한 순간에도 있다.\n말이 없어도 서로의 존재를 존중할 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 275,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 차이를 없애려 하지 말자.\n다름 속에서 함께 살아갈 방법을 찾아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 276,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계는 마음을 표현할수록 이해할 기회가 늘어난다.\n완벽한 문장보다 진실한 한마디가 먼저다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 277,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "진심 어린 칭찬은 상대의 좋은 점을 비춰 준다.\n고마운 점과 멋진 점을 구체적으로 전해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 278,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 자유를 두려워하지 않는 마음이다.\n서로의 삶을 존중할 때 믿음도 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 279,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 하루를 묻는 짧은 질문에도 애정이 담긴다.\n답을 듣는 시간까지 소중히 여겨 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 280,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 갈등 뒤에도 존중을 잃지 않는다.\n문제를 다루되 사람의 가치는 깎아내리지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 281,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 마음을 추측하기보다 직접 물어보자.\n질문은 오해를 풀고 이해를 넓히는 시작이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 282,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "힘든 날에는 해결책보다 곁이 필요할 때가 있다.\n먼저 무엇이 도움이 될지 물어보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 283,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계에는 말하는 용기와 듣는 겸손이 모두 필요하다.\n서로의 마음을 배울 준비를 하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 284,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 노력을 당연하게 여기지 말자.\n작은 수고를 알아봐 주는 말이 큰 힘이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 285,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 사랑은 나의 목소리도 소중하게 여긴다.\n상대의 마음만큼 나의 감정도 존중하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 286,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계는 한쪽의 희생만으로 건강해질 수 없다.\n서로가 편안하고 안전한 방식을 함께 찾아야 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 287,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "함께 만든 추억을 소중히 돌보자.\n그 기억은 두 사람만의 이야기를 만들어 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 288,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 나누는 데 완벽한 문장은 필요하지 않다.\n진심을 담아 한 걸음 다가가면 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 289,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 감정을 존중하면 대화가 안전해진다.\n안전한 대화 속에서 해결책도 찾아갈 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 290,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계는 작은 오해를 풀어 가며 깊어진다.\n서로의 입장을 확인하는 일을 포기하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 291,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 약속한 것을 기억하고 지키려는 노력이다.\n신뢰는 반복되는 작은 행동으로 만들어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 292,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로에게 편안한 침묵을 선물하자.\n늘 무언가를 말하지 않아도 함께일 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 293,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 서로의 삶을 넓혀 준다.\n사랑은 가능성을 줄이는 대신 응원하는 마음이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 294,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "다정한 질문 하나가 긴 대화의 문을 연다.\n상대의 세계를 알고 싶다는 마음을 표현하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 295,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 불완전함을 현실적으로 바라보는 일이다.\n이상적인 모습보다 지금의 사람을 알아가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 296,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계의 신뢰는 시간이 아니라 일관성으로 쌓인다.\n오늘의 행동이 내일의 안도감을 만든다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 297,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 확인하는 일은 약함이 아니라 용기다.\n솔직한 대화가 서로를 더 가까이 데려갈 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 298,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "작은 고마움을 자주 표현하자.\n감사한 마음은 말할수록 관계에 온기를 더한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 299,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 서로의 경계를 안전하게 지켜 준다.\n존중받는 공간에서 친밀함도 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 300,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "함께 기뻐하고 함께 배우는 관계를 가꾸자.\n서로의 삶에 든든한 응원이 되어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 301,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 서로를 당연하게 여기지 않는 마음이다.\n익숙해져도 고마움과 관심을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 302,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계가 깊어질수록 솔직한 대화가 중요해진다.\n마음을 숨기기보다 존중하며 나누어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 303,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로를 이해하려는 노력은 관계를 따뜻하게 한다.\n모든 것을 알 수 없어도 계속 물을 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 304,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 사람에게 좋은 마음을 숨기지 말자.\n작은 표현이 서로에게 큰 용기가 될 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 305,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 말을 고치기 전에 이해하려고 해 보자.\n먼저 들으면 대화의 방향이 달라질 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 306,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로에게 필요한 휴식과 공간을 인정하자.\n건강한 가까움에는 각자의 여백도 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 307,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "함께 보낸 시간에 마음을 더해 보자.\n같은 공간에 있어도 진심으로 함께하는 것이 중요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 308,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "진심은 작은 배려로도 충분히 전해질 수 있다.\n상대에게 필요한 것을 살피는 마음을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 309,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 함께 미래를 꿈꾸면서 오늘을 돌보는 일이다.\n먼 훗날의 약속은 오늘의 행동으로 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 310,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 서로의 성취를 경쟁으로 만들지 않는다.\n서로의 기쁨을 응원하며 함께 성장하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 311,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 표현하는 것은 관계를 위한 작은 다리다.\n한 걸음씩 서로의 마음에 다가가 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 312,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 이야기를 기억해 주는 사람이 되어 보자.\n작은 관심이 큰 애정으로 느껴질 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 313,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 기분을 모두 책임지는 일이 아니다.\n대신 그 감정을 존중하며 함께 이야기할 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 314,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "건강한 관계에는 애정과 경계가 함께 존재한다.\n가까이 지내면서도 서로의 선택을 존중하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 315,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "이해받고 싶다면 이해하려는 마음부터 건네자.\n서로의 입장을 살피는 대화가 시작점이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 316,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "부족함을 비난보다 대화로 다루자.\n서로 배우려는 마음이 관계를 더 단단하게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 317,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "작은 안부가 긴 하루의 위로가 될 수 있다.\n짧은 메시지에도 진심을 담아 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 318,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 솔직할 수 있는 용기를 준다.\n서로의 마음을 존중하며 진실하게 이야기하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 319,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대를 내 기준에 맞추지 않는 존중이다.\n다른 모습 그대로 알아갈 여지를 남기자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 320,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 장점을 말로 알려 주자.\n마음속 칭찬을 표현하면 상대에게 닿을 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 321,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계는 잘못을 인정하고 다시 배우며 자란다.\n사과 뒤의 변화가 신뢰를 다시 세운다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 322,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 마음을 당연히 안다고 여기지 말자.\n사람은 계속 변하고 새로운 이야기를 품는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 323,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 서로의 삶에 따뜻한 여백을 남긴다.\n함께함과 혼자만의 시간을 모두 존중하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 324,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 다름을 호기심으로 바라보자.\n이해하려는 질문이 거리감을 줄여 줄 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 325,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 기념일뿐 아니라 아무 날의 배려에도 담긴다.\n평범한 하루를 함께 돌보는 마음을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 326,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음이 복잡할 때는 판단보다 질문을 먼저 하자.\n대화를 통해 서로의 진짜 필요를 알아갈 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 327,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계는 웃는 기억과 어려움을 나눈 경험으로 깊어진다.\n함께 지나온 시간을 소중히 돌아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 328,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 감정을 가볍게 여기지 말자.\n작은 서운함도 존중하며 들어 줄 필요가 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 329,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 사랑은 서로가 자기 자신으로 살아가게 한다.\n사랑 안에서도 나의 빛을 잃지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 330,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 다가가는 마음과 기다려 주는 마음을 함께 갖는다.\n상대가 마음을 열 시간을 존중하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 331,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계는 두려움보다 돌봄으로 지켜 가는 것이다.\n서로의 소중함을 행동으로 표현하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 332,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 작은 성장을 알아봐 주자.\n진심 어린 응원이 다음 걸음을 도울 수 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 333,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 약점을 무기로 사용하지 않는다.\n믿고 나눈 이야기를 조심스럽게 지켜 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 334,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 대답을 서두르기보다 마음을 살피는 일이다.\n천천히 듣고 생각할 시간을 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 335,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 기대를 말로 나누면 오해가 줄어든다.\n마음속 바람을 상대가 알아서 알 거라 기대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 336,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계에는 함께하는 시간과 각자의 시간이 모두 필요하다.\n균형을 존중할 때 친밀함이 더 편안해진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 337,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "진심 어린 관심은 상대를 있는 그대로 보려는 노력이다.\n내가 아는 모습만으로 상대를 판단하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 338,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "갈등이 없는 관계만이 좋은 관계는 아니다.\n갈등을 존중하며 다루는 방식이 중요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 339,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 기쁨을 축하하는 마음을 아끼지 말자.\n좋은 소식을 함께 반기는 일이 사랑을 키운다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 340,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "고마움과 미안함을 편하게 말할 수 있는 관계를 만들자.\n솔직한 표현은 관계를 더 안전하게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 341,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 마음을 얻는 기술보다 마음을 돌보는 태도다.\n상대의 필요를 듣고 작은 행동으로 응답하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 342,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로를 이해하는 데는 꾸준한 관심이 필요하다.\n한 번의 대화로 모든 것을 알 수는 없다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 343,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "작은 친절이 반복될 때 관계에 믿음이 생긴다.\n매일의 행동이 마음을 보여 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 344,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 꿈에 진심으로 귀 기울이는 일이다.\n그 꿈이 자라도록 곁에서 응원해 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 345,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 서로의 실수를 조롱하지 않는다.\n실수를 배움의 기회로 대할 때 신뢰가 자란다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 346,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 나누는 사람에게 진솔한 표현은 선물이다.\n완벽한 말보다 진심 어린 말이 오래 남는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 347,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 함께 있을 때 더 나답게 느껴지는 관계다.\n서로의 개성을 존중하며 편안함을 만들어 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 348,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 말에 귀 기울이는 시간이 관계를 지킨다.\n들으려는 마음이 이해의 시작이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 349,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 불편한 주제도 존중하며 이야기할 수 있다.\n문제를 피하기보다 함께 풀어 갈 방법을 찾자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 350,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 모든 것을 알아야 시작되는 것은 아니다.\n계속 알아가려는 마음이 관계를 자라게 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 351,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 감정을 인정하면 해결의 길이 보이기 시작한다.\n먼저 마음을 이해하고 다음 걸음을 함께 정하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 352,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "신뢰는 작은 진실을 지키는 데서 자란다.\n솔직함과 책임감이 관계의 바탕이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 353,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 하루가 궁금한 마음이다.\n일상의 이야기를 나누며 서로의 세계를 알아가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 354,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 각자의 삶과 함께하는 삶을 모두 존중한다.\n함께여도 각자의 꿈을 이어 갈 수 있어야 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 355,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음이 상했을 때는 비난보다 감정을 설명해 보자.\n내가 느낀 것을 차분히 나누면 이해의 문이 열린다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 356,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 잘 듣고 솔직히 말하며 꾸준히 돌보는 일이다.\n작은 노력을 이어 가는 것이 큰 마음이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 357,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로에게 고마움을 표현하는 일을 습관으로 만들자.\n익숙한 관계일수록 감사의 말이 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 358,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "누가 옳은지만 묻기보다 무엇을 이해해야 할지 생각하자.\n관계를 위한 대화는 승패보다 연결을 목표로 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 359,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대가 편안하게 거절할 수 있도록 존중하는 일이다.\n선택의 자유가 있을 때 마음도 더 안전해진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 360,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 경계를 넘지 않으면서 가까워진다.\n존중은 친밀함을 막는 벽이 아니라 든든한 바탕이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 361,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "작은 행동이 긴 설명보다 깊게 닿을 때가 있다.\n오늘 할 수 있는 배려로 마음을 전해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 362,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 성장과 나의 성장을 함께 응원하는 일이다.\n서로의 가능성을 믿어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 363,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 확인하는 대화는 불안을 줄여 줄 수 있다.\n궁금한 점은 추측보다 다정하게 물어보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 364,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 완벽한 사람이 아니라 함께 노력하는 사람들로 이루어진다.\n서로 배우려는 마음을 잃지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 365,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "함께한 일상을 소중히 기억하자.\n평범한 순간이 두 사람만의 추억이 된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 366,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 차이를 인정하면 관계에 숨 쉴 공간이 생긴다.\n같지 않아도 함께할 수 있는 방법을 찾아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 367,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "마음을 다치게 했다면 변명보다 이해와 사과를 건네자.\n달라진 행동이 진심을 보여 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 368,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 친밀함과 자유를 함께 지켜 준다.\n서로를 믿고 각자의 삶을 존중하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 369,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대를 바꾸는 계획보다 이해하는 과정이다.\n지금의 모습을 알아가려는 마음을 갖자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 370,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "판단 없이 이야기를 들어 주는 순간 친밀함이 자란다.\n먼저 들어 주는 사람이 되어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 371,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "작은 약속을 꾸준히 지킬 때 관계가 안정된다.\n신뢰는 일상 속에서 차곡차곡 만들어진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 372,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 감정을 숨기는 것이 아니라 안전하게 나누는 일이다.\n서로의 마음을 존중하며 표현하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 373,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 서로의 성취를 함께 기뻐한다.\n상대의 행복을 나의 기쁨처럼 반겨 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 374,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대가 중요하게 여기는 것을 기억해 주자.\n그 관심은 당신의 마음을 보여 주는 작은 표현이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 375,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 함께 웃을 이유를 만들어 가는 일이다.\n평범한 하루에도 즐거움을 나눌 순간이 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 376,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "다정함은 선택이고 존중은 기본이다.\n둘 다 지킬 때 관계는 더 안전해진다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 377,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 마음을 단정하지 말고 물어보자.\n질문은 오해를 줄이고 이해를 넓혀 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 378,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "갈등 속에서도 상대의 가치를 깎아내리지 말자.\n문제와 사람을 구분하는 태도가 필요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 379,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 말에 담긴 마음을 이해하려는 노력이다.\n표현이 서툴러도 진심을 알아가려 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 380,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "기대하는 바를 말할 때 부탁과 존중을 함께 담자.\n서로의 필요를 알면 조율할 방법도 생긴다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 381,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계는 한 사람만 맞추는 것이 아니라 함께 조율하는 일이다.\n서로의 편안함을 함께 찾아가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 382,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 혼자만의 시간을 가질 권리도 존중한다.\n건강한 가까움은 자유를 허락한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 383,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "고마움을 표현하는 데 인색하지 말자.\n작은 감사가 마음의 거리를 좁혀 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 384,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 약한 순간을 조심스럽게 대하자.\n그때 보여 준 배려가 신뢰로 남는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 385,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "거창한 약속보다 오늘의 행동으로 사랑을 보여 주자.\n작은 실천이 진심을 가장 잘 드러낸다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 386,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계의 평온함은 서로를 통제하지 않을 때 자란다.\n믿음은 강요보다 존중에서 시작된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 387,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 사랑은 내 마음을 말할 수 있는 용기를 준다.\n서로의 목소리를 안전하게 들을 수 있어야 한다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 388,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "이해하려는 마음은 오해를 풀어 가는 시작이다.\n먼저 상대의 입장에서 생각해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 389,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 함께하는 미래와 각자의 꿈을 모두 소중히 여긴다.\n서로의 가능성을 응원하며 걸어가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 390,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사과 뒤에는 행동의 변화가 따라야 한다.\n달라지려는 노력이 신뢰를 다시 쌓는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 391,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 감정을 고치려 하지 말고 먼저 들어 주자.\n공감은 해결책보다 먼저 필요한 순간이 있다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 392,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 상대의 행복을 내 방식으로 정하지 않는 일이다.\n무엇이 좋은지 함께 물으며 알아가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 393,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "자주 표현하는 고마움이 관계를 따뜻하게 한다.\n마음속 감사는 말로 전할 때 더 잘 닿는다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 394,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 하루를 묻고 진심으로 들어 주자.\n관심은 작은 질문에서 시작된다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 395,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 한 사람이 모든 책임을 짊어지게 하지 않는다.\n함께 나누고 함께 해결하는 것이 중요하다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 396,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "사랑은 불완전함을 핑계로 서로를 아프게 하지 않는 일이다.\n부족한 부분도 존중하며 대화하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 397,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "관계에는 친밀함만큼 정직함도 필요하다.\n솔직한 마음이 신뢰를 지켜 준다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 398,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "서로의 다름을 존중하면 함께할 방법이 늘어난다.\n차이를 없애기보다 조화를 찾아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 399,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "상대의 이야기를 기억하고 다시 물어보자.\n그 관심은 마음을 귀하게 여긴다는 표현이다.",
+    "author": "Dearly"
+  },
+  {
+    "id": 400,
+    "category": "사랑과 관계",
+    "length": 2,
+    "text": "좋은 관계는 마음을 표현해도 비웃음당하지 않는 곳이다.\n서로의 진심을 안전하게 받아 주자.",
+    "author": "Dearly"
+  }
+]

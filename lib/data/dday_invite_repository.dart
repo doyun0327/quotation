@@ -83,6 +83,15 @@ class DdayInviteRepository {
       throw StateError('not_signed_in');
     }
     await UserProfileSync.upsertCurrentUser();
+    await ensureHostMembership(ddayId);
+    await _db.collection('dday_memberships').doc(ddayId).set(
+      {
+        'inviteOpen': true,
+        'updatedBy': uid,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
 
     final ddayRef = _db.collection('ddays').doc(ddayId);
     await ddayRef.set(
@@ -226,10 +235,14 @@ class DdayInviteRepository {
         }
       }
 
+      if (members.length >= DdayInviteLimits.maxFriends) {
+        throw StateError('friends_full');
+      }
+
       members.add({
         'uid': uid,
         'characterId': guestChar,
-        if (guestName != null) 'displayName': guestName,
+        'displayName': ?guestName,
         'joinedAt': Timestamp.now(),
       });
       final guestUids = members.map((m) => m['uid'] as String).toList();
@@ -242,6 +255,7 @@ class DdayInviteRepository {
           'members': members,
           'guestUids': guestUids,
           'maxGuests': DdayInviteLimits.maxFriends,
+          'updatedBy': uid,
           'updatedAt': FieldValue.serverTimestamp(),
           if (!memSnap.exists) 'pairedAt': FieldValue.serverTimestamp(),
         },
@@ -256,7 +270,7 @@ class DdayInviteRepository {
         },
         SetOptions(merge: true),
       );
-      // Keep invite pending so more friends (up to 5) can join with same code.
+      // Keep the code pending so more people can join, up to 10 including the host.
       tx.set(
         inviteDoc.reference,
         {
@@ -283,6 +297,13 @@ class DdayInviteRepository {
     for (final doc in snaps.docs) {
       await doc.reference.update({'status': 'revoked'});
     }
+    await _db.collection('dday_memberships').doc(ddayId).set(
+      {
+        'inviteOpen': false,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
   }
 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> watchMembership(

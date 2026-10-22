@@ -19,7 +19,7 @@ abstract final class TogetherCheerLayout {
   }
 
   static TextStyle style({required bool isPixel, required double textScale}) {
-    final factor = (textScale / 100).clamp(0.6, 1.6);
+    final factor = (textScale / 100).clamp(0.6, 2.4);
     return TextStyle(
       fontFamily: isPixel ? 'Galmuri' : null,
       fontSize: (isPixel ? 16.0 : 22.0) * factor,

@@ -9,14 +9,15 @@ class UserProfileSync {
 
   static final _db = FirebaseFirestore.instance;
 
-  static Future<void> upsertCurrentUser() async {
+  static Future<void> upsertCurrentUser({String? displayName}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+    final name = (displayName ?? user.displayName)?.trim();
     try {
       await _db.collection('users').doc(user.uid).set(
         {
           'characterId': characterController.character.id,
-          'displayName': user.displayName,
+          'displayName': (name == null || name.isEmpty) ? user.displayName : name,
           'email': user.email,
           'updatedAt': FieldValue.serverTimestamp(),
         },
@@ -24,6 +25,41 @@ class UserProfileSync {
       );
     } catch (e) {
       debugPrint('UserProfileSync.upsert: $e');
+    }
+  }
+
+  /// Writes the nickname onto this user's membership rows so friends see it.
+  static Future<void> syncDisplayName(String name) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return;
+    await upsertCurrentUser(displayName: trimmed);
+    try {
+      final asGuest = await _db
+          .collection('dday_memberships')
+          .where('guestUids', arrayContains: user.uid)
+          .get();
+      for (final doc in asGuest.docs) {
+        final members = (doc.data()['members'] as List<dynamic>? ?? [])
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
+        var changed = false;
+        for (final member in members) {
+          if (member['uid'] == user.uid && member['displayName'] != trimmed) {
+            member['displayName'] = trimmed;
+            changed = true;
+          }
+        }
+        if (changed) {
+          await doc.reference.set(
+            {'members': members},
+            SetOptions(merge: true),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('UserProfileSync.syncDisplayName: $e');
     }
   }
 
@@ -53,7 +89,11 @@ class UserProfileSync {
         .get();
     for (final doc in asHost.docs) {
       await doc.reference.set(
-        {'hostCharacterId': charId, 'updatedAt': FieldValue.serverTimestamp()},
+        {
+          'hostCharacterId': charId,
+          'updatedBy': uid,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
         SetOptions(merge: true),
       );
     }
@@ -78,6 +118,7 @@ class UserProfileSync {
         await doc.reference.set(
           {
             'members': members,
+            'updatedBy': uid,
             'updatedAt': FieldValue.serverTimestamp(),
           },
           SetOptions(merge: true),

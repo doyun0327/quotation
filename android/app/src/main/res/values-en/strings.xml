@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Daily Word</string>
+    <string name="widget_description">Shows your character and speech-bubble quote on the home screen</string>
+    <string name="dday_widget_description">Shows the cheer widget you decorate with friends</string>
+    <string name="dday_widget_label">Together</string>
+    <string name="dday_widget_label_s">Together 2×2</string>
+    <string name="dday_widget_label_m">Together 3×2</string>
+    <string name="dday_widget_label_l">Together 4×2</string>
+    <string name="dday_widget_label_xl">Together 4×3</string>
+    <string name="dday_widget_label_sq">Together 3×3</string>
+    <string name="dday_widget_label_tall">Together 2×3</string>
+    <string name="dday_widget_pin_hint">Add to home screen</string>
+    <string name="dday_widget_empty_title">Together</string>
+    <string name="dday_widget_empty_date"></string>
+    <string name="dday_widget_configure_title">Move characters</string>
+    <string name="dday_widget_configure_subtitle">Same layout as the home widget. Drag a character and it updates right away.</string>
+    <string name="dday_widget_configure_apply">Done</string>
+    <string name="dday_widget_drag_hint">Drag the character left or right</string>
+    <string name="dday_widget_me_position">My character (left-right)</string>
+    <string name="dday_widget_friend_position">Friend character (left-right)</string>
+    <string name="dday_widget_me_position_value">My character (left-right): %1$d</string>
+    <string name="dday_widget_friend_position_value">Friend character (left-right): %1$d</string>
+    <string name="dday_widget_settings_cd">Character position</string>
+    <string name="widget_character_cd">Character</string>
+    <string name="widget_placeholder_quote">Open the app to see today\'s quote here</string>
+    <string name="widget_default_category">Daily Word</string>
+    <string name="widget_configure_title">Widget quote category</string>
+    <string name="widget_configure_subtitle">The widget uses the same quote as the home speech bubble. Pick a category to follow.</string>
+    <string name="widget_configure_add">Add widget</string>
+    <string name="widget_category_comfort">Comfort &amp; Cheer</string>
+    <string name="widget_category_faith">Faith &amp; Wisdom</string>
+    <string name="widget_category_literature">Quotes &amp; Literature</string>
+    <string name="widget_category_daily">Happy Everyday</string>
+</resources>

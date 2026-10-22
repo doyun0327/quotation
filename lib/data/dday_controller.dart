@@ -16,6 +16,7 @@ class DdayItem {
     this.iconId = 'heart',
     this.repeatYearly = false,
     this.pinnedForWidget = false,
+    this.favorite = false,
     this.friends = const [],
     this.cloudOwnerUid,
     this.latestCheer,
@@ -27,6 +28,7 @@ class DdayItem {
   final String iconId;
   final bool repeatYearly;
   final bool pinnedForWidget;
+  final bool favorite;
 
   /// Accepted friends for this room.
   /// Populated only from cloud membership — never from local picker.
@@ -81,6 +83,7 @@ class DdayItem {
         'iconId': iconId,
         'repeatYearly': repeatYearly,
         'pinnedForWidget': pinnedForWidget,
+        'favorite': favorite,
         'friends': friends.map((e) => e.toJson()).toList(),
         if (cloudOwnerUid != null) 'cloudOwnerUid': cloudOwnerUid,
         if (latestCheer != null) 'latestCheer': latestCheer,
@@ -108,6 +111,7 @@ class DdayItem {
       iconId: json['iconId'] as String? ?? 'heart',
       repeatYearly: json['repeatYearly'] as bool? ?? false,
       pinnedForWidget: json['pinnedForWidget'] as bool? ?? false,
+      favorite: json['favorite'] as bool? ?? false,
       friends: friends,
       cloudOwnerUid: json['cloudOwnerUid'] as String?,
       latestCheer: json['latestCheer'] as String?,
@@ -120,6 +124,7 @@ class DdayItem {
     String? iconId,
     bool? repeatYearly,
     bool? pinnedForWidget,
+    bool? favorite,
     List<DdayFriendMember>? friends,
     bool clearFriends = false,
     String? cloudOwnerUid,
@@ -134,6 +139,7 @@ class DdayItem {
       iconId: iconId ?? this.iconId,
       repeatYearly: repeatYearly ?? this.repeatYearly,
       pinnedForWidget: pinnedForWidget ?? this.pinnedForWidget,
+      favorite: favorite ?? this.favorite,
       friends: clearFriends ? const [] : (friends ?? this.friends),
       cloudOwnerUid:
           clearCloudOwner ? null : (cloudOwnerUid ?? this.cloudOwnerUid),
@@ -338,14 +344,14 @@ class DdayController extends ChangeNotifier {
   /// Feet stay inside the widget. The editor tightens this to the live background.
   static const duoOffsetMinY = 0;
   static const duoOffsetMaxY = 480;
-  static const textOffsetMinX = -120;
-  static const textOffsetMaxX = 120;
-  static const textOffsetMinY = -80;
-  static const textOffsetMaxY = 80;
+  static const textOffsetMinX = -480;
+  static const textOffsetMaxX = 480;
+  static const textOffsetMinY = -320;
+  static const textOffsetMaxY = 320;
   static const scaleMin = 60;
   static const bgOpacityMin = 20;
   static const bgOpacityMax = 100;
-  static const scaleMax = 160;
+  static const scaleMax = 240;
 
   final List<DdayItem> _items = [];
   final Map<String, _RoomOffsets> _roomOffsets = {};
@@ -359,9 +365,7 @@ class DdayController extends ChangeNotifier {
   List<DdayItem> get items {
     final sorted = [..._items];
     sorted.sort((a, b) {
-      if (a.pinnedForWidget != b.pinnedForWidget) {
-        return a.pinnedForWidget ? -1 : 1;
-      }
+      if (a.favorite != b.favorite) return a.favorite ? -1 : 1;
       return a.title.toLowerCase().compareTo(b.title.toLowerCase());
     });
     return List.unmodifiable(sorted);
@@ -527,6 +531,9 @@ class DdayController extends ChangeNotifier {
     TogetherWidgetShape? shape,
     TogetherWidgetSize? widgetSize,
     bool fromCloud = false,
+    bool notifyFriends = false,
+    double? canvasW,
+    double? canvasH,
   }) async {
     final targetId = roomId ?? widgetDday?.id;
     if (targetId == null) return;
@@ -564,7 +571,19 @@ class DdayController extends ChangeNotifier {
         cur.textColor == next.textColor &&
         cur.shape == next.shape &&
         cur.widgetSize == next.widgetSize;
-    if (same) return;
+    if (same) {
+      if (!fromCloud && notifyFriends) {
+        unawaited(
+          DdayCloudSync.pushSharedLayout(
+            roomId: targetId,
+            notifyFriends: true,
+            canvasW: canvasW,
+            canvasH: canvasH,
+          ),
+        );
+      }
+      return;
+    }
 
     _roomOffsets[targetId] = next;
     if (widgetDday?.id == targetId) {
@@ -575,8 +594,15 @@ class DdayController extends ChangeNotifier {
     }
     await _persistRoomOffsets();
     notifyListeners();
-    if (!fromCloud) {
-      unawaited(DdayCloudSync.pushSharedLayout(roomId: targetId));
+    if (!fromCloud && notifyFriends) {
+      unawaited(
+        DdayCloudSync.pushSharedLayout(
+          roomId: targetId,
+          notifyFriends: true,
+          canvasW: canvasW,
+          canvasH: canvasH,
+        ),
+      );
     }
   }
 
@@ -625,6 +651,15 @@ class DdayController extends ChangeNotifier {
     await _persist();
   }
 
+  Future<void> toggleFavorite(String id) async {
+    final index = _items.indexWhere((e) => e.id == id);
+    if (index < 0) return;
+    final item = _items[index];
+    _items[index] = item.copyWith(favorite: !item.favorite);
+    await _persist();
+    notifyListeners();
+  }
+
   Future<void> pinForWidget(String id) async {
     for (var i = 0; i < _items.length; i++) {
       final item = _items[i];
@@ -647,21 +682,12 @@ class DdayController extends ChangeNotifier {
     final next = trimmed.isEmpty ? null : trimmed;
     _localCheerIds.add(roomId);
     final cur = _items[index];
-    final already =
-        (cur.latestCheer ?? '') == (next ?? '') && cur.pinnedForWidget;
+    final already = (cur.latestCheer ?? '') == (next ?? '');
     if (!already) {
-      for (var i = 0; i < _items.length; i++) {
-        if (i == index) {
-          _items[i] = cur.copyWith(
-            latestCheer: next,
-            clearLatestCheer: next == null,
-            pinnedForWidget: true,
-          );
-        } else if (_items[i].pinnedForWidget) {
-          _items[i] = _items[i].copyWith(pinnedForWidget: false);
-        }
-      }
-      _applyActiveOffsetsFromPinned();
+      _items[index] = cur.copyWith(
+        latestCheer: next,
+        clearLatestCheer: next == null,
+      );
       await _persist();
       notifyListeners();
     }
@@ -679,6 +705,7 @@ class DdayController extends ChangeNotifier {
           incoming.isEmpty;
       _items[index] = item.copyWith(
         pinnedForWidget: existing.pinnedForWidget,
+        favorite: existing.favorite,
         latestCheer: keepLocal ? existing.latestCheer : incoming,
         clearLatestCheer: keepLocal &&
             (existing.latestCheer == null || existing.latestCheer!.isEmpty),

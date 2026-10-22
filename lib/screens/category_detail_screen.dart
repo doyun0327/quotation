@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/quote_models.dart';
+import 'package:quotation/data/quote_repository.dart';
 import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -22,6 +23,7 @@ class CategoryDetailScreen extends StatelessWidget {
       listenable: localeController,
       builder: (context, _) {
         final t = AppStrings.current;
+        final category = QuoteRepository.byId(this.category.id);
         final title = t.mainCategoryTitle(category.id);
 
         return Scaffold(

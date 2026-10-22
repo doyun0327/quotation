@@ -220,6 +220,8 @@ class _DdayScreenState extends State<DdayScreen> {
                               item: item,
                               onOpen: () => _openRoom(item),
                               onDelete: () => _confirmDelete(item),
+                              onToggleFavorite: () =>
+                                  ddayController.toggleFavorite(item.id),
                             );
                           },
                         ),
@@ -238,11 +240,13 @@ class _TogetherRoomCard extends StatelessWidget {
     required this.item,
     required this.onOpen,
     required this.onDelete,
+    required this.onToggleFavorite,
   });
 
   final DdayItem item;
   final VoidCallback onOpen;
   final VoidCallback onDelete;
+  final VoidCallback onToggleFavorite;
 
   @override
   Widget build(BuildContext context) {
@@ -316,18 +320,6 @@ class _TogetherRoomCard extends StatelessWidget {
                         ],
                       ],
                     ),
-                    if (item.hasFriend) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        t.togetherFriendCountLabel(item.friendCount),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTheme.body.copyWith(
-                          fontSize: 12,
-                          color: AppColors.muted,
-                        ),
-                      ),
-                    ],
                     if (cheer != null && cheer.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
@@ -344,17 +336,40 @@ class _TogetherRoomCard extends StatelessWidget {
                   ],
                 ),
               ),
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'delete') onDelete();
-                },
-                padding: EdgeInsets.zero,
-                icon: const Icon(
-                  Icons.more_vert_rounded,
-                  color: Color(0xFF9AA3B2),
-                ),
-                itemBuilder: (context) => [
-                  PopupMenuItem(value: 'delete', child: Text(t.delete)),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: onToggleFavorite,
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 32,
+                    ),
+                    icon: Icon(
+                      item.favorite
+                          ? Icons.star_rounded
+                          : Icons.star_border_rounded,
+                      color: item.favorite
+                          ? const Color(0xFFF5B942)
+                          : const Color(0xFFB7C0CE),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onDelete,
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 32,
+                    ),
+                    tooltip: t.delete,
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: Color(0xFFB7C0CE),
+                    ),
+                  ),
                 ],
               ),
             ],

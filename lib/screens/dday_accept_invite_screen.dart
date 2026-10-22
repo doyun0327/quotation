@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
+import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
+import 'package:quotation/screens/together_room_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -58,14 +60,17 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
         return;
       }
 
-      await DdayInviteRepository.acceptInviteByCode(_codeCtrl.text);
+      final roomId =
+          await DdayInviteRepository.acceptInviteByCode(_codeCtrl.text);
       await DdayCloudSync.pullMemberships();
+      await ddayController.pinForWidget(roomId);
       await HomeWidgetSync.syncDday();
       if (!mounted) return;
-      setState(() {
-        _success = true;
-        _message = t.ddayInviteAcceptSuccess;
-      });
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (_) => TogetherRoomScreen(roomId: roomId),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() {

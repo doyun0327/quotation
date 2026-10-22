@@ -12,6 +12,7 @@ import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/l10n/app_strings.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
@@ -64,6 +65,11 @@ abstract final class HomeWidgetSync {
   static const keyThemeAccent = 'themeAccent';
   static const keyThemeBorder = 'themeBorder';
   static const keyThemeWindowBar = 'themeWindowBar';
+  static const keyDdayRoomId = 'ddayRoomId';
+  static const keyDdayRoomsJson = 'ddayRoomsJson';
+  static const keyDdayWidgetBindings = 'ddayWidgetBindings';
+  static const keyDdayPendingRoomId = 'ddayPendingRoomId';
+  static const keyDdayHostByRoom = 'ddayHostByRoom';
   static const keyDdayTitle = 'ddayTitle';
   static const keyDdayLabel = 'ddayLabel';
   static const keyDdayDate = 'ddayDate';
@@ -123,9 +129,13 @@ abstract final class HomeWidgetSync {
 
   /// Measured home-widget host size + corner (written by Android provider).
   static Future<({Size size, TogetherWidgetSize forSize, double cornerDp})?>
-      loadHostPreviewSize() async {
+      loadHostPreviewSize({String? roomId}) async {
     if (!_isAndroid) return null;
     try {
+      if (roomId != null && roomId.isNotEmpty) {
+        final forRoom = await _hostForRoom(roomId);
+        if (forRoom != null) return forRoom;
+      }
       final exactW = double.tryParse(
         await HomeWidget.getWidgetData<String>(keyDdayHostWidthExact) ?? '',
       );
@@ -179,7 +189,12 @@ abstract final class HomeWidgetSync {
     if (!_isAndroid) return;
 
     final quote = selectionController.bubbleQuote ??
-        const Quote(id: 'fallback', text: '오늘도 잘하고 있어.');
+        Quote(
+          id: 'fallback',
+          text: localeController.isKorean
+              ? '오늘도 잘하고 있어.'
+              : "You're doing well today.",
+        );
     final categoryId = selectionController.mainCategoryId;
     final categoryTitle = AppStrings.current.mainCategoryTitle(categoryId);
     final palette = themeController.palette;
@@ -254,31 +269,145 @@ abstract final class HomeWidgetSync {
     }
   }
 
-  /// Sync data to existing Together widgets. Only asks to pin when none are installed.
-  /// Returns `true` when a pin request was shown; `false` when an existing widget was updated
-  /// (or pin is unsupported).
+  /// Saves every room, then pins a new widget only when [roomId] does not
+  /// already have one. Other rooms' widgets stay as they are.
   ///
-  /// Pin dialog is shown ASAP (light preview). Heavy widget redraw runs in the background
-  /// so "홈에 적용" no longer waits several seconds before the add sheet appears.
-  static Future<bool> syncAndOfferPinTogetherWidget() async {
+  /// Returns `true` when the add-to-home sheet was shown.
+  static Future<bool> syncAndOfferPinTogetherWidget({
+    String? roomId,
+    String? keepUnboundOn,
+  }) async {
     if (!_isAndroid) return false;
     try {
-      // Persist prefs first (fast) so a newly pinned widget has data.
+      final id = roomId ?? ddayController.widgetDday?.id ?? '';
+      final keep = (keepUnboundOn != null &&
+              keepUnboundOn.isNotEmpty &&
+              keepUnboundOn != id)
+          ? keepUnboundOn
+          : id;
+      // Lock widgets already on the home screen before the global room id
+      // switches, so the next room cannot take them.
+      await _bindUnboundWidgets(keep);
       await _saveDday();
-
-      final alreadyInstalled = await _hasTogetherWidgetInstalled();
-      if (alreadyInstalled) {
-        unawaited(syncDday(reloadFromPrefs: false));
+      if (id.isEmpty) {
+        await _updateAllDdayWidgets();
         return false;
       }
-
-      // Show add sheet immediately — do not wait for bitmap/font widget rebuild.
+      if (await _roomHasWidget(id)) {
+        await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, '');
+        await _updateAllDdayWidgets();
+        return false;
+      }
+      await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, id);
+      await HomeWidget.saveWidgetData<String>(keyDdayRoomId, id);
       final pinned = await _requestPinTogetherWidgetFast();
-      unawaited(syncDday(reloadFromPrefs: false));
+      unawaited(_updateAllDdayWidgets());
       return pinned;
     } catch (e) {
       debugPrint('syncAndOfferPinTogetherWidget: $e');
       return false;
+    }
+  }
+
+  static bool _isTogetherProvider(String? className) {
+    if (className == null || className.isEmpty) return false;
+    return _ddayProviders.any(
+      (p) =>
+          className == p.qualified ||
+          className.endsWith('.${p.name}') ||
+          className == p.name,
+    );
+  }
+
+  static Future<Map<String, String>> _readBindings() async {
+    final raw =
+        await HomeWidget.getWidgetData<String>(keyDdayWidgetBindings) ?? '';
+    if (raw.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return {};
+      return decoded.map(
+        (key, value) => MapEntry(key.toString(), value.toString()),
+      );
+    } catch (_) {
+      return {};
+    }
+  }
+
+  static Future<bool> _roomHasWidget(String roomId) async {
+    final bindings = await _readBindings();
+    return bindings.values.any((id) => id == roomId);
+  }
+
+  /// Claim home widgets that are not tied to a room yet, without touching
+  /// widgets that already belong to someone else.
+  static Future<void> _bindUnboundWidgets(String roomId) async {
+    if (roomId.isEmpty) return;
+    final bindings = await _readBindings();
+    final installed = await HomeWidget.getInstalledWidgets();
+    var changed = false;
+    for (final info in installed) {
+      if (!_isTogetherProvider(info.androidClassName)) continue;
+      final widgetId = info.androidWidgetId;
+      if (widgetId == null) continue;
+      final key = widgetId.toString();
+      final current = bindings[key] ?? '';
+      if (current.isNotEmpty) continue;
+      bindings[key] = roomId;
+      changed = true;
+    }
+    if (!changed) return;
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayWidgetBindings,
+      jsonEncode(bindings),
+    );
+  }
+
+  static Future<Map<String, Size>> _readHostByRoom() async {
+    final raw = await HomeWidget.getWidgetData<String>(keyDdayHostByRoom) ?? '';
+    if (raw.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return {};
+      final out = <String, Size>{};
+      for (final entry in decoded.entries) {
+        if (entry.value is! Map) continue;
+        final map = Map<String, dynamic>.from(entry.value as Map);
+        final w = double.tryParse('${map['w']}') ?? 0;
+        final h = double.tryParse('${map['h']}') ?? 0;
+        if (w < 40 || h < 40) continue;
+        out[entry.key.toString()] = Size(w, h);
+      }
+      return out;
+    } catch (_) {
+      return {};
+    }
+  }
+
+  static Future<({Size size, TogetherWidgetSize forSize, double cornerDp})?>
+      _hostForRoom(String roomId) async {
+    final raw = await HomeWidget.getWidgetData<String>(keyDdayHostByRoom) ?? '';
+    if (raw.isEmpty) return null;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return null;
+      final value = decoded[roomId];
+      if (value is! Map) return null;
+      final map = Map<String, dynamic>.from(value);
+      final w = double.tryParse('${map['w']}') ?? 0;
+      final h = double.tryParse('${map['h']}') ?? 0;
+      if (w < 40 || h < 40) return null;
+      final screen = _screenWidthDp().toDouble();
+      if (w > screen * 1.25 || h > screen * 1.5) return null;
+      final corner = (map['corner'] as num?)?.toDouble() ??
+          TogetherWidgetSize.defaultCornerDp;
+      return (
+        size: Size(w, h),
+        forSize: TogetherWidgetSize.byId(map['sizeId'] as String?),
+        cornerDp: corner.clamp(12.0, 40.0),
+      );
+    } catch (_) {
+      return null;
     }
   }
 
@@ -310,30 +439,59 @@ abstract final class HomeWidgetSync {
     }
   }
 
-  static Future<bool> _hasTogetherWidgetInstalled() async {
-    final size = _currentWidgetSize();
-    final provider = _providerForSize(size);
-    final wanted = provider.qualified;
-    final shortName = provider.name;
-    try {
-      final installed = await HomeWidget.getInstalledWidgets();
-      for (final info in installed) {
-        final className = info.androidClassName ?? '';
-        if (className == wanted ||
-            className.endsWith('.$shortName') ||
-            className == shortName) {
-          return true;
-        }
+  static Future<void> _saveAllRooms(String meId) async {
+    final hosts = await _readHostByRoom();
+    final rooms = <String, Map<String, Object>>{};
+    for (final item in ddayController.items) {
+      final textScale = ddayController.textScaleForRoom(item.id);
+      final cheer = item.latestCheer?.trim() ?? '';
+      final box = hosts[item.id] ??
+          TogetherWidgetSize.s42.homeSize(_screenWidthDp().toDouble());
+      final inner = TogetherCheerLayout.innerSize(
+        box.width,
+        box.height,
+        TogetherWidgetSize.defaultCornerDp,
+      );
+      var label = cheer;
+      try {
+        label = TogetherCheerLayout.wrap(
+          text: cheer,
+          maxWidth: inner.width,
+          isPixel: visualStyleController.isPixel,
+          textScale: textScale.toDouble(),
+        );
+      } catch (e) {
+        debugPrint('cheer wrap: $e');
       }
-    } catch (e) {
-      debugPrint('getInstalledWidgets: $e');
+      final theme =
+          TogetherBgTheme.byId(ddayController.bgThemeForRoom(item.id));
+      rooms[item.id] = {
+        'label': label,
+        'me': meId,
+        'friend': item.hasFriend ? (item.friendCharacterId ?? '').trim() : '',
+        'meX': ddayController.meOffsetXForRoom(item.id),
+        'meY': ddayController.meOffsetYForRoom(item.id),
+        'friendX': ddayController.friendOffsetXForRoom(item.id),
+        'friendY': ddayController.friendOffsetYForRoom(item.id),
+        'textX': ddayController.textOffsetXForRoom(item.id),
+        'textY': ddayController.textOffsetYForRoom(item.id),
+        'charScale': ddayController.charScaleForRoom(item.id),
+        'friendScale': ddayController.friendScaleForRoom(item.id),
+        'textScale': textScale,
+        'bgAsset': theme.assetPath,
+        'textColor': _hex(Color(ddayController.textColorForRoom(item.id))),
+      };
     }
-    return false;
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayRoomsJson,
+      jsonEncode(rooms),
+    );
   }
 
   static Future<void> _saveDday() async {
     final item = ddayController.widgetDday;
     final meId = characterController.character.id;
+    await _saveAllRooms(meId);
     final roomId = item?.id;
     final charScale =
         roomId == null ? 100 : ddayController.charScaleForRoom(roomId);
@@ -362,21 +520,20 @@ abstract final class HomeWidgetSync {
       keyVisualStyle,
       visualStyleController.style.id,
     );
-    await HomeWidget.saveWidgetData<int>(
-      keyDdayMeOffsetX,
-      ddayController.duoMeOffsetX,
-    );
-    await HomeWidget.saveWidgetData<int>(
-      keyDdayMeOffsetY,
-      ddayController.duoMeOffsetY,
-    );
-    await HomeWidget.saveWidgetData<int>(
-      keyDdayFriendOffsetX,
-      ddayController.duoFriendOffsetX,
-    );
+    final meOffsetX =
+        roomId == null ? 0 : ddayController.meOffsetXForRoom(roomId);
+    final meOffsetY =
+        roomId == null ? 0 : ddayController.meOffsetYForRoom(roomId);
+    final friendOffsetX =
+        roomId == null ? 0 : ddayController.friendOffsetXForRoom(roomId);
+    final friendOffsetY =
+        roomId == null ? 0 : ddayController.friendOffsetYForRoom(roomId);
+    await HomeWidget.saveWidgetData<int>(keyDdayMeOffsetX, meOffsetX);
+    await HomeWidget.saveWidgetData<int>(keyDdayMeOffsetY, meOffsetY);
+    await HomeWidget.saveWidgetData<int>(keyDdayFriendOffsetX, friendOffsetX);
     await HomeWidget.saveWidgetData<int>(
       keyDdayFriendOffsetY,
-      ddayController.duoFriendOffsetY,
+      friendOffsetY,
     );
     await HomeWidget.saveWidgetData<int>(keyDdayTextOffsetX, textOffsetX);
     await HomeWidget.saveWidgetData<int>(keyDdayTextOffsetY, textOffsetY);
@@ -394,6 +551,7 @@ abstract final class HomeWidgetSync {
     );
     await HomeWidget.saveWidgetData<String>(keyDdayShape, shape.id);
     await HomeWidget.saveWidgetData<String>(keyDdayWidgetSize, widgetSize.id);
+    await HomeWidget.saveWidgetData<String>(keyDdayRoomId, roomId ?? '');
     if (item == null) {
       // Title/date kept empty — widget shows cheer text only.
       await HomeWidget.saveWidgetData<String>(keyDdayTitle, '');

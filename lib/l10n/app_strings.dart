@@ -1,3 +1,4 @@
+import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 
 class AppStrings {
@@ -137,8 +138,9 @@ class AppStrings {
       : 'Join my Together room "$title"!\nCode: $code\n$url';
   String ddayInviteSlotsLeft(int n) =>
       _ko ? '남은 자리 $n명' : '$n spots left';
-  String get ddayInviteFull =>
-      _ko ? '친구가 가득 찼어요 (최대 5명)' : 'Friend limit reached (max 5)';
+  String get ddayInviteFull => _ko
+      ? '이 방은 방장 포함 ${DdayInviteLimits.maxPeople}명까지예요'
+      : 'This room is full (${DdayInviteLimits.maxPeople} people, including the host)';
   String get ddayInviteNeedLogin =>
       _ko ? 'Google로 로그인해 주세요' : 'Please sign in with Google';
   /// Shown only when cloud auth is not ready (host create-invite path).
@@ -148,6 +150,10 @@ class AppStrings {
   String get ddayInviteCreateFailed =>
       _ko ? '초대를 만들지 못했어요. 잠시 후 다시 시도해 주세요' : 'Could not create invite. Try again shortly';
   String get ddayInviteRetry => _ko ? '다시 시도' : 'Retry';
+  String get togetherFriendFallbackName => _ko ? '친구' : 'Friend';
+  String togetherWidgetChangedBodyFor(String name) => _ko
+      ? '$name - 위젯을 수정했어요!'
+      : '$name updated the widget!';
   String get ddayInviteAcceptTitle => _ko ? '초대 코드 입력' : 'Enter invite code';
   String get ddayInviteAcceptSubtitle => _ko
       ? '친구가 보낸 6자리 코드를 입력하세요.'
@@ -213,6 +219,9 @@ class AppStrings {
       _ko ? '오늘의 운세를 새로 뽑았어요' : 'Fortune refreshed';
   String get browseTitle =>
       _ko ? '어떤 문장을 읽고 싶나요?' : 'What would you like to read?';
+  String get readerMenu => _ko ? '메뉴' : 'Menu';
+  String get readerTheme => _ko ? '테마' : 'Theme';
+  String get readerCategories => _ko ? '카테고리' : 'Categories';
 
   String get archiveTitle => _ko ? '보관함' : 'Archive';
   String get archiveHint => _ko
@@ -290,6 +299,17 @@ class AppStrings {
       _ko ? '글자 크기: $name' : 'Font size: $name';
 
   String get accountSection => _ko ? '계정' : 'Account';
+  String get nicknameTitle => _ko ? '닉네임' : 'Nickname';
+  String get nicknameHint =>
+      _ko ? '친구에게 보일 이름' : 'Name your friends will see';
+  String get nicknameSave => _ko ? '저장' : 'Save';
+  String get nicknameEmptyTitle =>
+      _ko ? '닉네임을 입력해 주세요' : 'Add a nickname';
+  String get nicknameEditSubtitle =>
+      _ko ? '탭해서 닉네임 수정' : 'Tap to edit nickname';
+  String get nicknameRequired =>
+      _ko ? '닉네임을 입력해 주세요' : 'Enter a nickname';
+  String get nicknameSaved => _ko ? '닉네임을 저장했어요' : 'Nickname saved';
   String get googleLoginTitle =>
       _ko ? 'Google 계정으로 로그인' : 'Sign in with Google';
   String get googleLoginSubtitle => _ko
@@ -375,6 +395,7 @@ class AppStrings {
   String get noQuotes => _ko ? '표시할 문장이 없어요' : 'No quotes to show';
   String get savedToArchive =>
       _ko ? '보관함에 담았어요' : 'Saved to archive';
+  String get archiveRemove => _ko ? '보관 해제' : 'Remove from archive';
   String get removedFromArchive =>
       _ko ? '보관함에서 뺐어요' : 'Removed from archive';
   String get share => _ko ? '공유하기' : 'Share';
@@ -411,6 +432,43 @@ class AppStrings {
         return id;
     }
   }
+
+  String ddayIconName(String id) {
+    switch (id) {
+      case 'cake':
+        return _ko ? '케이크' : 'Cake';
+      case 'plane':
+        return _ko ? '비행기' : 'Plane';
+      case 'cat':
+        return _ko ? '고양이' : 'Cat';
+      case 'dog':
+        return _ko ? '강아지' : 'Dog';
+      case 'pen':
+        return _ko ? '볼펜' : 'Pen';
+      case 'notebook':
+        return _ko ? '공책' : 'Notebook';
+      case 'sport':
+        return _ko ? '운동' : 'Sport';
+      case 'medal':
+        return _ko ? '메달' : 'Medal';
+      case 'home':
+        return _ko ? '집' : 'Home';
+      case 'baby':
+        return _ko ? '아기' : 'Baby';
+      case 'tree':
+        return _ko ? '나무' : 'Tree';
+      case 'star':
+        return _ko ? '별' : 'Star';
+      case 'wine':
+        return _ko ? '와인' : 'Wine';
+      case 'heart':
+        return _ko ? '하트' : 'Heart';
+      default:
+        return id;
+    }
+  }
+
+  String get fontSample => _ko ? '가' : 'A';
 
   String fontName(String id) {
     switch (id) {

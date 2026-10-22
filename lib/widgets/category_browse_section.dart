@@ -82,7 +82,6 @@ class CategoryBrowseSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final categories = QuoteRepository.categories;
 
     return ListenableBuilder(
       listenable: Listenable.merge([
@@ -91,6 +90,7 @@ class CategoryBrowseSection extends StatelessWidget {
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
+        final categories = QuoteRepository.categories;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

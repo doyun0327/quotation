@@ -8,7 +8,6 @@ import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/character_select_screen.dart';
-import 'package:quotation/screens/dday_accept_invite_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -16,6 +15,7 @@ import 'package:quotation/theme/font_scale_controller.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/language_row.dart';
+import 'package:quotation/widgets/nickname_dialog.dart';
 import 'package:quotation/widgets/settings_widgets.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -152,14 +152,9 @@ class SettingsScreen extends StatelessWidget {
                                     ),
                                   )
                                 : const GoogleMark(),
-                            title: signedIn
-                                ? (user.displayName?.isNotEmpty == true
-                                    ? user.displayName!
-                                    : t.googleLoggedInTitle)
-                                : t.googleLoginTitle,
-                            subtitle: signedIn
-                                ? t.googleLoggedInSubtitle(user.email)
-                                : t.googleLoginSubtitle,
+                            title: authController.nickname ?? t.nicknameEmptyTitle,
+                            subtitle: authController.googleEmail ??
+                                t.nicknameEditSubtitle,
                             trailing: SettingsOutlineButton(
                               label: signedIn ? t.logout : t.login,
                               onPressed: authController.isBusy
@@ -168,11 +163,7 @@ class SettingsScreen extends StatelessWidget {
                                       ? _signOut(context)
                                       : _signIn(context),
                             ),
-                            onTap: authController.isBusy
-                                ? null
-                                : () => signedIn
-                                    ? _signOut(context)
-                                    : _signIn(context),
+                            onTap: () => showNicknameDialog(context),
                           ),
                         ],
                       ),
@@ -332,37 +323,6 @@ class SettingsScreen extends StatelessWidget {
                                       );
                                     },
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      SettingsSection(
-                        title: t.ddayTitle,
-                        children: [
-                          SettingsItem(
-                            icon: Icons.qr_code_rounded,
-                            title: t.ddayInviteEnterCodeMenu,
-                            subtitle: t.ddayInviteAcceptSubtitle,
-                            iconColor: palette.accent,
-                            trailing: SettingsOutlineButton(
-                              label: t.ddayInviteAcceptAction,
-                              onPressed: () async {
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) =>
-                                        const DdayAcceptInviteScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            onTap: () async {
-                              await Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) =>
-                                      const DdayAcceptInviteScreen(),
-                                ),
-                              );
-                            },
                           ),
                         ],
                       ),

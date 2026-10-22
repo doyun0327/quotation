@@ -8,6 +8,14 @@ abstract final class QuoteAssetLoader {
       'assets/quotes/ko/bible_reflections_1000_audited.json';
   static const buddhismKoPath =
       'assets/quotes/ko/buddhist_reflections_1000.json';
+  static const gratitudeKoPath =
+      'assets/quotes/ko/dearly_gratitude_joy_quotes_500.json';
+  static const gratitudeEnPath =
+      'assets/quotes/en/dearly_gratitude_joy_quotes_500_en.json';
+  static const loveKoPath =
+      'assets/quotes/ko/dearly_love_relationship_quotes_400.json';
+  static const loveEnPath =
+      'assets/quotes/en/dearly_love_relationship_quotes_400_en.json';
 
   static Future<List<Quote>> loadChristianKo() => _loadList(
         path: christianKoPath,
@@ -16,6 +24,21 @@ abstract final class QuoteAssetLoader {
           final reference = _text(item['reference']);
           return reference.isNotEmpty ? reference : '성경';
         },
+      );
+
+  /// Only the `text` field is shown. Author and category stay unused.
+  static Future<List<Quote>> loadGratitude({required bool korean}) =>
+      _loadList(
+        path: korean ? gratitudeKoPath : gratitudeEnPath,
+        idPrefix: korean ? 'daily_gratitude_ko_' : 'daily_gratitude_en_',
+        authorOf: (_) => '',
+      );
+
+  /// Only the `text` field is shown. Author and category stay unused.
+  static Future<List<Quote>> loadLove({required bool korean}) => _loadList(
+        path: korean ? loveKoPath : loveEnPath,
+        idPrefix: korean ? 'daily_love_ko_' : 'daily_love_en_',
+        authorOf: (_) => '',
       );
 
   static Future<List<Quote>> loadBuddhismKo() => _loadList(

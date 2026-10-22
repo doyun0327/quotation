@@ -1,0 +1,2802 @@
+[
+  {
+    "id": 1,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "아직 일어나지 않은 일을 오늘의 마음으로 모두 감당하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 2,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 많다는 건 네가 모든 걸 통제해야 한다는 뜻이 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 3,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 숨을 고르는 것부터 시작해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 4,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안한 마음이 든다고 해서 나쁜 일이 일어날 거라는 뜻은 아니야.\n오늘은 한 걸음이면 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 5,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 답을 지금 당장 찾지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 6,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘 할 수 있는 일과 오늘 할 수 없는 일을 나눠 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 7,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "미래를 걱정하는 동안 현재의 작은 평온을 놓치지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 8,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불확실한 상황에서도 너는 한 걸음씩 대응할 수 있어.\n오늘은 모든 답을 찾을 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 9,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정을 없애려고 애쓰기보다 잠시 곁에 두고 쉬어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 10,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 복잡할수록 지금 눈앞의 한 가지에 집중해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 11,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안은 예언이 아니라 지금 느끼는 감정이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 12,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "모든 가능성을 미리 대비할 필요는 없어.\n오늘은 네 마음에 쉴 자리를 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 13,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 통제할 수 없는 일까지 책임지지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 14,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 커질 때는 사실과 상상을 구분해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 15,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 작은 쉼이 내일을 준비하는 힘이 될 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 16,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "지금 느끼는 긴장이 영원히 이어지지는 않을 거야.\n오늘은 가능성은 여전히 남아 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 17,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 급해도 결정은 천천히 내려도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 18,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 문제를 한 번에 해결해야 하는 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 19,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안할 때는 몸이 보내는 신호도 다정하게 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 20,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정하는 마음을 부끄러워하지 않아도 돼.\n오늘은 현재로 천천히 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 21,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "아직 모르는 일에 최악의 결말을 붙이지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 22,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 할 수 있는 만큼 준비했다면 잠시 내려놓아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 23,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 생겼다고 해서 네가 약한 사람인 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 24,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘의 불안이 내일의 현실을 결정하지는 않아.\n오늘은 사실과 걱정을 구분해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 25,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "작은 한 걸음은 막막함을 줄이는 데 도움이 될 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 26,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "숨을 천천히 내쉬며 지금 이 순간으로 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 27,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 사람의 마음을 읽거나 만족시킬 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 28,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정은 잠시 미뤄 두고 물 한 잔부터 마셔 보자.\n오늘은 도움을 구해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 29,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네 마음이 쉬어 갈 틈을 만들어 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 30,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실함을 견디는 것도 배울 수 있는 힘이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 31,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 당장 확신이 없어도 다음 행동은 정할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 32,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 반복될 때는 잠시 화면을 내려놓고 주변을 둘러보자.\n오늘은 작은 평온을 지켜 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 33,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "아직 결정되지 않은 일을 이미 실패한 일처럼 생각하지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 34,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 너에게 필요한 건 더 많은 걱정보다 작은 휴식일 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 35,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 생각이 떠올라도 그 생각을 모두 믿을 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 36,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "네가 할 수 있는 일에 힘을 쓰고 나머지는 잠시 놓아 주자.\n오늘은 하나씩 살펴보면 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 37,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 흔들리는 날에도 너는 자신을 돌볼 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 38,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정을 말로 꺼내면 혼자 짊어진 무게가 조금 가벼워질 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 39,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 막막함에도 작은 출구는 있을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 40,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "모든 일이 계획대로 흘러가야만 괜찮은 건 아니야.\n오늘은 숨을 고르는 것부터 시작하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 41,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 하루에도 편안한 순간은 찾아올 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 42,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 너의 하루 전체를 차지하도록 두지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 43,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "미래를 다 알 수 없다는 사실이 모든 가능성을 나쁘게 만들진 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 44,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "지금은 결론보다 잠깐의 여유가 먼저일 수 있어.\n오늘은 미래의 모든 일을 오늘 감당하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 45,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 준비할 수 있는 만큼 준비하고 나머지는 상황을 보며 대응하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 46,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음을 억지로 밝게 바꾸지 않아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 47,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 커질수록 문제를 더 작은 조각으로 나눠 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 48,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘 밤에는 내일의 모든 일을 미리 살지 않아도 돼.\n오늘은 네가 할 수 있는 만큼만 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 49,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안은 네가 소중하게 여기는 것이 있다는 신호일 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 50,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 답이 없더라도 지금 할 수 있는 선택은 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 51,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "생각이 많아질 때는 몸을 움직이며 긴장을 풀어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 52,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정의 목소리보다 지금 확인할 수 있는 사실을 믿어 보자.\n오늘은 감정은 머물다 지나갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 53,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 불안한 마음을 느끼면서도 하루를 살아갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 54,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 문제를 평생의 문제로 키워 생각하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 55,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "아직 오지 않은 순간에 오늘의 에너지를 모두 쓰지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 56,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "잠깐 멈추는 것은 포기하는 것과 달라.\n오늘은 작은 돌봄도 의미가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 57,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려오면 한 번에 한 호흡만 생각해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 58,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 모든 상황을 예측하지 못해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 59,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 생각은 찾아왔다가 다시 지나갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 60,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "지금 할 수 있는 작은 준비 하나면 충분한 시작이야.\n오늘은 혼자 해결할 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 61,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 불편하다고 해서 네 선택이 틀렸다는 뜻은 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 62,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정을 해결할 수 없다면 잠시 쉬는 것도 방법이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 63,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 감당할 수 있는 범위를 넘는 책임은 나누어도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 64,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "미래에 대한 두려움보다 지금의 필요를 먼저 살펴보자.\n오늘은 지금의 감정이 미래를 정하지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 65,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 것을 완벽하게 대비해야 안전한 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 66,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 날에는 평소보다 더 천천히 움직여도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 67,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 사실인지 확인하기 전에는 결론을 서두르지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 68,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "너의 마음에 잠시 아무것도 하지 않을 시간을 허락해 줘.\n오늘은 쉬었다가 다시 시작해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 69,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 감정은 중요하지만 모든 상황을 설명하는 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 70,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "한 가지씩 살펴보면 커 보이던 걱정도 다르게 보일 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 71,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안할 때는 믿을 수 있는 사람에게 마음을 나눠도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 72,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "모르는 것을 모두 나쁜 쪽으로 채워 넣지 말자.\n오늘은 오늘의 안정을 소중히 여기자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 73,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 평온을 내일의 걱정과 바꾸지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 74,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정하는 자신을 탓하지 말고 필요한 돌봄을 찾아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 75,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 바꿀 수 있는 것부터 조용히 시작해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 76,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안이 커져도 너의 판단력과 가능성이 사라진 건 아니야.\n오늘은 스스로에게 부드럽게 말해 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 77,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 감정은 잠시 머물 공간을 필요로 해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 78,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 계속된다면 적어 두고 나중에 다시 살펴봐도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 79,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 당장 답이 보이지 않는다고 답이 없는 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 80,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "네가 잘못될 가능성만큼 다른 가능성도 열려 있어.\n오늘은 다음 행동은 천천히 정해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 81,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 모든 것을 이해하기보다 잠깐 편안해지는 것을 목표로 하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 82,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음이 있어도 너는 안전한 순간을 찾아갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 83,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정을 줄이는 첫걸음은 지금 할 수 있는 일을 구분하는 거야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 84,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "아직 일어나지 않은 대화를 머릿속에서 반복하지 않아도 돼.\n지금은 한 걸음이면 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 85,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 상상한 결과가 반드시 현실이 되는 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 86,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 작은 일상에 마음을 기대어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 87,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 너를 몰아붙일 때 스스로에게 부드럽게 말해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 88,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "모든 일이 한 번에 정리되지 않아도 괜찮아.\n지금은 모든 답을 찾을 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 89,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 날에도 규칙적인 식사와 휴식은 도움이 될 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 90,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때는 눈앞의 색과 소리부터 천천히 알아차려 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 91,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 많다는 이유로 자신을 나무라지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 92,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "네가 준비한 만큼 해 보고 결과는 차분히 받아들이자.\n지금은 네 마음에 쉴 자리를 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 93,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 생각과 너 자신을 같은 것으로 여기지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 94,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금은 멀리 내다보기보다 다음 한 걸음을 정해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 95,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 사람에게 좋은 인상을 남겨야 하는 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 96,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정을 완전히 없애지 못해도 하루를 잘 보낼 수 있어.\n지금은 가능성은 여전히 남아 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 97,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너의 마음은 쉬어도 되는 곳이 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 98,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "아직 정해지지 않은 미래에는 좋은 가능성도 남아 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 99,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 순간에도 네가 이미 지나온 어려움을 기억해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 100,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 커질수록 자신에게 필요한 것을 먼저 물어보자.\n지금은 현재로 천천히 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 101,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 이 순간 네가 할 수 있는 작은 일을 찾아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 102,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 답을 혼자 찾아야 한다는 부담을 내려놓자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 103,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 불안정한 날에는 큰 결정보다 작은 돌봄을 선택해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 104,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "너는 불안을 느낀다고 해서 그 감정에 끌려가야 하는 건 아니야.\n지금은 사실과 걱정을 구분해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 105,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 현실을 준비하게 돕는지, 너를 지치게 하는지 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 106,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 미래를 통제하기보다 현재를 돌보는 데 집중해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 107,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "잠시 쉬어도 해결해야 할 일들이 사라지는 건 아니지만 너는 회복할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 108,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안이 찾아와도 네 하루에 평온이 들어올 자리는 남아 있어.\n지금은 도움을 구해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 109,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 걱정을 모두 내일로 가져갈 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 110,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "확실한 답이 없을 때는 지금 아는 것부터 시작하면 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 111,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 불확실한 상황에서도 도움을 구하고 방법을 찾을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 112,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "마음이 앞서 달려갈 때 몸은 지금 이곳에 있다는 걸 기억하자.\n지금은 작은 평온을 지켜 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 113,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 머릿속에서 커질수록 종이에 적어 실제 크기를 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 114,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 할 수 있는 최선은 모든 것을 통제하는 것이 아니라 대응하는 거야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 115,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 작은 안정을 소중히 여기자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 116,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안한 마음이 있다고 해서 좋은 일이 올 가능성이 줄어드는 건 아니야.\n지금은 하나씩 살펴보면 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 117,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 모르는 부분을 천천히 알아가도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 118,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 시작될 때 스스로에게 지금 필요한 것이 무엇인지 물어보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 119,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 상황을 대비하는 대신 필요한 순간에 대처할 힘을 믿어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 120,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안한 생각이 반복되면 잠시 다른 감각에 집중해 보자.\n지금은 숨을 고르는 것부터 시작하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 121,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너의 하루는 걱정만으로 이루어져 있지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 122,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 아직 오지 않은 일보다 이미 해낸 일을 돌아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 123,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실함 속에서도 작은 계획은 방향을 만들어 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 124,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정을 나누는 것은 문제를 포기하는 일이 아니야.\n지금은 미래의 모든 일을 오늘 감당하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 125,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 모든 답을 모른다는 사실은 자연스러운 일이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 126,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 급해질 때는 결정을 잠시 미뤄도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 127,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음을 느끼는 자신에게 비난 대신 이해를 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 128,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "지금의 어려움을 미래 전체로 확대하지 말자.\n지금은 네가 할 수 있는 만큼만 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 129,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 예상하지 못한 상황에서도 배워 가며 대처할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 130,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 너를 지치게 한다면 잠시 멈추고 몸을 돌보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 131,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 작은 평온은 충분히 누릴 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 132,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "모든 가능성을 다 생각하는 것이 언제나 더 안전한 건 아니야.\n지금은 감정은 머물다 지나갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 133,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너의 생각이 가장 어두운 결론으로 향할 때 다른 가능성도 떠올려 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 134,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안이 있어도 지금의 순간을 경험할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 135,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정을 없애야만 편안해질 수 있는 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 136,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "네가 통제할 수 있는 일에 집중하는 것은 포기가 아니야.\n지금은 작은 돌봄도 의미가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 137,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 해결되지 않은 일을 잠시 내려놓고 쉴 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 138,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "미래의 너는 미래의 상황에 맞게 대응할 수 있을 거야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 139,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 긴장을 알아차리는 것만으로도 돌봄은 시작돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 140,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 생기면 먼저 사실을 확인하고 다음 행동을 정하자.\n지금은 혼자 해결할 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 141,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 사람의 반응을 미리 책임질 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 142,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 할 수 있는 준비와 네가 통제할 수 없는 결과를 구분해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 143,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 불안할 때는 자신에게 필요한 안전감을 작은 행동으로 만들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 144,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "아직 벌어지지 않은 일을 이미 겪은 것처럼 아파하지 않아도 돼.\n지금은 지금의 감정이 미래를 정하지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 145,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 많은 날에도 너는 작은 기쁨을 누릴 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 146,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너의 불안은 너의 전부가 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 147,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 순간으로 돌아오는 연습을 천천히 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 148,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "모르는 미래를 두려움만으로 채우지 말자.\n지금은 쉬었다가 다시 시작해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 149,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 올라오면 잠시 숨을 고르고 무엇이 필요한지 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 150,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 너에게 필요한 만큼만 생각해도 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 151,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 모든 문제를 미리 해결할 수 없어도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 152,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안한 생각이 사실인지 증거를 차분히 살펴보자.\n지금은 오늘의 안정을 소중히 여기자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 153,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 무거울 때는 할 일을 줄이는 것도 현명한 선택이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 154,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 작은 준비를 마쳤다면 잠시 마음을 놓아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 155,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너의 평온은 모든 문제가 해결된 뒤에만 가능한 것이 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 156,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 반복되어도 매번 그 생각을 따라갈 필요는 없어.\n지금은 스스로에게 부드럽게 말해 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 157,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 할 수 있는 일을 마친 뒤에는 쉬어도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 158,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안이 커질수록 혼자 버티기보다 도움을 요청해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 159,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "미래를 모른다는 사실은 새로운 가능성이 남아 있다는 뜻이기도 해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 160,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘의 감정을 내일의 예언으로 받아들이지 말자.\n지금은 다음 행동은 천천히 정해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 161,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 불안한 이유를 이해하는 데에도 시간이 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 162,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음속 걱정과 실제로 해야 할 일을 따로 적어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 163,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 일이 원하는 대로 되지 않아도 너는 다시 방향을 찾을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 164,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안한 마음을 억지로 밀어내지 말고 천천히 바라보자.\n기억해, 한 걸음이면 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 165,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 걱정이 얼마나 현실적인지 다정하게 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 166,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 네가 할 수 있는 만큼만 책임져도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 167,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "작은 휴식이 생각을 정돈하는 데 도움이 될 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 168,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정 때문에 놓친 현재의 순간을 하나만 다시 찾아보자.\n기억해, 모든 답을 찾을 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 169,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 것을 미리 알아야만 잘 살아갈 수 있는 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 170,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 오늘을 살아내는 동안 내일을 위한 힘도 조금씩 쌓이고 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 171,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안이 있어도 너는 중요한 일을 차근차근 해낼 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 172,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "지금의 마음이 원하는 것은 정답보다 안정일 수 있어.\n기억해, 네 마음에 쉴 자리를 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 173,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정의 끝을 찾으려 애쓰기보다 오늘의 끝을 편안하게 맞이하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 174,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 모든 생각을 해결하지 않고도 잠시 쉴 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 175,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에도 너를 지지해 줄 사람과 방법은 찾을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 176,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘은 마음이 만든 최악의 장면보다 눈앞의 현실을 바라보자.\n기억해, 가능성은 여전히 남아 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 177,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 많을 때는 스스로에게 너무 많은 질문을 던지지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 178,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 필요한 작은 행동 하나를 선택하면 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 179,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 모든 걸 완벽하게 처리해야 한다는 규칙은 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 180,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안한 하루에도 스스로를 다정하게 대할 수 있어.\n기억해, 현재로 천천히 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 181,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 잠잠해질 때까지 기다리지 않고도 일상을 이어 갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 182,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 할 수 있는 것과 내려놓을 것을 구분해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 183,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 지금 느끼는 감정은 이해받을 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 184,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "미래를 향한 걱정이 현재의 너를 지치게 하지 않도록 쉬어 가자.\n기억해, 사실과 걱정을 구분해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 185,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 불안할 때는 익숙하고 편안한 일 하나를 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 186,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 모든 상황을 예측하지 않아도 삶을 배워 갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 187,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 반복되는 순간마다 지금 여기로 돌아올 기회도 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 188,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘의 불안이 네가 가진 모든 좋은 가능성을 가리게 두지 마.\n기억해, 도움을 구해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 189,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금은 답을 찾는 대신 충분히 숨 쉬는 시간이 필요할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 190,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음을 혼자 감당하기 어렵다면 도움을 받아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 191,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 걱정을 모두 해결하지 못해도 하루를 마칠 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 192,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "너는 모르는 상황에서도 조금씩 길을 찾아갈 수 있어.\n기억해, 작은 평온을 지켜 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 193,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 올라오면 자신에게 지금 안전한 순간인지 차분히 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 194,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 것을 걱정하는 대신 한 가지씩 돌보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 195,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 작은 안정이 내일을 준비하는 바탕이 될 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 196,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "네가 두려워하는 결과가 반드시 일어나는 것은 아니야.\n기억해, 하나씩 살펴보면 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 197,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 걱정의 크기보다 네가 필요한 돌봄을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 198,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 앞서갈 때 천천히 현재의 감각으로 돌아오자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 199,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 걱정을 느끼면서도 너에게 중요한 일을 할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 200,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "아직 결정되지 않은 일에 미리 결론을 내리지 말자.\n기억해, 숨을 고르는 것부터 시작하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 201,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 너에게 평온한 틈을 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 202,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정을 적어 보면 해결할 수 있는 부분이 보일 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 203,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 상황을 완벽하게 대비할 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 204,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안한 생각을 알아차리고도 다른 행동을 선택할 수 있어.\n기억해, 미래의 모든 일을 오늘 감당하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 205,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 할 수 있는 준비를 했다면 그 노력을 인정해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 206,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 마음을 몰아세우지 말고 조금 천천히 살아가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 207,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 많아도 너는 편안함을 누릴 자격이 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 208,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "미래의 불확실함 속에도 좋은 변화가 들어올 수 있어.\n기억해, 네가 할 수 있는 만큼만 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 209,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너의 마음이 쉬는 동안에도 문제를 해결할 힘은 다시 모일 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 210,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 감정은 지나가는 손님처럼 잠시 머물 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 211,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정의 답을 지금 찾지 못해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 212,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "현재의 작은 일에 집중하면 마음이 잠시 쉴 수 있어.\n기억해, 감정은 머물다 지나갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 213,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 할 수 없는 일을 내려놓는 것도 지혜야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 214,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 커질 때는 혼자만의 생각에서 잠시 벗어나 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 215,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 너는 오늘의 일만으로도 충분히 애쓰고 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 216,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "모든 것을 미리 통제하지 않아도 삶은 이어질 수 있어.\n기억해, 작은 돌봄도 의미가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 217,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 순간에도 너에게 친절한 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 218,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 지금 할 수 있는 한 가지부터 시작하면 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 219,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 너의 가능성을 대신 말하게 두지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 220,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "미래를 모르는 너에게도 현재를 즐길 권리가 있어.\n기억해, 혼자 해결할 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 221,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 걱정을 해결하는 시간과 쉬는 시간을 따로 마련해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 222,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 생각을 사실과 구분하는 연습을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 223,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 모든 것을 감당해야 하는 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 224,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘의 작은 안심을 가볍게 여기지 말자.\n기억해, 지금의 감정이 미래를 정하지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 225,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 불편한 날에는 평소보다 자신에게 더 다정해지자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 226,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 생겼다는 사실만으로 나쁜 결과를 확신하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 227,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 불확실함 속에서도 필요한 도움을 찾을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 228,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "지금의 순간을 돌보는 일은 미래를 포기하는 일이 아니야.\n기억해, 쉬었다가 다시 시작해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 229,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 걱정을 끝내지 않아도 잠시 편안해질 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 230,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 아직 오지 않은 일을 잠시 내려놓자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 231,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음을 이해하는 데 시간을 써도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 232,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "네가 오늘 할 수 있는 작은 일은 생각보다 충분할 수 있어.\n기억해, 오늘의 안정을 소중히 여기자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 233,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 너를 지배하지 않도록 주의를 현재로 돌려 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 234,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바쁠 때는 천천히 걷는 것부터 시작해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 235,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 불안 속에서도 너를 돌보는 선택은 남아 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 236,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "네가 걱정하는 모든 일이 현실이 되는 것은 아니야.\n기억해, 스스로에게 부드럽게 말해 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 237,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 필요한 것은 미래의 모든 답이 아니라 다음 한 걸음이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 238,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음이 찾아오면 자신을 탓하지 말고 잠시 쉬어 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 239,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 네가 통제할 수 있는 일에만 힘을 써도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 240,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "마음의 여유는 모든 문제가 사라진 뒤에만 생기는 것이 아니야.\n기억해, 다음 행동은 천천히 정해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 241,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 깊어질 때는 신뢰하는 사람과 현실을 함께 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 242,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 감정은 진짜지만 그 감정이 예측하는 결과까지 확실한 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 243,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 너에게 필요한 만큼의 평온을 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 244,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "모든 답을 가진 채로 살아갈 필요는 없어.\n천천히 한 걸음이면 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 245,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정을 느끼면서도 천천히 다음 일을 해낼 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 246,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 불확실함이 네 미래 전체를 결정하지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 247,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 네 마음을 안전하게 돌보는 것부터 시작하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 248,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 많아진 자신에게 비난보다 이해를 건네자.\n천천히 모든 답을 찾을 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 249,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 이 순간 할 수 있는 작은 일에 마음을 두자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 250,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 모든 것을 예측하지 못해도 충분히 대응할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 251,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음에도 잠시 쉬어 갈 자리를 만들어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 252,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 반복되면 같은 생각을 계속 따라가지 않아도 돼.\n천천히 네 마음에 쉴 자리를 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 253,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 평온을 내일의 불안에 미리 내어 주지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 254,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 모르는 미래에는 아직 정해지지 않은 가능성이 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 255,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정은 준비에 도움이 될 때만 잠시 활용하고 나머지는 내려놓자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 256,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "너의 하루에 걱정 외의 감정도 머물 수 있게 해 주자.\n천천히 가능성은 여전히 남아 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 257,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금은 자신을 다그치기보다 마음을 진정시키는 일이 먼저야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 258,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 날에도 너는 작은 기쁨을 발견할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 259,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 걱정이 네 존재의 가치를 바꾸지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 260,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "필요하다면 잠시 멈추고 다시 시작해도 괜찮아.\n천천히 현재로 천천히 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 261,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 지금 모든 답을 알지 못해도 괜찮은 사람이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 262,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 현실을 바꾸지 못한다면 잠시 쉬는 쪽을 선택해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 263,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 복잡할 때는 오늘 꼭 해야 할 한 가지부터 정해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 264,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "미래의 문제를 오늘의 너 혼자 해결할 필요는 없어.\n천천히 사실과 걱정을 구분해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 265,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 숨과 지금의 자리로 천천히 돌아오자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 266,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 불안한 날에도 스스로를 보호할 방법을 배울 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 267,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 커져도 가능한 다음 행동은 작게 남아 있을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 268,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘은 불안을 없애기보다 함께 지나가는 법을 연습해 보자.\n천천히 도움을 구해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 269,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너의 마음이 보내는 신호를 부드럽게 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 270,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "아직 오지 않은 결과를 미리 감당하느라 지치지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 271,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 불확실한 하루를 한 순간씩 지나갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 272,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘의 작은 휴식은 낭비가 아니라 회복이야.\n천천히 작은 평온을 지켜 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 273,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 너의 시야를 좁힐 때 다른 가능성을 하나 떠올려 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 274,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 할 수 있는 준비를 했다면 스스로를 믿어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 275,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 걱정하는 일도 상황에 따라 달라질 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 276,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘은 모든 것을 해결하는 대신 자신을 돌보는 일도 해 보자.\n천천히 하나씩 살펴보면 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 277,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 불안할 때는 믿을 수 있는 사실 하나에 집중해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 278,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 지금 느끼는 불안이 네 미래의 전부는 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 279,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정을 멈추지 못한다고 자신을 또 걱정하지는 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 280,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "지금은 작은 안정부터 차근차근 만들어 가자.\n천천히 숨을 고르는 것부터 시작하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 281,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "모든 문제를 혼자 해결해야 한다는 생각을 잠시 내려놓자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 282,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 걱정을 내일의 너와 나누어도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 283,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 마음이 복잡한 순간에도 자신에게 친절할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 284,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불안이 올라오면 발이 바닥에 닿는 감각을 느껴 보자.\n천천히 미래의 모든 일을 오늘 감당하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 285,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 네가 이미 해낸 것들도 함께 기억하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 286,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 미래를 완벽히 알 수 없어도 오늘은 살아갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 287,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너의 마음을 편하게 하는 작은 습관을 찾아보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 288,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 너를 끌고 가게 두지 말고 한 걸음씩 방향을 정하자.\n천천히 네가 할 수 있는 만큼만 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 289,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 긴장을 느끼고 천천히 풀어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 290,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 모든 생각에 답을 주지 않아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 291,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "너는 걱정이 있어도 너다운 하루를 만들어 갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 292,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "마음이 불안할수록 기본적인 돌봄을 잊지 말자.\n천천히 감정은 머물다 지나갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 293,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 너에게 필요한 것은 더 많은 예측이 아니라 충분한 쉼일 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 294,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 커질 때는 해결할 수 있는 일부터 골라 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 295,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "아직 모르는 일에 대해 자신에게 불리한 결론을 서두르지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 296,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘의 작은 평온을 누리는 데 허락은 필요 없어.\n천천히 작은 돌봄도 의미가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 297,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 할 수 있는 만큼 준비했다면 그 뒤에는 기다릴 시간도 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 298,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음을 혼자 숨기지 않아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 299,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 찾아와도 네 하루에는 다른 선택지가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 300,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "지금의 불편함이 영원히 이어질 거라고 단정하지 말자.\n천천히 혼자 해결할 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 301,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "미래를 걱정하는 마음도 잠시 쉴 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 302,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 불안을 느끼는 자신에게 따뜻한 말을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 303,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "한 번에 하나씩 살피면 막막함이 조금 줄어들 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 304,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "네가 모르는 상황을 모두 나쁜 결과로 채우지 말자.\n천천히 지금의 감정이 미래를 정하지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 305,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금 할 수 있는 일을 마친 뒤에는 스스로에게 휴식을 허락하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 306,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 너를 지치게 한다면 잠시 다른 곳에 시선을 두자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 307,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘의 작은 행동이 마음에 안정감을 줄 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 308,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "너는 불안한 감정을 느껴도 중요한 선택을 천천히 할 수 있어.\n천천히 쉬었다가 다시 시작해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 309,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 많아지는 순간마다 자신을 돌볼 기회도 찾아오고 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 310,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "미래가 불확실해도 지금의 한 걸음은 선택할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 311,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네 마음이 보내는 걱정을 다그치지 말고 차분히 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 312,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘은 모든 일을 잘하는 것보다 마음을 지키는 것을 먼저 해도 돼.\n천천히 오늘의 안정을 소중히 여기자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 313,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안이 있어도 너는 도움을 받고 다시 균형을 찾을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 314,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정의 결론을 내리기 전에 지금 확인할 수 있는 것을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 315,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 너에게는 모든 답보다 한 번의 깊은 숨이 필요할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 316,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘의 마음을 내일의 기준으로 삼지 않아도 돼.\n천천히 스스로에게 부드럽게 말해 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 317,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "네가 할 수 없는 일은 잠시 내려놓고 할 수 있는 일을 돌보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 318,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 있어도 삶의 작은 즐거움을 놓치지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 319,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불안한 마음을 인정하는 것부터 회복은 시작될 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 320,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "너는 오늘의 모든 문제를 오늘 밤까지 해결할 필요가 없어.\n천천히 다음 행동은 천천히 정해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 321,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "지금의 불안은 하나의 감정이지 미래를 확정하는 약속이 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 322,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘은 한 걸음씩, 한 호흡씩 지나가도 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 323,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 지금 할 수 있는 한 가지부터 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 324,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 밀려올 때 네 마음에 잠시 여유를 주자.\n괜찮아, 한 걸음이면 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 325,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 모든 답을 서두르지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 326,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 현재의 작은 사실에 집중해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 327,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 필요하다면 누군가와 나눠도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 328,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 밀려올 때 오늘의 걱정을 잠시 내려놓아도 돼.\n괜찮아, 모든 답을 찾을 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 329,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 네가 통제할 수 있는 일부터 정리해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 330,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 잠깐 쉬어 가는 것도 좋은 선택이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 331,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 최악의 결과만 떠올리지 않도록 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 332,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 밀려올 때 네 몸과 마음이 원하는 것을 살펴보자.\n괜찮아, 네 마음에 쉴 자리를 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 333,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 작은 행동 하나로 시작해도 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 334,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 지금의 감정이 전부는 아니라는 걸 기억하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 335,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 너 자신에게 부드러운 말을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 336,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 밀려올 때 확실하지 않다는 이유로 나쁜 결론을 내리지 말자.\n괜찮아, 가능성은 여전히 남아 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 337,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 오늘 해결할 일과 나중에 볼 일을 나눠 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 338,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 한 번의 깊은 숨으로 현재에 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 339,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 네가 이미 해낸 일도 함께 떠올려 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 340,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "걱정이 밀려올 때 조금씩 대응할 수 있다는 사실을 믿어 보자.\n괜찮아, 현재로 천천히 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 341,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 모든 책임을 혼자 짊어지지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 342,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "걱정이 밀려올 때 편안함을 위한 작은 공간을 만들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 343,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 지금 할 수 있는 한 가지부터 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 344,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불확실한 순간에는 네 마음에 잠시 여유를 주자.\n괜찮아, 사실과 걱정을 구분해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 345,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 모든 답을 서두르지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 346,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 현재의 작은 사실에 집중해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 347,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 필요하다면 누군가와 나눠도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 348,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불확실한 순간에는 오늘의 걱정을 잠시 내려놓아도 돼.\n괜찮아, 도움을 구해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 349,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 네가 통제할 수 있는 일부터 정리해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 350,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 잠깐 쉬어 가는 것도 좋은 선택이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 351,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 최악의 결과만 떠올리지 않도록 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 352,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불확실한 순간에는 네 몸과 마음이 원하는 것을 살펴보자.\n괜찮아, 작은 평온을 지켜 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 353,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 작은 행동 하나로 시작해도 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 354,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 지금의 감정이 전부는 아니라는 걸 기억하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 355,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 너 자신에게 부드러운 말을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 356,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불확실한 순간에는 확실하지 않다는 이유로 나쁜 결론을 내리지 말자.\n괜찮아, 하나씩 살펴보면 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 357,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 오늘 해결할 일과 나중에 볼 일을 나눠 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 358,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 한 번의 깊은 숨으로 현재에 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 359,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 네가 이미 해낸 일도 함께 떠올려 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 360,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "불확실한 순간에는 조금씩 대응할 수 있다는 사실을 믿어 보자.\n괜찮아, 숨을 고르는 것부터 시작하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 361,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 모든 책임을 혼자 짊어지지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 362,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "불확실한 순간에는 편안함을 위한 작은 공간을 만들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 363,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 지금 할 수 있는 한 가지부터 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 364,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "마음이 바빠질 때 네 마음에 잠시 여유를 주자.\n괜찮아, 미래의 모든 일을 오늘 감당하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 365,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 모든 답을 서두르지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 366,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 현재의 작은 사실에 집중해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 367,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 필요하다면 누군가와 나눠도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 368,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "마음이 바빠질 때 오늘의 걱정을 잠시 내려놓아도 돼.\n괜찮아, 네가 할 수 있는 만큼만 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 369,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 네가 통제할 수 있는 일부터 정리해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 370,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 잠깐 쉬어 가는 것도 좋은 선택이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 371,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 최악의 결과만 떠올리지 않도록 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 372,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "마음이 바빠질 때 네 몸과 마음이 원하는 것을 살펴보자.\n괜찮아, 감정은 머물다 지나갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 373,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 작은 행동 하나로 시작해도 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 374,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 지금의 감정이 전부는 아니라는 걸 기억하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 375,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 너 자신에게 부드러운 말을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 376,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "마음이 바빠질 때 확실하지 않다는 이유로 나쁜 결론을 내리지 말자.\n괜찮아, 작은 돌봄도 의미가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 377,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 오늘 해결할 일과 나중에 볼 일을 나눠 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 378,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 한 번의 깊은 숨으로 현재에 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 379,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 네가 이미 해낸 일도 함께 떠올려 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 380,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "마음이 바빠질 때 조금씩 대응할 수 있다는 사실을 믿어 보자.\n괜찮아, 혼자 해결할 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 381,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 모든 책임을 혼자 짊어지지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 382,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "마음이 바빠질 때 편안함을 위한 작은 공간을 만들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 383,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 지금 할 수 있는 한 가지부터 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 384,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘을 마무리하며 네 마음에 잠시 여유를 주자.\n괜찮아, 지금의 감정이 미래를 정하지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 385,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 모든 답을 서두르지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 386,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 현재의 작은 사실에 집중해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 387,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 필요하다면 누군가와 나눠도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 388,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘을 마무리하며 오늘의 걱정을 잠시 내려놓아도 돼.\n괜찮아, 쉬었다가 다시 시작해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 389,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 네가 통제할 수 있는 일부터 정리해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 390,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 잠깐 쉬어 가는 것도 좋은 선택이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 391,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 최악의 결과만 떠올리지 않도록 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 392,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘을 마무리하며 네 몸과 마음이 원하는 것을 살펴보자.\n괜찮아, 오늘의 안정을 소중히 여기자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 393,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 작은 행동 하나로 시작해도 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 394,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 지금의 감정이 전부는 아니라는 걸 기억하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 395,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 너 자신에게 부드러운 말을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 396,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘을 마무리하며 확실하지 않다는 이유로 나쁜 결론을 내리지 말자.\n괜찮아, 스스로에게 부드럽게 말해 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 397,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 오늘 해결할 일과 나중에 볼 일을 나눠 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 398,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 한 번의 깊은 숨으로 현재에 돌아와 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 399,
+    "category": "불안과 걱정",
+    "length": 1,
+    "text": "오늘을 마무리하며 네가 이미 해낸 일도 함께 떠올려 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 400,
+    "category": "불안과 걱정",
+    "length": 2,
+    "text": "오늘을 마무리하며 조금씩 대응할 수 있다는 사실을 믿어 보자.\n괜찮아, 다음 행동은 천천히 정해도 돼.",
+    "author": "Dearly"
+  }
+]

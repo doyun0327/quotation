@@ -25,6 +25,14 @@ class TogetherBgTheme {
       id: 'widget_background2',
       assetPath: 'assets/images/widgetbackground/widget_background2.png',
     ),
+    TogetherBgTheme(
+      id: 'widget_background3',
+      assetPath: 'assets/images/widgetbackground/widget_background3.png',
+    ),
+    TogetherBgTheme(
+      id: 'widget_background4',
+      assetPath: 'assets/images/widgetbackground/widget_backgournd4.png',
+    ),
   ];
 
   static TogetherBgTheme byId(String? id) {

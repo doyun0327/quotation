@@ -30,7 +30,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.quotation.quotation"
+        applicationId = "com.dearly.quoteswidget"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

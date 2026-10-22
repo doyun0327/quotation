@@ -11,13 +11,15 @@ import 'package:quotation/widgets/dashed_border.dart';
 import 'package:quotation/widgets/pixel_icons.dart';
 
 class ArchiveScreen extends StatelessWidget {
-  const ArchiveScreen({super.key});
+  const ArchiveScreen({super.key, this.showBack = false});
+
+  /// Pushed from the quote reader. Back returns to that quote.
+  final bool showBack;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-
-    return SafeArea(
+    final page = SafeArea(
       child: ListenableBuilder(
         listenable: Listenable.merge([archiveController, localeController]),
         builder: (context, _) {
@@ -29,9 +31,18 @@ class ArchiveScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                padding: EdgeInsets.fromLTRB(showBack ? 4 : 20, 8, 20, 8),
                 child: Row(
                   children: [
+                    if (showBack)
+                      IconButton(
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        icon: const Icon(
+                          Icons.chevron_left_rounded,
+                          size: 28,
+                          color: AppColors.ink,
+                        ),
+                      ),
                     const Icon(Icons.favorite_rounded, color: AppColors.heart),
                     const SizedBox(width: 8),
                     Text(
@@ -117,6 +128,11 @@ class ArchiveScreen extends StatelessWidget {
           );
         },
       ),
+    );
+    if (!showBack) return page;
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: page,
     );
   }
 }
@@ -223,7 +239,8 @@ class _ArchiveQuoteCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   [
-                    if (item.author != null) '- ${item.author}',
+                    if (item.author != null && item.author!.trim().isNotEmpty)
+                      '- ${item.author}',
                     date,
                   ].where((e) => e.isNotEmpty).join('  ·  '),
                   style: AppTheme.body.copyWith(
@@ -240,7 +257,7 @@ class _ArchiveQuoteCard extends StatelessWidget {
               Icons.favorite_rounded,
               color: AppColors.heart,
             ),
-            tooltip: '보관 해제',
+            tooltip: AppStrings.current.archiveRemove,
           ),
         ],
       ),

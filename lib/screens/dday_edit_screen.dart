@@ -171,7 +171,7 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                                       DdayPixelIcon(kind: kind, size: 30),
                                       const SizedBox(height: 4),
                                       Text(
-                                        kind.labelKo(),
+                                        AppStrings.current.ddayIconName(kind.id),
                                         textAlign: TextAlign.center,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,

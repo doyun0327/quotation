@@ -5,6 +5,9 @@ import 'package:quotation/screens/home_screen.dart';
 import 'package:quotation/screens/settings_screen.dart';
 import 'package:quotation/widgets/pixel_bottom_nav.dart';
 
+/// Together tab is index 1, the same place as tapping a room name.
+final ValueNotifier<int> mainShellTab = ValueNotifier<int>(0);
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -14,6 +17,24 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _navIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _navIndex = mainShellTab.value;
+    mainShellTab.addListener(_onTabRequest);
+  }
+
+  @override
+  void dispose() {
+    mainShellTab.removeListener(_onTabRequest);
+    super.dispose();
+  }
+
+  void _onTabRequest() {
+    if (!mounted || _navIndex == mainShellTab.value) return;
+    setState(() => _navIndex = mainShellTab.value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +52,10 @@ class _MainShellState extends State<MainShell> {
       ),
       bottomNavigationBar: PixelBottomNav(
         currentIndex: _navIndex,
-        onTap: (index) => setState(() => _navIndex = index),
+        onTap: (index) {
+          mainShellTab.value = index;
+          setState(() => _navIndex = index);
+        },
       ),
     );
   }

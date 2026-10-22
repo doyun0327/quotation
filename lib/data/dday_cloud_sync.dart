@@ -2,13 +2,29 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/data/user_profile_sync.dart';
+import 'package:quotation/widgets/together_widget_preview.dart';
+
+/// A friend's home-widget apply that has already been written on this phone.
+class TogetherLayoutNotice {
+  const TogetherLayoutNotice({
+    required this.roomId,
+    required this.roomTitle,
+    required this.actorName,
+    required this.stamp,
+  });
+
+  final String roomId;
+  final String roomTitle;
+  final String actorName;
+  final String stamp;
+}
 
 /// Keeps local D-Days + membership friend lists in sync with Firestore.
 class DdayCloudSync {
@@ -16,7 +32,11 @@ class DdayCloudSync {
 
   static final _db = FirebaseFirestore.instance;
   static final List<StreamSubscription<dynamic>> _subs = [];
+  static final Map<String, String> _seenLayoutNotify = {};
   static bool _started = false;
+
+  /// Fired after a friend's applied layout is saved on this phone.
+  static void Function(TogetherLayoutNotice notice)? onRemoteWidgetEdit;
 
   static Future<void> start() async {
     await stop();
@@ -118,34 +138,55 @@ class DdayCloudSync {
         .where('hostUid', isEqualTo: uid)
         .snapshots()
         .listen((snap) async {
+      final notices = <TogetherLayoutNotice>[];
       for (final change in snap.docChanges) {
         final data = change.doc.data();
         if (data == null) continue;
-        await _applyMembershipDoc(change.doc.id, data, uid);
+        final notice = await _applyMembershipDoc(
+          change.doc.id,
+          data,
+          uid,
+          notifyRemote: change.type == DocumentChangeType.modified,
+        );
+        if (notice != null) notices.add(notice);
       }
       await HomeWidgetSync.syncDday();
+      for (final notice in notices) {
+        onRemoteWidgetEdit?.call(notice);
+      }
     });
     final guestSub = _db
         .collection('dday_memberships')
         .where('guestUids', arrayContains: uid)
         .snapshots()
         .listen((snap) async {
+      final notices = <TogetherLayoutNotice>[];
       for (final change in snap.docChanges) {
         final data = change.doc.data();
         if (data == null) continue;
-        await _applyMembershipDoc(change.doc.id, data, uid);
+        final notice = await _applyMembershipDoc(
+          change.doc.id,
+          data,
+          uid,
+          notifyRemote: change.type == DocumentChangeType.modified,
+        );
+        if (notice != null) notices.add(notice);
       }
       await HomeWidgetSync.syncDday();
+      for (final notice in notices) {
+        onRemoteWidgetEdit?.call(notice);
+      }
     });
     _subs.add(hostSub);
     _subs.add(guestSub);
   }
 
-  static Future<void> _applyMembershipDoc(
+  static Future<TogetherLayoutNotice?> _applyMembershipDoc(
     String ddayId,
     Map<String, dynamic> data,
-    String myUid,
-  ) async {
+    String myUid, {
+    bool notifyRemote = false,
+  }) async {
     final hostUid = data['hostUid'] as String? ?? '';
     final hostCharacterId = data['hostCharacterId'] as String? ?? 'basic';
     final membersRaw = data['members'] as List<dynamic>? ?? [];
@@ -159,7 +200,7 @@ class DdayCloudSync {
       if (ddayController.items.any((e) => e.id == ddayId)) {
         await ddayController.remove(ddayId);
       }
-      return;
+      return null;
     }
 
     // Friends shown to me: if I'm host → guests; if I'm guest → host + other guests.
@@ -184,7 +225,7 @@ class DdayCloudSync {
       // Guest may not have the room locally — pull from cloud.
       final ddaySnap = await _db.collection('ddays').doc(ddayId).get();
       final dday = ddaySnap.data();
-      if (dday == null) return;
+      if (dday == null) return null;
       final target = (dday['targetDate'] as Timestamp?)?.toDate() ?? DateTime.now();
       await ddayController.upsertFromCloud(
         DdayItem(
@@ -211,7 +252,47 @@ class DdayCloudSync {
       );
     }
 
-    await _applySharedLayout(ddayId, data, myUid == hostUid);
+    final actor =
+        (data['updatedBy'] ?? data['layoutUpdatedBy'])?.toString() ?? '';
+    // Our own write is already in local dp. Applying it again would scale it
+    // a second time when this phone's canvas differs from the saved one.
+    if (actor.isEmpty || actor != myUid) {
+      await _applySharedLayout(ddayId, data, myUid == hostUid);
+    }
+
+    final stamp = _layoutStamp(data['layoutNotifyAt']);
+    final unseen = stamp.isNotEmpty && _seenLayoutNotify[ddayId] != stamp;
+    if (stamp.isNotEmpty) _seenLayoutNotify[ddayId] = stamp;
+    if (!notifyRemote || !unseen || actor.isEmpty || actor == myUid) {
+      return null;
+    }
+    final local = ddayController.items.where((e) => e.id == ddayId);
+    final roomTitle = local.isEmpty ? '' : local.first.title;
+    var actorName = (data['layoutUpdatedByName'] as String?)?.trim() ?? '';
+    if (actorName.isEmpty) {
+      for (final member in members) {
+        final name = member.displayName?.trim() ?? '';
+        if (member.uid == actor && name.isNotEmpty) {
+          actorName = name;
+          break;
+        }
+      }
+    }
+    if (actorName.isEmpty) {
+      final profile = await UserProfileSync.fetchUser(actor);
+      actorName = (profile?['displayName'] as String?)?.trim() ?? '';
+    }
+    return TogetherLayoutNotice(
+      roomId: ddayId,
+      roomTitle: roomTitle,
+      actorName: actorName,
+      stamp: stamp,
+    );
+  }
+
+  static String _layoutStamp(dynamic value) {
+    if (value is Timestamp) return value.millisecondsSinceEpoch.toString();
+    return value?.toString() ?? '';
   }
 
   /// Host-centric layout → viewer-relative me/friend offsets.
@@ -233,17 +314,32 @@ class DdayCloudSync {
         !data.containsKey('layoutTextX')) {
       return;
     }
-    final hostX = (data['layoutHostX'] as num?)?.toInt() ?? 0;
-    final hostY = (data['layoutHostY'] as num?)?.toInt() ?? 0;
-    final guestX = (data['layoutGuestX'] as num?)?.toInt() ?? 0;
-    final guestY = (data['layoutGuestY'] as num?)?.toInt() ?? 0;
-    final textX = (data['layoutTextX'] as num?)?.toInt();
-    final textY = (data['layoutTextY'] as num?)?.toInt();
+    final local = await _localCanvas(roomId);
+    final sx = _canvasRatio(
+      local.width,
+      (data['layoutCanvasW'] as num?)?.toDouble(),
+    );
+    final sy = _canvasRatio(
+      local.height,
+      (data['layoutCanvasH'] as num?)?.toDouble(),
+    );
+    int ax(int v) => (v * sx).round();
+    int ay(int v) => (v * sy).round();
+    int? aScale(int? v) => v == null ? null : (v * sx).round();
+    final hostX = ax((data['layoutHostX'] as num?)?.toInt() ?? 0);
+    final hostY = ay((data['layoutHostY'] as num?)?.toInt() ?? 0);
+    final guestX = ax((data['layoutGuestX'] as num?)?.toInt() ?? 0);
+    final guestY = ay((data['layoutGuestY'] as num?)?.toInt() ?? 0);
+    final rawTextX = (data['layoutTextX'] as num?)?.toInt();
+    final rawTextY = (data['layoutTextY'] as num?)?.toInt();
+    final textX = rawTextX == null ? null : ax(rawTextX);
+    final textY = rawTextY == null ? null : ay(rawTextY);
     final legacyScale = (data['layoutCharScale'] as num?)?.toInt();
-    final hostScale = (data['layoutHostScale'] as num?)?.toInt() ?? legacyScale;
+    final hostScale =
+        aScale((data['layoutHostScale'] as num?)?.toInt() ?? legacyScale);
     final guestScale =
-        (data['layoutGuestScale'] as num?)?.toInt() ?? legacyScale;
-    final textScale = (data['layoutTextScale'] as num?)?.toInt();
+        aScale((data['layoutGuestScale'] as num?)?.toInt() ?? legacyScale);
+    final textScale = aScale((data['layoutTextScale'] as num?)?.toInt());
     final bgTheme = data['layoutBgTheme'] as String?;
     final textColor = (data['layoutTextColor'] as num?)?.toInt();
     final shapeId = data['layoutShape'] as String?;
@@ -292,7 +388,31 @@ class DdayCloudSync {
   }
 
   /// Push duo offsets as shared host/guest layout for a room.
-  static Future<void> pushSharedLayout({String? roomId}) async {
+  /// Preview size this phone draws the together widget at.
+  static Future<Size> _localCanvas(String roomId) async {
+    final host = await HomeWidgetSync.loadHostPreviewSize(roomId: roomId);
+    return TogetherWidgetPreview.sizeForShape(
+      TogetherWidgetShape.square,
+      TogetherWidgetSize.s42,
+      host?.size,
+      host?.forSize,
+    );
+  }
+
+  /// Map a sender-canvas dp value onto this phone's canvas.
+  static double _canvasRatio(double local, double? sender) {
+    if (sender == null || sender < 40 || local < 40) return 1;
+    final ratio = local / sender;
+    if (!ratio.isFinite || ratio <= 0) return 1;
+    return ratio.clamp(0.5, 2.2);
+  }
+
+  static Future<void> pushSharedLayout({
+    String? roomId,
+    bool notifyFriends = false,
+    double? canvasW,
+    double? canvasH,
+  }) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     DdayItem? item = ddayController.widgetDday;
     if (roomId != null) {
@@ -318,17 +438,32 @@ class DdayCloudSync {
     final textColor = ddayController.textColorForRoom(item.id);
     const shape = TogetherWidgetShape.square;
     final widgetSize = ddayController.widgetSizeForRoom(item.id);
-    final iAmHost = item.cloudOwnerUid == null || item.cloudOwnerUid == uid;
+    var hostUid = item.cloudOwnerUid ?? '';
+    try {
+      final mem = await _db.collection('dday_memberships').doc(item.id).get();
+      final remoteHost = mem.data()?['hostUid'] as String?;
+      if (remoteHost != null && remoteHost.isNotEmpty) hostUid = remoteHost;
+    } catch (_) {}
+    final iAmHost = hostUid.isEmpty || hostUid == uid;
     final hostX = iAmHost ? meX : friendX;
     final hostY = iAmHost ? meY : friendY;
     final guestX = iAmHost ? friendX : meX;
     final guestY = iAmHost ? friendY : meY;
     final hostScale = iAmHost ? meScale : friendScale;
     final guestScale = iAmHost ? friendScale : meScale;
+    var cw = canvasW;
+    var ch = canvasH;
+    if (cw == null || ch == null || cw < 40 || ch < 40) {
+      final canvas = await _localCanvas(item.id);
+      cw = canvas.width;
+      ch = canvas.height;
+    }
 
     try {
       await _db.collection('dday_memberships').doc(item.id).set(
         {
+          'layoutCanvasW': cw,
+          'layoutCanvasH': ch,
           'layoutHostX': hostX,
           'layoutHostY': hostY,
           'layoutGuestX': guestX,
@@ -344,7 +479,11 @@ class DdayCloudSync {
           'layoutShape': shape.id,
           'layoutWidgetSize': widgetSize.id,
           'layoutUpdatedBy': uid,
+          'layoutUpdatedByName':
+              FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
+          'updatedBy': uid,
           'updatedAt': FieldValue.serverTimestamp(),
+          if (notifyFriends) 'layoutNotifyAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
       );

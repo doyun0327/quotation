@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:quotation/data/quote_asset_loader.dart';
 import 'package:quotation/data/quote_bank.dart';
 import 'package:quotation/data/quote_models.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/widgets/pixel_icons.dart';
 
 abstract final class QuoteRepository {
   static final Map<String, List<Quote>> _overrides = {};
+  static List<Quote> _gratitudeKo = const [];
+  static List<Quote> _gratitudeEn = const [];
+  static List<Quote> _loveKo = const [];
+  static List<Quote> _loveEn = const [];
 
   static List<MainCategory> categories = _buildCategories();
 
@@ -21,8 +26,30 @@ abstract final class QuoteRepository {
   }
 
   static List<Quote> quotesFor(String mainId, String subId) {
+    if (mainId == 'daily' && subId == 'gratitude') {
+      final loaded =
+          localeController.isKorean ? _gratitudeKo : _gratitudeEn;
+      if (loaded.isNotEmpty) return loaded;
+    }
+    if (mainId == 'daily' && subId == 'love') {
+      final loaded = localeController.isKorean ? _loveKo : _loveEn;
+      if (loaded.isNotEmpty) return loaded;
+    }
     final key = '$mainId:$subId';
     return _overrides[key] ?? quoteBank[key] ?? const <Quote>[];
+  }
+
+  /// Gratitude and love sentences for the current language.
+  static List<Quote> dailyQuotesForLocale() {
+    return [
+      ...quotesFor('daily', 'gratitude'),
+      ...quotesFor('daily', 'love'),
+    ];
+  }
+
+  /// Reloads category snapshots after the app language changes.
+  static void onLocaleChanged() {
+    categories = _buildCategories();
   }
 
   static Future<void> initialize() async {
@@ -30,9 +57,17 @@ abstract final class QuoteRepository {
       final results = await Future.wait([
         QuoteAssetLoader.loadChristianKo(),
         QuoteAssetLoader.loadBuddhismKo(),
+        QuoteAssetLoader.loadGratitude(korean: true),
+        QuoteAssetLoader.loadGratitude(korean: false),
+        QuoteAssetLoader.loadLove(korean: true),
+        QuoteAssetLoader.loadLove(korean: false),
       ]);
       final christian = results[0];
       final buddhism = results[1];
+      _gratitudeKo = results[2];
+      _gratitudeEn = results[3];
+      _loveKo = results[4];
+      _loveEn = results[5];
       var changed = false;
 
       if (christian.isNotEmpty) {
@@ -43,7 +78,11 @@ abstract final class QuoteRepository {
         _overrides['faith:buddhism'] = buddhism;
         changed = true;
       }
-      if (changed) {
+      if (changed ||
+          _gratitudeKo.isNotEmpty ||
+          _gratitudeEn.isNotEmpty ||
+          _loveKo.isNotEmpty ||
+          _loveEn.isNotEmpty) {
         categories = _buildCategories();
       }
     } catch (_) {

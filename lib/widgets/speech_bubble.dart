@@ -135,7 +135,6 @@ class _RectBubblePainter extends CustomPainter {
     final bodyBottom = size.height - tailHeight;
     final w = size.width;
     final r = radius;
-
     const tailAnchor = 16.0;
     const tipX = 6.0;
 

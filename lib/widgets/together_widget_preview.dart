@@ -126,8 +126,14 @@ class TogetherWidgetPreview extends StatelessWidget {
         ? 0.0
         : (raw.a < 1 ? raw.a : (bgOpacity / 100).clamp(0.0, 1.0));
     final color = raw.withValues(alpha: opacity);
-    final meFactor = (meScale / 100).clamp(0.6, 1.6);
-    final friendFactor = (friendScale / 100).clamp(0.6, 1.6);
+    final meFactor = (meScale / 100).clamp(
+      DdayController.scaleMin / 100,
+      DdayController.scaleMax / 100,
+    );
+    final friendFactor = (friendScale / 100).clamp(
+      DdayController.scaleMin / 100,
+      DdayController.scaleMax / 100,
+    );
     final meW = charW * meFactor;
     final meH = charH * meFactor;
     final friendW = charW * friendFactor;
@@ -140,7 +146,7 @@ class TogetherWidgetPreview extends StatelessWidget {
       charW: meW,
       charH: meH,
     );
-    final friendPos = TogetherCharacterBounds.friend(
+    final friendPos = TogetherCharacterBounds.me(
       x: friendX,
       y: friendY,
       width: width,
@@ -244,7 +250,7 @@ class TogetherWidgetPreview extends StatelessWidget {
         ? null
         : Positioned(
             key: const ValueKey('together-friend'),
-            right: 4 - friendPos.x,
+            left: 4 + friendPos.x,
             bottom: friendPos.y,
             child: sprite(
               asset: friend!.assetPath,
@@ -392,10 +398,13 @@ abstract final class TogetherCharacterBounds {
     required double charW,
     required double charH,
   }) {
-    final minX = charW + 4 - width;
-    final loX = minX > 4 ? 4.0 : minX;
-    final maxY = height - charH;
-    final hiY = maxY < 0 ? 0.0 : maxY;
-    return (x: x.clamp(loX, 4.0).toDouble(), y: y.clamp(0.0, hiY).toDouble());
+    return me(
+      x: x,
+      y: y,
+      width: width,
+      height: height,
+      charW: charW,
+      charH: charH,
+    );
   }
 }

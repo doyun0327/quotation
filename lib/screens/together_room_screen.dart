@@ -136,10 +136,11 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                         builder: (context, snap) {
                           final cheer = snap.data;
                           final local = room.latestCheer?.trim();
-                          final text = cheer?.text ??
-                              ((local != null && local.isNotEmpty)
-                                  ? local
-                                  : null);
+                          // Typed text wins immediately. Cloud fills in only when
+                          // nothing has been saved on this device yet.
+                          final text = (local != null && local.isNotEmpty)
+                              ? local
+                              : cheer?.text;
                           return _RoomWidgetPreview(
                             room: room,
                             cheerText: text,
@@ -301,7 +302,9 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
 
   Future<void> _loadHostSize() async {
     await HomeWidgetSync.syncDday();
-    final host = await HomeWidgetSync.loadHostPreviewSize();
+    final host = await HomeWidgetSync.loadHostPreviewSize(
+      roomId: widget.room.id,
+    );
     if (!mounted || host == null) return;
     setState(() {
       _hostSize = host.size;

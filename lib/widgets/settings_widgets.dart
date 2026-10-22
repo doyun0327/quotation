@@ -382,7 +382,7 @@ class FontScaleRow extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        '가',
+                        AppStrings.current.fontSample,
                         style: AppTheme.body.copyWith(
                           fontSize: option.sampleSize,
                           fontWeight: FontWeight.w900,

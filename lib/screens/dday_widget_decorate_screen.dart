@@ -52,6 +52,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   late int _friendScale;
   late int _textScale;
   _DecorateFocus _focus = _DecorateFocus.me;
+  String? _pickedFriendUid;
   bool _scaleMe = true;
   late String _bgThemeId;
   late int _textColor;
@@ -65,7 +66,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   final bool _loggingIn = false;
 
   final _cheerCtrl = TextEditingController();
+  final _cheerFocus = FocusNode();
   final _dragTick = ValueNotifier<int>(0);
+  bool _applyingRemote = false;
 
   static const _shape = TogetherWidgetShape.square;
 
@@ -86,42 +89,116 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _bgThemeId = ddayController.bgThemeForRoom(id);
     _textColor = ddayController.textColorForRoom(id);
     _widgetSize = TogetherWidgetSize.s42;
-    _fitCharacters();
     final rooms = ddayController.items.where((e) => e.id == id);
     _cheerCtrl.text =
         rooms.isEmpty ? '' : (rooms.first.latestCheer?.trim() ?? '');
     _cheerCtrl.addListener(() {
+      if (_applyingRemote) return;
       if (mounted) setState(() {});
       _scheduleCheerPush();
     });
+    ddayController.addListener(_syncFromController);
+  }
+
+  void _syncFromController() {
+    if (!mounted || _dragging || _applyingRemote) return;
+    final id = widget.roomId;
+    final meX = ddayController.meOffsetXForRoom(id).toDouble();
+    final meY = ddayController.meOffsetYForRoom(id).toDouble();
+    final friendX = ddayController.friendOffsetXForRoom(id).toDouble();
+    final friendY = ddayController.friendOffsetYForRoom(id).toDouble();
+    final textX = ddayController.textOffsetXForRoom(id).toDouble();
+    final textY = ddayController.textOffsetYForRoom(id).toDouble();
+    final meScale = ddayController.charScaleForRoom(id);
+    final friendScale = ddayController.friendScaleForRoom(id);
+    final textScale = ddayController.textScaleForRoom(id);
+    final theme = ddayController.bgThemeForRoom(id);
+    final color = ddayController.textColorForRoom(id);
+    final layoutChanged = _meX != meX ||
+        _meY != meY ||
+        _friendX != friendX ||
+        _friendY != friendY ||
+        _textX != textX ||
+        _textY != textY ||
+        _meScale != meScale ||
+        _friendScale != friendScale ||
+        _textScale != textScale ||
+        _bgThemeId != theme ||
+        _textColor != color;
+    if (layoutChanged) {
+      setState(() {
+        _meX = meX;
+        _meY = meY;
+        _friendX = friendX;
+        _friendY = friendY;
+        _textX = textX;
+        _textY = textY;
+        _meScale = meScale;
+        _friendScale = friendScale;
+        _textScale = textScale;
+        _bgThemeId = theme;
+        _textColor = color;
+        if (_focus == _DecorateFocus.friend) _scaleMe = false;
+      });
+    }
+    if (_cheerFocus.hasFocus) return;
+    final cheer = _room?.latestCheer?.trim() ?? '';
+    if (_cheerCtrl.text == cheer) return;
+    _applyingRemote = true;
+    _cheerCtrl.text = cheer;
+    _applyingRemote = false;
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadHostSize() async {
     try {
       await HomeWidgetSync.syncDday();
     } catch (_) {}
-    final host = await HomeWidgetSync.loadHostPreviewSize();
+    final host = await HomeWidgetSync.loadHostPreviewSize(
+      roomId: widget.roomId,
+    );
     if (!mounted || host == null) return;
     setState(() {
       _hostSize = host.size;
       _hostForSize = host.forSize;
       _hostCornerDp = host.cornerDp;
+      if (_dragging) return;
+      final id = widget.roomId;
+      _meX = ddayController.meOffsetXForRoom(id).toDouble();
+      _meY = ddayController.meOffsetYForRoom(id).toDouble();
+      _friendX = ddayController.friendOffsetXForRoom(id).toDouble();
+      _friendY = ddayController.friendOffsetYForRoom(id).toDouble();
       _fitCharacters();
     });
   }
 
   void _scheduleCheerPush() {
+    final text = _cheerCtrl.text;
+    final roomId = widget.roomId;
+    unawaited(ddayController.setRoomCheer(roomId, text));
     _cheerPush?.cancel();
-    _cheerPush = Timer(const Duration(milliseconds: 350), () async {
-      await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
-      await HomeWidgetSync.syncDday();
+    _cheerPush = Timer(const Duration(milliseconds: 350), () {
+      unawaited(HomeWidgetSync.syncDday());
     });
+  }
+
+  void _flushCheerPush() {
+    final text = _cheerCtrl.text;
+    final roomId = widget.roomId;
+    _cheerPush?.cancel();
+    _cheerPush = null;
+    unawaited(() async {
+      await ddayController.setRoomCheer(roomId, text);
+      await HomeWidgetSync.syncDday();
+    }());
   }
 
   @override
   void dispose() {
-    _cheerPush?.cancel();
+    ddayController.removeListener(_syncFromController);
+    _flushCheerPush();
     _cheerCtrl.dispose();
+    _cheerFocus.dispose();
     _dragTick.dispose();
     super.dispose();
   }
@@ -191,11 +268,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       textColor: _textColor,
       shape: _shape,
       widgetSize: _widgetSize,
+      notifyFriends: applyToHome,
+      canvasW: _previewSize.width,
+      canvasH: _previewSize.height,
     );
     if (applyToHome) {
+      final previousRoom = ddayController.widgetDday?.id;
       await ddayController.applyRoomToHomeWidget(widget.roomId);
-      final pinned =
-          await HomeWidgetSync.syncAndOfferPinTogetherWidget();
+      final pinned = await HomeWidgetSync.syncAndOfferPinTogetherWidget(
+        roomId: widget.roomId,
+        keepUnboundOn: previousRoom,
+      );
       if (toast && mounted) {
         final t = AppStrings.current;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -217,10 +300,20 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
   double _spriteW(int scale) =>
-      charW * _widgetSize.charFactor * (scale / 100).clamp(0.6, 1.6);
+      charW *
+      _widgetSize.charFactor *
+      (scale / 100).clamp(
+        DdayController.scaleMin / 100,
+        DdayController.scaleMax / 100,
+      );
 
   double _spriteH(int scale) =>
-      charH * _widgetSize.charFactor * (scale / 100).clamp(0.6, 1.6);
+      charH *
+      _widgetSize.charFactor *
+      (scale / 100).clamp(
+        DdayController.scaleMin / 100,
+        DdayController.scaleMax / 100,
+      );
 
   Size get _previewSize => TogetherWidgetPreview.sizeForShape(
         _shape,
@@ -239,7 +332,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       charW: _spriteW(_meScale),
       charH: _spriteH(_meScale),
     );
-    final friend = TogetherCharacterBounds.friend(
+    final friend = TogetherCharacterBounds.me(
       x: _friendX,
       y: _friendY,
       width: size.width,
@@ -276,8 +369,21 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
   void _selectFriend() {
-    if (_focus == _DecorateFocus.friend) return;
+    final friends = _room?.friends;
+    if (friends == null || friends.isEmpty) return;
+    final uid = friends.first.uid;
+    if (_focus == _DecorateFocus.friend && _pickedFriendUid == uid) return;
     setState(() {
+      _pickedFriendUid = uid;
+      _focus = _DecorateFocus.friend;
+      _scaleMe = false;
+    });
+  }
+
+  void _selectFriendMember(String uid) {
+    if (_focus == _DecorateFocus.friend && _pickedFriendUid == uid) return;
+    setState(() {
+      _pickedFriendUid = uid;
       _focus = _DecorateFocus.friend;
       _scaleMe = false;
     });
@@ -310,7 +416,15 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final t = AppStrings.current;
     final palette = context.palette;
 
-    return Scaffold(
+    final theme = Theme.of(context);
+    return Theme(
+      data: theme.copyWith(
+        textTheme: theme.textTheme.apply(fontFamily: 'Galmuri'),
+        primaryTextTheme: theme.primaryTextTheme.apply(fontFamily: 'Galmuri'),
+      ),
+      child: DefaultTextStyle.merge(
+        style: const TextStyle(fontFamily: 'Galmuri'),
+        child: Scaffold(
       backgroundColor: const Color(0xFFF3F7FD),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF3F7FD),
@@ -322,6 +436,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         title: Text(
           t.ddayDuoDecorateTitle,
           style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
             fontSize: 18,
             fontWeight: FontWeight.w900,
             color: palette.accent,
@@ -335,6 +450,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           characterController,
           visualStyleController,
           localeController,
+          authController,
         ]),
         builder: (context, _) {
           final live = _room;
@@ -350,7 +466,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
             _hostSize,
             _hostForSize,
           );
-          final isPixel = visualStyleController.isPixel;
+          // Decorate stays pixel even when the rest of the app is clean.
+          const isPixel = true;
           final charBase = _widgetSize.charFactor;
 
           // Preview is pinned above the scroll area so dragging never scrolls the page.
@@ -368,6 +485,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                           child: Text(
                             t.ddayInviteFriendCount(live?.friendCount ?? 0),
                             style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: palette.accent,
@@ -447,30 +565,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       t.ddayDuoDecorateDragHint,
                       textAlign: TextAlign.center,
                       style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                         fontSize: 12,
                         color: AppColors.muted,
                       ),
                     ),
-                    if (liveHasFriend) ...[
-                      const SizedBox(height: 10),
-                      _CharacterPickRow(
-                        me: characterController.character,
-                        friend: AppCharacter.byId(liveFriendId),
-                        meLabel: t.ddayDecorateMeChip(
-                          t.characterName(characterController.character.id),
-                        ),
-                        friendLabel: t.ddayDecorateFriendChip(
-                          t.characterName(
-                            liveFriendId ?? characterController.character.id,
-                          ),
-                        ),
-                        selectedMe: _focus == _DecorateFocus.me,
-                        selectedFriend: _focus == _DecorateFocus.friend,
-                        accent: palette.accent,
-                        onMe: _selectMe,
-                        onFriend: _selectFriend,
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -482,9 +581,46 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       : const BouncingScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
                   children: [
+                    _MemberPickGrid(
+                      members: [
+                        _RoomMember(
+                          isMe: true,
+                          assetPath: characterController.assetPath,
+                          nickname: authController.nickname ??
+                              t.characterName(
+                                characterController.character.id,
+                              ),
+                        ),
+                        for (final friend in live?.friends ?? const [])
+                          _RoomMember(
+                            friendUid: friend.uid,
+                            assetPath: AppCharacter.byId(
+                              friend.characterId,
+                            ).assetPath,
+                            nickname: () {
+                              final name = friend.displayName?.trim();
+                              if (name != null && name.isNotEmpty) return name;
+                              return t.characterName(friend.characterId);
+                            }(),
+                          ),
+                      ],
+                      meSelected: _focus == _DecorateFocus.me,
+                      selectedFriendUid: _focus == _DecorateFocus.friend
+                          ? _pickedFriendUid
+                          : null,
+                      accent: palette.accent,
+                      onTap: (member) {
+                        if (member.isMe) {
+                          _selectMe();
+                        } else if (member.friendUid != null) {
+                          _selectFriendMember(member.friendUid!);
+                        }
+                      },
+                    ),
                     Text(
                       t.togetherCheerTitle,
                       style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: palette.accent,
@@ -493,11 +629,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     const SizedBox(height: 10),
                     TextField(
                       controller: _cheerCtrl,
+                      focusNode: _cheerFocus,
                       maxLength: 80,
                       maxLines: 3,
                       minLines: 2,
                       enabled: !_savingCheer && !_loggingIn,
                       style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF2C3340),
@@ -507,6 +645,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         counterText: '',
                         hintText: t.togetherCheerPlaceholder,
                         hintStyle: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                           fontSize: 15,
                           color: const Color(0xFFB0B8C6),
                         ),
@@ -534,6 +673,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     Text(
                       t.ddayDecorateBgLabel,
                       style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: palette.accent,
@@ -588,6 +728,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     Text(
                       t.ddayDecorateTextColorLabel,
                       style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: palette.accent,
@@ -617,6 +758,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               context,
                               initialArgb: _textColor,
                               allowTransparent: false,
+                              pixelStyle: true,
                               title: t.ddayDecorateTextColorLabel,
                             );
                             if (picked == null || !mounted) return;
@@ -640,6 +782,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               ),
                       ),
                       style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: palette.accent,
@@ -669,6 +812,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     Text(
                       t.ddayDecorateTextScaleLabel,
                       style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: palette.accent,
@@ -711,6 +855,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                   ? t.togetherCheerSend
                                   : t.ddayDuoDecorateDone,
                           style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -725,6 +870,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           );
         },
       ),
+        ),
+      ),
     );
   }
 
@@ -732,113 +879,144 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
 enum _DecorateFocus { me, friend, text }
 
-class _CharacterPickRow extends StatelessWidget {
-  const _CharacterPickRow({
-    required this.me,
-    required this.friend,
-    required this.meLabel,
-    required this.friendLabel,
-    required this.selectedMe,
-    required this.selectedFriend,
-    required this.accent,
-    required this.onMe,
-    required this.onFriend,
+class _RoomMember {
+  const _RoomMember({
+    required this.assetPath,
+    required this.nickname,
+    this.isMe = false,
+    this.friendUid,
   });
 
-  final AppCharacter me;
-  final AppCharacter friend;
-  final String meLabel;
-  final String friendLabel;
-  final bool selectedMe;
-  final bool selectedFriend;
+  final bool isMe;
+  final String? friendUid;
+  final String assetPath;
+  final String nickname;
+}
+
+/// Room roster above the cheer field.
+/// Chip width stays at the 5-across size. 1–5 people use one row;
+/// 6 or more split into two rows (6→3+3, 7→4+3, 8→4+4, 9→5+4, 10→5+5).
+class _MemberPickGrid extends StatelessWidget {
+  const _MemberPickGrid({
+    required this.members,
+    required this.meSelected,
+    required this.selectedFriendUid,
+    required this.accent,
+    required this.onTap,
+  });
+
+  final List<_RoomMember> members;
+  final bool meSelected;
+  final String? selectedFriendUid;
   final Color accent;
-  final VoidCallback onMe;
-  final VoidCallback onFriend;
+  final ValueChanged<_RoomMember> onTap;
+
+  static int _rowCount(int count) {
+    if (count <= 5) return count;
+    return (count / 2).ceil();
+  }
+
+  bool _selected(_RoomMember member) {
+    if (member.isMe) return meSelected;
+    return selectedFriendUid != null && member.friendUid == selectedFriendUid;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _CharacterPick(
-            character: me,
-            label: meLabel,
-            selected: selectedMe,
-            accent: accent,
-            onTap: onMe,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _CharacterPick(
-            character: friend,
-            label: friendLabel,
-            selected: selectedFriend,
-            accent: accent,
-            onTap: onFriend,
-          ),
-        ),
-      ],
+    if (members.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const gap = 8.0;
+          final cellW = (constraints.maxWidth - gap * 4) / 5;
+          final perRow = _rowCount(members.length);
+          final rows = <List<_RoomMember>>[];
+          for (var i = 0; i < members.length; i += perRow) {
+            final end = (i + perRow).clamp(0, members.length);
+            rows.add(members.sublist(i, end));
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var r = 0; r < rows.length; r++) ...[
+                if (r > 0) const SizedBox(height: gap),
+                Row(
+                  children: [
+                    for (var i = 0; i < rows[r].length; i++) ...[
+                      if (i > 0) const SizedBox(width: gap),
+                      SizedBox(
+                        width: cellW,
+                        child: _MemberChip(
+                          member: rows[r][i],
+                          selected: _selected(rows[r][i]),
+                          accent: accent,
+                          onTap: () => onTap(rows[r][i]),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ],
+          );
+        },
+      ),
     );
   }
 }
 
-class _CharacterPick extends StatelessWidget {
-  const _CharacterPick({
-    required this.character,
-    required this.label,
+class _MemberChip extends StatelessWidget {
+  const _MemberChip({
+    required this.member,
     required this.selected,
     required this.accent,
     required this.onTap,
   });
 
-  final AppCharacter character;
-  final String label;
+  final _RoomMember member;
   final bool selected;
   final Color accent;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: selected ? const Color(0xFFFFF8D6) : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(
-          color: selected ? accent : const Color(0xFFE0E0E0),
-          width: selected ? 2.5 : 1,
-        ),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Row(
-            children: [
-              Image.asset(
-                character.assetPath,
-                width: 28,
-                height: 36,
-                fit: BoxFit.contain,
-                filterQuality: FilterQuality.none,
-                isAntiAlias: false,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTheme.body.copyWith(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF2C3340),
-                  ),
-                ),
-              ),
-            ],
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.fromLTRB(2, 6, 2, 6),
+        decoration: BoxDecoration(
+          color: selected ? accent.withValues(alpha: 0.12) : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? accent : const Color(0xFFE4ECF7),
+            width: selected ? 2 : 1,
           ),
+        ),
+        child: Column(
+          children: [
+            Image.asset(
+              member.assetPath,
+              height: 44,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.none,
+              isAntiAlias: false,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              member.nickname,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: AppTheme.body.copyWith(
+                fontFamily: 'Galmuri',
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF2C3340),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -911,6 +1089,7 @@ class _MoreColorsButton extends StatelessWidget {
         child: Text(
           label,
           style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
             fontSize: 12,
             fontWeight: FontWeight.w800,
             color: accent,

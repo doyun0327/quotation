@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -6,11 +7,15 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quotation/data/archive_controller.dart';
+import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/quote_repository.dart';
+import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
+import 'package:quotation/screens/archive_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
+import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/quote_backgrounds.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
@@ -34,13 +39,54 @@ class QuoteListScreen extends StatefulWidget {
 
 class _QuoteListScreenState extends State<QuoteListScreen> {
   final GlobalKey _shareKey = GlobalKey();
+  final Random _random = Random();
   late final PageController _pageController;
   bool _sharing = false;
+  List<Quote> _order = const [];
+  String _orderKey = '';
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: widget.initialIndex);
+    final source = QuoteRepository.quotesFor(
+      widget.mainCategory.id,
+      widget.subCategory.id,
+    );
+    _orderKey = _orderKeyFor(source);
+    _order = _shuffled(source);
+    _pageController = PageController(initialPage: _startPage(source));
+  }
+
+  String _orderKeyFor(List<Quote> source) {
+    final head = source.isEmpty ? '' : source.first.id;
+    final tail = source.isEmpty ? '' : source.last.id;
+    return '${localeController.isKorean}:${source.length}:$head:$tail';
+  }
+
+  List<Quote> _shuffled(List<Quote> source) {
+    final copy = List<Quote>.of(source);
+    copy.shuffle(_random);
+    return copy;
+  }
+
+  /// Keeps the quote the user opened (home bubble) after the deck is shuffled.
+  int _startPage(List<Quote> source) {
+    final index = widget.initialIndex;
+    if (index <= 0 || index >= source.length || _order.isEmpty) return 0;
+    final id = source[index].id;
+    final found = _order.indexWhere((quote) => quote.id == id);
+    return found < 0 ? 0 : found;
+  }
+
+  void _syncOrder(List<Quote> source) {
+    final key = _orderKeyFor(source);
+    if (key == _orderKey) return;
+    _orderKey = key;
+    _order = _shuffled(source);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_pageController.hasClients) return;
+      _pageController.jumpToPage(0);
+    });
   }
 
   @override
@@ -88,6 +134,246 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     }
   }
 
+  Future<void> _openReaderMenu(BuildContext context, String currentAsset) async {
+    final t = AppStrings.current;
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (sheetContext) {
+        final media = MediaQuery.of(sheetContext);
+        final maxHeight = media.size.height * 0.68;
+        final palette = sheetContext.palette;
+        return SafeArea(
+          child: SizedBox(
+            height: maxHeight,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: palette.border,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  t.readerTheme,
+                  style: AppTheme.body.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: palette.accent,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 72,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: QuoteBackgrounds.current.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 10),
+                    itemBuilder: (context, index) {
+                      final asset = QuoteBackgrounds.current[index];
+                      final selected = asset == currentAsset;
+                      return GestureDetector(
+                        onTap: () {
+                          QuoteBackgrounds.selected.value = asset;
+                          Navigator.of(sheetContext).pop();
+                        },
+                        child: Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: selected ? palette.accent : palette.border,
+                              width: selected ? 2.4 : 1,
+                            ),
+                          ),
+                          clipBehavior: Clip.hardEdge,
+                          child: Image.asset(
+                            asset,
+                            fit: BoxFit.cover,
+                            filterQuality: visualStyleController.isClean
+                                ? FilterQuality.medium
+                                : FilterQuality.none,
+                            isAntiAlias: visualStyleController.isClean,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Text(
+                  t.readerCategories,
+                  style: AppTheme.body.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: palette.accent,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                for (final main in QuoteRepository.categories) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14, bottom: 2),
+                    child: Text(
+                      t.mainCategoryTitle(main.id),
+                      style: AppTheme.body.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                  ),
+                  for (final sub in main.subCategories)
+                    ListTile(
+                      contentPadding: const EdgeInsets.only(left: 2),
+                      dense: true,
+                      visualDensity: VisualDensity.compact,
+                      minVerticalPadding: 0,
+                      title: Text(
+                        t.subCategoryTitle(sub.id),
+                        style: AppTheme.body.copyWith(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                      trailing: !membershipController.canAccess(main.id)
+                          ? const Icon(
+                              Icons.lock_outline_rounded,
+                              size: 18,
+                              color: AppColors.muted,
+                            )
+                          : main.id == widget.mainCategory.id &&
+                                  sub.id == widget.subCategory.id
+                              ? Icon(
+                                  Icons.check_rounded,
+                                  color: palette.accent,
+                                )
+                              : null,
+                      onTap: () => _openCategory(sheetContext, main, sub),
+                    ),
+                ],
+                const SizedBox(height: 8),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    Icons.favorite_rounded,
+                    color: palette.accent,
+                  ),
+                  title: Text(
+                    t.archiveTitle,
+                    style: AppTheme.body.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => _openArchive(sheetContext),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _openCategory(
+    BuildContext sheetContext,
+    MainCategory main,
+    SubCategory sub,
+  ) {
+    Navigator.of(sheetContext).pop();
+    if (!mounted) return;
+    if (!membershipController.canAccess(main.id)) {
+      _showPremiumLock();
+      return;
+    }
+    if (main.id == widget.mainCategory.id && sub.id == widget.subCategory.id) {
+      return;
+    }
+    selectionController.selectSubCategory(main.id, sub.id);
+    final freshMain = QuoteRepository.byId(main.id);
+    final freshSub = QuoteRepository.subById(main.id, sub.id) ?? sub;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(
+        builder: (_) => QuoteListScreen(
+          mainCategory: freshMain,
+          subCategory: freshSub,
+        ),
+      ),
+    );
+  }
+
+  void _openArchive(BuildContext sheetContext) {
+    Navigator.of(sheetContext).pop();
+    if (!mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const ArchiveScreen(showBack: true),
+      ),
+    );
+  }
+
+  Future<void> _showPremiumLock() async {
+    if (!mounted) return;
+    final t = AppStrings.current;
+    final palette = context.palette;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.card,
+          title: Text(
+            t.premiumLockedTitle,
+            style: AppTheme.body.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          content: Text(
+            t.premiumLockedBody,
+            style: AppTheme.body.copyWith(
+              fontSize: 13.5,
+              height: 1.45,
+              fontWeight: FontWeight.w600,
+              color: AppColors.muted,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(t.premiumLockedDismiss),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                membershipController.setPremium(true);
+              },
+              child: Text(
+                t.premiumLockedCta,
+                style: AppTheme.body.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: palette.accent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _toggleHeart({
     required Quote quote,
     required String categoryTitle,
@@ -122,14 +408,17 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
         localeController,
         archiveController,
         visualStyleController,
+        QuoteBackgrounds.selected,
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
         final title = t.subCategoryTitle(widget.subCategory.id);
-        final quotes = QuoteRepository.quotesFor(
+        final source = QuoteRepository.quotesFor(
           widget.mainCategory.id,
           widget.subCategory.id,
         );
+        _syncOrder(source);
+        final quotes = _order;
         final categoryTitle = t.mainCategoryTitle(widget.mainCategory.id);
         final accent = widget.mainCategory.accent;
         final topInset = MediaQuery.paddingOf(context).top;
@@ -248,6 +537,17 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                     ),
                   ),
                 ),
+                Positioned(
+                  left: 16,
+                  bottom: 20,
+                  child: SafeArea(
+                    top: false,
+                    child: _ReaderMenuButton(
+                      label: t.readerMenu,
+                      onTap: () => _openReaderMenu(context, backgroundAsset),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -291,20 +591,26 @@ class _QuotePage extends StatelessWidget {
               color: AppColors.ink,
             ),
           ),
-          const SizedBox(height: 22),
-          Text(
-            '- ${quote.author}',
-            textAlign: TextAlign.center,
-            style: AppTheme.body.copyWith(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w600,
-              color: AppColors.muted,
+          if (quote.author.trim().isNotEmpty) ...[
+            const SizedBox(height: 22),
+            Text(
+              '- ${quote.author}',
+              textAlign: TextAlign.center,
+              style: AppTheme.body.copyWith(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: AppColors.muted,
+              ),
             ),
-          ),
+          ],
           const Spacer(flex: 2),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(width: 52),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
               _ActionButton(
                 icon: saved
                     ? Icons.favorite_rounded
@@ -320,10 +626,47 @@ class _QuotePage extends StatelessWidget {
                 color: AppColors.ink,
                 onTap: sharing ? null : onShare,
               ),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 28),
         ],
+      ),
+    );
+  }
+}
+
+class _ReaderMenuButton extends StatelessWidget {
+  const _ReaderMenuButton({
+    required this.label,
+    required this.onTap,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.82),
+      shape: const CircleBorder(),
+      elevation: 0,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Tooltip(
+          message: label,
+          child: const Padding(
+            padding: EdgeInsets.all(12),
+            child: Icon(
+              Icons.menu_rounded,
+              size: 26,
+              color: AppColors.ink,
+            ),
+          ),
+        ),
       ),
     );
   }

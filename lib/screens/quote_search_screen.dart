@@ -288,19 +288,20 @@ class _SearchResultCard extends StatelessWidget {
               height: 1.45,
             ),
           ),
-          const SizedBox(height: 10),
+          if (quote.author.trim().isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text(
+              '- ${quote.author}',
+              style: AppTheme.body.copyWith(
+                fontSize: 12,
+                color: AppColors.muted,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  '- ${quote.author}',
-                  style: AppTheme.body.copyWith(
-                    fontSize: 12,
-                    color: AppColors.muted,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+              const Spacer(),
               IconButton(
                 onPressed: () {
                   final nowSaved = archiveController.toggle(

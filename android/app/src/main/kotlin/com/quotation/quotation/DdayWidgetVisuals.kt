@@ -207,8 +207,8 @@ object DdayWidgetVisuals {
     canvas.save()
     canvas.clipPath(clipPath)
 
-    val meScale = (charScale / 100f).coerceIn(0.6f, 1.6f)
-    val frScale = (friendScale / 100f).coerceIn(0.6f, 1.6f)
+    val meScale = (charScale / 100f).coerceIn(0.6f, 2.4f)
+    val frScale = (friendScale / 100f).coerceIn(0.6f, 2.4f)
     val meWDp = (72f * sizeCharFactor * meScale).toInt().coerceAtLeast(20)
     val meHDp = (96f * sizeCharFactor * meScale).toInt().coerceAtLeast(28)
     val meW = (meWDp * density).toInt().coerceAtLeast(8)
@@ -280,9 +280,8 @@ object DdayWidgetVisuals {
               heightDp = friendHDp,
               isPixel = isPixel,
           )
-      // Flutter: right: 4 - friendX. Keep the sprite inside the background.
       val friendLeft =
-          (originX + contentW - (4f - friendOffsetX) * density - friendW).coerceIn(
+          (originX + (4f + friendOffsetX) * density).coerceIn(
               originX,
               (originX + contentW - friendW).coerceAtLeast(originX),
           )

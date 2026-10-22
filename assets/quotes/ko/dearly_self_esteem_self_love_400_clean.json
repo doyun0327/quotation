@@ -1,0 +1,2802 @@
+[
+  {
+    "id": 1,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 있는 그대로도 사랑받을 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 2,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 사랑하는 일은 모든 변화의 시작이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 3,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "다른 사람의 인정이 없어도 너의 가치는 변하지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 4,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "완벽하지 않은 모습까지 너의 일부로 받아들여 줘.\n너의 가치는 오늘의 결과로 달라지지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 5,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신에게도 가장 친한 친구처럼 다정하게 말해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 6,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 가치는 성과나 외모로 결정되지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 7,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 존중하는 마음은 작은 선택에서 시작돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 8,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "누군가와 비교하기보다 어제의 너를 돌아봐.\n너 자신에게도 다정함을 나눠 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 9,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 다른 사람의 기준에 맞춰 살아야 할 이유가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 10,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "실수해도 너를 미워하지 않는 연습을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 11,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 돌보는 일은 이기적인 행동이 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 12,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너의 마음과 필요도 다른 사람만큼 중요해.\n너만의 속도로 성장해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 13,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "모든 사람에게 사랑받지 않아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 14,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 너를 믿어 주는 순간 다시 시작할 힘이 생겨.",
+    "author": "Dearly"
+  },
+  {
+    "id": 15,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 증명하지 않아도 충분히 소중한 사람이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 16,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신을 낮추는 말 대신 자신을 세우는 말을 선택해.\n네가 너의 편이 되어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 17,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 속도와 방식에도 존중받을 이유가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 18,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "있는 그대로의 너를 받아들이는 데 정답은 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 19,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 누군가보다 나아야만 가치 있는 사람이 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 20,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "오늘의 너에게도 따뜻한 말을 건네 줘.\n완벽하지 않아도 충분히 소중해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 21,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 사랑하는 것은 매일 조금씩 배우는 일이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 22,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 가진 장점을 남의 장점과 비교해 작게 만들지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 23,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 감정을 소중하게 여기는 것도 자기 사랑이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 24,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "마음에 들지 않는 부분이 있어도 너 전체를 부정하지 마.\n작은 노력도 너의 일부로 인정해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 25,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 실수보다 훨씬 큰 존재야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 26,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 존중한다면 싫은 일에 아니라고 말해도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 27,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 바라는 삶을 선택할 권리는 너에게 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 28,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자기 사랑은 부족함이 없는 척하는 일이 아니야.\n남의 기준보다 네 마음을 믿어 봐.",
+    "author": "Dearly"
+  },
+  {
+    "id": 29,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 약점도 너를 이해하는 출발점이 될 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 30,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "오늘도 너 자신을 포기하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 31,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 가진 빛은 다른 사람의 빛과 달라도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 32,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신에게 엄격한 만큼 다정함도 허락해 줘.\n너는 사랑받기 위해 증명할 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 33,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가의 무심한 말로 너의 가치를 정하지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 34,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 사랑을 얻기 위해 자신을 바꿀 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 35,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 스스로를 존중할 때 관계의 기준도 선명해져.",
+    "author": "Dearly"
+  },
+  {
+    "id": 36,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너의 작은 성취를 스스로 알아봐 줘.\n스스로를 존중하는 선택을 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 37,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "모든 날에 자신감이 넘칠 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 38,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 믿는 마음은 작은 약속을 지키며 자라나.",
+    "author": "Dearly"
+  },
+  {
+    "id": 39,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 남의 기대를 모두 채우기 위해 존재하지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 40,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 원하는 모습으로 성장할 시간은 충분해.\n너의 장점도 잊지 말고 바라봐 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 41,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 용서하는 것도 용기야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 42,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 너를 대하는 방식이 삶의 분위기를 바꿀 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 43,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 가치를 남의 반응에 맡기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 44,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "사랑받기 위해 완벽할 필요는 없어.\n네가 원하는 삶을 선택할 권리는 너에게 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 45,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 존재만으로도 세상에 고유한 자리가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 46,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 돌보는 일에 죄책감을 느끼지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 47,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "다른 사람의 선택이 너의 매력을 결정하지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 48,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 너만의 방식으로 충분히 빛나고 있어.\n너의 감정에도 귀 기울일 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 49,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "오늘의 부족함이 내일의 가능성을 지우지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 50,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신에게 기회를 한 번 더 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 51,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로에게 건네는 말부터 부드럽게 바꿔 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 52,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너의 경계를 지키는 것은 자신을 아끼는 일이야.\n자신을 아끼는 마음을 오늘도 이어 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 53,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 편안함을 느끼는 삶도 충분히 좋은 삶이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 54,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 가치는 누군가의 관심이 많고 적음으로 달라지지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 55,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 사랑할 때까지 기다리지 말고 오늘부터 아껴 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 56,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 다른 사람과 똑같아질 필요가 없어.\n너의 존재는 비교로 설명할 수 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 57,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 진짜 모습으로 살아갈수록 마음은 자유로워져.",
+    "author": "Dearly"
+  },
+  {
+    "id": 58,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "모든 선택이 완벽하지 않아도 너를 믿어도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 59,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 인정하는 데 허락을 구할 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 60,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 누구의 대체품도 아닌 유일한 너야.\n너에게도 충분한 휴식과 배려가 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 61,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 해낸 일을 우연이라고만 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 62,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로에게도 좋은 것을 받을 자격이 있다고 말해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 63,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 단점만 바라보느라 장점을 놓치지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 64,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "남의 시선보다 네 마음의 목소리를 먼저 들어 봐.\n실수해도 너 자신을 미워하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 65,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 누군가에게 선택받지 못해도 가치 있는 사람이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 66,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑은 자신을 있는 그대로 알아가는 과정이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 67,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 변하고 싶다면 미움보다 애정에서 시작해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 68,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신의 감정을 부끄러워하지 않아도 돼.\n너의 진심을 소중히 여겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 69,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 늘 강하거나 밝아야만 사랑스러운 게 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 70,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 원하는 것을 말하는 일도 자신을 존중하는 방법이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 71,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 삶에 필요한 거리를 정할 권리는 너에게 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 72,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "다른 사람의 성공은 너의 실패가 아니야.\n너는 지금 모습 그대로도 존중받을 만해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 73,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 믿는 데 완벽한 증거가 필요한 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 74,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 개성을 숨기지 않아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 75,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 너를 이해하려는 노력만으로도 성장하고 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 76,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "오늘의 너를 어제의 후회로 벌주지 마.\n작은 성장도 기쁘게 받아들이자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 77,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너에게 맞지 않는 자리에 억지로 머물지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 78,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 사랑한다는 건 자기 편이 되어 주는 일이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 79,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 마음을 지키는 선택은 충분히 용감해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 80,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 쉬는 날에도 가치 있는 사람이야.\n너의 행복을 뒤로 미루지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 81,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가의 사랑을 잃어도 자신에 대한 사랑까지 잃지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 82,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 가진 고유함은 고쳐야 할 결함이 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 83,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 성장은 남에게 보이지 않아도 진짜야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 84,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신을 칭찬하는 일을 어색해하지 말자.\n너의 가치는 오늘의 결과로 달라지지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 85,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 다른 사람의 기준표로 평가될 수 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 86,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너를 작게 만드는 관계보다 너를 존중하는 관계를 선택해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 87,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 꿈을 작게 말하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 88,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 다시 선택하고 새롭게 시작할 수 있어.\n너 자신에게도 다정함을 나눠 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 89,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신의 한계를 인정하는 것도 자기 이해의 일부야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 90,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 늘 생산적이지 않아도 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 91,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 마음에 필요한 것을 알아차리는 일부터 시작하자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 92,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너를 아끼는 사람처럼 너 자신도 대하자.\n너만의 속도로 성장해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 93,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신감이 없어도 한 걸음 내딛을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 94,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 느끼는 불안이 너의 능력을 정의하지는 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 95,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 남의 속도에 맞춰 증명할 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 96,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너 자신을 지지하는 사람이 되어 줘.\n네가 너의 편이 되어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 97,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 선택을 모두가 이해하지 않아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 98,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 사랑받을 자격을 갖추기 위해 더 노력할 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 99,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 존중은 스스로의 마음을 가볍게 여기지 않는 데서 시작돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 100,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너의 이야기는 다른 사람의 이야기와 달라도 아름다워.\n완벽하지 않아도 충분히 소중해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 101,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신에게 두 번째 기회를 주는 것을 잊지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 102,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 오늘도 조금씩 너다운 사람이 되어 가고 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 103,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 사랑하는 마음은 비교를 멈추는 순간 자라나.",
+    "author": "Dearly"
+  },
+  {
+    "id": 104,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너의 존재는 누군가의 평가보다 훨씬 깊어.\n작은 노력도 너의 일부로 인정해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 105,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너를 있는 그대로 받아주는 첫 사람이 네 자신이면 좋겠어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 106,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 가진 다정함을 너에게도 나눠 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 107,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 기준으로 행복을 정의해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 108,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 인정받지 못한 날에도 소중해.\n남의 기준보다 네 마음을 믿어 봐.",
+    "author": "Dearly"
+  },
+  {
+    "id": 109,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 아끼는 마음은 작은 휴식에서도 드러나.",
+    "author": "Dearly"
+  },
+  {
+    "id": 110,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 누구인지 남이 정하게 두지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 111,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 진심을 지키면서도 충분히 사랑받을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 112,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자기 사랑은 자신을 고치는 일보다 이해하는 일에 가까워.\n너는 사랑받기 위해 증명할 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 113,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 가능성은 지금의 자신감보다 클 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 114,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신에게 함부로 말하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 115,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 가치는 한 번의 실패로 줄어들지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 116,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 언제든 새로운 면을 발견할 수 있는 사람이야.\n스스로를 존중하는 선택을 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 117,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 존중하는 사람은 자신의 시간을 소중히 여겨.",
+    "author": "Dearly"
+  },
+  {
+    "id": 118,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 원하는 삶을 선택하는 데 너무 늦은 때는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 119,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 취향과 생각도 존중받을 만해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 120,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신을 사랑하는 데 다른 사람의 동의는 필요 없어.\n너의 장점도 잊지 말고 바라봐 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 121,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 누군가의 관심을 얻기 위해 애쓰지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 122,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 스스로에게 건넨 약속을 지키며 신뢰를 쌓아 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 123,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신의 부족함을 인정해도 자신을 깎아내릴 필요는 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 124,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 늘 누군가에게 맞춰야 하는 사람이 아니야.\n네가 원하는 삶을 선택할 권리는 너에게 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 125,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑은 나를 있는 그대로 바라보는 용기야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 126,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 바뀌어도 너의 소중함은 그대로야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 127,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 장점을 조용히 믿어도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 128,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신에게 친절한 선택을 죄책감 없이 해 보자.\n너의 감정에도 귀 기울일 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 129,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 다른 사람의 시선을 통과해야만 빛나는 존재가 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 130,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 가치는 비교표에 적을 수 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 131,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 믿는 마음은 매일 조금씩 쌓여.",
+    "author": "Dearly"
+  },
+  {
+    "id": 132,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 사랑받기 위해 늘 무언가를 해낼 필요가 없어.\n자신을 아끼는 마음을 오늘도 이어 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 133,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 나답게 웃는 순간을 더 자주 만들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 134,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 돌보는 일을 가장 나중으로 미루지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 135,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 감정은 귀 기울일 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 136,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "누군가와 멀어져도 너 자신과는 가까워지자.\n너의 존재는 비교로 설명할 수 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 137,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 완성되어야만 소중한 사람이 되는 게 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 138,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신의 마음을 지키는 경계는 사랑의 일부야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 139,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 작은 용기를 크게 인정해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 140,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 다른 사람과 다른 길을 가도 괜찮아.\n너에게도 충분한 휴식과 배려가 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 141,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 존중하는 선택이 때로는 외로워도 옳을 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 142,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 존재를 설명하거나 변호하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 143,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 사랑하는 연습은 오늘 한 번 더 자신을 선택하는 거야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 144,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 가진 좋은 점을 당연하게 여기지 마.\n실수해도 너 자신을 미워하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 145,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 부족한 부분이 있어도 충분히 매력적이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 146,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 미워하는 말이 습관이 되지 않게 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 147,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 마음에도 편안히 머물 자리가 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 148,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신을 믿는다는 건 늘 확신하는 것이 아니라 다시 시도하는 거야.\n너의 진심을 소중히 여겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 149,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 다른 사람의 속도보다 너의 방향을 살펴야 해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 150,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 중요하게 여기는 것을 지키며 살아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 151,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑은 자신에게 진실해지는 것에서 시작돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 152,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너의 가치가 흔들리는 날에는 너의 존재를 다시 기억해.\n너는 지금 모습 그대로도 존중받을 만해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 153,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 잘한 날에도 힘든 날에도 같은 사람으로 소중해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 154,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 사랑하는 사람은 자신의 실수도 배움으로 바라봐.",
+    "author": "Dearly"
+  },
+  {
+    "id": 155,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 행복을 사소한 일로 취급하지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 156,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너를 존중하지 않는 곳에 머무는 것이 의무는 아니야.\n작은 성장도 기쁘게 받아들이자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 157,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 선택한 변화는 네 삶을 위한 것이면 충분해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 158,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신에게도 따뜻한 환대를 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 159,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 누구와도 바꿀 수 없는 고유한 사람이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 160,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신의 속마음을 이해하려는 시간이 필요해.\n너의 행복을 뒤로 미루지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 161,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 자존감은 매일의 작은 선택으로 자라날 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 162,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 늘 강한 모습을 보여 줄 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 163,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 사랑하는 일은 타인과의 비교를 줄이는 데서 시작돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 164,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 바라는 존중을 너 자신에게도 보여 줘.\n너의 가치는 오늘의 결과로 달라지지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 165,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 모습 중 아직 익숙하지 않은 부분도 받아들여 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 166,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신의 장점을 발견하는 데 부끄러워하지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 167,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 모든 관계를 유지하기 위해 자신을 잃을 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 168,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자기 사랑은 자신을 무조건 옳다고 여기는 일이 아니야.\n너 자신에게도 다정함을 나눠 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 169,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "잘못을 인정하면서도 자신을 존중할 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 170,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 존재는 성취 목록보다 훨씬 커.",
+    "author": "Dearly"
+  },
+  {
+    "id": 171,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너를 사랑하는 데 특별한 이유가 꼭 필요한 건 아니야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 172,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 오늘도 너 자신을 다시 선택할 수 있어.\n너만의 속도로 성장해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 173,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 마음을 귀하게 여기는 사람들과 함께해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 174,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 믿는 연습은 작은 성공을 기억하는 데서 시작돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 175,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 남의 허락 없이도 너답게 살아갈 수 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 176,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 지켜낸 경계는 너 자신에 대한 존중이야.\n네가 너의 편이 되어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 177,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 불완전함은 너를 인간답게 만들어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 178,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 사랑하는 마음은 단숨에 완성되지 않아도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 179,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 네가 생각하는 것보다 더 많은 가능성을 품고 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 180,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신의 감정을 존중하면 원하는 것도 더 잘 알게 돼.\n완벽하지 않아도 충분히 소중해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 181,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 늘 누군가의 기대에 맞는 답이 될 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 182,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 스스로를 대하는 태도에도 따뜻함을 더해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 183,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 가치를 남의 기분에 맡기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 184,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 모든 것을 잘해야만 자랑스러운 사람이 아니야.\n작은 노력도 너의 일부로 인정해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 185,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑은 자신의 편에 서서 진실을 바라보는 일이야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 186,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 삶에서 너 자신도 중요한 사람이어야 해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 187,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너는 누군가를 실망시켜도 여전히 존중받을 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 188,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너의 내면을 돌보는 시간은 결코 낭비가 아니야.\n남의 기준보다 네 마음을 믿어 봐.",
+    "author": "Dearly"
+  },
+  {
+    "id": 189,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 이해하는 만큼 선택도 더 분명해질 거야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 190,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 개성은 세상에 필요한 색깔 중 하나야.",
+    "author": "Dearly"
+  },
+  {
+    "id": 191,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자신을 존중하는 마음으로 하루를 시작해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 192,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너는 오늘도 충분히 노력하고 있어.\n너는 사랑받기 위해 증명할 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 193,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너의 가치와 오늘의 기분을 같은 것으로 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 194,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너를 아끼는 마음을 말과 행동으로 보여 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 195,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 원하는 삶을 향해 작은 선택을 해도 좋아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 196,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자신을 사랑하는 일은 자기 자신을 알아가는 긴 여행이야.\n스스로를 존중하는 선택을 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 197,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 198,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 199,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 200,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자존감을 지키려면 너의 가치를 결과로만 판단하지 마.\n너의 장점도 잊지 말고 바라봐 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 201,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 202,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 203,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 204,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자존감을 지키려면 너의 존재를 증명하려 애쓰지 않아도 돼.\n네가 원하는 삶을 선택할 권리는 너에게 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 205,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 206,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 207,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 208,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자존감을 지키려면 너 자신을 작게 만들지 말자.\n너의 감정에도 귀 기울일 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 209,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 210,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 211,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 212,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자존감을 지키려면 작은 성장도 소중하게 받아들이자.\n자신을 아끼는 마음을 오늘도 이어 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 213,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 214,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 215,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자존감을 지키려면 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 216,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자존감을 지키려면 완벽하지 않은 너에게도 자리를 내어 주자.\n너의 존재는 비교로 설명할 수 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 217,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 218,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 219,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 220,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자기 사랑을 배우는 동안 너의 가치를 결과로만 판단하지 마.\n너에게도 충분한 휴식과 배려가 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 221,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 222,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 223,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 224,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자기 사랑을 배우는 동안 너의 존재를 증명하려 애쓰지 않아도 돼.\n실수해도 너 자신을 미워하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 225,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 226,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 227,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 228,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자기 사랑을 배우는 동안 너 자신을 작게 만들지 말자.\n너의 진심을 소중히 여겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 229,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 230,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 231,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 232,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자기 사랑을 배우는 동안 작은 성장도 소중하게 받아들이자.\n너는 지금 모습 그대로도 존중받을 만해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 233,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 234,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 235,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "자기 사랑을 배우는 동안 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 236,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "자기 사랑을 배우는 동안 완벽하지 않은 너에게도 자리를 내어 주자.\n작은 성장도 기쁘게 받아들이자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 237,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 238,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 239,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 240,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너 자신을 바라볼 때 너의 가치를 결과로만 판단하지 마.\n너의 행복을 뒤로 미루지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 241,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 242,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 243,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 244,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너 자신을 바라볼 때 너의 존재를 증명하려 애쓰지 않아도 돼.\n너의 가치는 오늘의 결과로 달라지지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 245,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 246,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 247,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 248,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너 자신을 바라볼 때 너 자신을 작게 만들지 말자.\n너 자신에게도 다정함을 나눠 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 249,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 250,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 251,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 252,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너 자신을 바라볼 때 작은 성장도 소중하게 받아들이자.\n너만의 속도로 성장해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 253,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 254,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 255,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "너 자신을 바라볼 때 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 256,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "너 자신을 바라볼 때 완벽하지 않은 너에게도 자리를 내어 주자.\n네가 너의 편이 되어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 257,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 258,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 259,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 260,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "관계 속에서도 너의 가치를 결과로만 판단하지 마.\n완벽하지 않아도 충분히 소중해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 261,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 262,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 263,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 264,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "관계 속에서도 너의 존재를 증명하려 애쓰지 않아도 돼.\n작은 노력도 너의 일부로 인정해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 265,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 266,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 267,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 268,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "관계 속에서도 너 자신을 작게 만들지 말자.\n남의 기준보다 네 마음을 믿어 봐.",
+    "author": "Dearly"
+  },
+  {
+    "id": 269,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 270,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 271,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 272,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "관계 속에서도 작은 성장도 소중하게 받아들이자.\n너는 사랑받기 위해 증명할 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 273,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 274,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 275,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "관계 속에서도 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 276,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "관계 속에서도 완벽하지 않은 너에게도 자리를 내어 주자.\n스스로를 존중하는 선택을 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 277,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 278,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 279,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 280,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "새로운 선택 앞에서 너의 가치를 결과로만 판단하지 마.\n너의 장점도 잊지 말고 바라봐 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 281,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 282,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 283,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 284,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "새로운 선택 앞에서 너의 존재를 증명하려 애쓰지 않아도 돼.\n네가 원하는 삶을 선택할 권리는 너에게 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 285,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 286,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 287,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 288,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "새로운 선택 앞에서 너 자신을 작게 만들지 말자.\n너의 감정에도 귀 기울일 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 289,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 290,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 291,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 292,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "새로운 선택 앞에서 작은 성장도 소중하게 받아들이자.\n자신을 아끼는 마음을 오늘도 이어 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 293,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 294,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 295,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "새로운 선택 앞에서 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 296,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "새로운 선택 앞에서 완벽하지 않은 너에게도 자리를 내어 주자.\n너의 존재는 비교로 설명할 수 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 297,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 298,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 299,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 300,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "마음이 흔들리는 날에는 너의 가치를 결과로만 판단하지 마.\n너에게도 충분한 휴식과 배려가 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 301,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 302,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 303,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 304,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "마음이 흔들리는 날에는 너의 존재를 증명하려 애쓰지 않아도 돼.\n실수해도 너 자신을 미워하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 305,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 306,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 307,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 308,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "마음이 흔들리는 날에는 너 자신을 작게 만들지 말자.\n너의 진심을 소중히 여겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 309,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 310,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 311,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 312,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "마음이 흔들리는 날에는 작은 성장도 소중하게 받아들이자.\n너는 지금 모습 그대로도 존중받을 만해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 313,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 314,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 315,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "마음이 흔들리는 날에는 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 316,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "마음이 흔들리는 날에는 완벽하지 않은 너에게도 자리를 내어 주자.\n작은 성장도 기쁘게 받아들이자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 317,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 318,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 319,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 320,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "성장하는 과정에서 너의 가치를 결과로만 판단하지 마.\n너의 행복을 뒤로 미루지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 321,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 322,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 323,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 324,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "성장하는 과정에서 너의 존재를 증명하려 애쓰지 않아도 돼.\n너의 가치는 오늘의 결과로 달라지지 않아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 325,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 326,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 327,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 328,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "성장하는 과정에서 너 자신을 작게 만들지 말자.\n너 자신에게도 다정함을 나눠 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 329,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 330,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 331,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 332,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "성장하는 과정에서 작은 성장도 소중하게 받아들이자.\n너만의 속도로 성장해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 333,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 334,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 335,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "성장하는 과정에서 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 336,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "성장하는 과정에서 완벽하지 않은 너에게도 자리를 내어 주자.\n네가 너의 편이 되어 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 337,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 338,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 339,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 340,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "스스로를 평가할 때 너의 가치를 결과로만 판단하지 마.\n완벽하지 않아도 충분히 소중해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 341,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 342,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 343,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 344,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "스스로를 평가할 때 너의 존재를 증명하려 애쓰지 않아도 돼.\n작은 노력도 너의 일부로 인정해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 345,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 346,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 347,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 348,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "스스로를 평가할 때 너 자신을 작게 만들지 말자.\n남의 기준보다 네 마음을 믿어 봐.",
+    "author": "Dearly"
+  },
+  {
+    "id": 349,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 350,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 351,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 352,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "스스로를 평가할 때 작은 성장도 소중하게 받아들이자.\n너는 사랑받기 위해 증명할 필요가 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 353,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 354,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 355,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "스스로를 평가할 때 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 356,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "스스로를 평가할 때 완벽하지 않은 너에게도 자리를 내어 주자.\n스스로를 존중하는 선택을 해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 357,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 358,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 359,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 360,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "누군가와 비교하고 싶을 때 너의 가치를 결과로만 판단하지 마.\n너의 장점도 잊지 말고 바라봐 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 361,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 362,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 363,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 364,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "누군가와 비교하고 싶을 때 너의 존재를 증명하려 애쓰지 않아도 돼.\n네가 원하는 삶을 선택할 권리는 너에게 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 365,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 366,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 367,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 368,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "누군가와 비교하고 싶을 때 너 자신을 작게 만들지 말자.\n너의 감정에도 귀 기울일 가치가 있어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 369,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 370,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 371,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 372,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "누군가와 비교하고 싶을 때 작은 성장도 소중하게 받아들이자.\n자신을 아끼는 마음을 오늘도 이어 가자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 373,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 374,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 375,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "누군가와 비교하고 싶을 때 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 376,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "누군가와 비교하고 싶을 때 완벽하지 않은 너에게도 자리를 내어 주자.\n너의 존재는 비교로 설명할 수 없어.",
+    "author": "Dearly"
+  },
+  {
+    "id": 377,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 378,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 379,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 380,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 지쳐 있을 때 너의 가치를 결과로만 판단하지 마.\n너에게도 충분한 휴식과 배려가 필요해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 381,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 네가 중요하게 여기는 것을 잊지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 382,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 자신의 목소리를 먼저 들어 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 383,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 너에게 필요한 속도를 허락해 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 384,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 지쳐 있을 때 너의 존재를 증명하려 애쓰지 않아도 돼.\n실수해도 너 자신을 미워하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 385,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 스스로에게 공정한 시선을 건네자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 386,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 남의 기준보다 너의 진심을 살펴보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 387,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 너의 장점을 당연하게 여기지 마.",
+    "author": "Dearly"
+  },
+  {
+    "id": 388,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 지쳐 있을 때 너 자신을 작게 만들지 말자.\n너의 진심을 소중히 여겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 389,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 네가 원하는 방향을 다시 확인해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 390,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 너의 감정을 부끄러워하지 않아도 돼.",
+    "author": "Dearly"
+  },
+  {
+    "id": 391,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 자신을 존중하는 선택을 해 보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 392,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 지쳐 있을 때 작은 성장도 소중하게 받아들이자.\n너는 지금 모습 그대로도 존중받을 만해.",
+    "author": "Dearly"
+  },
+  {
+    "id": 393,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 너의 행복을 뒤로 미루지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 394,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 너에게도 배려를 나눠 주자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 395,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "네가 지쳐 있을 때 너의 삶을 네 기준으로 바라보자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 396,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "네가 지쳐 있을 때 완벽하지 않은 너에게도 자리를 내어 주자.\n작은 성장도 기쁘게 받아들이자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 397,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "앞으로 나아가려면 너의 마음을 함부로 대하지 말자.",
+    "author": "Dearly"
+  },
+  {
+    "id": 398,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "앞으로 나아가려면 너의 선택을 존중해도 괜찮아.",
+    "author": "Dearly"
+  },
+  {
+    "id": 399,
+    "category": "자존감과 자기 사랑",
+    "length": 1,
+    "text": "앞으로 나아가려면 자신에게 친절할 여지를 남겨 줘.",
+    "author": "Dearly"
+  },
+  {
+    "id": 400,
+    "category": "자존감과 자기 사랑",
+    "length": 2,
+    "text": "앞으로 나아가려면 너의 가치를 결과로만 판단하지 마.\n너의 행복을 뒤로 미루지 않아도 돼.",
+    "author": "Dearly"
+  }
+]
