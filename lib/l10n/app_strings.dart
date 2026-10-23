@@ -24,6 +24,7 @@ class AppStrings {
   String get ddayEmptyHint => _ko
       ? '방을 만들거나, 상단 초대 코드로 참여해 보세요'
       : 'Create a room, or join with an invite code above';
+  String get ddayLeaveRoom => _ko ? '방 나가기' : 'Leave room';
   String get ddayAdd => _ko ? '방 만들기' : 'Create room';
   String get ddayEdit => _ko ? '방 수정' : 'Edit room';
   String get ddayAddSubtitle => _ko
@@ -47,12 +48,12 @@ class AppStrings {
   String get ddayPinnedWidget => _ko ? '위젯에 표시 중' : 'On widget';
   String get ddayDuoBadge => _ko ? '같이' : 'Together';
   String get ddayDuoTestSection =>
-      _ko ? '같이 위젯 꾸미기' : 'Together widget';
+      _ko ? '위젯 꾸미기' : 'Customize widget';
   String get ddayDuoTestUpdatedToast =>
       _ko ? '홈 화면 같이 위젯에 반영했어요' : 'Applied to the Together home widget';
   String get ddayDuoDecorateOpen => _ko ? '위젯 꾸미기' : 'Customize widget';
   String get ddayDuoDecorateTitle =>
-      _ko ? '같이 위젯 꾸미기' : 'Customize Together widget';
+      _ko ? '위젯 꾸미기' : 'Customize widget';
   String get ddayDuoDecorateSubtitle => _ko
       ? '같은 방 친구와 캐릭터 위치를 함께 맞추고, 홈 위젯에 바로 반영해요'
       : 'Place characters with room friends — changes sync to the home widget';
@@ -75,7 +76,11 @@ class AppStrings {
   String get ddayDecorateSizeLabel => _ko ? '위젯 크기' : 'Widget size';
   String get ddayDecorateBgLabel => _ko ? '배경테마' : 'Background theme';
 
-  String get ddayDecorateBgNone => _ko ? '없음' : 'None';
+  String get ddayDecorateBgNone => _ko ? '투명' : 'Transparent';
+  String get ddayDecorateBgAlbum => _ko ? '앨범' : 'Album';
+  String get ddayDecorateBgAlbumFailed => _ko
+      ? '사진을 불러오지 못했어요'
+      : 'Could not open that photo';
   String get ddayDecorateTextColorLabel => _ko ? '글자색' : 'Text color';
   String get ddayDecorateTransparent => _ko ? '투명' : 'Transparent';
   String get ddayDecoratePickColor => _ko ? '색 고르기' : 'Pick a color';
@@ -199,8 +204,8 @@ class AppStrings {
       ? '홈 화면 추가 창이 열렸어요. 추가를 눌러 주세요'
       : 'Add-to-home sheet opened — tap Add to place the widget';
   String get togetherWidgetSyncToast => _ko
-      ? '홈 화면 같이 위젯에 수정 내용을 반영했어요'
-      : 'Updated the Together widget on your home screen';
+      ? '위젯에 수정 내용을 반영했어요!'
+      : 'Widget updated!';
   String get togetherFriendsLabel => _ko ? '같은 방 친구' : 'Friends in room';
   String get togetherSoloFriends =>
       _ko ? '아직 친구가 없어요. 초대해 보세요' : 'No friends yet — invite someone';
@@ -211,7 +216,7 @@ class AppStrings {
   String get save => _ko ? '저장' : 'Save';
   String get delete => _ko ? '삭제' : 'Delete';
 
-  String get brandTitle => 'DAILY WORD';
+  String get brandTitle => 'Dearly';
   String get brandSubtitle => 'FOR A KINDER YOU';
 
   String get todaysFortune => _ko ? '오늘의 운세' : "Today's Fortune";
@@ -243,8 +248,40 @@ class AppStrings {
   String get characterSelectSubtitle => _ko
       ? '나중에 설정에서 언제든 바꿀 수 있어요'
       : 'You can change this anytime in Settings';
+  String get characterWidgetHint => _ko
+      ? '캐릭터와 말풍선을 위젯으로 내보낼 수 있어요!'
+      : 'You can send your character and speech bubble to a widget!';
+  String get characterWidgetHintExport => _ko ? '내보내기' : 'Export';
+  String get characterWidgetHintClose => _ko ? '닫기' : 'Close';
+  String get characterWidgetHintClosed => _ko
+      ? '홈 화면을 길게 눌러 위젯을 추가할 수 있어요!'
+      : 'Long-press the home screen to add the widget!';
   String get characterSelectConfirm => _ko ? '이 캐릭터로 시작' : 'Start with this';
   String get characterChange => _ko ? '캐릭터 변경' : 'Change character';
+  String get shopTitle => _ko ? '상점' : 'Shop';
+  String get characterSettingsTitle =>
+      _ko ? '캐릭터 설정' : 'Character settings';
+  String get shopCategoryCharacter => _ko ? '캐릭터' : 'Characters';
+  String get shopGroupFemale => _ko ? '여' : 'Women';
+  String get shopGroupMale => _ko ? '남' : 'Men';
+  String get shopMaleEmpty =>
+      _ko ? '남자 캐릭터를 준비 중이에요' : 'Male characters are on the way';
+  String get shopAdUnlock => _ko ? '캐릭터 소유하기' : 'Get this character';
+  String get shopAdUnlockBody => _ko
+      ? '영상을 시청하고 새로운 캐릭터를 받아보세요!'
+      : 'Watch a video and get a new character!';
+  String get shopAdConfirm => _ko ? '확인' : 'OK';
+  String shopAdLeft(int n) => _ko
+      ? '광고로 열 수 있는 캐릭터가 $n개 남았어요.'
+      : '$n characters left to unlock with ads.';
+  String get shopNeedPremium => _ko
+      ? '구독하면 캐릭터가 모두 열려요.'
+      : 'Subscribe to unlock every character.';
+  String get shopAdFailed => _ko
+      ? '광고를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'
+      : 'Could not load the ad. Try again shortly.';
+  String get shopUnlocked => _ko ? '캐릭터를 열었어요' : 'Character unlocked';
+  String get shopSubscribe => _ko ? '구독하기' : 'Subscribe';
   String get friendCharacterTitle => _ko ? '친구 캐릭터' : 'Friend character';
   String get friendCharacterSubtitle => _ko
       ? '켜면 같은 방에 들어와요. 서로 고친 위젯이 양쪽 폰에 반영돼요'
@@ -256,13 +293,13 @@ class AppStrings {
   String get friendCharacterFailedToast =>
       _ko ? '같은 방에 들어가지 못했어요' : 'Could not join the shared room';
   String characterName(String id) {
-    switch (id) {
-      case 'bul':
-        return _ko ? '불' : 'Bul';
-      case 'basic':
-      default:
-        return _ko ? '기본' : 'Basic';
+    if (id == 'bul') return _ko ? '불' : 'Bul';
+    if (id == 'basic') return _ko ? '기본' : 'Basic';
+    if (id.startsWith('c')) {
+      final n = id.substring(1);
+      return _ko ? '스타일 $n' : 'Style $n';
     }
+    return _ko ? '기본' : 'Basic';
   }
 
   String get styleSection => _ko ? '화면 스타일' : 'Visual style';
@@ -352,7 +389,25 @@ class AppStrings {
   String get premiumTitle => _ko ? '프리미엄 구독' : 'Premium';
   String get premiumSubtitle =>
       _ko ? '광고 없이 모든 기능을 이용하세요' : 'Enjoy all features without ads';
-  String get viewPremium => _ko ? '프리미엄 보기' : 'View Premium';
+  String get viewPremium => _ko ? '구독하기' : 'Subscribe';
+  String billingError(String code) {
+    switch (code) {
+      case 'missing_key':
+        return _ko
+            ? 'RevenueCat 공개 키가 아직 없어요. 키를 넣은 뒤 다시 눌러 주세요'
+            : 'The RevenueCat public key is missing. Add it, then try again';
+      case 'unavailable':
+        return _ko
+            ? 'Play 스토어 결제를 사용할 수 없어요'
+            : 'Play Store billing is unavailable';
+      case 'not_found':
+        return _ko
+            ? '월 구독 상품을 아직 찾을 수 없어요. RevenueCat 오퍼링을 만든 뒤 다시 눌러 주세요'
+            : 'Monthly plan is not available yet. Create the RevenueCat offering, then try again';
+      default:
+        return _ko ? '구독을 시작하지 못했어요' : 'Could not start the subscription';
+    }
+  }
   String get premiumToast => _ko ? '프리미엄 보기' : 'View Premium';
   String get premiumToggleTitle =>
       _ko ? '프리미엄 (임시)' : 'Premium (temp)';
@@ -369,7 +424,7 @@ class AppStrings {
       ? '이 카테고리는 프리미엄 회원만 볼 수 있어요. 행복한 일상은 무료로 이용할 수 있어요.'
       : 'This category is for premium members. Happy Everyday is free.';
   String get premiumLockedDismiss => _ko ? '닫기' : 'Close';
-  String get premiumLockedCta => _ko ? '프리미엄 켜기' : 'Turn on Premium';
+  String get premiumLockedCta => _ko ? '월 구독하기' : 'Subscribe monthly';
 
   String get otherSection => _ko ? '기타 설정' : 'Other';
   String get eveningDebugTitle =>

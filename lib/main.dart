@@ -5,7 +5,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quotation/ads/interstitial_ads.dart';
 import 'package:quotation/data/auth_controller.dart';
+import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
@@ -52,6 +54,7 @@ Future<void> main() async {
 
   await visualStyleController.load();
   await characterController.load();
+  await membershipController.load();
   await localeController.load();
   await QuoteRepository.initialize();
   localeController.addListener(() {
@@ -66,11 +69,17 @@ Future<void> main() async {
     HomeWidgetSync.syncCharacter();
     unawaited(UserProfileSync.syncCharacter());
   });
-  visualStyleController.addListener(HomeWidgetSync.syncDday);
+  visualStyleController.addListener(() {
+    unawaited(HomeWidgetSync.syncDday());
+    unawaited(HomeWidgetSync.syncFromHome());
+  });
 
   runApp(const QuotationApp());
 
-  unawaited(MobileAds.instance.initialize());
+  unawaited(MobileAds.instance.initialize().then((_) {
+    InterstitialAds.preload();
+  }));
+  unawaited(billingController.initialize());
   unawaited(HomeWidgetSync.initialize());
   unawaited(TogetherFcm.start(appNavigatorKey));
   unawaited(EncouragementNotificationScheduler.initialize());
@@ -128,30 +137,30 @@ class _QuotationAppState extends State<QuotationApp> {
       builder: (context, _) {
         return MaterialApp(
           navigatorKey: appNavigatorKey,
-          title: 'Daily Word',
+          title: 'Dearly',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(themeController.palette),
           locale: Locale(localeController.language.id),
           builder: (context, child) {
             final media = MediaQuery.of(context);
             final showAd = !membershipController.isPremium;
+            var data = media.copyWith(
+              textScaler: TextScaler.linear(fontScaleController.scale),
+            );
+            if (showAd) {
+              data = data.removePadding(removeBottom: true);
+            }
             return MediaQuery(
-              data: media.copyWith(
-                textScaler: TextScaler.linear(fontScaleController.scale),
-              ),
+              data: data,
               child: Column(
                 children: [
                   Expanded(
-                    child: MediaQuery.removePadding(
-                      context: context,
-                      removeBottom: showAd,
-                      child: KeyedSubtree(
-                        key: ValueKey(
-                          '${visualStyleController.style.id}_'
-                          '${characterController.character.id}',
-                        ),
-                        child: child ?? const SizedBox.shrink(),
+                    child: KeyedSubtree(
+                      key: ValueKey(
+                        '${visualStyleController.style.id}_'
+                        '${characterController.character.id}',
                       ),
+                      child: child ?? const SizedBox.shrink(),
                     ),
                   ),
                   if (showAd)

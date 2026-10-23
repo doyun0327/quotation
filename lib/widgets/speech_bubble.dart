@@ -26,90 +26,73 @@ class SpeechBubble extends StatelessWidget {
     final palette = context.palette;
     final clean = visualStyleController.isClean;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final maxW = constraints.maxWidth;
-        final maxH = constraints.maxHeight;
-        final width = !maxW.isFinite || maxW <= 0 ? 220.0 : maxW;
-        final height = !maxH.isFinite || maxH <= 0
-            ? 120.0
-            : maxH.clamp(100.0, 132.0);
-
-        return SizedBox(
-          width: width,
-          height: height,
-          child: Stack(
-            fit: StackFit.expand,
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: CustomPaint(
+            painter: _RectBubblePainter(
+              fill: AppColors.card,
+              border: palette.border,
+              shadow: clean
+                  ? const Color(0x18000000)
+                  : const Color(0x14000000),
+              radius: clean ? 22 : _radius,
+              tailHeight: _tailHeight,
+              soft: clean,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 10 + _tailHeight),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomPaint(
-                painter: _RectBubblePainter(
-                  fill: AppColors.card,
-                  border: palette.border,
-                  shadow: clean
-                      ? const Color(0x18000000)
-                      : const Color(0x14000000),
-                  radius: clean ? 22 : _radius,
-                  tailHeight: _tailHeight,
-                  soft: clean,
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onMessageTap,
+                  borderRadius: BorderRadius.circular(clean ? 16 : 10),
+                  child: Text(
+                    message,
+                    softWrap: true,
+                    style: AppTheme.body.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      height: 1.4,
+                      color: AppColors.ink,
+                    ),
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 10 + _tailHeight),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: onMessageTap,
-                          borderRadius: BorderRadius.circular(clean ? 16 : 10),
-                          child: SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            child: Text(
-                              message,
-                              softWrap: true,
-                              style: AppTheme.body.copyWith(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                height: 1.4,
-                                color: AppColors.ink,
-                              ),
-                            ),
-                          ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: onHeartTap,
+                    customBorder: const CircleBorder(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 160),
+                        child: Icon(
+                          isSaved
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          key: ValueKey(isSaved),
+                          size: 20,
+                          color: AppColors.heart,
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: onHeartTap,
-                          customBorder: const CircleBorder(),
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 160),
-                              child: Icon(
-                                isSaved
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded,
-                                key: ValueKey(isSaved),
-                                size: 20,
-                                color: AppColors.heart,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

@@ -13,9 +13,11 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/quote_repository.dart';
 import 'package:quotation/firebase_options.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/screens/main_shell.dart';
+import 'package:quotation/screens/quote_list_screen.dart';
 import 'package:quotation/screens/together_room_screen.dart';
 
 @pragma('vm:entry-point')
@@ -200,17 +202,59 @@ abstract final class TogetherFcm {
     unawaited(openRoomFromNotice(response.payload));
   }
 
-  /// Home-screen together widget tap: `dearly://together?room={id}`.
+  /// Home-screen widget tap.
+  /// Character bubble: `dearly://quote?id=&category=&sub=`
+  /// Together: `dearly://together?room={id}`.
   static Future<void> openFromHomeWidget(Uri? uri) async {
-    if (uri == null || uri.scheme != 'dearly' || uri.host != 'together') {
+    if (uri == null || uri.scheme != 'dearly') return;
+    if (uri.host == 'quote') {
+      await _openQuote(uri);
       return;
     }
+    if (uri.host != 'together') return;
     final room = uri.queryParameters['room']?.trim() ?? '';
     if (room.isEmpty) {
       mainShellTab.value = 1;
       return;
     }
     await openRoomFromNotice(room);
+  }
+
+  static Future<void> _openQuote(Uri uri) async {
+    final id = uri.queryParameters['id']?.trim() ?? '';
+    final now = DateTime.now();
+    final key = 'quote:$id';
+    if (_lastOpenedRoom == key &&
+        _lastOpenedAt != null &&
+        now.difference(_lastOpenedAt!) < const Duration(seconds: 2)) {
+      return;
+    }
+    _lastOpenedRoom = key;
+    _lastOpenedAt = now;
+    mainShellTab.value = 0;
+    if (id.isEmpty) return;
+    final located = QuoteRepository.locateQuote(
+      id,
+      categoryId: uri.queryParameters['category'],
+      subId: uri.queryParameters['sub'],
+    );
+    if (located == null) return;
+    for (var attempt = 0; attempt < 8; attempt++) {
+      final nav = navigatorKey?.currentState;
+      if (nav != null) {
+        await nav.push(
+          MaterialPageRoute<void>(
+            builder: (_) => QuoteListScreen(
+              mainCategory: located.main,
+              subCategory: located.sub,
+              initialIndex: located.index,
+            ),
+          ),
+        );
+        return;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+    }
   }
 
   static Future<void> openRoomFromNotice(String? roomId) async {

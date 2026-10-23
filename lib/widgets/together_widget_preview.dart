@@ -1,9 +1,33 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 
 typedef TogetherWidgetPanDelta = void Function(double dx, double dy);
+
+Widget _backgroundImage(String path, bool isPixel) {
+  final quality = isPixel ? FilterQuality.none : FilterQuality.medium;
+  if (path.startsWith('assets/')) {
+    return Image.asset(
+      path,
+      fit: BoxFit.fill,
+      filterQuality: quality,
+      isAntiAlias: !isPixel,
+      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+    );
+  }
+  return Image.file(
+    File(path),
+    key: ValueKey(path),
+    fit: BoxFit.cover,
+    gaplessPlayback: false,
+    filterQuality: quality,
+    isAntiAlias: !isPixel,
+    errorBuilder: (_, _, _) => const SizedBox.shrink(),
+  );
+}
 
 /// Shared preview for the Together home widget (solo / duo).
 class TogetherWidgetPreview extends StatelessWidget {
@@ -14,6 +38,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     required this.charW,
     required this.charH,
     required this.label,
+    this.labelListenable,
     required this.me,
     required this.friend,
     required this.meX,
@@ -50,6 +75,8 @@ class TogetherWidgetPreview extends StatelessWidget {
   final double charW;
   final double charH;
   final String label;
+  /// Typed cheer. When set, only the label rebuilds while the user types.
+  final ValueNotifier<String>? labelListenable;
   final AppCharacter me;
   final AppCharacter? friend;
   final double meX;
@@ -280,13 +307,7 @@ class TogetherWidgetPreview extends StatelessWidget {
           if (hasImage)
             Positioned.fill(
               child: RepaintBoundary(
-                child: Image.asset(
-                  bgAssetPath!,
-                  fit: BoxFit.fill,
-                  filterQuality:
-                      isPixel ? FilterQuality.none : FilterQuality.medium,
-                  isAntiAlias: !isPixel,
-                ),
+                child: _backgroundImage(bgAssetPath!, isPixel),
               ),
             ),
           Positioned(
@@ -304,10 +325,9 @@ class TogetherWidgetPreview extends StatelessWidget {
                   constraints: BoxConstraints(maxWidth: innerW),
                   child: Stack(
                     children: [
-                      Text(
-                        label.trim().isEmpty ? ' ' : label,
-                        textAlign: TextAlign.center,
-                        textScaler: TextScaler.noScaling,
+                      _LiveCheerText(
+                        label: label,
+                        labelListenable: labelListenable,
                         style: labelStyle,
                       ),
                       if (highlightText)
@@ -331,6 +351,39 @@ class TogetherWidgetPreview extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// Cheer label that follows typing without rebuilding the rest of the preview.
+class _LiveCheerText extends StatelessWidget {
+  const _LiveCheerText({
+    required this.label,
+    required this.style,
+    this.labelListenable,
+  });
+
+  final String label;
+  final TextStyle style;
+  final ValueNotifier<String>? labelListenable;
+
+  @override
+  Widget build(BuildContext context) {
+    final listenable = labelListenable;
+    if (listenable == null) return _text(label);
+    return ValueListenableBuilder<String>(
+      valueListenable: listenable,
+      builder: (context, draft, _) => _text(draft),
+    );
+  }
+
+  Widget _text(String value) {
+    final shown = value.trim();
+    return Text(
+      shown.isEmpty ? ' ' : shown,
+      textAlign: TextAlign.center,
+      textScaler: TextScaler.noScaling,
+      style: style,
     );
   }
 }

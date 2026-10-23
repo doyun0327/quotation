@@ -11,6 +11,10 @@ abstract final class QuoteRepository {
   static List<Quote> _gratitudeEn = const [];
   static List<Quote> _loveKo = const [];
   static List<Quote> _loveEn = const [];
+  static List<Quote> _fortuneKo = const [];
+  static List<Quote> _fortuneEn = const [];
+  static List<Quote> _famousKo = const [];
+  static List<Quote> _famousEn = const [];
 
   static List<MainCategory> categories = _buildCategories();
 
@@ -35,8 +39,54 @@ abstract final class QuoteRepository {
       final loaded = localeController.isKorean ? _loveKo : _loveEn;
       if (loaded.isNotEmpty) return loaded;
     }
+    if (mainId == 'literature' && subId == 'quotes') {
+      final loaded = localeController.isKorean ? _famousKo : _famousEn;
+      if (loaded.isNotEmpty) return loaded;
+    }
     final key = '$mainId:$subId';
     return _overrides[key] ?? quoteBank[key] ?? const <Quote>[];
+  }
+
+  /// Finds the deck that contains [quoteId], including loaded quote files.
+  static ({MainCategory main, SubCategory sub, int index})? locateQuote(
+    String quoteId, {
+    String? categoryId,
+    String? subId,
+  }) {
+    final id = quoteId.trim();
+    if (id.isEmpty) return null;
+    final preferred = <MainCategory>[];
+    if (categoryId != null && categoryId.isNotEmpty) {
+      preferred.add(byId(categoryId));
+    }
+    final rest = [
+      for (final category in categories)
+        if (!preferred.any((item) => item.id == category.id)) category,
+    ];
+    for (final main in [...preferred, ...rest]) {
+      final subs = <SubCategory>[];
+      if (subId != null &&
+          subId.isNotEmpty &&
+          preferred.isNotEmpty &&
+          main.id == preferred.first.id) {
+        final chosen = subById(main.id, subId);
+        if (chosen != null) subs.add(chosen);
+      }
+      for (final sub in main.subCategories) {
+        if (!subs.any((item) => item.id == sub.id)) subs.add(sub);
+      }
+      for (final sub in subs) {
+        final quotes = quotesFor(main.id, sub.id);
+        final index = quotes.indexWhere((quote) => quote.id == id);
+        if (index >= 0) return (main: main, sub: sub, index: index);
+      }
+    }
+    return null;
+  }
+
+  /// Fortune lines for the current language.
+  static List<Quote> fortuneQuotesForLocale() {
+    return localeController.isKorean ? _fortuneKo : _fortuneEn;
   }
 
   /// Gratitude and love sentences for the current language.
@@ -61,6 +111,10 @@ abstract final class QuoteRepository {
         QuoteAssetLoader.loadGratitude(korean: false),
         QuoteAssetLoader.loadLove(korean: true),
         QuoteAssetLoader.loadLove(korean: false),
+        QuoteAssetLoader.loadFortune(korean: true),
+        QuoteAssetLoader.loadFortune(korean: false),
+        QuoteAssetLoader.loadFamous(korean: true),
+        QuoteAssetLoader.loadFamous(korean: false),
       ]);
       final christian = results[0];
       final buddhism = results[1];
@@ -68,6 +122,10 @@ abstract final class QuoteRepository {
       _gratitudeEn = results[3];
       _loveKo = results[4];
       _loveEn = results[5];
+      _fortuneKo = results[6];
+      _fortuneEn = results[7];
+      _famousKo = results[8];
+      _famousEn = results[9];
       var changed = false;
 
       if (christian.isNotEmpty) {
@@ -82,7 +140,9 @@ abstract final class QuoteRepository {
           _gratitudeKo.isNotEmpty ||
           _gratitudeEn.isNotEmpty ||
           _loveKo.isNotEmpty ||
-          _loveEn.isNotEmpty) {
+          _loveEn.isNotEmpty ||
+          _famousKo.isNotEmpty ||
+          _famousEn.isNotEmpty) {
         categories = _buildCategories();
       }
     } catch (_) {

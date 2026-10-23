@@ -4,6 +4,7 @@ import 'dart:ui' show Size;
 
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
+import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -390,6 +391,7 @@ class DdayController extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    await WidgetAlbumBackground.load();
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_prefsKey);
     _items.clear();

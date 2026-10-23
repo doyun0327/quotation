@@ -5,11 +5,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.media.ExifInterface
 import android.os.Build
 import android.text.Layout
 import android.text.StaticLayout
@@ -24,6 +26,19 @@ import kotlin.math.roundToInt
 object DdayWidgetVisuals {
   fun drawableFor(characterId: String): Int {
     return if (characterId == "bul") R.drawable.character_bul else R.drawable.character
+  }
+
+  /** Flutter asset for a shop character. Falls back to the default sprite. */
+  fun assetFor(characterId: String): String {
+    if (characterId == "c65") return "assets/images/character/character(65).png"
+    if (characterId.startsWith("c")) {
+      val n = characterId.removePrefix("c").toIntOrNull()
+      if (n != null && n in 1..64) {
+        return "assets/images/character/character ($n).png"
+      }
+    }
+    if (characterId == "bul") return "assets/images/character/character (1).png"
+    return "assets/images/character/character.png"
   }
 
   /** Same cell grid as Flutter [TogetherWidgetSize]. */
@@ -190,8 +205,12 @@ object DdayWidgetVisuals {
             isFilterBitmap = !isPixel
             isAntiAlias = !isPixel
           }
-      // Stretch the image to the widget. No solid color behind it.
-      canvas.drawBitmap(themeBmp, null, Rect(0, 0, w, h), paint)
+      val dest = Rect(0, 0, w, h)
+      if (isPhotoFile(bgAssetPath)) {
+        drawCover(canvas, themeBmp, dest, paint)
+      } else {
+        canvas.drawBitmap(themeBmp, null, dest, paint)
+      }
       canvas.restore()
       themeBmp.recycle()
     }
@@ -355,6 +374,21 @@ object DdayWidgetVisuals {
     return bitmap
   }
 
+  /**
+   * RemoteViews parcels fail once a bitmap is about 1MB.
+   * ImageViews scale the result back up, so a smaller bitmap still fills the widget.
+   */
+  fun fitBitmap(source: Bitmap, maxEdge: Int): Bitmap {
+    val longest = max(source.width, source.height)
+    if (longest <= maxEdge) return source
+    val scale = maxEdge.toFloat() / longest
+    val w = (source.width * scale).roundToInt().coerceAtLeast(1)
+    val h = (source.height * scale).roundToInt().coerceAtLeast(1)
+    val scaled = Bitmap.createScaledBitmap(source, w, h, true)
+    if (scaled != source) source.recycle()
+    return scaled
+  }
+
   /** Character art; nearest-neighbor when pixel so sprites stay crisp. */
   fun characterBitmap(
       context: Context,
@@ -363,11 +397,12 @@ object DdayWidgetVisuals {
       heightDp: Int,
       isPixel: Boolean,
   ): Bitmap {
-    val resId = drawableFor(characterId)
     val w = dp(context, widthDp).coerceAtLeast(8)
     val h = dp(context, heightDp).coerceAtLeast(8)
+    val resId = drawableFor(characterId)
     val src =
-        BitmapFactory.decodeResource(context.resources, resId)
+        decodeFlutterAsset(context, assetFor(characterId))
+            ?: BitmapFactory.decodeResource(context.resources, resId)
             ?: run {
               val drawable =
                   ResourcesCompat.getDrawable(context.resources, resId, null)
@@ -437,14 +472,105 @@ object DdayWidgetVisuals {
     return Typeface.DEFAULT
   }
 
+  /** Gallery photos are absolute files. Bundled themes stay in assets. */
+  private fun isPhotoFile(assetPath: String?): Boolean {
+    if (assetPath.isNullOrBlank()) return false
+    return assetPath.startsWith("/") || assetPath.startsWith("file://")
+  }
+
+  /** Fill [dest] without stretching. Extra edges are cropped. */
+  private fun drawCover(canvas: Canvas, bitmap: Bitmap, dest: Rect, paint: Paint) {
+    val srcW = bitmap.width.toFloat()
+    val srcH = bitmap.height.toFloat()
+    if (srcW <= 0f || srcH <= 0f) return
+    val dstW = dest.width().toFloat()
+    val dstH = dest.height().toFloat()
+    val scale = max(dstW / srcW, dstH / srcH)
+    val cropW = dstW / scale
+    val cropH = dstH / scale
+    val left = ((srcW - cropW) / 2f).roundToInt().coerceAtLeast(0)
+    val top = ((srcH - cropH) / 2f).roundToInt().coerceAtLeast(0)
+    val right = (left + cropW.roundToInt()).coerceAtMost(bitmap.width)
+    val bottom = (top + cropH.roundToInt()).coerceAtMost(bitmap.height)
+    if (right <= left || bottom <= top) {
+      canvas.drawBitmap(bitmap, null, dest, paint)
+      return
+    }
+    canvas.drawBitmap(bitmap, Rect(left, top, right, bottom), dest, paint)
+  }
+
+  /** Downsample and honor camera rotation so a gallery photo stays intact. */
+  private fun decodePhotoFile(filePath: String): Bitmap? {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(filePath, bounds)
+    if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+    val maxEdge = 1600
+    var sample = 1
+    while (bounds.outWidth / sample > maxEdge || bounds.outHeight / sample > maxEdge) {
+      sample *= 2
+    }
+    val decoded =
+        BitmapFactory.decodeFile(
+            filePath,
+            BitmapFactory.Options().apply { inSampleSize = sample },
+        ) ?: return null
+    val orientation =
+        try {
+          ExifInterface(filePath).getAttributeInt(
+              ExifInterface.TAG_ORIENTATION,
+              ExifInterface.ORIENTATION_NORMAL,
+          )
+        } catch (_: Exception) {
+          ExifInterface.ORIENTATION_NORMAL
+        }
+    val matrix = Matrix()
+    when (orientation) {
+      ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+      ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+      ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+      ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.preScale(-1f, 1f)
+      ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.preScale(1f, -1f)
+      ExifInterface.ORIENTATION_TRANSPOSE -> {
+        matrix.postRotate(90f)
+        matrix.preScale(-1f, 1f)
+      }
+      ExifInterface.ORIENTATION_TRANSVERSE -> {
+        matrix.postRotate(270f)
+        matrix.preScale(-1f, 1f)
+      }
+      else -> return decoded
+    }
+    val rotated =
+        Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true)
+    if (rotated != decoded) decoded.recycle()
+    return rotated
+  }
+
   /** Load a Flutter asset (e.g. assets/images/…) from the APK AssetManager. */
   fun decodeFlutterAsset(context: Context, assetPath: String?): Bitmap? {
     if (assetPath.isNullOrBlank()) return null
+    val filePath = when {
+      assetPath.startsWith("file://") -> assetPath.removePrefix("file://")
+      assetPath.startsWith("/") -> assetPath
+      else -> null
+    }
+    if (filePath != null) {
+      return try {
+        decodePhotoFile(filePath)
+      } catch (_: Throwable) {
+        null
+      }
+    }
+    // Flutter stores spaces in asset file names as %20 inside the APK.
+    val encoded = assetPath.replace(" ", "%20")
     val candidates =
         listOf(
+            "flutter_assets/$encoded",
             "flutter_assets/$assetPath",
+            encoded,
             assetPath,
             assetPath.removePrefix("assets/").let { "flutter_assets/assets/$it" },
+            encoded.removePrefix("assets/").let { "flutter_assets/assets/$it" },
         )
     for (path in candidates) {
       try {

@@ -12,6 +12,9 @@ class TogetherBgTheme {
 
   bool get isNone => assetPath.isEmpty;
 
+  /// Photo picked from the device album. The file path is stored separately.
+  static const albumId = 'album';
+
   static const none = TogetherBgTheme(id: 'none', assetPath: '');
 
   /// Themes from [assets/images/widgetbackground/].
@@ -37,6 +40,7 @@ class TogetherBgTheme {
 
   static TogetherBgTheme byId(String? id) {
     if (id == null || id.isEmpty) return none;
+    if (id == albumId) return const TogetherBgTheme(id: albumId, assetPath: '');
     for (final t in all) {
       if (t.id == id) return t;
     }

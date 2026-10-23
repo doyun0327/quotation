@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
-import 'package:quotation/data/character_controller.dart';
-import 'package:quotation/data/dday_controller.dart';
-import 'package:quotation/data/encouragement_notification_scheduler.dart';
+import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
-import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
-import 'package:quotation/screens/character_select_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -65,6 +61,12 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _subscribe(BuildContext context) async {
+    final code = await billingController.buyMonthly();
+    if (!context.mounted || code == null) return;
+    _toast(context, AppStrings.current.billingError(code));
+  }
+
   Future<void> _signOut(BuildContext context) async {
     await authController.signOut();
     if (!context.mounted) return;
@@ -82,10 +84,8 @@ class SettingsScreen extends StatelessWidget {
         themeController,
         visualStyleController,
         membershipController,
+        billingController,
         authController,
-        characterController,
-        ddayController,
-        togetherTestRoom,
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
@@ -95,7 +95,6 @@ class SettingsScreen extends StatelessWidget {
         final isPremium = membershipController.isPremium;
         final user = authController.user;
         final signedIn = user != null;
-        final character = characterController.character;
         return Scaffold(
           backgroundColor: AppColors.background,
           body: SafeArea(
@@ -178,10 +177,13 @@ class SettingsScreen extends StatelessWidget {
                             iconColor: palette.accent,
                             trailing: SettingsOutlineButton(
                               label: t.viewPremium,
-                              onPressed: () =>
-                                  _toast(context, t.premiumToast),
+                              onPressed: billingController.isBusy
+                                  ? null
+                                  : () => _subscribe(context),
                             ),
-                            onTap: () => _toast(context, t.premiumToast),
+                            onTap: billingController.isBusy
+                                ? null
+                                : () => _subscribe(context),
                           ),
                           SettingsItem(
                             icon: Icons.workspace_premium_rounded,
@@ -241,88 +243,6 @@ class SettingsScreen extends StatelessWidget {
                                 next.languageChanged(selected.label(selected)),
                               );
                             },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      SettingsSection(
-                        title: t.characterSection,
-                        children: [
-                          SettingsItem(
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
-                                character.assetPath,
-                                width: 42,
-                                height: 42,
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.medium,
-                              ),
-                            ),
-                            title: t.characterTitle,
-                            subtitle: t.characterSubtitle,
-                            trailing: SettingsOutlineButton(
-                              label: t.characterChange,
-                              onPressed: () async {
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) =>
-                                        const CharacterSelectScreen(
-                                      allowSkip: true,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            onTap: () async {
-                              await Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) =>
-                                      const CharacterSelectScreen(
-                                    allowSkip: true,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      SettingsSection(
-                        title: t.friendCharacterTitle,
-                        children: [
-                          SettingsItem(
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
-                                togetherTestRoom.friendCharacter.assetPath,
-                                width: 42,
-                                height: 42,
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.medium,
-                              ),
-                            ),
-                            title: t.friendCharacterTitle,
-                            subtitle: t.friendCharacterSubtitle,
-                            trailing: Switch.adaptive(
-                              value: togetherTestRoom.enabled,
-                              activeTrackColor: palette.accent,
-                              onChanged: togetherTestRoom.busy
-                                  ? null
-                                  : (value) async {
-                                      final ok = await togetherTestRoom
-                                          .setEnabled(value);
-                                      if (!context.mounted) return;
-                                      _toast(
-                                        context,
-                                        ok
-                                            ? (value
-                                                ? t.friendCharacterOnToast
-                                                : t.friendCharacterOffToast)
-                                            : t.friendCharacterFailedToast,
-                                      );
-                                    },
-                            ),
                           ),
                         ],
                       ),
@@ -417,18 +337,6 @@ class SettingsScreen extends StatelessWidget {
                       SettingsSection(
                         title: t.otherSection,
                         children: [
-                          SettingsItem(
-                            icon: Icons.nights_stay_outlined,
-                            title: t.eveningDebugTitle,
-                            subtitle: t.eveningDebugSubtitle,
-                            onTap: () async {
-                              await EncouragementNotificationScheduler
-                                  .debugShowEveningOnce();
-                              if (context.mounted) {
-                                _toast(context, t.eveningDebugToast);
-                              }
-                            },
-                          ),
                           SettingsItem(
                             icon: Icons.description_outlined,
                             title: t.termsTitle,

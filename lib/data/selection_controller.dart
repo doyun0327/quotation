@@ -66,18 +66,10 @@ class SelectionController extends ChangeNotifier {
     return all.isEmpty ? _fallbackBubble : all;
   }
 
-  /// Fortune pool. English uses the English quote files only.
-  /// Korean free uses daily files; Korean premium uses every category.
+  /// One line from the language's fortune file.
   List<Quote> get _fortunePool {
-    if (!localeController.isKorean || !membershipController.isPremium) {
-      final daily = QuoteRepository.dailyQuotesForLocale();
-      return daily.isEmpty ? _fallbackFortune : daily;
-    }
-
-    final all = [
-      for (final category in QuoteRepository.categories) ...category.allQuotes,
-    ];
-    return all.isEmpty ? _fallbackFortune : all;
+    final loaded = QuoteRepository.fortuneQuotesForLocale();
+    return loaded.isEmpty ? _fallbackFortune : loaded;
   }
 
   String get _todayKey {
@@ -94,8 +86,6 @@ class SelectionController extends ChangeNotifier {
       _mainCategoryId = MembershipController.freeCategoryId;
       _subCategoryId = null;
     }
-    _fortuneDayKey = null;
-    _ensureDailyFortune();
     _refreshBubble();
     notifyListeners();
   }
@@ -120,15 +110,11 @@ class SelectionController extends ChangeNotifier {
   }
 
   void _ensureDailyFortune() {
-    final dayKey = _todayKey;
-    final membershipKey =
-        membershipController.isPremium ? 'premium' : 'free';
-    final cacheKey =
-        '$dayKey:$membershipKey:${localeController.language.id}';
+    final cacheKey = '$_todayKey:${localeController.language.id}';
     if (_fortuneDayKey == cacheKey && _fortuneQuote != null) return;
 
     final pool = _fortunePool;
-    // Same calendar day + membership tier → same fortune.
+    // Same calendar day and language → same fortune.
     final index = Random(cacheKey.hashCode).nextInt(pool.length);
     _fortuneQuote = pool[index];
     _fortuneDayKey = cacheKey;

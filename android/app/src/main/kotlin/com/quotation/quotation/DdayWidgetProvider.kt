@@ -3,9 +3,14 @@ package com.quotation.quotation
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
 import android.widget.RemoteViews
+import kotlin.math.max
 import kotlin.math.roundToInt
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetPlugin
@@ -44,6 +49,19 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
   }
 
   private fun updateOne(
+      context: Context,
+      appWidgetManager: AppWidgetManager,
+      widgetId: Int,
+      widgetData: SharedPreferences,
+  ) {
+    try {
+      drawOne(context, appWidgetManager, widgetId, widgetData)
+    } catch (e: Exception) {
+      Log.e(TAG, "together widget update failed id=$widgetId", e)
+    }
+  }
+
+  private fun drawOne(
       context: Context,
       appWidgetManager: AppWidgetManager,
       widgetId: Int,
@@ -134,7 +152,10 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
               )
           setOnClickPendingIntent(R.id.dday_widget_root, launchIntent)
           setOnClickPendingIntent(R.id.dday_composite, launchIntent)
-          setImageViewBitmap(R.id.dday_composite, composite)
+          setImageViewBitmap(
+              R.id.dday_composite,
+              DdayWidgetVisuals.fitBitmap(composite, 480),
+          )
         }
 
     // Let Flutter decorate preview use the same dp + corner as this host.
@@ -167,6 +188,109 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
         .apply()
 
     appWidgetManager.updateAppWidget(widgetId, views)
+  }
+
+  /**
+   * Preview shown in the system "add to home screen" sheet.
+   * Uses the room the app just saved, so the sheet matches the decorated widget.
+   */
+  fun buildPinPreview(context: Context, sizeId: String): RemoteViews {
+    val prefs = HomeWidgetPlugin.getData(context)
+    val normalized = normalizeSize(sizeId)
+    val pending = readString(prefs, "ddayPendingRoomId")
+    val roomId = if (pending.isNotBlank()) pending else readString(prefs, "ddayRoomId")
+    val room = readJson(prefs, "ddayRoomsJson").optJSONObject(roomId)
+    val label = roomStr(room, "label", readString(prefs, "ddayLabel"))
+    val meId = roomStr(room, "me", readString(prefs, "ddayCharMe")).ifBlank { "basic" }
+    val friendId = roomStr(room, "friend", readString(prefs, "ddayCharFriend"))
+    val style = readString(prefs, "visualStyle").ifBlank { "pixel" }
+    val meOffsetX = roomInt(room, "meX", readInt(prefs, "ddayMeOffsetX", 0))
+    val meOffsetY = roomInt(room, "meY", readInt(prefs, "ddayMeOffsetY", 0))
+    val friendOffsetX = roomInt(room, "friendX", readInt(prefs, "ddayFriendOffsetX", 0))
+    val friendOffsetY = roomInt(room, "friendY", readInt(prefs, "ddayFriendOffsetY", 0))
+    val textOffsetX = roomInt(room, "textX", readInt(prefs, "ddayTextOffsetX", 0))
+    val textOffsetY = roomInt(room, "textY", readInt(prefs, "ddayTextOffsetY", 0))
+    val charScale = roomInt(room, "charScale", readInt(prefs, "ddayCharScale", 100)).coerceIn(60, 240)
+    val friendScale =
+        roomInt(room, "friendScale", readInt(prefs, "ddayFriendCharScale", charScale))
+            .coerceIn(60, 240)
+    val textScale =
+        roomInt(room, "textScale", readInt(prefs, "ddayTextScale", 100)).coerceIn(60, 240)
+    val bgAsset = roomStr(room, "bgAsset", readString(prefs, "ddayBgAsset"))
+    val textColor =
+        DdayWidgetVisuals.parseArgb(
+            roomStr(room, "textColor", readString(prefs, "ddayTextColor")).ifBlank { null },
+            default = 0xFFF26B8A.toInt(),
+        )
+    val isPixel = style != "clean"
+    val screenWidthDp = readInt(prefs, "ddayScreenWidthDp", 0).let { saved ->
+      if (saved > 0) {
+        saved
+      } else {
+        val metrics = context.resources.displayMetrics
+        (metrics.widthPixels / metrics.density).toInt().coerceAtLeast(320)
+      }
+    }
+    val (canvasW, canvasH) =
+        DdayWidgetVisuals.previewSizeDp("square", normalized, screenWidthDp)
+    val bitmap =
+        DdayWidgetVisuals.buildTogetherWidgetBitmap(
+            context = context,
+            shape = "square",
+            widthDp = canvasW,
+            heightDp = canvasH,
+            bgAssetPath = bgAsset.ifBlank { null },
+            textColorArgb = textColor,
+            isPixel = isPixel,
+            label = label,
+            textScale = textScale,
+            textOffsetX = textOffsetX,
+            textOffsetY = textOffsetY,
+            meId = meId,
+            friendId = friendId,
+            meOffsetX = meOffsetX,
+            meOffsetY = meOffsetY,
+            friendOffsetX = friendOffsetX,
+            friendOffsetY = friendOffsetY,
+            charScale = charScale,
+            friendScale = friendScale,
+            sizeCharFactor = DdayWidgetVisuals.charFactor(normalized),
+        )
+    val preview = scaleForPinSheet(bitmap, isPixel)
+    return wrapPinPreview(context, preview, canvasW, canvasH)
+  }
+
+  /** Compact image shown in the system add-widget sheet. */
+  fun wrapPinPreview(
+      context: Context,
+      bitmap: Bitmap,
+      widthDp: Float,
+      heightDp: Float,
+  ): RemoteViews {
+    val (viewW, viewH) = pinPreviewPx(context, widthDp, heightDp)
+    return RemoteViews(context.packageName, R.layout.dday_widget_pin_prompt).apply {
+      setImageViewBitmap(R.id.dday_pin_preview, bitmap)
+      setInt(R.id.dday_pin_preview, "setMinimumWidth", viewW)
+      setInt(R.id.dday_pin_preview, "setMinimumHeight", viewH)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        setViewLayoutWidth(R.id.dday_pin_preview, viewW.toFloat(), TypedValue.COMPLEX_UNIT_PX)
+        setViewLayoutHeight(R.id.dday_pin_preview, viewH.toFloat(), TypedValue.COMPLEX_UNIT_PX)
+      }
+    }
+  }
+
+  /** Widget aspect, shrunk so the pin sheet stays short. */
+  private fun pinPreviewPx(context: Context, widthDp: Float, heightDp: Float): Pair<Int, Int> {
+    val metrics = context.resources.displayMetrics
+    val density = metrics.density.coerceAtLeast(0.5f)
+    val maxW = (metrics.widthPixels * 0.56f).roundToInt().coerceAtLeast(1)
+    val maxH = (metrics.heightPixels * 0.14f).roundToInt().coerceAtLeast(1)
+    var w = (widthDp * density).roundToInt().coerceAtLeast(1)
+    var h = (heightDp * density).roundToInt().coerceAtLeast(1)
+    val fit = minOf(maxW.toFloat() / w, maxH.toFloat() / h, 1f)
+    w = (w * fit).roundToInt().coerceAtLeast(1)
+    h = (h * fit).roundToInt().coerceAtLeast(1)
+    return w to h
   }
 
   /** Keep each home-widget instance on its own room. A new widget takes [ddayPendingRoomId]. */
@@ -213,8 +337,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     return "square"
   }
 
-  private fun readSize(prefs: SharedPreferences): String {
-    val raw = readString(prefs, "ddayWidgetSize")
+  private fun normalizeSize(raw: String): String {
     return when (raw) {
       "s33", "sq", "s22", "s",
       "s42", "l",
@@ -223,6 +346,27 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
       -> raw
       else -> "s42"
     }
+  }
+
+  private fun readSize(prefs: SharedPreferences): String {
+    return normalizeSize(readString(prefs, "ddayWidgetSize"))
+  }
+
+  /** Keep the pin-sheet bitmap under the Binder limit. */
+  private fun scaleForPinSheet(source: Bitmap, isPixel: Boolean): Bitmap {
+    val maxEdge = 420
+    val longest = max(source.width, source.height)
+    if (longest <= maxEdge) return source
+    val scale = maxEdge.toFloat() / longest
+    val w = (source.width * scale).roundToInt().coerceAtLeast(1)
+    val h = (source.height * scale).roundToInt().coerceAtLeast(1)
+    val scaled = Bitmap.createScaledBitmap(source, w, h, !isPixel)
+    if (scaled != source) source.recycle()
+    return scaled
+  }
+
+  companion object {
+    private const val TAG = "DdayWidget"
   }
 
   private fun readString(prefs: SharedPreferences, key: String): String {

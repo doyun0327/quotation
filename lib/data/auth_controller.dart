@@ -25,14 +25,26 @@ class AuthUser {
   final String? photoUrl;
   final bool firebaseLinked;
 
-  factory AuthUser.fromFirebase(User user) {
+  factory AuthUser.fromFirebase(User user, {String? emailFallback}) {
     return AuthUser(
       id: user.uid,
-      email: user.email ?? '',
+      email: emailOf(user, fallback: emailFallback),
       displayName: user.displayName,
       photoUrl: user.photoURL,
       firebaseLinked: true,
     );
+  }
+
+  /// Firebase often leaves [User.email] empty; the Google provider still has it.
+  static String emailOf(User user, {String? fallback}) {
+    final direct = user.email?.trim() ?? '';
+    if (direct.isNotEmpty) return direct;
+    for (final info in user.providerData) {
+      final email = info.email?.trim() ?? '';
+      if (email.isNotEmpty) return email;
+    }
+    final extra = fallback?.trim() ?? '';
+    return extra;
   }
 
   factory AuthUser.fromGoogle(GoogleSignInAccount account) {
@@ -47,8 +59,8 @@ class AuthUser {
 
   static AuthUser? fromPrefs(SharedPreferences prefs) {
     final id = prefs.getString(_prefsId);
-    final email = prefs.getString(_prefsEmail);
-    if (id == null || email == null) return null;
+    final email = prefs.getString(_prefsEmail)?.trim() ?? '';
+    if (id == null || email.isEmpty) return null;
     return AuthUser(
       id: id,
       email: email,
@@ -126,18 +138,22 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
 
     _authSub = FirebaseAuth.instance.authStateChanges().listen((fbUser) async {
-      if (fbUser != null) {
-        await _setUser(AuthUser.fromFirebase(fbUser));
-        unawaited(DdayCloudSync.start());
-      }
+      if (fbUser == null || fbUser.isAnonymous) return;
+      await _setUser(AuthUser.fromFirebase(fbUser));
+      unawaited(DdayCloudSync.start());
     });
 
     try {
       final existingFb = FirebaseAuth.instance.currentUser;
       if (existingFb != null && !existingFb.isAnonymous) {
-        await _setUser(AuthUser.fromFirebase(existingFb));
+        await existingFb.reload();
+        final fresh = FirebaseAuth.instance.currentUser ?? existingFb;
+        await _setUser(AuthUser.fromFirebase(fresh));
       }
       await ensureAnonymous();
+      if (googleEmail == null) {
+        await _restoreGoogleAccount();
+      }
     } catch (e) {
       debugPrint('Auth init: $e');
       await ensureAnonymous();
@@ -244,7 +260,9 @@ class AuthController extends ChangeNotifier {
           await FirebaseAuth.instance.signInWithCredential(credential);
       final fbUser = result.user;
       if (fbUser == null) return false;
-      await _setUser(AuthUser.fromFirebase(fbUser));
+      await _setUser(
+        AuthUser.fromFirebase(fbUser, emailFallback: account.email),
+      );
       await UserProfileSync.upsertCurrentUser();
       await DdayCloudSync.start();
       return true;
@@ -301,10 +319,10 @@ class AuthController extends ChangeNotifier {
         photoUrl: current.photoUrl,
         firebaseLinked: current.firebaseLinked,
       );
-    } else if (fb != null) {
+    } else if (fb != null && !fb.isAnonymous) {
       _user = AuthUser(
         id: fb.uid,
-        email: fb.email ?? '',
+        email: AuthUser.emailOf(fb),
         displayName: name,
         photoUrl: fb.photoURL,
         firebaseLinked: true,
@@ -330,15 +348,21 @@ class AuthController extends ChangeNotifier {
       _nickname = name;
       await prefs.setString(_prefsNickname, name);
     }
+    final incomingEmail = user.email.trim();
+    final keptEmail = incomingEmail.isNotEmpty
+        ? incomingEmail
+        : (_user?.email.trim() ?? '');
     _user = AuthUser(
       id: user.id,
-      email: user.email,
+      email: keptEmail,
       displayName: name,
       photoUrl: user.photoUrl,
       firebaseLinked: user.firebaseLinked,
     );
     await prefs.setString(_prefsId, user.id);
-    await prefs.setString(_prefsEmail, user.email);
+    if (keptEmail.isNotEmpty) {
+      await prefs.setString(_prefsEmail, keptEmail);
+    }
     await prefs.setString(_prefsFirebase, user.firebaseLinked ? '1' : '0');
     if (name != null) {
       await prefs.setString(_prefsName, name);
@@ -351,6 +375,18 @@ class AuthController extends ChangeNotifier {
       await prefs.remove(_prefsPhoto);
     }
     notifyListeners();
+  }
+
+  /// Brings back the Gmail address when Firebase only has an anonymous session.
+  Future<void> _restoreGoogleAccount() async {
+    try {
+      final account = await _client.signInSilently();
+      if (account == null || account.email.trim().isEmpty) return;
+      await _setUser(AuthUser.fromGoogle(account));
+      unawaited(_linkFirebase(account));
+    } catch (e) {
+      debugPrint('Google silent restore: $e');
+    }
   }
 
   Future<void> _clearUser() async {

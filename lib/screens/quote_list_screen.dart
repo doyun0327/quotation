@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quotation/data/archive_controller.dart';
+import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/quote_repository.dart';
@@ -17,6 +18,7 @@ import 'package:quotation/screens/archive_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/quote_backgrounds.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:share_plus/share_plus.dart';
@@ -146,7 +148,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
       builder: (sheetContext) {
         final media = MediaQuery.of(sheetContext);
         final maxHeight = media.size.height * 0.68;
-        final palette = sheetContext.palette;
+        final palette = themeController.palette;
         return SafeArea(
           child: SizedBox(
             height: maxHeight,
@@ -265,6 +267,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                 const SizedBox(height: 8),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
+                  iconColor: palette.accent,
                   leading: Icon(
                     Icons.favorite_rounded,
                     color: palette.accent,
@@ -356,9 +359,15 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
               child: Text(t.premiumLockedDismiss),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(dialogContext).pop();
-                membershipController.setPremium(true);
+                final code = await billingController.buyMonthly();
+                if (!mounted || code == null) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppStrings.current.billingError(code)),
+                  ),
+                );
               },
               child: Text(
                 t.premiumLockedCta,
@@ -420,7 +429,6 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
         _syncOrder(source);
         final quotes = _order;
         final categoryTitle = t.mainCategoryTitle(widget.mainCategory.id);
-        final accent = widget.mainCategory.accent;
         final topInset = MediaQuery.paddingOf(context).top;
         final now = DateTime.now();
         final daySeed = now.difference(DateTime(now.year)).inDays;
@@ -527,7 +535,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                               style: AppTheme.body.copyWith(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
-                                color: accent,
+                                color: Colors.black,
                               ),
                             ),
                           ),

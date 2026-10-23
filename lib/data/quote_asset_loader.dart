@@ -16,6 +16,14 @@ abstract final class QuoteAssetLoader {
       'assets/quotes/ko/dearly_love_relationship_quotes_400.json';
   static const loveEnPath =
       'assets/quotes/en/dearly_love_relationship_quotes_400_en.json';
+  static const fortuneKoPath =
+      'assets/quotes/ko/todays_fortune_500_ko.json';
+  static const fortuneEnPath =
+      'assets/quotes/en/todays_fortune_500_en.json';
+  static const famousKoPath =
+      'assets/quotes/ko/famous_quotes_400_ko.json';
+  static const famousEnPath =
+      'assets/quotes/en/famous_quotes_400_en.json';
 
   static Future<List<Quote>> loadChristianKo() => _loadList(
         path: christianKoPath,
@@ -34,11 +42,27 @@ abstract final class QuoteAssetLoader {
         authorOf: (_) => '',
       );
 
+  /// Today's fortune lines. The files store the sentence in `fortune`.
+  static Future<List<Quote>> loadFortune({required bool korean}) => _loadList(
+        path: korean ? fortuneKoPath : fortuneEnPath,
+        idPrefix: korean ? 'fortune_ko_' : 'fortune_en_',
+        textKey: 'fortune',
+        authorOf: (_) => '',
+      );
+
   /// Only the `text` field is shown. Author and category stay unused.
   static Future<List<Quote>> loadLove({required bool korean}) => _loadList(
         path: korean ? loveKoPath : loveEnPath,
         idPrefix: korean ? 'daily_love_ko_' : 'daily_love_en_',
         authorOf: (_) => '',
+      );
+
+  /// Famous quotes. Only `quote` and `author` are kept.
+  static Future<List<Quote>> loadFamous({required bool korean}) => _loadList(
+        path: korean ? famousKoPath : famousEnPath,
+        idPrefix: korean ? 'famous_ko_' : 'famous_en_',
+        textKey: 'quote',
+        authorOf: (item) => _text(item['author']),
       );
 
   static Future<List<Quote>> loadBuddhismKo() => _loadList(
@@ -62,6 +86,7 @@ abstract final class QuoteAssetLoader {
     required String path,
     required String idPrefix,
     required String Function(Map<String, dynamic> item) authorOf,
+    String textKey = 'text',
   }) async {
     final raw = await rootBundle.loadString(path);
     final decoded = jsonDecode(raw);
@@ -72,7 +97,7 @@ abstract final class QuoteAssetLoader {
         if (item is Map<String, dynamic>)
           Quote(
             id: '$idPrefix${item['id']}',
-            text: _text(item['text']),
+            text: _text(item[textKey]),
             author: authorOf(item),
           ),
     ].where((q) => q.text.isNotEmpty).toList(growable: false);

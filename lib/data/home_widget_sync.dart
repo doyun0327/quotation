@@ -10,6 +10,7 @@ import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -19,7 +20,10 @@ import 'package:quotation/theme/visual_style_controller.dart';
 /// Mirrors the home-screen speech-bubble quote + theme onto the Android widget.
 abstract final class HomeWidgetSync {
   static const androidProviderName = 'DailyWordWidgetProvider';
-  static const androidDdayProviderName = 'DdayWidgetProvider';
+  static const androidProviderQualified =
+      'com.quotation.quotation.DailyWordWidgetProvider';
+  static const androidDdayProviderQualified =
+      'com.quotation.quotation.DdayWidgetProvider';
 
   /// Chip id → Android provider (3×3 / 4×2 / 4×3 / 3×2).
   static const _ddayProviders = <({String key, String name, String qualified})>[
@@ -60,6 +64,7 @@ abstract final class HomeWidgetSync {
   static const keyQuoteText = 'quoteText';
   static const keyAuthor = 'author';
   static const keyCategoryId = 'categoryId';
+  static const keySubCategoryId = 'subCategoryId';
   static const keyCategoryTitle = 'categoryTitle';
   static const keyQuotePool = 'quotePool';
   static const keyThemeAccent = 'themeAccent';
@@ -209,6 +214,10 @@ abstract final class HomeWidgetSync {
       await HomeWidget.saveWidgetData<String>(keyQuoteText, quote.text);
       await HomeWidget.saveWidgetData<String>(keyAuthor, quote.author);
       await HomeWidget.saveWidgetData<String>(keyCategoryId, categoryId);
+      await HomeWidget.saveWidgetData<String>(
+        keySubCategoryId,
+        selectionController.subCategoryId ?? '',
+      );
       await HomeWidget.saveWidgetData<String>(keyCategoryTitle, categoryTitle);
       await HomeWidget.saveWidgetData<String>(
         keyQuotePool,
@@ -216,10 +225,7 @@ abstract final class HomeWidgetSync {
       );
       await _saveTheme(palette);
       await _saveCharacter();
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-      );
+      await _pushCharacterWidget();
     } catch (_) {
       // Ignore when widget is unavailable.
     }
@@ -229,13 +235,43 @@ abstract final class HomeWidgetSync {
     if (!_isAndroid) return;
     try {
       await _saveCharacter();
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-      );
-      // D-Day widget also shows my character.
+      await _pushCharacterWidget();
+      // Together widget also shows my character.
       await syncDday();
     } catch (_) {}
+  }
+
+  /// The widget class lives in `com.quotation.quotation`, not the application id.
+  static Future<void> _pushCharacterWidget() async {
+    try {
+      await _pinChannel.invokeMethod<bool>('refreshCharacterWidget');
+      return;
+    } catch (e) {
+      debugPrint('refreshCharacterWidget: $e');
+    }
+    try {
+      await HomeWidget.updateWidget(
+        qualifiedAndroidName: androidProviderQualified,
+      );
+    } catch (e) {
+      debugPrint('update character widget: $e');
+    }
+  }
+
+  static Future<void> _pushTogetherWidget() async {
+    try {
+      await _pinChannel.invokeMethod<bool>('refreshTogetherWidget');
+      return;
+    } catch (e) {
+      debugPrint('refreshTogetherWidget: $e');
+    }
+    try {
+      await HomeWidget.updateWidget(
+        qualifiedAndroidName: androidDdayProviderQualified,
+      );
+    } catch (e) {
+      debugPrint('update together widget: $e');
+    }
   }
 
   static Future<void> _saveCharacter() async {
@@ -253,55 +289,38 @@ abstract final class HomeWidgetSync {
         await ddayController.reloadOffsetsFromPrefs();
       }
       await _saveDday();
-      await _updateAllDdayWidgets();
+      await _pushTogetherWidget();
     } catch (_) {}
   }
 
-  static Future<void> _updateAllDdayWidgets() async {
-    for (final p in _ddayProviders) {
-      try {
-        await HomeWidget.updateWidget(
-          name: p.name,
-          androidName: p.name,
-          qualifiedAndroidName: p.qualified,
-        );
-      } catch (_) {}
-    }
-  }
-
-  /// Saves every room, then pins a new widget only when [roomId] does not
-  /// already have one. Other rooms' widgets stay as they are.
+  /// Saves every room, then updates the home widget for [roomId].
+  /// Pins a new widget only when none is on the home screen yet.
   ///
   /// Returns `true` when the add-to-home sheet was shown.
   static Future<bool> syncAndOfferPinTogetherWidget({
     String? roomId,
-    String? keepUnboundOn,
   }) async {
     if (!_isAndroid) return false;
     try {
       final id = roomId ?? ddayController.widgetDday?.id ?? '';
-      final keep = (keepUnboundOn != null &&
-              keepUnboundOn.isNotEmpty &&
-              keepUnboundOn != id)
-          ? keepUnboundOn
-          : id;
-      // Lock widgets already on the home screen before the global room id
-      // switches, so the next room cannot take them.
-      await _bindUnboundWidgets(keep);
       await _saveDday();
-      if (id.isEmpty) {
-        await _updateAllDdayWidgets();
-        return false;
+      final installed = await _installedTogetherIds();
+      if (id.isNotEmpty && installed.isNotEmpty) {
+        final showed = await _showRoomOnHomeWidget(id, installed);
+        if (showed) {
+          await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, '');
+          await _pushTogetherWidget();
+          return false;
+        }
       }
-      if (await _roomHasWidget(id)) {
-        await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, '');
-        await _updateAllDdayWidgets();
+      if (id.isEmpty) {
+        await _pushTogetherWidget();
         return false;
       }
       await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, id);
       await HomeWidget.saveWidgetData<String>(keyDdayRoomId, id);
       final pinned = await _requestPinTogetherWidgetFast();
-      unawaited(_updateAllDdayWidgets());
+      await _pushTogetherWidget();
       return pinned;
     } catch (e) {
       debugPrint('syncAndOfferPinTogetherWidget: $e');
@@ -334,33 +353,37 @@ abstract final class HomeWidgetSync {
     }
   }
 
-  static Future<bool> _roomHasWidget(String roomId) async {
-    final bindings = await _readBindings();
-    return bindings.values.any((id) => id == roomId);
-  }
-
-  /// Claim home widgets that are not tied to a room yet, without touching
-  /// widgets that already belong to someone else.
-  static Future<void> _bindUnboundWidgets(String roomId) async {
-    if (roomId.isEmpty) return;
-    final bindings = await _readBindings();
+  static Future<List<int>> _installedTogetherIds() async {
     final installed = await HomeWidget.getInstalledWidgets();
-    var changed = false;
+    final ids = <int>[];
     for (final info in installed) {
       if (!_isTogetherProvider(info.androidClassName)) continue;
       final widgetId = info.androidWidgetId;
-      if (widgetId == null) continue;
-      final key = widgetId.toString();
-      final current = bindings[key] ?? '';
-      if (current.isNotEmpty) continue;
-      bindings[key] = roomId;
-      changed = true;
+      if (widgetId != null) ids.add(widgetId);
     }
-    if (!changed) return;
+    return ids;
+  }
+
+  /// Points a widget already on the home screen at [roomId] and returns true.
+  /// Returns false when every placed widget belongs to a different room.
+  static Future<bool> _showRoomOnHomeWidget(
+    String roomId,
+    List<int> installed,
+  ) async {
+    final bindings = await _readBindings();
+    if (installed.any((id) => bindings['$id'] == roomId)) return true;
+    final unbound =
+        installed.where((id) => (bindings['$id'] ?? '').isEmpty).toList();
+    final target = unbound.isNotEmpty
+        ? unbound.first
+        : (installed.length == 1 ? installed.first : null);
+    if (target == null) return false;
+    bindings['$target'] = roomId;
     await HomeWidget.saveWidgetData<String>(
       keyDdayWidgetBindings,
       jsonEncode(bindings),
     );
+    return true;
   }
 
   static Future<Map<String, Size>> _readHostByRoom() async {
@@ -408,6 +431,32 @@ abstract final class HomeWidgetSync {
       );
     } catch (_) {
       return null;
+    }
+  }
+
+  /// Opens the system sheet to place the home character and speech bubble.
+  static Future<bool> pinCharacterWidget() async {
+    if (!_isAndroid) return false;
+    try {
+      await syncFromHome();
+      final ok = await _pinChannel.invokeMethod<bool>('pinCharacterWidget');
+      if (ok == true) return true;
+    } catch (e) {
+      debugPrint('pinCharacterWidget channel: $e');
+    }
+    try {
+      final supported =
+          await HomeWidget.isRequestPinWidgetSupported() ?? false;
+      if (!supported) return false;
+      await HomeWidget.requestPinWidget(
+        name: androidProviderName,
+        androidName: androidProviderName,
+        qualifiedAndroidName: 'com.quotation.quotation.$androidProviderName',
+      );
+      return true;
+    } catch (e) {
+      debugPrint('pinCharacterWidget: $e');
+      return false;
     }
   }
 
@@ -463,8 +512,7 @@ abstract final class HomeWidgetSync {
       } catch (e) {
         debugPrint('cheer wrap: $e');
       }
-      final theme =
-          TogetherBgTheme.byId(ddayController.bgThemeForRoom(item.id));
+      final themeId = ddayController.bgThemeForRoom(item.id);
       rooms[item.id] = {
         'label': label,
         'me': meId,
@@ -478,7 +526,11 @@ abstract final class HomeWidgetSync {
         'charScale': ddayController.charScaleForRoom(item.id),
         'friendScale': ddayController.friendScaleForRoom(item.id),
         'textScale': textScale,
-        'bgAsset': theme.assetPath,
+        'bgAsset': WidgetAlbumBackground.resolvedAsset(
+              themeId: themeId,
+              roomId: item.id,
+            ) ??
+            '',
         'textColor': _hex(Color(ddayController.textColorForRoom(item.id))),
       };
     }
@@ -502,7 +554,13 @@ abstract final class HomeWidgetSync {
     final bgThemeId = roomId == null
         ? 'widget_background'
         : ddayController.bgThemeForRoom(roomId);
-    final bgTheme = TogetherBgTheme.byId(bgThemeId);
+    final bgAsset = roomId == null
+        ? TogetherBgTheme.byId(bgThemeId).assetPath
+        : (WidgetAlbumBackground.resolvedAsset(
+              themeId: bgThemeId,
+              roomId: roomId,
+            ) ??
+            '');
     final textColor =
         roomId == null ? 0xFFF26B8A : ddayController.textColorForRoom(roomId);
     const shape = TogetherWidgetShape.square;
@@ -540,10 +598,10 @@ abstract final class HomeWidgetSync {
     await HomeWidget.saveWidgetData<int>(keyDdayCharScale, charScale);
     await HomeWidget.saveWidgetData<int>(keyDdayFriendCharScale, friendScale);
     await HomeWidget.saveWidgetData<int>(keyDdayTextScale, textScale);
-    await HomeWidget.saveWidgetData<String>(keyDdayBgTheme, bgTheme.id);
+    await HomeWidget.saveWidgetData<String>(keyDdayBgTheme, bgThemeId);
     await HomeWidget.saveWidgetData<String>(
       keyDdayBgAsset,
-      bgTheme.assetPath,
+      bgAsset,
     );
     await HomeWidget.saveWidgetData<String>(
       keyDdayTextColor,
@@ -597,10 +655,7 @@ abstract final class HomeWidgetSync {
     if (!_isAndroid) return;
     try {
       await _saveTheme(themeController.palette);
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-      );
+      await _pushCharacterWidget();
     } catch (_) {}
   }
 
@@ -617,6 +672,10 @@ abstract final class HomeWidgetSync {
     await HomeWidget.saveWidgetData<String>(
       keyThemeWindowBar,
       _hex(palette.windowBar),
+    );
+    await HomeWidget.saveWidgetData<String>(
+      keyVisualStyle,
+      visualStyleController.style.id,
     );
   }
 

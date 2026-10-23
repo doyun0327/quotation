@@ -6,6 +6,7 @@ import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -38,8 +39,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     0xFF9E9E9E,
     0xFFE53935,
     0xFFFF9800,
+    0xFFFBC02D,
     0xFF43A047,
     0xFF1E88E5,
+    0xFF8E24AA,
+    0xFFF26B8A,
   ];
 
   late double _meX;
@@ -58,7 +62,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   late int _textColor;
   late TogetherWidgetSize _widgetSize;
   Size? _hostSize;
-  Timer? _cheerPush;
   TogetherWidgetSize? _hostForSize;
   double _hostCornerDp = TogetherWidgetSize.defaultCornerDp;
   bool _dragging = false;
@@ -66,6 +69,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   final bool _loggingIn = false;
 
   final _cheerCtrl = TextEditingController();
+  final _cheerDraft = ValueNotifier<String>('');
   final _cheerFocus = FocusNode();
   final _dragTick = ValueNotifier<int>(0);
   bool _applyingRemote = false;
@@ -86,17 +90,20 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _meScale = ddayController.charScaleForRoom(id);
     _friendScale = ddayController.friendScaleForRoom(id);
     _textScale = ddayController.textScaleForRoom(id);
-    _bgThemeId = ddayController.bgThemeForRoom(id);
+    final savedTheme = ddayController.bgThemeForRoom(id);
+    _bgThemeId = savedTheme == TogetherBgTheme.albumId
+        ? 'widget_background'
+        : savedTheme;
+    if (savedTheme == TogetherBgTheme.albumId) {
+      unawaited(_persist());
+    }
     _textColor = ddayController.textColorForRoom(id);
     _widgetSize = TogetherWidgetSize.s42;
     final rooms = ddayController.items.where((e) => e.id == id);
     _cheerCtrl.text =
         rooms.isEmpty ? '' : (rooms.first.latestCheer?.trim() ?? '');
-    _cheerCtrl.addListener(() {
-      if (_applyingRemote) return;
-      if (mounted) setState(() {});
-      _scheduleCheerPush();
-    });
+    _cheerDraft.value = _cheerCtrl.text;
+    _cheerCtrl.addListener(_onCheerEdited);
     ddayController.addListener(_syncFromController);
   }
 
@@ -146,8 +153,15 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     if (_cheerCtrl.text == cheer) return;
     _applyingRemote = true;
     _cheerCtrl.text = cheer;
+    _cheerDraft.value = cheer;
     _applyingRemote = false;
-    if (mounted) setState(() {});
+  }
+
+  void _onCheerEdited() {
+    if (_applyingRemote) return;
+    final text = _cheerCtrl.text;
+    if (_cheerDraft.value == text) return;
+    _cheerDraft.value = text;
   }
 
   Future<void> _loadHostSize() async {
@@ -172,32 +186,12 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     });
   }
 
-  void _scheduleCheerPush() {
-    final text = _cheerCtrl.text;
-    final roomId = widget.roomId;
-    unawaited(ddayController.setRoomCheer(roomId, text));
-    _cheerPush?.cancel();
-    _cheerPush = Timer(const Duration(milliseconds: 350), () {
-      unawaited(HomeWidgetSync.syncDday());
-    });
-  }
-
-  void _flushCheerPush() {
-    final text = _cheerCtrl.text;
-    final roomId = widget.roomId;
-    _cheerPush?.cancel();
-    _cheerPush = null;
-    unawaited(() async {
-      await ddayController.setRoomCheer(roomId, text);
-      await HomeWidgetSync.syncDday();
-    }());
-  }
-
   @override
   void dispose() {
     ddayController.removeListener(_syncFromController);
-    _flushCheerPush();
+    _cheerCtrl.removeListener(_onCheerEdited);
     _cheerCtrl.dispose();
+    _cheerDraft.dispose();
     _cheerFocus.dispose();
     _dragTick.dispose();
     super.dispose();
@@ -246,11 +240,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   Future<void> _persist({bool applyToHome = false, bool toast = false}) async {
     if (applyToHome) {
-      _cheerPush?.cancel();
       await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
-      await HomeWidgetSync.syncDday();
-      final cheerOk = await _saveCheerIfNeeded();
-      if (!cheerOk) return;
     }
     await ddayController.setDuoOffsets(
       roomId: widget.roomId,
@@ -273,20 +263,14 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       canvasH: _previewSize.height,
     );
     if (applyToHome) {
-      final previousRoom = ddayController.widgetDday?.id;
       await ddayController.applyRoomToHomeWidget(widget.roomId);
-      final pinned = await HomeWidgetSync.syncAndOfferPinTogetherWidget(
+      await HomeWidgetSync.syncAndOfferPinTogetherWidget(
         roomId: widget.roomId,
-        keepUnboundOn: previousRoom,
       );
+      await _saveCheerIfNeeded();
       if (toast && mounted) {
-        final t = AppStrings.current;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              pinned ? t.togetherWidgetPinnedToast : t.togetherWidgetSyncToast,
-            ),
-          ),
+          SnackBar(content: Text(AppStrings.current.togetherWidgetSyncToast)),
         );
       }
       return;
@@ -411,6 +395,30 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     setState(() => _dragging = value);
   }
 
+  Widget _bgChoice({
+    required bool selected,
+    required Color accent,
+    required VoidCallback onTap,
+    required Widget child,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE8EEF6),
+          border: Border.all(
+            color: selected ? accent : Colors.transparent,
+            width: 3,
+          ),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: child,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = AppStrings.current;
@@ -505,6 +513,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             charW: charW * charBase,
                             charH: charH * charBase,
                             label: liveLabel,
+                            labelListenable: _cheerDraft,
                             me: characterController.character,
                             friend: liveHasFriend && liveFriendId != null
                                 ? AppCharacter.byId(liveFriendId)
@@ -521,11 +530,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             textScale: _textScale,
                             bgColor: 0x00000000,
                             bgOpacity: 100,
-                            bgAssetPath: () {
-                              final theme =
-                                  TogetherBgTheme.byId(_bgThemeId);
-                              return theme.isNone ? null : theme.assetPath;
-                            }(),
+                            bgAssetPath: WidgetAlbumBackground.resolvedAsset(
+                              themeId: _bgThemeId,
+                              roomId: widget.roomId,
+                            ),
                             textColor: _textColor,
                             shape: _shape,
                             cornerRadius: _hostCornerDp,
@@ -688,38 +696,36 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
                           final theme = TogetherBgTheme.all[index];
-                          return GestureDetector(
+                          return _bgChoice(
+                            selected: _bgThemeId == theme.id,
+                            accent: palette.accent,
                             onTap: () {
                               setState(() => _bgThemeId = theme.id);
                               _persist();
                             },
-                            child: Container(
-                              width: 72,
-                              height: 72,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFE8EEF6),
-                              ),
-                              clipBehavior: Clip.hardEdge,
-                              child: theme.isNone
-                                  ? Center(
-                                      child: Text(
-                                        t.ddayDecorateBgNone,
-                                        textAlign: TextAlign.center,
-                                        style: AppTheme.body.copyWith(
-                                          fontFamily: 'Galmuri',
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w800,
-                                          color: const Color(0xFF5B6B8C),
-                                        ),
+                            child: theme.isNone
+                                ? Center(
+                                    child: Text(
+                                      t.ddayDecorateBgNone,
+                                      textAlign: TextAlign.center,
+                                      style: AppTheme.body.copyWith(
+                                        fontFamily: 'Galmuri',
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                        color: const Color(0xFF5B6B8C),
                                       ),
-                                    )
-                                  : Image.asset(
-                                      theme.assetPath,
-                                      fit: BoxFit.cover,
-                                      filterQuality: FilterQuality.none,
-                                      isAntiAlias: false,
                                     ),
-                            ),
+                                  )
+                                : Image.asset(
+                                    theme.assetPath,
+                                    width: 72,
+                                    height: 72,
+                                    fit: BoxFit.cover,
+                                    filterQuality: visualStyleController.isClean
+                                        ? FilterQuality.medium
+                                        : FilterQuality.none,
+                                    isAntiAlias: visualStyleController.isClean,
+                                  ),
                           );
                         },
                       ),
@@ -735,12 +741,32 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: [
-                        for (final c in _textQuick)
-                          _ColorDot(
+                    SizedBox(
+                      height: 36,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _textQuick.length + 1,
+                        separatorBuilder: (_, _) => const SizedBox(width: 10),
+                        itemBuilder: (context, index) {
+                          if (index == _textQuick.length) {
+                            return _MoreColorsButton(
+                              accent: palette.accent,
+                              label: t.ddayDecorateMoreColors,
+                              onTap: () async {
+                                final picked = await showColorPaletteSheet(
+                                  context,
+                                  initialArgb: _textColor,
+                                  allowTransparent: false,
+                                  title: t.ddayDecorateTextColorLabel,
+                                );
+                                if (picked == null || !mounted) return;
+                                setState(() => _textColor = picked);
+                                _persist();
+                              },
+                            );
+                          }
+                          final c = _textQuick[index];
+                          return _ColorDot(
                             argb: c,
                             selected: _textColor == c,
                             transparent: false,
@@ -749,33 +775,19 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               setState(() => _textColor = c);
                               _persist();
                             },
-                          ),
-                        _MoreColorsButton(
-                          accent: palette.accent,
-                          label: t.ddayDecorateMoreColors,
-                          onTap: () async {
-                            final picked = await showColorPaletteSheet(
-                              context,
-                              initialArgb: _textColor,
-                              allowTransparent: false,
-                              pixelStyle: true,
-                              title: t.ddayDecorateTextColorLabel,
-                            );
-                            if (picked == null || !mounted) return;
-                            setState(() => _textColor = picked);
-                            _persist();
-                          },
-                        ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: 18),
                     Text(
                       t.ddayDecorateCharScaleFor(
                         _scaleMe || !liveHasFriend
                             ? t.ddayDecorateMeChip(
-                                t.characterName(
-                                  characterController.character.id,
-                                ),
+                                authController.nickname?.trim().isNotEmpty ==
+                                        true
+                                    ? authController.nickname!.trim()
+                                    : t.nicknameTitle,
                               )
                             : t.ddayDecorateFriendChip(
                                 t.characterName(liveFriendId ?? ''),
@@ -1047,7 +1059,7 @@ class _ColorDot extends StatelessWidget {
         height: 36,
         decoration: BoxDecoration(
           color: transparent ? Colors.transparent : Color(argb),
-          borderRadius: BorderRadius.circular(6),
+          shape: BoxShape.circle,
           border: Border.all(
             color: selected ? accent : const Color(0xFFE0E0E0),
             width: selected ? 2.5 : 1,

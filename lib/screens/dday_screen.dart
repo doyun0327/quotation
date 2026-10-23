@@ -193,7 +193,7 @@ class _DdayScreenState extends State<DdayScreen> {
                           padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                           itemCount: items.length + 1,
                           separatorBuilder: (_, _) =>
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 10),
                           itemBuilder: (context, index) {
                             if (index == items.length) {
                               return OutlinedButton.icon(
@@ -261,7 +261,7 @@ class _TogetherRoomCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         onTap: onOpen,
         child: Container(
-          padding: const EdgeInsets.fromLTRB(14, 14, 6, 14),
+          padding: const EdgeInsets.fromLTRB(14, 4, 4, 4),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFE4ECF7)),
@@ -269,74 +269,71 @@ class _TogetherRoomCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 32,
+                height: 32,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: palette.accent.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: DdayPixelIcon(kind: item.iconKind, size: 34),
+                child: DdayPixelIcon(kind: item.iconKind, size: 22),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            item.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTheme.body.copyWith(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF2C3340),
-                            ),
-                          ),
-                        ),
-                        if (item.hasFriend) ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: palette.accent.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              t.ddayDuoBadge,
-                              style: AppTheme.body.copyWith(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                color: palette.accent,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    if (cheer != null && cheer.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        cheer,
+                    Flexible(
+                      child: Text(
+                        item.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTheme.body.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: palette.accent,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF2C3340),
+                        ),
+                      ),
+                    ),
+                    if (item.hasFriend) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: palette.accent.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          t.ddayDuoBadge,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: palette.accent,
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (cheer != null && cheer.isNotEmpty) ...[
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          cheer,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: palette.accent,
+                          ),
                         ),
                       ),
                     ],
                   ],
                 ),
               ),
-              Column(
+              Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
@@ -344,13 +341,14 @@ class _TogetherRoomCard extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
                     constraints: const BoxConstraints(
-                      minWidth: 36,
+                      minWidth: 32,
                       minHeight: 32,
                     ),
                     icon: Icon(
                       item.favorite
                           ? Icons.star_rounded
                           : Icons.star_border_rounded,
+                      size: 22,
                       color: item.favorite
                           ? const Color(0xFFF5B942)
                           : const Color(0xFFB7C0CE),
@@ -361,12 +359,13 @@ class _TogetherRoomCard extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
                     constraints: const BoxConstraints(
-                      minWidth: 36,
+                      minWidth: 32,
                       minHeight: 32,
                     ),
-                    tooltip: t.delete,
+                    tooltip: t.ddayLeaveRoom,
                     icon: const Icon(
-                      Icons.delete_outline_rounded,
+                      Icons.logout_rounded,
+                      size: 20,
                       color: Color(0xFFB7C0CE),
                     ),
                   ),

@@ -3,7 +3,7 @@ import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/home_widget_sync.dart';
-import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -364,12 +364,10 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             textScale: ddayController.textScaleForRoom(room.id),
             bgColor: 0x00000000,
             bgOpacity: 100,
-            bgAssetPath: () {
-              final theme = TogetherBgTheme.byId(
-                ddayController.bgThemeForRoom(room.id),
-              );
-              return theme.isNone ? null : theme.assetPath;
-            }(),
+            bgAssetPath: WidgetAlbumBackground.resolvedAsset(
+              themeId: ddayController.bgThemeForRoom(room.id),
+              roomId: room.id,
+            ),
             textColor: ddayController.textColorForRoom(room.id),
             shape: TogetherWidgetShape.square,
             cornerRadius: _hostCornerDp,

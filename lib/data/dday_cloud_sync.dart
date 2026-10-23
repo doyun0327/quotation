@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quotation/data/dday_controller.dart';
+import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
@@ -340,7 +341,8 @@ class DdayCloudSync {
     final guestScale =
         aScale((data['layoutGuestScale'] as num?)?.toInt() ?? legacyScale);
     final textScale = aScale((data['layoutTextScale'] as num?)?.toInt());
-    final bgTheme = data['layoutBgTheme'] as String?;
+    final rawBg = data['layoutBgTheme'] as String?;
+    final bgTheme = rawBg == TogetherBgTheme.albumId ? null : rawBg;
     final textColor = (data['layoutTextColor'] as num?)?.toInt();
     final shapeId = data['layoutShape'] as String?;
     final shape =
@@ -474,7 +476,7 @@ class DdayCloudSync {
           'layoutHostScale': hostScale,
           'layoutGuestScale': guestScale,
           'layoutTextScale': textScale,
-          'layoutBgTheme': bgTheme,
+          if (bgTheme != TogetherBgTheme.albumId) 'layoutBgTheme': bgTheme,
           'layoutTextColor': textColor,
           'layoutShape': shape.id,
           'layoutWidgetSize': widgetSize.id,

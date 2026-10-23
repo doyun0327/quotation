@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/character_controller.dart';
+import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -7,6 +8,7 @@ import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
+import 'package:quotation/widgets/character_widget_hint.dart';
 
 class CharacterSelectScreen extends StatefulWidget {
   const CharacterSelectScreen({
@@ -27,11 +29,51 @@ class CharacterSelectScreen extends StatefulWidget {
 
 class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
   late AppCharacter _selected;
+  bool _hintVisible = true;
+  bool _hintBusy = false;
+  CharacterGroup _group = CharacterGroup.female;
+
+  List<AppCharacter> get _choices {
+    final pool = AppCharacter.inGroup(_group);
+    final owned = [
+      for (final character in pool)
+        if (characterController.isUsable(character)) character,
+    ];
+    owned.sort((a, b) {
+      final fav = (characterController.isFavorite(a) ? 0 : 1) -
+          (characterController.isFavorite(b) ? 0 : 1);
+      if (fav != 0) return fav;
+      return pool.indexOf(a).compareTo(pool.indexOf(b));
+    });
+    return owned;
+  }
 
   @override
   void initState() {
     super.initState();
     _selected = characterController.character;
+  }
+
+  Future<void> _hideHint() async {
+    await CharacterWidgetHint.markDismissed();
+    if (!mounted) return;
+    setState(() => _hintVisible = false);
+  }
+
+  Future<void> _exportHint() async {
+    if (_hintBusy) return;
+    setState(() => _hintBusy = true);
+    await characterController.select(_selected);
+    await _hideHint();
+    if (!mounted) return;
+    await CharacterWidgetHint.export(context);
+  }
+
+  Future<void> _closeHint() async {
+    if (_hintBusy) return;
+    setState(() => _hintBusy = true);
+    CharacterWidgetHint.showClosedMessage(context);
+    await _hideHint();
   }
 
   Future<void> _confirm() async {
@@ -50,7 +92,11 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
     final palette = context.palette;
 
     return ListenableBuilder(
-      listenable: localeController,
+      listenable: Listenable.merge([
+        localeController,
+        membershipController,
+        characterController,
+      ]),
       builder: (context, _) {
         final t = AppStrings.current;
         return Scaffold(
@@ -89,24 +135,65 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
                       color: AppColors.muted,
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  if (!widget.allowSkip && _hintVisible) ...[
+                    const SizedBox(height: 16),
+                    CharacterWidgetHintCard(
+                      onExport: _exportHint,
+                      onClose: _closeHint,
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _GroupTab(
+                        label: t.shopGroupFemale,
+                        selected: _group == CharacterGroup.female,
+                        accent: palette.accent,
+                        onTap: () =>
+                            setState(() => _group = CharacterGroup.female),
+                      ),
+                      const SizedBox(width: 8),
+                      _GroupTab(
+                        label: t.shopGroupMale,
+                        selected: _group == CharacterGroup.male,
+                        accent: palette.accent,
+                        onTap: () =>
+                            setState(() => _group = CharacterGroup.male),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
                   Expanded(
-                    child: Row(
-                      children: [
-                        for (final character in AppCharacter.values) ...[
-                          Expanded(
-                            child: _CharacterOption(
-                              character: character,
-                              selected: _selected == character,
-                              label: t.characterName(character.id),
-                              onTap: () =>
-                                  setState(() => _selected = character),
+                    child: _choices.isEmpty
+                        ? Center(
+                            child: Text(
+                              t.shopMaleEmpty,
+                              style: AppTheme.body.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.muted,
+                              ),
                             ),
-                          ),
-                          if (character != AppCharacter.values.last)
-                            const SizedBox(width: 14),
-                        ],
-                      ],
+                          )
+                        : GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 14,
+                        crossAxisSpacing: 14,
+                        childAspectRatio: 0.78,
+                      ),
+                      itemCount: _choices.length,
+                      itemBuilder: (context, index) {
+                        final character = _choices[index];
+                        return _CharacterOption(
+                          character: character,
+                          selected: _selected.id == character.id,
+                          label: t.characterName(character.id),
+                          onTap: () => setState(() => _selected = character),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -131,6 +218,43 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _GroupTab extends StatelessWidget {
+  const _GroupTab({
+    required this.label,
+    required this.selected,
+    required this.accent,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final Color accent;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: selected ? accent : Colors.white,
+      borderRadius: BorderRadius.circular(99),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(99),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+          child: Text(
+            label,
+            style: AppTheme.body.copyWith(
+              color: selected ? Colors.white : accent,
+              fontWeight: FontWeight.w800,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

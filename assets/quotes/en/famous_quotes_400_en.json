@@ -1,0 +1,3202 @@
+[
+  {
+    "id": 1,
+    "author": "Socrates",
+    "quote": "The unexamined life is not worth living.",
+    "category": "Philosophy",
+    "source": "플라톤, 《변론》 38a",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 2,
+    "author": "Socrates",
+    "quote": "I know that I know nothing.",
+    "category": "Philosophy",
+    "source": "플라톤의 대화편에 전해지는 사상 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 3,
+    "author": "Plato",
+    "quote": "The beginning is the most important part of the work.",
+    "category": "Philosophy",
+    "source": "《국가》 관련 전통적 번역·귀속 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 4,
+    "author": "Aristotle",
+    "quote": "Excellence is not an act, but a habit.",
+    "category": "Philosophy",
+    "source": "《니코마코스 윤리학》 사상 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 5,
+    "author": "Aristotle",
+    "quote": "We are what we repeatedly do.",
+    "category": "Philosophy",
+    "source": "《니코마코스 윤리학》 사상 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 6,
+    "author": "Confucius",
+    "quote": "Is it not a joy to learn and to practice what you have learned?",
+    "category": "Philosophy",
+    "source": "《논어》 학이편",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 7,
+    "author": "Confucius",
+    "quote": "To know what you know and what you do not know is true knowledge.",
+    "category": "Philosophy",
+    "source": "《논어》 위정편의 뜻을 옮김",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 8,
+    "author": "Confucius",
+    "quote": "Is it not a pleasure to have friends come from afar?",
+    "category": "Philosophy",
+    "source": "《논어》 학이편",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 9,
+    "author": "Laozi",
+    "quote": "A journey of a thousand miles begins with a single step.",
+    "category": "Philosophy",
+    "source": "《도덕경》 64장 번역",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 10,
+    "author": "Laozi",
+    "quote": "The softest things can overcome the hardest things.",
+    "category": "Philosophy",
+    "source": "《도덕경》의 뜻을 옮김",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 11,
+    "author": "Mencius",
+    "quote": "When Heaven is about to place a great responsibility on someone, it first tests their heart and body.",
+    "category": "Philosophy",
+    "source": "《맹자》 고자 하편의 뜻을 옮김",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 12,
+    "author": "장자",
+    "quote": "You cannot explain the ocean to a frog that lives in a well.",
+    "category": "Philosophy",
+    "source": "《장자》 추수편",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 13,
+    "author": "Epictetus",
+    "quote": "It is not things themselves that disturb us, but our judgments about them.",
+    "category": "Philosophy",
+    "source": "《엥케이리디온》 5장",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 14,
+    "author": "Marcus Aurelius",
+    "quote": "Your life is shaped by the quality of your thoughts.",
+    "category": "Philosophy",
+    "source": "《명상록》의 뜻을 옮김",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 15,
+    "author": "Seneca",
+    "quote": "Luck is what happens when preparation meets opportunity.",
+    "category": "Philosophy",
+    "source": "세네카에게 흔히 귀속되나 정확한 출처 불확실",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 16,
+    "author": "Epicurus",
+    "quote": "You cannot live wisely without living pleasantly.",
+    "category": "Philosophy",
+    "source": "에피쿠로스 사상의 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 17,
+    "author": "René Descartes",
+    "quote": "I think, therefore I am.",
+    "category": "Philosophy",
+    "source": "《방법서설》 및 《성찰》",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 18,
+    "author": "Baruch Spinoza",
+    "quote": "A free person thinks least of death; their wisdom is a meditation on life.",
+    "category": "Philosophy",
+    "source": "《에티카》 4부 정리 67",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 19,
+    "author": "John Locke",
+    "quote": "New opinions are always suspected and usually opposed.",
+    "category": "Philosophy",
+    "source": "정확한 문구 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 20,
+    "author": "Voltaire",
+    "quote": "I disapprove of what you say, but I will defend to the death your right to say it.",
+    "category": "Philosophy",
+    "source": "볼테르의 실제 문구가 아닌 후대의 요약으로 알려짐",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 21,
+    "author": "Jean-Jacques Rousseau",
+    "quote": "Man is born free, and everywhere he is in chains.",
+    "category": "Philosophy",
+    "source": "《사회계약론》 제1권 1장",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 22,
+    "author": "Immanuel Kant",
+    "quote": "Thoughts without content are empty; intuitions without concepts are blind.",
+    "category": "Philosophy",
+    "source": "《순수이성비판》의 뜻을 옮김",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 23,
+    "author": "Friedrich Nietzsche",
+    "quote": "That which does not kill us makes us stronger.",
+    "category": "Philosophy",
+    "source": "《우상의 황혼》",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 24,
+    "author": "Søren Kierkegaard",
+    "quote": "Life can only be understood backwards, but it must be lived forwards.",
+    "category": "Philosophy",
+    "source": "일기에서 널리 번역되는 문구; 판본별 표현 차이",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 25,
+    "author": "John Stuart Mill",
+    "quote": "The only freedom worth the name is pursuing our own good in our own way.",
+    "category": "Philosophy",
+    "source": "《자유론》 사상의 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 26,
+    "author": "William James",
+    "quote": "Act as if what you do makes a difference. It does.",
+    "category": "Philosophy",
+    "source": "《감정의 원리》 관련 사상의 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 27,
+    "author": "Ralph Waldo Emerson",
+    "quote": "Trust yourself; every heart vibrates to that iron string.",
+    "category": "Writer",
+    "source": "에머슨 에세이 번역·의역",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 28,
+    "author": "Henry David Thoreau",
+    "quote": "The mass of men lead lives of quiet desperation.",
+    "category": "Writer",
+    "source": "《월든》 1장",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 29,
+    "author": "Mark Twain",
+    "quote": "Most people are trying to change the world, but few try to change themselves.",
+    "category": "Writer",
+    "source": "마크 트웨인에게 흔히 귀속되나 출처 불확실",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 30,
+    "author": "William Shakespeare",
+    "quote": "To thine own self be true.",
+    "category": "Writer",
+    "source": "《햄릿》 1막 3장",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 31,
+    "author": "Jane Austen",
+    "quote": "I will be happy in my own way.",
+    "category": "Writer",
+    "source": "작품 문구로 널리 유통되나 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 32,
+    "author": "Charles Dickens",
+    "quote": "Even the darkest night will end and the sun will rise.",
+    "category": "Writer",
+    "source": "디킨스에게 흔히 귀속되나 출처 불확실",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 33,
+    "author": "Victor Hugo",
+    "quote": "The future has several names: impossible for the weak, unknown for the timid, and opportunity for the brave.",
+    "category": "Writer",
+    "source": "위고에게 귀속되는 번역 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 34,
+    "author": "Leo Tolstoy",
+    "quote": "Everyone thinks of changing the world, but no one thinks of changing himself.",
+    "category": "Writer",
+    "source": "톨스토이에게 흔히 귀속되나 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 35,
+    "author": "Fyodor Dostoevsky",
+    "quote": "Beauty will save the world.",
+    "category": "Writer",
+    "source": "《백치》의 대사·맥락에 따라 번역 차이",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 36,
+    "author": "Antoine de Saint-Exupéry",
+    "quote": "What is essential is invisible to the eye.",
+    "category": "Writer",
+    "source": "《어린 왕자》",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 37,
+    "author": "Oscar Wilde",
+    "quote": "Be yourself; everyone else is already taken.",
+    "category": "Writer",
+    "source": "와일드에게 흔히 귀속되나 정확한 출처 불확실",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 38,
+    "author": "Virginia Woolf",
+    "quote": "A woman must have money and a room of her own if she is to write fiction.",
+    "category": "Writer",
+    "source": "《자기만의 방》 사상의 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 39,
+    "author": "Maya Angelou",
+    "quote": "People will forget what you said and did, but they will never forget how you made them feel.",
+    "category": "Writer",
+    "source": "안젤루에게 널리 귀속되는 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 40,
+    "author": "Helen Keller",
+    "quote": "Alone we can do so little; together we can do so much.",
+    "category": "Activist",
+    "source": "헬렌 켈러에게 귀속되는 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 41,
+    "author": "Nelson Mandela",
+    "quote": "It always seems impossible until it's done.",
+    "category": "President / Leader",
+    "source": "연설·저술에 널리 인용되는 문구",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 42,
+    "author": "Martin Luther King Jr.",
+    "quote": "Injustice anywhere is a threat to justice everywhere.",
+    "category": "Activist",
+    "source": "《버밍햄 감옥에서 보낸 편지》",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 43,
+    "author": "Franklin D. Roosevelt",
+    "quote": "The only thing we have to fear is fear itself.",
+    "category": "President / Leader",
+    "source": "1933년 취임 연설",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 44,
+    "author": "John F. Kennedy",
+    "quote": "Ask not what your country can do for you; ask what you can do for your country.",
+    "category": "President / Leader",
+    "source": "1961년 취임 연설",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 45,
+    "author": "Abraham Lincoln",
+    "quote": "Government of the people, by the people, for the people, shall not perish from the earth.",
+    "category": "President / Leader",
+    "source": "1863년 게티즈버그 연설",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 46,
+    "author": "George Washington",
+    "quote": "Perseverance and spirit have done wonders in all ages.",
+    "category": "President / Leader",
+    "source": "1775년 슈일러 장군에게 보낸 편지",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 47,
+    "author": "Thomas Jefferson",
+    "quote": "We hold these truths to be self-evident, that all men are created equal.",
+    "category": "President / Leader",
+    "source": "미국 독립선언서, 1776년",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 48,
+    "author": "Benjamin Franklin",
+    "quote": "Well done is better than well said.",
+    "category": "Politician / Inventor",
+    "source": "《가난한 리처드의 연감》에 실린 격언",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 49,
+    "author": "Frederick Douglass",
+    "quote": "If there is no struggle, there is no progress.",
+    "category": "Activist",
+    "source": "1857년 연설의 문구",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 50,
+    "author": "Winston Churchill",
+    "quote": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+    "category": "정치인",
+    "source": "처칠에게 흔히 귀속되나 정확한 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 51,
+    "author": "Mahatma Gandhi",
+    "quote": "Be the change you wish to see in the world.",
+    "category": "지도자",
+    "source": "간디에게 흔히 귀속되는 현대적 의역; 정확한 출처 불확실",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 52,
+    "author": "Albert Einstein",
+    "quote": "Imagination is more important than knowledge.",
+    "category": "Scientist",
+    "source": "1929년 인터뷰에서 전해지는 발언",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 53,
+    "author": "Marie Curie",
+    "quote": "Nothing in life is to be feared; it is only to be understood.",
+    "category": "Scientist",
+    "source": "퀴리에게 귀속되는 번역 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 54,
+    "author": "Galileo Galilei",
+    "quote": "And yet it moves.",
+    "category": "Scientist",
+    "source": "후대에 전해지는 말로 실제 발언 여부 논쟁 있음",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 55,
+    "author": "Isaac Newton",
+    "quote": "If I have seen further, it is by standing on the shoulders of giants.",
+    "category": "Scientist",
+    "source": "로버트 훅에게 보낸 편지, 1675년",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 56,
+    "author": "Leonardo da Vinci",
+    "quote": "Learning never exhausts the mind.",
+    "category": "예술가·발명가",
+    "source": "다 빈치에게 흔히 귀속되나 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 57,
+    "author": "Vincent van Gogh",
+    "quote": "Great things are done by a series of small things brought together.",
+    "category": "Artist",
+    "source": "반 고흐에게 귀속되는 번역 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 58,
+    "author": "Pablo Picasso",
+    "quote": "Every child is an artist. The problem is how to remain an artist once we grow up.",
+    "category": "Artist",
+    "source": "피카소에게 흔히 귀속되나 정확한 출처 불확실",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 59,
+    "author": "Ludwig van Beethoven",
+    "quote": "Art is a higher revelation than all wisdom and philosophy.",
+    "category": "Musician",
+    "source": "베토벤의 편지·대화록에서 전해지는 표현; 판본 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 60,
+    "author": "Wolfgang Amadeus Mozart",
+    "quote": "Music is not in the notes, but in the silence between.",
+    "category": "Musician",
+    "source": "모차르트에게 흔히 잘못 귀속되는 문구",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 61,
+    "author": "Bob Dylan",
+    "quote": "The only constant is change.",
+    "category": "Musician",
+    "source": "밥 딜런의 정확한 발언으로 확인되지 않은 표현",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 62,
+    "author": "David Bowie",
+    "quote": "I know who I am, and I change every day.",
+    "category": "Musician",
+    "source": "보위에게 귀속되는 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 63,
+    "author": "Oprah Winfrey",
+    "quote": "Passion is energy. Feel the power that comes from focusing on what excites you.",
+    "category": "방송인",
+    "source": "오프라의 발언을 요약한 번역",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 64,
+    "author": "Steve Jobs",
+    "quote": "You have to find what you love.",
+    "category": "기업가",
+    "source": "2005년 스탠퍼드 졸업 연설의 뜻을 옮김",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 65,
+    "author": "Michael Jordan",
+    "quote": "I have failed over and over and over again in my life. And that is why I succeed.",
+    "category": "Athlete",
+    "source": "조던의 광고 캠페인 발언을 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 66,
+    "author": "Serena Williams",
+    "quote": "Successful women create opportunities for other women.",
+    "category": "Athlete",
+    "source": "윌리엄스에게 귀속되는 발언의 요약; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 67,
+    "author": "Muhammad Ali",
+    "quote": "The success of a team comes from working together.",
+    "category": "Athlete",
+    "source": "알리의 광고·연설에서 알려진 문구",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 68,
+    "author": "Walt Disney",
+    "quote": "Impossible is not a fact. It's an opinion.",
+    "category": "Creator",
+    "source": "디즈니에게 널리 귀속되는 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 69,
+    "author": "Eleanor Roosevelt",
+    "quote": "Dreams can come true if you have the courage to pursue them.",
+    "category": "Public figure",
+    "source": "엘리너 루스벨트에게 귀속되는 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 70,
+    "author": "Amelia Earhart",
+    "quote": "No one can make you feel inferior without your consent.",
+    "category": "탐험가",
+    "source": "에어하트에게 귀속되는 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 71,
+    "author": "Frida Kahlo",
+    "quote": "The most difficult thing is the decision to act; the rest is merely tenacity.",
+    "category": "Artist",
+    "source": "칼로의 일기·인터뷰를 바탕으로 널리 인용; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 72,
+    "author": "Bruce Lee",
+    "quote": "I am my own muse.",
+    "category": "배우·무술가",
+    "source": "브루스 리의 가르침을 번역한 문구",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 73,
+    "author": "Audrey Hepburn",
+    "quote": "Absorb what is useful, discard what is useless, and add what is specifically your own.",
+    "category": "Actor",
+    "source": "헵번에게 귀속되나 출처 불확실",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 74,
+    "author": "Marilyn Monroe",
+    "quote": "For beautiful eyes, look for the good in others.",
+    "category": "Actor",
+    "source": "먼로에게 흔히 귀속되나 출처 불확실",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 75,
+    "author": "Charlie Chaplin",
+    "quote": "Imperfection is beauty, madness is genius, and it's better to be absolutely ridiculous than absolutely boring.",
+    "category": "Actor / Director",
+    "source": "채플린에게 귀속되는 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 76,
+    "author": "Tom Hanks",
+    "quote": "Tomorrow is another day.",
+    "category": "Actor",
+    "source": "영화·대중문화에서 널리 쓰이는 표현; 개인 발언 아님",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 77,
+    "author": "Keanu Reeves",
+    "quote": "Falling in love is a good thing.",
+    "category": "Actor",
+    "source": "인터뷰 인용으로 유통; 정확한 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 78,
+    "author": "Emma Watson",
+    "quote": "You define yourself; others do not define you.",
+    "category": "Actor / Activist",
+    "source": "왓슨의 공개 연설·인터뷰 취지를 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 79,
+    "author": "Leonardo DiCaprio",
+    "quote": "Protecting the environment is everyone's responsibility.",
+    "category": "Actor / Activist",
+    "source": "환경 연설의 취지를 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 80,
+    "author": "RM (BTS)",
+    "quote": "Loving yourself is a lifelong journey.",
+    "category": "가수",
+    "source": "UN 연설·캠페인 메시지의 취지 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 81,
+    "author": "Yuna Kim",
+    "quote": "It is important to keep going and see things through.",
+    "category": "Athlete",
+    "source": "김연아의 인터뷰 취지 요약; 정확한 문구 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 82,
+    "author": "Son Heung-min",
+    "quote": "When a team works together, it can achieve more.",
+    "category": "Athlete",
+    "source": "손흥민의 인터뷰 취지 요약; 정확한 문구 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 83,
+    "author": "Bong Joon-ho",
+    "quote": "The most personal is the most creative.",
+    "category": "Film director",
+    "source": "골든글로브 수상 연설에서 마틴 스코세이지를 인용",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 84,
+    "author": "Yun Dong-ju",
+    "quote": "May I look up at the heavens until the day I die, without a speck of shame.",
+    "category": "Poet",
+    "source": "시 《서시》",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 85,
+    "author": "Kim Gu",
+    "quote": "The only thing I truly wish to possess is the power of a rich and beautiful culture.",
+    "category": "Independence activist",
+    "source": "《백범일지》의 문장 일부",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 86,
+    "author": "King Sejong",
+    "quote": "I feel sorrow when people cannot express their thoughts because they do not know the written language.",
+    "category": "King / Scholar",
+    "source": "훈민정음 해례본 서문 취지",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 87,
+    "author": "Jeong Yak-yong",
+    "quote": "Diligence and frugality are foundations of a household.",
+    "category": "Scholar",
+    "source": "《목민심서》 등 다산 저술의 취지 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 88,
+    "author": "Yi Sun-sin",
+    "quote": "If you wish to live, prepare to die; if you wish to die, prepare to live.",
+    "category": "Military commander",
+    "source": "《난중일기》·명량해전 관련 전승 문구; 판본 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 89,
+    "author": "Venerable Beopjeong",
+    "quote": "Non-possession is not having nothing; it is not holding on to what is unnecessary.",
+    "category": "Religious figure",
+    "source": "법정 스님의 수필로 널리 알려진 문장; 판본 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 90,
+    "author": "Cardinal Kim Sou-hwan",
+    "quote": "It took a lifetime for love to travel from my head to my heart.",
+    "category": "Religious figure",
+    "source": "김수환 추기경에게 널리 귀속되는 문구; 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 91,
+    "author": "Park Wan-suh",
+    "quote": "Life is not merely something to endure; it is something to live through.",
+    "category": "Writer",
+    "source": "박완서에게 귀속되는 문구; 정확한 출처 확인 필요",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 92,
+    "author": "Kim Young-ha",
+    "quote": "Stories help us understand who we are.",
+    "category": "Writer",
+    "source": "김영하의 강연·저술 취지 요약",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 93,
+    "author": "Na Tae-joo",
+    "quote": "It is beautiful when you look closely; it is lovely when you look for a long time. You are like that, too.",
+    "category": "Poet",
+    "source": "시 《풀꽃》",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 94,
+    "author": "Jung Ho-seung",
+    "quote": "Do not cry. To be lonely is to be human.",
+    "category": "Poet",
+    "source": "시 《수선화에게》의 일부",
+    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
+  },
+  {
+    "id": 95,
+    "author": "Confucius",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 96,
+    "author": "Abraham Lincoln",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 97,
+    "author": "Maya Angelou",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 98,
+    "author": "Socrates",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 99,
+    "author": "Nelson Mandela",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 100,
+    "author": "Helen Keller",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 101,
+    "author": "Aristotle",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 102,
+    "author": "Eleanor Roosevelt",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 103,
+    "author": "Audrey Hepburn",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 104,
+    "author": "Laozi",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 105,
+    "author": "Franklin D. Roosevelt",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 106,
+    "author": "Bruce Lee",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 107,
+    "author": "Mencius",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 108,
+    "author": "John F. Kennedy",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 109,
+    "author": "Oprah Winfrey",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 110,
+    "author": "Epictetus",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 111,
+    "author": "Kim Gu",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 112,
+    "author": "Steve Jobs",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 113,
+    "author": "Marcus Aurelius",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 114,
+    "author": "Martin Luther King Jr.",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 115,
+    "author": "Vincent van Gogh",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 116,
+    "author": "Seneca",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 117,
+    "author": "Mahatma Gandhi",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 118,
+    "author": "Leonardo da Vinci",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 119,
+    "author": "René Descartes",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 120,
+    "author": "Abraham Lincoln",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 121,
+    "author": "Yun Dong-ju",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 122,
+    "author": "Baruch Spinoza",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 123,
+    "author": "Nelson Mandela",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 124,
+    "author": "Na Tae-joo",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 125,
+    "author": "Immanuel Kant",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 126,
+    "author": "Eleanor Roosevelt",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 127,
+    "author": "Jung Ho-seung",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 128,
+    "author": "Friedrich Nietzsche",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 129,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 130,
+    "author": "Park Wan-suh",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 131,
+    "author": "Jean-Jacques Rousseau",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 132,
+    "author": "John F. Kennedy",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 133,
+    "author": "Maya Angelou",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 134,
+    "author": "John Stuart Mill",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 135,
+    "author": "Kim Gu",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 136,
+    "author": "Helen Keller",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 137,
+    "author": "Ralph Waldo Emerson",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 138,
+    "author": "Martin Luther King Jr.",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 139,
+    "author": "Audrey Hepburn",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 140,
+    "author": "Henry David Thoreau",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 141,
+    "author": "Mahatma Gandhi",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 142,
+    "author": "Bruce Lee",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 143,
+    "author": "Confucius",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 144,
+    "author": "Abraham Lincoln",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 145,
+    "author": "Oprah Winfrey",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 146,
+    "author": "Socrates",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 147,
+    "author": "Nelson Mandela",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 148,
+    "author": "Steve Jobs",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 149,
+    "author": "Aristotle",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 150,
+    "author": "Eleanor Roosevelt",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 151,
+    "author": "Vincent van Gogh",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 152,
+    "author": "Laozi",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 153,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 154,
+    "author": "Leonardo da Vinci",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 155,
+    "author": "Mencius",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 156,
+    "author": "John F. Kennedy",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 157,
+    "author": "Yun Dong-ju",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 158,
+    "author": "Epictetus",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 159,
+    "author": "Kim Gu",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 160,
+    "author": "Na Tae-joo",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 161,
+    "author": "Marcus Aurelius",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 162,
+    "author": "Martin Luther King Jr.",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 163,
+    "author": "Jung Ho-seung",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 164,
+    "author": "Seneca",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 165,
+    "author": "Mahatma Gandhi",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 166,
+    "author": "Park Wan-suh",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 167,
+    "author": "René Descartes",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 168,
+    "author": "Abraham Lincoln",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 169,
+    "author": "Maya Angelou",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 170,
+    "author": "Baruch Spinoza",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 171,
+    "author": "Nelson Mandela",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 172,
+    "author": "Helen Keller",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 173,
+    "author": "Immanuel Kant",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 174,
+    "author": "Eleanor Roosevelt",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 175,
+    "author": "Audrey Hepburn",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 176,
+    "author": "Friedrich Nietzsche",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 177,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 178,
+    "author": "Bruce Lee",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 179,
+    "author": "Jean-Jacques Rousseau",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 180,
+    "author": "John F. Kennedy",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 181,
+    "author": "Oprah Winfrey",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 182,
+    "author": "John Stuart Mill",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 183,
+    "author": "Kim Gu",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 184,
+    "author": "Steve Jobs",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 185,
+    "author": "Ralph Waldo Emerson",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 186,
+    "author": "Martin Luther King Jr.",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 187,
+    "author": "Vincent van Gogh",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 188,
+    "author": "Henry David Thoreau",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 189,
+    "author": "Mahatma Gandhi",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 190,
+    "author": "Leonardo da Vinci",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 191,
+    "author": "Confucius",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 192,
+    "author": "Abraham Lincoln",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 193,
+    "author": "Yun Dong-ju",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 194,
+    "author": "Socrates",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 195,
+    "author": "Nelson Mandela",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 196,
+    "author": "Na Tae-joo",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 197,
+    "author": "Aristotle",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 198,
+    "author": "Eleanor Roosevelt",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 199,
+    "author": "Jung Ho-seung",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 200,
+    "author": "Laozi",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 201,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 202,
+    "author": "Park Wan-suh",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 203,
+    "author": "Mencius",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 204,
+    "author": "John F. Kennedy",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 205,
+    "author": "Maya Angelou",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 206,
+    "author": "Epictetus",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 207,
+    "author": "Kim Gu",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 208,
+    "author": "Helen Keller",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 209,
+    "author": "Marcus Aurelius",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 210,
+    "author": "Martin Luther King Jr.",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 211,
+    "author": "Audrey Hepburn",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 212,
+    "author": "Seneca",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 213,
+    "author": "Mahatma Gandhi",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 214,
+    "author": "Bruce Lee",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 215,
+    "author": "René Descartes",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 216,
+    "author": "Abraham Lincoln",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 217,
+    "author": "Oprah Winfrey",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 218,
+    "author": "Baruch Spinoza",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 219,
+    "author": "Nelson Mandela",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 220,
+    "author": "Steve Jobs",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 221,
+    "author": "Immanuel Kant",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 222,
+    "author": "Eleanor Roosevelt",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 223,
+    "author": "Vincent van Gogh",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 224,
+    "author": "Friedrich Nietzsche",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 225,
+    "author": "Franklin D. Roosevelt",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 226,
+    "author": "Leonardo da Vinci",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 227,
+    "author": "Jean-Jacques Rousseau",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 228,
+    "author": "John F. Kennedy",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 229,
+    "author": "Yun Dong-ju",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 230,
+    "author": "John Stuart Mill",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 231,
+    "author": "Kim Gu",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 232,
+    "author": "Na Tae-joo",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 233,
+    "author": "Ralph Waldo Emerson",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 234,
+    "author": "Martin Luther King Jr.",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 235,
+    "author": "Jung Ho-seung",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 236,
+    "author": "Henry David Thoreau",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 237,
+    "author": "Mahatma Gandhi",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 238,
+    "author": "Park Wan-suh",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 239,
+    "author": "Confucius",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 240,
+    "author": "Abraham Lincoln",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 241,
+    "author": "Maya Angelou",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 242,
+    "author": "Socrates",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 243,
+    "author": "Nelson Mandela",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 244,
+    "author": "Helen Keller",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 245,
+    "author": "Aristotle",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 246,
+    "author": "Eleanor Roosevelt",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 247,
+    "author": "Audrey Hepburn",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 248,
+    "author": "Laozi",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 249,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 250,
+    "author": "Bruce Lee",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 251,
+    "author": "Mencius",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 252,
+    "author": "John F. Kennedy",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 253,
+    "author": "Oprah Winfrey",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 254,
+    "author": "Epictetus",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 255,
+    "author": "Kim Gu",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 256,
+    "author": "Steve Jobs",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 257,
+    "author": "Marcus Aurelius",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 258,
+    "author": "Martin Luther King Jr.",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 259,
+    "author": "Vincent van Gogh",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 260,
+    "author": "Seneca",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 261,
+    "author": "Mahatma Gandhi",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 262,
+    "author": "Leonardo da Vinci",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 263,
+    "author": "René Descartes",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 264,
+    "author": "Abraham Lincoln",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 265,
+    "author": "Yun Dong-ju",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 266,
+    "author": "Baruch Spinoza",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 267,
+    "author": "Nelson Mandela",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 268,
+    "author": "Na Tae-joo",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 269,
+    "author": "Immanuel Kant",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 270,
+    "author": "Eleanor Roosevelt",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 271,
+    "author": "Jung Ho-seung",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 272,
+    "author": "Friedrich Nietzsche",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 273,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 274,
+    "author": "Park Wan-suh",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 275,
+    "author": "Jean-Jacques Rousseau",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 276,
+    "author": "John F. Kennedy",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 277,
+    "author": "Maya Angelou",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 278,
+    "author": "John Stuart Mill",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 279,
+    "author": "Kim Gu",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 280,
+    "author": "Helen Keller",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 281,
+    "author": "Ralph Waldo Emerson",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 282,
+    "author": "Martin Luther King Jr.",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 283,
+    "author": "Audrey Hepburn",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 284,
+    "author": "Henry David Thoreau",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 285,
+    "author": "Mahatma Gandhi",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 286,
+    "author": "Bruce Lee",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 287,
+    "author": "Confucius",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 288,
+    "author": "Abraham Lincoln",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 289,
+    "author": "Oprah Winfrey",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 290,
+    "author": "Socrates",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 291,
+    "author": "Nelson Mandela",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 292,
+    "author": "Steve Jobs",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 293,
+    "author": "Aristotle",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 294,
+    "author": "Eleanor Roosevelt",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 295,
+    "author": "Vincent van Gogh",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 296,
+    "author": "Laozi",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 297,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 298,
+    "author": "Leonardo da Vinci",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 299,
+    "author": "Mencius",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 300,
+    "author": "John F. Kennedy",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 301,
+    "author": "Yun Dong-ju",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 302,
+    "author": "Epictetus",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 303,
+    "author": "Kim Gu",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 304,
+    "author": "Na Tae-joo",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 305,
+    "author": "Marcus Aurelius",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 306,
+    "author": "Martin Luther King Jr.",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 307,
+    "author": "Jung Ho-seung",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 308,
+    "author": "Seneca",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 309,
+    "author": "Mahatma Gandhi",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 310,
+    "author": "Park Wan-suh",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 311,
+    "author": "René Descartes",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 312,
+    "author": "Abraham Lincoln",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 313,
+    "author": "Maya Angelou",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 314,
+    "author": "Baruch Spinoza",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 315,
+    "author": "Nelson Mandela",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 316,
+    "author": "Helen Keller",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 317,
+    "author": "Immanuel Kant",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 318,
+    "author": "Eleanor Roosevelt",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 319,
+    "author": "Audrey Hepburn",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 320,
+    "author": "Friedrich Nietzsche",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 321,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 322,
+    "author": "Bruce Lee",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 323,
+    "author": "Jean-Jacques Rousseau",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 324,
+    "author": "John F. Kennedy",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 325,
+    "author": "Oprah Winfrey",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 326,
+    "author": "John Stuart Mill",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 327,
+    "author": "Kim Gu",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 328,
+    "author": "Steve Jobs",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 329,
+    "author": "Ralph Waldo Emerson",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 330,
+    "author": "Martin Luther King Jr.",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 331,
+    "author": "Vincent van Gogh",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 332,
+    "author": "Henry David Thoreau",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 333,
+    "author": "Mahatma Gandhi",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 334,
+    "author": "Leonardo da Vinci",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 335,
+    "author": "Confucius",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 336,
+    "author": "Abraham Lincoln",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 337,
+    "author": "Yun Dong-ju",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 338,
+    "author": "Socrates",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 339,
+    "author": "Nelson Mandela",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 340,
+    "author": "Na Tae-joo",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 341,
+    "author": "Aristotle",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 342,
+    "author": "Eleanor Roosevelt",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 343,
+    "author": "Jung Ho-seung",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 344,
+    "author": "Laozi",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 345,
+    "author": "Franklin D. Roosevelt",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 346,
+    "author": "Park Wan-suh",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 347,
+    "author": "Mencius",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 348,
+    "author": "John F. Kennedy",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 349,
+    "author": "Maya Angelou",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 350,
+    "author": "Epictetus",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 351,
+    "author": "Kim Gu",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 352,
+    "author": "Helen Keller",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 353,
+    "author": "Marcus Aurelius",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 354,
+    "author": "Martin Luther King Jr.",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 355,
+    "author": "Audrey Hepburn",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 356,
+    "author": "Seneca",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 357,
+    "author": "Mahatma Gandhi",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 358,
+    "author": "Bruce Lee",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 359,
+    "author": "René Descartes",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 360,
+    "author": "Abraham Lincoln",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 361,
+    "author": "Oprah Winfrey",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 362,
+    "author": "Baruch Spinoza",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 363,
+    "author": "Nelson Mandela",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 364,
+    "author": "Steve Jobs",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 365,
+    "author": "Immanuel Kant",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 366,
+    "author": "Eleanor Roosevelt",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 367,
+    "author": "Vincent van Gogh",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 368,
+    "author": "Friedrich Nietzsche",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 369,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 370,
+    "author": "Leonardo da Vinci",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 371,
+    "author": "Jean-Jacques Rousseau",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 372,
+    "author": "John F. Kennedy",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 373,
+    "author": "Yun Dong-ju",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 374,
+    "author": "John Stuart Mill",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 375,
+    "author": "Kim Gu",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 376,
+    "author": "Na Tae-joo",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 377,
+    "author": "Ralph Waldo Emerson",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 378,
+    "author": "Martin Luther King Jr.",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 379,
+    "author": "Jung Ho-seung",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 380,
+    "author": "Henry David Thoreau",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 381,
+    "author": "Mahatma Gandhi",
+    "quote": "Before trying to change someone, try to understand them.",
+    "category": "Relationships",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 382,
+    "author": "Park Wan-suh",
+    "quote": "A small act of kindness can be the beginning of a better day for someone.",
+    "category": "Kindness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 383,
+    "author": "Confucius",
+    "quote": "The world keeps opening new doors to those who never stop asking questions.",
+    "category": "Learning",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 384,
+    "author": "Abraham Lincoln",
+    "quote": "Value the time you can use now more than the time that has passed.",
+    "category": "Time",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 385,
+    "author": "Maya Angelou",
+    "quote": "A dream becomes clearer when you turn it into action.",
+    "category": "Dreams",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 386,
+    "author": "Socrates",
+    "quote": "Define success by the values that matter to you, not by other people's applause.",
+    "category": "Success",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 387,
+    "author": "Nelson Mandela",
+    "quote": "Peace can arrive when you let go of the need to control everything.",
+    "category": "Peace",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 388,
+    "author": "Helen Keller",
+    "quote": "Creativity begins when you look at familiar things with fresh eyes.",
+    "category": "Creativity",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 389,
+    "author": "Aristotle",
+    "quote": "Being honest with yourself is the starting point of a grounded life.",
+    "category": "Honesty",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 390,
+    "author": "Eleanor Roosevelt",
+    "quote": "Knowing there is still more to learn keeps growth alive.",
+    "category": "Humility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 391,
+    "author": "Audrey Hepburn",
+    "quote": "Keeping small promises is one of the surest ways to build trust.",
+    "category": "Responsibility",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 392,
+    "author": "Laozi",
+    "quote": "Even when change feels unfamiliar, look for what it can teach you.",
+    "category": "Change",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 393,
+    "author": "Franklin D. Roosevelt",
+    "quote": "Happiness can be found in ordinary days, not only in extraordinary moments.",
+    "category": "Happiness",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 394,
+    "author": "Bruce Lee",
+    "quote": "Freedom grows from the right to choose and the willingness to own those choices.",
+    "category": "Freedom",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 395,
+    "author": "Mencius",
+    "quote": "Don't wait for fear to disappear; take one step forward alongside it.",
+    "category": "Courage",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 396,
+    "author": "John F. Kennedy",
+    "quote": "Today's small lesson can create a wider perspective tomorrow.",
+    "category": "Growth",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 397,
+    "author": "Oprah Winfrey",
+    "quote": "Even a slow step can make a path if you keep moving.",
+    "category": "Patience",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 398,
+    "author": "Epictetus",
+    "quote": "Look to your own values and direction before measuring yourself by others' standards.",
+    "category": "Self-trust",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 399,
+    "author": "Kim Gu",
+    "quote": "Failure is not the end; it can be a signal to try another way.",
+    "category": "Failure",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  },
+  {
+    "id": 400,
+    "author": "Steve Jobs",
+    "quote": "Even in difficult times, you can still choose your next step.",
+    "category": "Hope",
+    "source": "Original paraphrase inspired by a broad theme; not a verified quotation by this person.",
+    "note": "This is original wording, not a verified quotation. Do not attribute it as a verbatim statement."
+  }
+]

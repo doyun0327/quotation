@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.android.vending.BILLING"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
@@ -64,7 +65,7 @@
         <receiver
             android:name=".DailyWordWidgetProvider"
             android:exported="true"
-            android:label="@string/app_name">
+            android:label="@string/widget_character_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.quotation.quotation.ACTION_HOURLY_WIDGET_REFRESH" />
@@ -86,66 +87,6 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/dday_widget_info" />
-        </receiver>
-
-        <receiver
-            android:name=".DdayWidgetProviderS"
-            android:exported="true"
-            android:label="@string/dday_widget_label_s">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/dday_widget_info_s" />
-        </receiver>
-
-        <receiver
-            android:name=".DdayWidgetProviderM"
-            android:exported="true"
-            android:label="@string/dday_widget_label_m">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/dday_widget_info_m" />
-        </receiver>
-
-        <receiver
-            android:name=".DdayWidgetProviderXl"
-            android:exported="true"
-            android:label="@string/dday_widget_label_xl">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/dday_widget_info_xl" />
-        </receiver>
-
-        <receiver
-            android:name=".DdayWidgetProviderSq"
-            android:exported="true"
-            android:label="@string/dday_widget_label_sq">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/dday_widget_info_sq" />
-        </receiver>
-
-        <receiver
-            android:name=".DdayWidgetProviderTall"
-            android:exported="true"
-            android:label="@string/dday_widget_label_tall">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/dday_widget_info_tall" />
         </receiver>
 
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />

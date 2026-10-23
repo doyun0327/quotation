@@ -8,6 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.net.Uri
+import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
@@ -15,11 +17,6 @@ import android.util.TypedValue
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
-import org.json.JSONArray
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import kotlin.math.abs
 
 class DailyWordWidgetProvider : HomeWidgetProvider() {
   override fun onEnabled(context: Context) {
@@ -60,178 +57,76 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
     scheduleHourlyRefresh(context)
 
     appWidgetIds.forEach { widgetId ->
-      val views =
-          RemoteViews(context.packageName, R.layout.daily_word_widget).apply {
-            val pendingIntent =
-                HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
-            setOnClickPendingIntent(R.id.widget_root, pendingIntent)
+      try {
+        val views =
+            RemoteViews(context.packageName, R.layout.daily_word_widget).apply {
+              val quoteId = prefString(widgetData, "quoteId")
+              val categoryId = prefString(widgetData, "categoryId")
+              val subId = prefString(widgetData, "subCategoryId")
+              val launchUri =
+                  Uri.parse("dearly://quote").buildUpon().apply {
+                    if (quoteId.isNotBlank()) appendQueryParameter("id", quoteId)
+                    if (categoryId.isNotBlank()) {
+                      appendQueryParameter("category", categoryId)
+                    }
+                    if (subId.isNotBlank()) appendQueryParameter("sub", subId)
+                  }.build()
+              val pendingIntent =
+                  HomeWidgetLaunchIntent.getActivity(
+                      context,
+                      MainActivity::class.java,
+                      launchUri,
+                  )
+              setOnClickPendingIntent(R.id.widget_root, pendingIntent)
+              setOnClickPendingIntent(R.id.widget_character, pendingIntent)
+              setOnClickPendingIntent(R.id.widget_bubble_stack, pendingIntent)
+              setOnClickPendingIntent(R.id.widget_bubble_bg, pendingIntent)
+              setOnClickPendingIntent(R.id.widget_quote, pendingIntent)
 
-            val quoteText = resolveHourlyQuote(context, widgetData)
+              val quoteText =
+                  widgetData.getString("quoteText", null)?.trim().orEmpty().ifEmpty {
+                    widgetData.getString("flutter.quoteText", null)?.trim().orEmpty()
+                  }.ifEmpty {
+                    context.getString(R.string.widget_placeholder_quote)
+                  }
 
-            val accent = readColor(widgetData, "themeAccent", DEFAULT_ACCENT)
-            val border = readColor(widgetData, "themeBorder", DEFAULT_BORDER)
-            val windowBar = readColor(widgetData, "themeWindowBar", DEFAULT_WINDOW_BAR)
+              setTextViewText(R.id.widget_quote, quoteText)
+              val characterId =
+                  widgetData.getString("characterId", null)?.trim().orEmpty().ifEmpty {
+                    widgetData.getString("flutter.characterId", null)?.trim().orEmpty()
+                  }.ifEmpty { "basic" }
+              setImageViewBitmap(
+                  R.id.widget_character,
+                  DdayWidgetVisuals.fitBitmap(
+                      DdayWidgetVisuals.characterBitmap(
+                          context = context,
+                          characterId = characterId,
+                          widthDp = 112,
+                          heightDp = 148,
+                          isPixel = false,
+                      ),
+                      280,
+                  ),
+              )
 
-            setTextViewText(R.id.widget_quote, quoteText)
-            val characterId = widgetData.getString("characterId", "basic")
-            val characterRes =
-                if (characterId == "bul") R.drawable.character_bul
-                else R.drawable.character
-            setImageViewResource(R.id.widget_character, characterRes)
-            setInt(R.id.widget_window_bar, "setBackgroundColor", windowBar)
-            setInt(R.id.widget_chrome_1, "setBackgroundColor", 0xFFFFFFFF.toInt())
-            setInt(R.id.widget_chrome_2, "setBackgroundColor", 0xFFFFFFFF.toInt())
-            setInt(R.id.widget_chrome_3, "setBackgroundColor", 0xFFFFFFFF.toInt())
-            setTextColor(R.id.widget_chrome_1, accent)
-            setTextColor(R.id.widget_chrome_2, accent)
-            setTextColor(R.id.widget_chrome_3, accent)
+              val options = appWidgetManager.getAppWidgetOptions(widgetId)
+              val maxWidthDp =
+                  options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 250)
+              val bubbleWidthDp = (maxWidthDp - 98).coerceAtLeast(140)
+              val bubbleHeightDp = 118
+              applyHomeBubble(
+                  context = context,
+                  views = this,
+                  widgetData = widgetData,
+                  widthDp = bubbleWidthDp,
+                  heightDp = bubbleHeightDp,
+              )
+            }
 
-            val options = appWidgetManager.getAppWidgetOptions(widgetId)
-            val maxWidthDp =
-                options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 250)
-            val bubbleWidthDp = (maxWidthDp - 98).coerceAtLeast(140)
-            val bubbleHeightDp = 118
-            val bubbleBmp =
-                buildBubbleBitmap(
-                    context = context,
-                    widthDp = bubbleWidthDp,
-                    heightDp = bubbleHeightDp,
-                    fill = 0xFFFFFFFF.toInt(),
-                    border = border,
-                )
-            setImageViewBitmap(R.id.widget_bubble_bg, bubbleBmp)
-          }
-
-      appWidgetManager.updateAppWidget(widgetId, views)
-    }
-  }
-
-  private fun resolveHourlyQuote(
-      context: Context,
-      widgetData: SharedPreferences,
-  ): String {
-    val pool = readQuotePool(widgetData)
-    if (pool.isNotEmpty()) {
-      val hourKey =
-          SimpleDateFormat("yyyyMMddHH", Locale.US).format(Date())
-      val index = abs(hourKey.hashCode()) % pool.size
-      return pool[index]
-    }
-    return widgetData.getString("quoteText", null)
-        ?: context.getString(R.string.widget_placeholder_quote)
-  }
-
-  private fun readQuotePool(widgetData: SharedPreferences): List<String> {
-    val raw = widgetData.getString("quotePool", null) ?: return emptyList()
-    return try {
-      val array = JSONArray(raw)
-      buildList {
-        for (i in 0 until array.length()) {
-          val text = array.optString(i).trim()
-          if (text.isNotEmpty()) add(text)
-        }
+        appWidgetManager.updateAppWidget(widgetId, views)
+      } catch (e: Exception) {
+        android.util.Log.e("DailyWordWidget", "update failed id=$widgetId", e)
       }
-    } catch (_: Exception) {
-      emptyList()
-    }
-  }
-
-  private fun buildBubbleBitmap(
-      context: Context,
-      widthDp: Int,
-      heightDp: Int,
-      fill: Int,
-      border: Int,
-  ): Bitmap {
-    val density = context.resources.displayMetrics.density
-    val width = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        widthDp.toFloat(),
-        context.resources.displayMetrics,
-    ).toInt().coerceAtLeast(1)
-    val height = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        heightDp.toFloat(),
-        context.resources.displayMetrics,
-    ).toInt().coerceAtLeast(1)
-
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-
-    val radius = 12f * density
-    val tailHeight = 14f * density
-    val bodyBottom = height - tailHeight
-    val tailAnchor = 18f * density
-    val tipX = 8f * density
-
-    val path =
-        Path().apply {
-          moveTo(radius, 0f)
-          lineTo(width - radius, 0f)
-          quadTo(width.toFloat(), 0f, width.toFloat(), radius)
-          lineTo(width.toFloat(), bodyBottom - radius)
-          quadTo(width.toFloat(), bodyBottom, width - radius, bodyBottom)
-          lineTo(tailAnchor + 22f * density, bodyBottom)
-          cubicTo(
-              tailAnchor + 14f * density,
-              bodyBottom + 1f * density,
-              tipX + 10f * density,
-              bodyBottom + tailHeight * 0.55f,
-              tipX,
-              height - 1f * density,
-          )
-          cubicTo(
-              tipX + 2f * density,
-              bodyBottom + tailHeight * 0.45f,
-              tailAnchor + 2f * density,
-              bodyBottom + 1f * density,
-              tipX,
-              bodyBottom,
-          )
-          lineTo(radius, bodyBottom)
-          quadTo(0f, bodyBottom, 0f, bodyBottom - radius)
-          lineTo(0f, radius)
-          quadTo(0f, 0f, radius, 0f)
-          close()
-        }
-
-    canvas.drawPath(
-        Path(path).apply { offset(2f * density, 3f * density) },
-        Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x14000000 },
-    )
-    canvas.drawPath(
-        path,
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-          color = fill
-          style = Paint.Style.FILL
-        },
-    )
-    canvas.drawPath(
-        path,
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-          color = border
-          style = Paint.Style.STROKE
-          strokeWidth = 1.5f * density
-          strokeJoin = Paint.Join.ROUND
-        },
-    )
-
-    return bitmap
-  }
-
-  private fun readColor(prefs: SharedPreferences, key: String, default: Int): Int {
-    return try {
-      when (val raw = prefs.all[key]) {
-        is String -> {
-          val cleaned = raw.removePrefix("#")
-          (cleaned.toLong(16) and 0xFFFFFFFFL).toInt()
-        }
-        is Int -> raw
-        is Long -> raw.toInt()
-        else -> default
-      }
-    } catch (_: Exception) {
-      default
     }
   }
 
@@ -239,10 +134,250 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
     const val ACTION_HOURLY_REFRESH =
         "com.quotation.quotation.ACTION_HOURLY_WIDGET_REFRESH"
 
-    private const val DEFAULT_ACCENT = 0xFF5B8DEF.toInt()
     private const val DEFAULT_BORDER = 0xFFB8C0CE.toInt()
-    private const val DEFAULT_WINDOW_BAR = 0xFFBFD4F5.toInt()
     private const val HOUR_MS = AlarmManager.INTERVAL_HOUR
+
+    fun applyHomeBubble(
+        context: Context,
+        views: RemoteViews,
+        widgetData: SharedPreferences,
+        widthDp: Int,
+        heightDp: Int,
+    ) {
+      val border = readColor(widgetData, "themeBorder", DEFAULT_BORDER)
+      val style =
+          widgetData.getString("visualStyle", null)?.trim().orEmpty().ifEmpty {
+            widgetData.getString("flutter.visualStyle", null)?.trim().orEmpty()
+          }
+      views.setImageViewBitmap(
+          R.id.widget_bubble_bg,
+          DdayWidgetVisuals.fitBitmap(
+              buildBubbleBitmap(
+                  context = context,
+                  widthDp = widthDp,
+                  heightDp = heightDp,
+                  fill = 0xFFFFFFFF.toInt(),
+                  border = border,
+                  clean = style == "clean",
+              ),
+              360,
+          ),
+      )
+    }
+
+    private fun buildBubbleBitmap(
+        context: Context,
+        widthDp: Int,
+        heightDp: Int,
+        fill: Int,
+        border: Int,
+        clean: Boolean,
+    ): Bitmap {
+      val density = context.resources.displayMetrics.density
+      val width = TypedValue.applyDimension(
+          TypedValue.COMPLEX_UNIT_DIP,
+          widthDp.toFloat(),
+          context.resources.displayMetrics,
+      ).toInt().coerceAtLeast(1)
+      val height = TypedValue.applyDimension(
+          TypedValue.COMPLEX_UNIT_DIP,
+          heightDp.toFloat(),
+          context.resources.displayMetrics,
+      ).toInt().coerceAtLeast(1)
+
+      val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+      val canvas = Canvas(bitmap)
+      val radius = (if (clean) 22f else 14f) * density
+      val tailHeight = 12f * density
+      val bodyBottom = height - tailHeight
+      val tailAnchor = 16f * density
+      val tipX = 6f * density
+
+      val path =
+          Path().apply {
+            moveTo(radius, 0f)
+            lineTo(width - radius, 0f)
+            quadTo(width.toFloat(), 0f, width.toFloat(), radius)
+            lineTo(width.toFloat(), bodyBottom - radius)
+            quadTo(width.toFloat(), bodyBottom, width - radius, bodyBottom)
+            lineTo(tailAnchor + 20f * density, bodyBottom)
+            cubicTo(
+                tailAnchor + 12f * density,
+                bodyBottom + 1f * density,
+                tipX + 10f * density,
+                bodyBottom + tailHeight * 0.55f,
+                tipX,
+                height - 1f * density,
+            )
+            cubicTo(
+                tipX + 2f * density,
+                bodyBottom + tailHeight * 0.45f,
+                tailAnchor + 2f * density,
+                bodyBottom + 1f * density,
+                tipX,
+                bodyBottom,
+            )
+            lineTo(radius, bodyBottom)
+            quadTo(0f, bodyBottom, 0f, bodyBottom - radius)
+            lineTo(0f, radius)
+            quadTo(0f, 0f, radius, 0f)
+            close()
+          }
+
+      val shadow = Paint().apply {
+        color = if (clean) 0x18000000 else 0x14000000
+        isAntiAlias = clean
+        if (clean) {
+          maskFilter = BlurMaskFilter(6f * density, BlurMaskFilter.Blur.NORMAL)
+        }
+      }
+      canvas.drawPath(
+          Path(path).apply {
+            offset(if (clean) 0f else 2f * density, if (clean) 2f * density else 3f * density)
+          },
+          shadow,
+      )
+      canvas.drawPath(
+          path,
+          Paint().apply {
+            color = fill
+            style = Paint.Style.FILL
+            isAntiAlias = clean
+          },
+      )
+      canvas.drawPath(
+          path,
+          Paint().apply {
+            color = border
+            style = Paint.Style.STROKE
+            strokeWidth = (if (clean) 1f else 1.5f) * density
+            strokeJoin = Paint.Join.ROUND
+            isAntiAlias = clean
+          },
+      )
+      return bitmap
+    }
+
+    private fun prefString(prefs: SharedPreferences, key: String): String {
+      return prefs.getString(key, null)?.trim().orEmpty().ifEmpty {
+        prefs.getString("flutter.$key", null)?.trim().orEmpty()
+      }
+    }
+
+    private fun readColor(prefs: SharedPreferences, key: String, default: Int): Int {
+      return try {
+        when (val raw = prefs.all[key]) {
+          is String -> {
+            val cleaned = raw.removePrefix("#")
+            (cleaned.toLong(16) and 0xFFFFFFFFL).toInt()
+          }
+          is Int -> raw
+          is Long -> raw.toInt()
+          else -> default
+        }
+      } catch (_: Exception) {
+        default
+      }
+    }
+
+    fun buildPinBitmap(
+        context: Context,
+        widgetData: SharedPreferences,
+        quote: String,
+        characterId: String,
+    ): Bitmap {
+      val density = context.resources.displayMetrics.density.coerceAtLeast(0.5f)
+      val width = (200f * density).toInt().coerceAtLeast(1)
+      val height = (86f * density).toInt().coerceAtLeast(1)
+      val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+      val canvas = Canvas(bitmap)
+      val character =
+          DdayWidgetVisuals.characterBitmap(
+              context = context,
+              characterId = characterId.ifBlank { "basic" },
+              widthDp = 62,
+              heightDp = 80,
+              isPixel = false,
+          )
+      canvas.drawBitmap(
+          character,
+          0f,
+          (height - character.height).toFloat().coerceAtLeast(0f),
+          null,
+      )
+      val border = readColor(widgetData, "themeBorder", DEFAULT_BORDER)
+      val style =
+          widgetData.getString("visualStyle", null)?.trim().orEmpty().ifEmpty {
+            widgetData.getString("flutter.visualStyle", null)?.trim().orEmpty()
+          }
+      val bubbleLeft = (character.width - 8f * density).coerceAtLeast(0f)
+      val bubble =
+          buildBubbleBitmap(
+              context = context,
+              widthDp = ((width - bubbleLeft) / density).toInt().coerceAtLeast(80),
+              heightDp = 74,
+              fill = 0xFFFFFFFF.toInt(),
+              border = border,
+              clean = style == "clean",
+          )
+      canvas.drawBitmap(bubble, bubbleLeft, 2f * density, null)
+      val textPaint =
+          Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = 0xFF2C3340.toInt()
+            textSize = 11f * density
+            isFakeBoldText = true
+          }
+      drawWrapped(
+          canvas = canvas,
+          text = quote.ifBlank { context.getString(R.string.widget_placeholder_quote) },
+          paint = textPaint,
+          x = bubbleLeft + 10f * density,
+          y = 18f * density,
+          maxWidth = (width - 12f * density) - (bubbleLeft + 10f * density),
+          maxLines = 3,
+      )
+      if (character != bitmap) character.recycle()
+      if (bubble != bitmap) bubble.recycle()
+      return bitmap
+    }
+
+    private fun drawWrapped(
+        canvas: Canvas,
+        text: String,
+        paint: Paint,
+        x: Float,
+        y: Float,
+        maxWidth: Float,
+        maxLines: Int,
+    ) {
+      if (maxWidth <= 0f || text.isEmpty()) return
+      var line = ""
+      var top = y
+      var lines = 0
+      for (ch in text) {
+        if (ch == '\n') {
+          canvas.drawText(line, x, top, paint)
+          lines++
+          if (lines >= maxLines) return
+          line = ""
+          top += paint.textSize * 1.25f
+          continue
+        }
+        val trial = line + ch
+        if (line.isNotEmpty() && paint.measureText(trial) > maxWidth) {
+          canvas.drawText(line, x, top, paint)
+          lines++
+          if (lines >= maxLines) return
+          line = ch.toString()
+          top += paint.textSize * 1.25f
+        } else {
+          line = trial
+        }
+      }
+      if (line.isNotEmpty() && lines < maxLines) {
+        canvas.drawText(line, x, top, paint)
+      }
+    }
 
     fun scheduleHourlyRefresh(context: Context) {
       val alarmManager = context.getSystemService(AlarmManager::class.java) ?: return

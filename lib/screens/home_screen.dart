@@ -8,9 +8,11 @@ import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/category_detail_screen.dart';
+import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/screens/quote_list_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/widgets/character_widget_hint.dart';
 import 'package:quotation/widgets/category_browse_section.dart';
 import 'package:quotation/widgets/pixel_calendar.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
@@ -134,6 +136,13 @@ class HomeScreen extends StatelessWidget {
                 _CharacterHero(
                   message: bubbleText,
                   isSaved: archiveController.contains(bubbleId),
+                  onCharacterTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const ShopScreen(asSettings: true),
+                      ),
+                    );
+                  },
                   onHeartTap: () {
                     if (bubble != null) {
                       _toggleQuote(context, bubble);
@@ -145,6 +154,7 @@ class HomeScreen extends StatelessWidget {
                     }
                   },
                 ),
+                const CharacterWidgetHintBanner(),
                 const SizedBox(height: 20),
                 TodaysWordCard(
                   date: _today,
@@ -209,36 +219,39 @@ class _CharacterHero extends StatelessWidget {
   const _CharacterHero({
     required this.message,
     required this.isSaved,
+    this.onCharacterTap,
     this.onHeartTap,
     this.onMessageTap,
   });
 
   final String message;
   final bool isSaved;
+  final VoidCallback? onCharacterTap;
   final VoidCallback? onHeartTap;
   final VoidCallback? onMessageTap;
 
   @override
   Widget build(BuildContext context) {
-    // Character and bubble side-by-side (no overlap); bubble right matches cards.
-    return SizedBox(
-      height: 176,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
+    // Character stays at the bottom. The bubble grows upward with the quote.
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
           // Trim a little empty layout on the character's right so the bubble
           // can grow left without covering the sprite.
           ClipRect(
             child: Align(
               alignment: Alignment.centerLeft,
               widthFactor: 0.94,
-              child: Image.asset(
-                characterController.assetPath,
-                height: 148,
-                filterQuality: visualStyleController.isClean
-                    ? FilterQuality.medium
-                    : FilterQuality.none,
-                isAntiAlias: visualStyleController.isClean,
+              child: GestureDetector(
+                onTap: onCharacterTap,
+                child: Image.asset(
+                  characterController.assetPath,
+                  height: 148,
+                  filterQuality: visualStyleController.isClean
+                      ? FilterQuality.medium
+                      : FilterQuality.none,
+                  isAntiAlias: visualStyleController.isClean,
+                ),
               ),
             ),
           ),
@@ -255,7 +268,6 @@ class _CharacterHero extends StatelessWidget {
             ),
           ),
         ],
-      ),
     );
   }
 }

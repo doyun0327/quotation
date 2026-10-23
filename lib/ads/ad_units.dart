@@ -17,4 +17,17 @@ abstract final class AdUnits {
     if (prodAds && kReleaseMode) return banner;
     return androidTestBanner;
   }
+
+  /// Google's sample rewarded ad. Labeled as a test ad.
+  static const androidTestRewarded =
+      'ca-app-pub-3940256099942544/5224354917';
+
+  /// Rewarded unit used to open a shop character. Reward amount in AdMob is 1.
+  static const rewarded = 'ca-app-pub-4752729386590212/6190216743';
+
+  static String get rewardedUnitId {
+    if (kIsWeb) return androidTestRewarded;
+    if (prodAds && kReleaseMode) return rewarded;
+    return androidTestRewarded;
+  }
 }

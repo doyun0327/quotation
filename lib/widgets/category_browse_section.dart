@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/quote_repository.dart';
@@ -61,9 +62,15 @@ class CategoryBrowseSection extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(dialogContext).pop();
-                membershipController.setPremium(true);
+                final code = await billingController.buyMonthly();
+                if (!context.mounted || code == null) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppStrings.current.billingError(code)),
+                  ),
+                );
               },
               child: Text(
                 t.premiumLockedCta,
