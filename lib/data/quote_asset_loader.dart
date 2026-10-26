@@ -65,6 +65,55 @@ abstract final class QuoteAssetLoader {
         authorOf: (item) => _text(item['author']),
       );
 
+  /// Japanese manuscripts in `assets/quotes/jp`, keyed by category.
+  static const japanesePaths = <String, String>{
+    'comfort:tired': 'assets/quotes/jp/japanese_tired_day_quotes_300_v2.json',
+    'comfort:anxiety':
+        'assets/quotes/jp/japanese_anxiety_worry_quotes_300_aa71b8.json',
+    'comfort:self':
+        'assets/quotes/jp/japanese_self_esteem_self_love_quotes_300.json',
+    'comfort:courage':
+        'assets/quotes/jp/japanese_courage_challenge_quotes_300.json',
+    'comfort:lonely':
+        'assets/quotes/jp/japanese_loneliness_comfort_quotes_300.json',
+    'comfort:growth':
+        'assets/quotes/jp/japanese_failure_growth_quotes_300.json',
+    'comfort:relation':
+        'assets/quotes/jp/japanese_human_relationship_quotes_300.json',
+    'comfort:dream':
+        'assets/quotes/jp/japanese_dream_motivation_quotes_300.json',
+    'faith:buddhism': 'assets/quotes/jp/japanese_buddhism_quotes_300.json',
+    'faith:christian': 'assets/quotes/jp/japanese_christian_quotes_300.json',
+    'literature:quotes': 'assets/quotes/jp/japanese_famous_quotes_200.json',
+    'literature:writers':
+        'assets/quotes/jp/japanese_literary_book_quotes_300.json',
+    'daily:love':
+        'assets/quotes/jp/japanese_love_relationship_quotes_300.json',
+    'daily:gratitude':
+        'assets/quotes/jp/japanese_gratitude_joy_quotes_300_5ec9e4.json',
+  };
+
+  static Future<Map<String, List<Quote>>> loadJapanese() async {
+    final entries = await Future.wait(
+      japanesePaths.entries.map((entry) async {
+        final quotes = await _loadList(
+          path: entry.value,
+          idPrefix: 'ja_${entry.key.replaceAll(':', '_')}_',
+          authorOf: _japaneseAuthor,
+        );
+        return MapEntry(entry.key, quotes);
+      }),
+    );
+    return Map.fromEntries(entries);
+  }
+
+  static String _japaneseAuthor(Map<String, dynamic> item) {
+    final author = _text(item['author']);
+    final book = _text(item['book']);
+    if (author.isNotEmpty && book.isNotEmpty) return '$author · $book';
+    return author;
+  }
+
   static Future<List<Quote>> loadBuddhismKo() => _loadList(
         path: buddhismKoPath,
         idPrefix: 'faith_buddhism_',

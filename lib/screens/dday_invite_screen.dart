@@ -5,6 +5,7 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/l10n/app_strings.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -96,6 +97,13 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: localeController,
+      builder: (context, _) => _buildScreen(context),
+    );
+  }
+
+  Widget _buildScreen(BuildContext context) {
     final t = AppStrings.current;
     final palette = context.palette;
     return Scaffold(

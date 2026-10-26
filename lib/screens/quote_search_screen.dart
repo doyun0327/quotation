@@ -6,7 +6,9 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dashed_border.dart';
+import 'package:quotation/widgets/hamfoot_icon.dart';
 
 class SearchableQuote {
   const SearchableQuote({
@@ -126,7 +128,11 @@ class _QuoteSearchScreenState extends State<QuoteSearchScreen> {
                     children: [
                       IconButton(
                         onPressed: () => Navigator.of(context).maybePop(),
-                        icon: const Icon(Icons.chevron_left_rounded, size: 28),
+                        icon: const AppPixelIcon(
+                          AppGlyph.chevronLeft,
+                          size: 20,
+                          color: AppColors.ink,
+                        ),
                       ),
                       Expanded(
                         child: Container(
@@ -153,8 +159,9 @@ class _QuoteSearchScreenState extends State<QuoteSearchScreen> {
                                 color: AppColors.muted,
                               ),
                               border: InputBorder.none,
-                              icon: Icon(
-                                Icons.search_rounded,
+                              icon: AppPixelIcon(
+                                AppGlyph.search,
+                                size: 18,
                                 color: widget.accent,
                               ),
                               suffixIcon: _query.isEmpty
@@ -164,10 +171,10 @@ class _QuoteSearchScreenState extends State<QuoteSearchScreen> {
                                         _controller.clear();
                                         setState(() => _query = '');
                                       },
-                                      icon: const Icon(
-                                        Icons.close_rounded,
+                                      icon: const AppPixelIcon(
+                                        AppGlyph.close,
                                         color: AppColors.muted,
-                                        size: 20,
+                                        size: 16,
                                       ),
                                     ),
                             ),
@@ -309,6 +316,7 @@ class _SearchResultCard extends StatelessWidget {
                     text: quote.text,
                     categoryId: item.categoryId,
                     categoryTitle: t.mainCategoryTitle(item.categoryId),
+                    subCategoryId: item.subCategoryId,
                     subCategoryTitle: t.subCategoryTitle(item.subCategoryId),
                     author: quote.author,
                   );
@@ -321,13 +329,13 @@ class _SearchResultCard extends StatelessWidget {
                       ),
                       behavior: SnackBarBehavior.floating,
                       backgroundColor: AppColors.ink,
+                      duration: nowSaved
+                          ? const Duration(seconds: 2)
+                          : const Duration(seconds: 4),
                     ),
                   );
                 },
-                icon: Icon(
-                  saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                  color: AppColors.heart,
-                ),
+                icon: HamfootIcon(size: 22, active: saved),
               ),
             ],
           ),

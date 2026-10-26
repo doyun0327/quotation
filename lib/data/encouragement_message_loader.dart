@@ -73,6 +73,14 @@ abstract final class EncouragementMessageLoader {
     return _cache[cacheKey]!;
   }
 
+  /// Morning, lunch, and evening lines in one pool for a single daily pick.
+  static Future<List<EncouragementMessage>> loadAll({String? languageId}) async {
+    final lists = await Future.wait([
+      for (final slot in EncouragementSlot.values) load(slot, languageId: languageId),
+    ]);
+    return [for (final list in lists) ...list];
+  }
+
   static void clearCache() => _cache.clear();
 
   /// Deterministic daily pick (local calendar day + slot).
@@ -84,6 +92,17 @@ abstract final class EncouragementMessageLoader {
     if (pool.isEmpty) return null;
     final key =
         '${date.year.toString().padLeft(4, '0')}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}:${slot.name}';
+    return pool[Random(key.hashCode).nextInt(pool.length)];
+  }
+
+  /// One line for the calendar day, stable if scheduling runs again.
+  static EncouragementMessage? pickOnce(
+    DateTime date,
+    List<EncouragementMessage> pool,
+  ) {
+    if (pool.isEmpty) return null;
+    final key =
+        '${date.year.toString().padLeft(4, '0')}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}:once';
     return pool[Random(key.hashCode).nextInt(pool.length)];
   }
 

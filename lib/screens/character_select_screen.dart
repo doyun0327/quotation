@@ -7,7 +7,6 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/character_widget_hint.dart';
 
 class CharacterSelectScreen extends StatefulWidget {
@@ -313,10 +312,8 @@ class _CharacterOption extends StatelessWidget {
                 child: Image.asset(
                   character.assetPath,
                   fit: BoxFit.contain,
-                  filterQuality: visualStyleController.isClean
-                      ? FilterQuality.medium
-                      : FilterQuality.none,
-                  isAntiAlias: visualStyleController.isClean,
+                  filterQuality: FilterQuality.none,
+                  isAntiAlias: false,
                 ),
               ),
               const SizedBox(height: 10),

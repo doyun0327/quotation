@@ -15,6 +15,7 @@ abstract final class QuoteRepository {
   static List<Quote> _fortuneEn = const [];
   static List<Quote> _famousKo = const [];
   static List<Quote> _famousEn = const [];
+  static Map<String, List<Quote>> _japanese = const {};
 
   static List<MainCategory> categories = _buildCategories();
 
@@ -30,21 +31,38 @@ abstract final class QuoteRepository {
   }
 
   static List<Quote> quotesFor(String mainId, String subId) {
+    final key = '$mainId:$subId';
+    if (localeController.isJapanese) {
+      final japanese = _japanese[key];
+      if (japanese != null && japanese.isNotEmpty) return japanese;
+      return const <Quote>[];
+    }
     if (mainId == 'daily' && subId == 'gratitude') {
-      final loaded =
-          localeController.isKorean ? _gratitudeKo : _gratitudeEn;
+      final loaded = _byLanguage(_gratitudeKo, _gratitudeEn);
       if (loaded.isNotEmpty) return loaded;
     }
     if (mainId == 'daily' && subId == 'love') {
-      final loaded = localeController.isKorean ? _loveKo : _loveEn;
+      final loaded = _byLanguage(_loveKo, _loveEn);
       if (loaded.isNotEmpty) return loaded;
     }
     if (mainId == 'literature' && subId == 'quotes') {
-      final loaded = localeController.isKorean ? _famousKo : _famousEn;
+      final loaded = _byLanguage(_famousKo, _famousEn);
       if (loaded.isNotEmpty) return loaded;
     }
-    final key = '$mainId:$subId';
     return _overrides[key] ?? quoteBank[key] ?? const <Quote>[];
+  }
+
+  /// Korean and English files stay on their own language.
+  /// Japanese never falls through to the English file.
+  static List<Quote> _byLanguage(List<Quote> korean, List<Quote> english) {
+    switch (localeController.language) {
+      case AppLanguage.korean:
+        return korean;
+      case AppLanguage.english:
+        return english;
+      case AppLanguage.japanese:
+        return const [];
+    }
   }
 
   /// Finds the deck that contains [quoteId], including loaded quote files.
@@ -86,7 +104,7 @@ abstract final class QuoteRepository {
 
   /// Fortune lines for the current language.
   static List<Quote> fortuneQuotesForLocale() {
-    return localeController.isKorean ? _fortuneKo : _fortuneEn;
+    return _byLanguage(_fortuneKo, _fortuneEn);
   }
 
   /// Gratitude and love sentences for the current language.
@@ -104,7 +122,7 @@ abstract final class QuoteRepository {
 
   static Future<void> initialize() async {
     try {
-      final results = await Future.wait([
+      final results = await Future.wait<Object>([
         QuoteAssetLoader.loadChristianKo(),
         QuoteAssetLoader.loadBuddhismKo(),
         QuoteAssetLoader.loadGratitude(korean: true),
@@ -115,17 +133,19 @@ abstract final class QuoteRepository {
         QuoteAssetLoader.loadFortune(korean: false),
         QuoteAssetLoader.loadFamous(korean: true),
         QuoteAssetLoader.loadFamous(korean: false),
+        QuoteAssetLoader.loadJapanese(),
       ]);
-      final christian = results[0];
-      final buddhism = results[1];
-      _gratitudeKo = results[2];
-      _gratitudeEn = results[3];
-      _loveKo = results[4];
-      _loveEn = results[5];
-      _fortuneKo = results[6];
-      _fortuneEn = results[7];
-      _famousKo = results[8];
-      _famousEn = results[9];
+      final christian = results[0] as List<Quote>;
+      final buddhism = results[1] as List<Quote>;
+      _gratitudeKo = results[2] as List<Quote>;
+      _gratitudeEn = results[3] as List<Quote>;
+      _loveKo = results[4] as List<Quote>;
+      _loveEn = results[5] as List<Quote>;
+      _fortuneKo = results[6] as List<Quote>;
+      _fortuneEn = results[7] as List<Quote>;
+      _famousKo = results[8] as List<Quote>;
+      _famousEn = results[9] as List<Quote>;
+      _japanese = results[10] as Map<String, List<Quote>>;
       var changed = false;
 
       if (christian.isNotEmpty) {
@@ -142,7 +162,8 @@ abstract final class QuoteRepository {
           _loveKo.isNotEmpty ||
           _loveEn.isNotEmpty ||
           _famousKo.isNotEmpty ||
-          _famousEn.isNotEmpty) {
+          _famousEn.isNotEmpty ||
+          _japanese.isNotEmpty) {
         categories = _buildCategories();
       }
     } catch (_) {

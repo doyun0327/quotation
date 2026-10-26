@@ -692,10 +692,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       height: 72,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: TogetherBgTheme.all.length,
+                        itemCount: TogetherBgTheme.choices.length,
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
-                          final theme = TogetherBgTheme.all[index];
+                          final theme = TogetherBgTheme.choices[index];
                           return _bgChoice(
                             selected: _bgThemeId == theme.id,
                             accent: palette.accent,

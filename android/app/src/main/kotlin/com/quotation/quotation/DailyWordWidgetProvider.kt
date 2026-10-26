@@ -8,6 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.net.Uri
 import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
@@ -135,6 +137,7 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
         "com.quotation.quotation.ACTION_HOURLY_WIDGET_REFRESH"
 
     private const val DEFAULT_BORDER = 0xFFB8C0CE.toInt()
+    private const val DEFAULT_ACCENT = 0xFF5B8DEF.toInt()
     private const val HOUR_MS = AlarmManager.INTERVAL_HOUR
 
     fun applyHomeBubble(
@@ -145,6 +148,7 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
         heightDp: Int,
     ) {
       val border = readColor(widgetData, "themeBorder", DEFAULT_BORDER)
+      val accent = readColor(widgetData, "themeAccent", DEFAULT_ACCENT)
       val style =
           widgetData.getString("visualStyle", null)?.trim().orEmpty().ifEmpty {
             widgetData.getString("flutter.visualStyle", null)?.trim().orEmpty()
@@ -158,6 +162,7 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
                   heightDp = heightDp,
                   fill = 0xFFFFFFFF.toInt(),
                   border = border,
+                  accent = accent,
                   clean = style == "clean",
               ),
               360,
@@ -171,6 +176,7 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
         heightDp: Int,
         fill: Int,
         border: Int,
+        accent: Int,
         clean: Boolean,
     ): Bitmap {
       val density = context.resources.displayMetrics.density
@@ -255,7 +261,47 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
             isAntiAlias = clean
           },
       )
+      drawThemePaw(
+          context = context,
+          canvas = canvas,
+          color = accent,
+          right = width - 10f * density,
+          bottom = bodyBottom - 6f * density,
+          sizeDp = 16f,
+      )
       return bitmap
+    }
+
+    private fun drawThemePaw(
+        context: Context,
+        canvas: Canvas,
+        color: Int,
+        right: Float,
+        bottom: Float,
+        sizeDp: Float,
+    ) {
+      val density = context.resources.displayMetrics.density
+      val size = (sizeDp * density).toInt().coerceAtLeast(1)
+      val source =
+          DdayWidgetVisuals.decodeFlutterAsset(
+              context,
+              "assets/images/like/hamfoot.png",
+          ) ?: return
+      val scaled =
+          if (source.width == size && source.height == size) {
+            source
+          } else {
+            Bitmap.createScaledBitmap(source, size, size, false)
+          }
+      val paint =
+          Paint().apply {
+            colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+            isFilterBitmap = false
+            isAntiAlias = false
+          }
+      canvas.drawBitmap(scaled, right - size, bottom - size, paint)
+      if (scaled != source) scaled.recycle()
+      source.recycle()
     }
 
     private fun prefString(prefs: SharedPreferences, key: String): String {
@@ -306,6 +352,7 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
           null,
       )
       val border = readColor(widgetData, "themeBorder", DEFAULT_BORDER)
+      val accent = readColor(widgetData, "themeAccent", DEFAULT_ACCENT)
       val style =
           widgetData.getString("visualStyle", null)?.trim().orEmpty().ifEmpty {
             widgetData.getString("flutter.visualStyle", null)?.trim().orEmpty()
@@ -318,6 +365,7 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
               heightDp = 74,
               fill = 0xFFFFFFFF.toInt(),
               border = border,
+              accent = accent,
               clean = style == "clean",
           )
       canvas.drawBitmap(bubble, bubbleLeft, 2f * density, null)

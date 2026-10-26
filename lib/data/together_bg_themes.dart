@@ -38,6 +38,9 @@ class TogetherBgTheme {
     ),
   ];
 
+  /// Picker shows transparent and the first photo only.
+  static List<TogetherBgTheme> get choices => [all[0], all[1]];
+
   static TogetherBgTheme byId(String? id) {
     if (id == null || id.isEmpty) return none;
     if (id == albumId) return const TogetherBgTheme(id: albumId, assetPath: '');

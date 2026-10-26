@@ -45,7 +45,7 @@ class LanguageRow extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        language == AppLanguage.korean ? '가' : 'A',
+                        language.mark,
                         style: AppTheme.body.copyWith(
                           fontSize: 18,
                           fontWeight: FontWeight.w900,

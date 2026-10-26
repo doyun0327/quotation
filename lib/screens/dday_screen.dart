@@ -10,7 +10,9 @@ import 'package:quotation/screens/together_room_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
+import 'package:quotation/widgets/hamfoot_icon.dart';
 
 class DdayScreen extends StatefulWidget {
   const DdayScreen({super.key});
@@ -57,15 +59,11 @@ class _DdayScreenState extends State<DdayScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text(t.delete),
-          content: Text(
-            localeController.isKorean
-                ? '「${item.title}」 방을 삭제할까요?'
-                : 'Delete room "${item.title}"?',
-          ),
+          content: Text(t.deleteRoomConfirm(item.title)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(localeController.isKorean ? '취소' : 'Cancel'),
+              child: Text(t.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
@@ -105,7 +103,11 @@ class _DdayScreenState extends State<DdayScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 18, 12, 4),
                   child: Row(
                     children: [
-                      Icon(Icons.groups_rounded, color: palette.accent),
+                      Icon(
+                        Icons.groups_rounded,
+                        size: 26,
+                        color: palette.accent,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         t.ddayTitle,
@@ -125,9 +127,9 @@ class _DdayScreenState extends State<DdayScreen> {
                             ),
                           );
                         },
-                        icon: Icon(
-                          Icons.qr_code_rounded,
-                          size: 24,
+                        icon: AppPixelIcon(
+                          AppGlyph.qr,
+                          size: 20,
                           color: palette.accent,
                         ),
                         tooltip: t.ddayInviteEnterCodeMenu,
@@ -154,10 +156,9 @@ class _DdayScreenState extends State<DdayScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.groups_outlined,
-                                  size: 42,
-                                  color:
-                                      palette.accent.withValues(alpha: 0.55),
+                                  Icons.groups_rounded,
+                                  size: 40,
+                                  color: palette.accent.withValues(alpha: 0.55),
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
@@ -179,7 +180,11 @@ class _DdayScreenState extends State<DdayScreen> {
                                 const SizedBox(height: 18),
                                 FilledButton.icon(
                                   onPressed: _openEditor,
-                                  icon: const Icon(Icons.add_rounded),
+                                  icon: AppPixelIcon(
+                                    AppGlyph.add,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
                                   label: Text(t.ddayAdd),
                                   style: FilledButton.styleFrom(
                                     backgroundColor: palette.accent,
@@ -198,7 +203,11 @@ class _DdayScreenState extends State<DdayScreen> {
                             if (index == items.length) {
                               return OutlinedButton.icon(
                                 onPressed: _openEditor,
-                                icon: const Icon(Icons.add_rounded),
+                                icon: AppPixelIcon(
+                                  AppGlyph.add,
+                                  size: 16,
+                                  color: palette.accent,
+                                ),
                                 label: Text(t.ddayAdd),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: palette.accent,
@@ -344,14 +353,9 @@ class _TogetherRoomCard extends StatelessWidget {
                       minWidth: 32,
                       minHeight: 32,
                     ),
-                    icon: Icon(
-                      item.favorite
-                          ? Icons.star_rounded
-                          : Icons.star_border_rounded,
+                    icon: HamfootIcon(
                       size: 22,
-                      color: item.favorite
-                          ? const Color(0xFFF5B942)
-                          : const Color(0xFFB7C0CE),
+                      active: item.favorite,
                     ),
                   ),
                   IconButton(
@@ -365,7 +369,7 @@ class _TogetherRoomCard extends StatelessWidget {
                     tooltip: t.ddayLeaveRoom,
                     icon: const Icon(
                       Icons.logout_rounded,
-                      size: 20,
+                      size: 22,
                       color: Color(0xFFB7C0CE),
                     ),
                   ),

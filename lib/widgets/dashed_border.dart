@@ -12,6 +12,7 @@ class DashedBorder extends StatelessWidget {
     this.radius = 8,
     this.padding = const EdgeInsets.all(14),
     this.backgroundColor = Colors.white,
+    this.alwaysDashed = false,
   });
 
   final Widget child;
@@ -22,13 +23,14 @@ class DashedBorder extends StatelessWidget {
   final double radius;
   final EdgeInsets padding;
   final Color backgroundColor;
+  final bool alwaysDashed;
 
   @override
   Widget build(BuildContext context) {
     final clean = visualStyleController.isClean;
     final effectiveRadius = clean ? (radius < 14 ? 16.0 : radius + 4) : radius;
 
-    if (clean) {
+    if (clean && !alwaysDashed) {
       return Container(
         padding: padding,
         decoration: BoxDecoration(

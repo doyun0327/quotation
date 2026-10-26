@@ -13,7 +13,6 @@ import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/l10n/app_strings.dart';
-import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
@@ -196,9 +195,7 @@ abstract final class HomeWidgetSync {
     final quote = selectionController.bubbleQuote ??
         Quote(
           id: 'fallback',
-          text: localeController.isKorean
-              ? '오늘도 잘하고 있어.'
-              : "You're doing well today.",
+          text: AppStrings.current.doingWell,
         );
     final categoryId = selectionController.mainCategoryId;
     final categoryTitle = AppStrings.current.mainCategoryTitle(categoryId);

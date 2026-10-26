@@ -4,6 +4,7 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/widgets/hamfoot_icon.dart';
 
 class PixelBottomNav extends StatelessWidget {
   const PixelBottomNav({
@@ -50,13 +51,21 @@ class PixelBottomNav extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              currentIndex == i ? items[i].$2 : items[i].$1,
-                              size: 24,
-                              color: currentIndex == i
-                                  ? (i == 2 ? AppColors.heart : palette.accent)
-                                  : AppColors.muted,
-                            ),
+                            if (i == 2)
+                              HamfootIcon(
+                                size: 24,
+                                color: currentIndex == i
+                                    ? palette.accent
+                                    : AppColors.muted,
+                              )
+                            else
+                              Icon(
+                                currentIndex == i ? items[i].$2 : items[i].$1,
+                                size: 24,
+                                color: currentIndex == i
+                                    ? palette.accent
+                                    : AppColors.muted,
+                              ),
                             const SizedBox(height: 4),
                             Text(
                               items[i].$3,
@@ -64,7 +73,7 @@ class PixelBottomNav extends StatelessWidget {
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: currentIndex == i
-                                    ? (i == 2 ? AppColors.heart : palette.accent)
+                                    ? palette.accent
                                     : AppColors.muted,
                               ),
                             ),

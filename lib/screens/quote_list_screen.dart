@@ -21,6 +21,8 @@ import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/quote_backgrounds.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
+import 'package:quotation/widgets/app_pixel_icon.dart';
+import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:share_plus/share_plus.dart';
 
 class QuoteListScreen extends StatefulWidget {
@@ -46,6 +48,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
   bool _sharing = false;
   List<Quote> _order = const [];
   String _orderKey = '';
+  int _page = 0;
 
   @override
   void initState() {
@@ -56,13 +59,14 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     );
     _orderKey = _orderKeyFor(source);
     _order = _shuffled(source);
-    _pageController = PageController(initialPage: _startPage(source));
+    _page = _startPage(source);
+    _pageController = PageController(initialPage: _page);
   }
 
   String _orderKeyFor(List<Quote> source) {
     final head = source.isEmpty ? '' : source.first.id;
     final tail = source.isEmpty ? '' : source.last.id;
-    return '${localeController.isKorean}:${source.length}:$head:$tail';
+    return '${localeController.language.id}:${source.length}:$head:$tail';
   }
 
   List<Quote> _shuffled(List<Quote> source) {
@@ -85,6 +89,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     if (key == _orderKey) return;
     _orderKey = key;
     _order = _shuffled(source);
+    _page = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_pageController.hasClients) return;
       _pageController.jumpToPage(0);
@@ -222,18 +227,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                for (final main in QuoteRepository.categories) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 14, bottom: 2),
-                    child: Text(
-                      t.mainCategoryTitle(main.id),
-                      style: AppTheme.body.copyWith(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                  ),
+                for (final main in QuoteRepository.categories)
                   for (final sub in main.subCategories)
                     ListTile(
                       contentPadding: const EdgeInsets.only(left: 2),
@@ -249,29 +243,26 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                         ),
                       ),
                       trailing: !membershipController.canAccess(main.id)
-                          ? const Icon(
-                              Icons.lock_outline_rounded,
-                              size: 18,
+                          ? const AppPixelIcon(
+                              AppGlyph.lock,
+                              size: 16,
                               color: AppColors.muted,
                             )
                           : main.id == widget.mainCategory.id &&
                                   sub.id == widget.subCategory.id
-                              ? Icon(
-                                  Icons.check_rounded,
+                              ? AppPixelIcon(
+                                  AppGlyph.check,
+                                  size: 16,
                                   color: palette.accent,
                                 )
                               : null,
                       onTap: () => _openCategory(sheetContext, main, sub),
                     ),
-                ],
                 const SizedBox(height: 8),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   iconColor: palette.accent,
-                  leading: Icon(
-                    Icons.favorite_rounded,
-                    color: palette.accent,
-                  ),
+                  leading: const HamfootIcon(size: 24),
                   title: Text(
                     t.archiveTitle,
                     style: AppTheme.body.copyWith(
@@ -280,7 +271,11 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                       color: AppColors.ink,
                     ),
                   ),
-                  trailing: const Icon(Icons.chevron_right_rounded),
+                  trailing: const AppPixelIcon(
+                    AppGlyph.chevronRight,
+                    size: 16,
+                    color: AppColors.muted,
+                  ),
                   onTap: () => _openArchive(sheetContext),
                 ),
               ],
@@ -394,6 +389,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
       text: quote.text,
       categoryId: widget.mainCategory.id,
       categoryTitle: categoryTitle,
+      subCategoryId: widget.subCategory.id,
       subCategoryTitle: subTitle,
       author: quote.author,
     );
@@ -406,6 +402,9 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
         ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.ink,
+        duration: nowSaved
+            ? const Duration(seconds: 2)
+            : const Duration(seconds: 4),
       ),
     );
   }
@@ -430,9 +429,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
         final quotes = _order;
         final categoryTitle = t.mainCategoryTitle(widget.mainCategory.id);
         final topInset = MediaQuery.paddingOf(context).top;
-        final now = DateTime.now();
-        final daySeed = now.difference(DateTime(now.year)).inDays;
-        final backgroundAsset = QuoteBackgrounds.assetFor(seed: daySeed);
+        final backgroundAsset = QuoteBackgrounds.assetFor();
         final clean = visualStyleController.isClean;
 
         return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -487,22 +484,11 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                                 controller: _pageController,
                                 scrollDirection: Axis.vertical,
                                 itemCount: quotes.length,
+                                onPageChanged: (index) {
+                                  setState(() => _page = index);
+                                },
                                 itemBuilder: (context, index) {
-                                  final quote = quotes[index];
-                                  final saved =
-                                      archiveController.contains(quote.id);
-                                  return _QuotePage(
-                                    quote: quote,
-                                    saved: saved,
-                                    shareLabel: t.share,
-                                    sharing: _sharing,
-                                    onHeart: () => _toggleHeart(
-                                      quote: quote,
-                                      categoryTitle: categoryTitle,
-                                      subTitle: title,
-                                    ),
-                                    onShare: _shareImage,
-                                  );
+                                  return _QuotePage(quote: quotes[index]);
                                 },
                               ),
                       ),
@@ -522,9 +508,9 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                         children: [
                           IconButton(
                             onPressed: () => Navigator.of(context).maybePop(),
-                            icon: const Icon(
-                              Icons.chevron_left_rounded,
-                              size: 28,
+                            icon: const AppPixelIcon(
+                              AppGlyph.chevronLeft,
+                              size: 20,
                               color: AppColors.ink,
                             ),
                           ),
@@ -545,6 +531,50 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                     ),
                   ),
                 ),
+                if (quotes.isNotEmpty)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 28,
+                    child: SafeArea(
+                      top: false,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _ActionButton(
+                            mark: HamfootIcon(
+                              size: 24,
+                              active: archiveController.contains(
+                                quotes[_page.clamp(0, quotes.length - 1)].id,
+                              ),
+                            ),
+                            label: '',
+                            color: AppColors.heart,
+                            onTap: () {
+                              final quote =
+                                  quotes[_page.clamp(0, quotes.length - 1)];
+                              _toggleHeart(
+                                quote: quote,
+                                categoryTitle: categoryTitle,
+                                subTitle: title,
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 28),
+                          _ActionButton(
+                            mark: const AppPixelIcon(
+                              AppGlyph.share,
+                              size: 22,
+                              color: AppColors.ink,
+                            ),
+                            label: t.share,
+                            color: AppColors.ink,
+                            onTap: _sharing ? null : _shareImage,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 Positioned(
                   left: 16,
                   bottom: 20,
@@ -566,26 +596,14 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
 }
 
 class _QuotePage extends StatelessWidget {
-  const _QuotePage({
-    required this.quote,
-    required this.saved,
-    required this.shareLabel,
-    required this.sharing,
-    required this.onHeart,
-    required this.onShare,
-  });
+  const _QuotePage({required this.quote});
 
   final Quote quote;
-  final bool saved;
-  final String shareLabel;
-  final bool sharing;
-  final VoidCallback onHeart;
-  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 28),
+      padding: const EdgeInsets.fromLTRB(28, 0, 28, 96),
       child: Column(
         children: [
           const Spacer(flex: 2),
@@ -612,34 +630,6 @@ class _QuotePage extends StatelessWidget {
             ),
           ],
           const Spacer(flex: 2),
-          Row(
-            children: [
-              const SizedBox(width: 52),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-              _ActionButton(
-                icon: saved
-                    ? Icons.favorite_rounded
-                    : Icons.favorite_border_rounded,
-                label: '',
-                color: AppColors.heart,
-                onTap: onHeart,
-              ),
-              const SizedBox(width: 28),
-              _ActionButton(
-                icon: Icons.ios_share_rounded,
-                label: shareLabel,
-                color: AppColors.ink,
-                onTap: sharing ? null : onShare,
-              ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 28),
         ],
       ),
     );
@@ -668,9 +658,9 @@ class _ReaderMenuButton extends StatelessWidget {
           message: label,
           child: const Padding(
             padding: EdgeInsets.all(12),
-            child: Icon(
-              Icons.menu_rounded,
-              size: 26,
+            child: AppPixelIcon(
+              AppGlyph.menu,
+              size: 20,
               color: AppColors.ink,
             ),
           ),
@@ -682,13 +672,13 @@ class _ReaderMenuButton extends StatelessWidget {
 
 class _ActionButton extends StatelessWidget {
   const _ActionButton({
-    required this.icon,
+    required this.mark,
     required this.label,
     required this.color,
     required this.onTap,
   });
 
-  final IconData icon;
+  final Widget mark;
   final String label;
   final Color color;
   final VoidCallback? onTap;
@@ -709,7 +699,7 @@ class _ActionButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: color, size: 26),
+              mark,
               if (label.isNotEmpty) ...[
                 const SizedBox(width: 8),
                 Text(

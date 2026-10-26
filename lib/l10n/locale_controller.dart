@@ -2,21 +2,40 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum AppLanguage {
-  korean(id: 'ko', labelKo: '한국어', labelEn: 'Korean'),
-  english(id: 'en', labelKo: '영어', labelEn: 'English');
+  korean(id: 'ko', labelKo: '한국어', labelEn: 'Korean', labelJa: '韓国語', mark: '가'),
+  english(id: 'en', labelKo: '영어', labelEn: 'English', labelJa: '英語', mark: 'A'),
+  japanese(
+    id: 'ja',
+    labelKo: '일본어',
+    labelEn: 'Japanese',
+    labelJa: '日本語',
+    mark: 'あ',
+  );
 
   const AppLanguage({
     required this.id,
     required this.labelKo,
     required this.labelEn,
+    required this.labelJa,
+    required this.mark,
   });
 
   final String id;
   final String labelKo;
   final String labelEn;
+  final String labelJa;
+  final String mark;
 
-  String label(AppLanguage current) =>
-      current == AppLanguage.korean ? labelKo : labelEn;
+  String label(AppLanguage current) {
+    switch (current) {
+      case AppLanguage.korean:
+        return labelKo;
+      case AppLanguage.japanese:
+        return labelJa;
+      case AppLanguage.english:
+        return labelEn;
+    }
+  }
 
   static AppLanguage byId(String id) {
     return AppLanguage.values.firstWhere(
@@ -36,6 +55,7 @@ class LocaleController extends ChangeNotifier {
 
   AppLanguage get language => _language;
   bool get isKorean => _language == AppLanguage.korean;
+  bool get isJapanese => _language == AppLanguage.japanese;
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();

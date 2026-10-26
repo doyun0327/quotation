@@ -13,6 +13,7 @@ import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
+import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
@@ -63,9 +64,9 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                     children: [
                       IconButton(
                         onPressed: () => Navigator.of(context).maybePop(),
-                        icon: Icon(
-                          Icons.chevron_left_rounded,
-                          size: 32,
+                        icon: AppPixelIcon(
+                          AppGlyph.chevronLeft,
+                          size: 20,
                           color: palette.accent,
                         ),
                       ),
@@ -217,10 +218,10 @@ class _FriendsCard extends StatelessWidget {
                   child: SizedBox(
                     width: 36,
                     height: 36,
-                    child: Icon(
-                      Icons.add_rounded,
+                    child: AppPixelIcon(
+                      AppGlyph.add,
                       color: palette.accent,
-                      size: 22,
+                      size: 16,
                     ),
                   ),
                 ),
@@ -232,12 +233,12 @@ class _FriendsCard extends StatelessWidget {
     );
   }
 
-  String _koMe(AppStrings t) => localeController.isKorean ? '나' : 'Me';
+  String _koMe(AppStrings t) => t.meLabel;
 
   String _friendLabel(DdayFriendMember f) {
     final name = f.displayName?.trim();
     if (name != null && name.isNotEmpty) return name;
-    return localeController.isKorean ? '친구' : 'Friend';
+    return AppStrings.current.togetherFriendFallbackName;
   }
 }
 

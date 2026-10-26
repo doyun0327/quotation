@@ -7,6 +7,7 @@ class ArchiveItem {
     required this.savedAt,
     required this.categoryId,
     required this.categoryTitle,
+    this.subCategoryId,
     this.subCategoryTitle,
     this.author,
   });
@@ -16,6 +17,7 @@ class ArchiveItem {
   final DateTime savedAt;
   final String categoryId;
   final String categoryTitle;
+  final String? subCategoryId;
   final String? subCategoryTitle;
   final String? author;
 }
@@ -25,9 +27,11 @@ class ArchiveGroup {
     required this.categoryId,
     required this.categoryTitle,
     required this.items,
+    this.subCategoryId,
   });
 
   final String categoryId;
+  final String? subCategoryId;
   final String categoryTitle;
   final List<ArchiveItem> items;
 }
@@ -42,22 +46,26 @@ class ArchiveController extends ChangeNotifier {
   List<ArchiveGroup> get groupedByCategory {
     final order = <String>[];
     final map = <String, List<ArchiveItem>>{};
-    final titles = <String, String>{};
 
     for (final item in _items) {
-      map.putIfAbsent(item.categoryId, () {
-        order.add(item.categoryId);
+      final subId = item.subCategoryId;
+      final key = (subId != null && subId.isNotEmpty)
+          ? '${item.categoryId}:$subId'
+          : item.categoryId;
+      map.putIfAbsent(key, () {
+        order.add(key);
         return <ArchiveItem>[];
       }).add(item);
-      titles[item.categoryId] = item.categoryTitle;
     }
 
     return [
-      for (final id in order)
+      for (final key in order)
         ArchiveGroup(
-          categoryId: id,
-          categoryTitle: titles[id] ?? id,
-          items: List.unmodifiable(map[id]!),
+          categoryId: map[key]!.first.categoryId,
+          subCategoryId: map[key]!.first.subCategoryId,
+          categoryTitle: map[key]!.first.subCategoryTitle ??
+              map[key]!.first.categoryTitle,
+          items: List.unmodifiable(map[key]!),
         ),
     ];
   }
@@ -67,6 +75,7 @@ class ArchiveController extends ChangeNotifier {
     required String text,
     required String categoryId,
     required String categoryTitle,
+    String? subCategoryId,
     String? subCategoryTitle,
     String? author,
   }) {
@@ -85,6 +94,7 @@ class ArchiveController extends ChangeNotifier {
         savedAt: DateTime.now(),
         categoryId: categoryId,
         categoryTitle: categoryTitle,
+        subCategoryId: subCategoryId,
         subCategoryTitle: subCategoryTitle,
         author: author,
       ),

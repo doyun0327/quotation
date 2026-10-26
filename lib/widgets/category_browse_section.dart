@@ -8,17 +8,18 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:quotation/theme/visual_style_controller.dart';
+import 'package:quotation/theme/theme_controller.dart';
+import 'package:quotation/widgets/category_pixel_icon.dart';
+import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dashed_border.dart';
-import 'package:quotation/widgets/pixel_icons.dart';
 
 class CategoryBrowseSection extends StatelessWidget {
   const CategoryBrowseSection({
     super.key,
-    this.onCategoryTap,
+    this.onSubcategoryTap,
   });
 
-  final ValueChanged<MainCategory>? onCategoryTap;
+  final void Function(MainCategory main, SubCategory sub)? onSubcategoryTap;
 
   Future<void> _showPremiumLockDialog(BuildContext context) async {
     final t = AppStrings.current;
@@ -88,183 +89,139 @@ class CategoryBrowseSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.palette;
-
     return ListenableBuilder(
       listenable: Listenable.merge([
         localeController,
         membershipController,
+        themeController,
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
-        final categories = QuoteRepository.categories;
+        final palette = context.palette;
+        final tiles = <Widget>[];
+        for (final category in QuoteRepository.categories) {
+          final locked = !membershipController.canAccess(category.id);
+          for (final sub in category.subCategories) {
+            if (tiles.isNotEmpty) tiles.add(const SizedBox(height: 10));
+            tiles.add(
+              _SubcategoryRow(
+                title: t.subCategoryTitle(sub.id),
+                subtitle: t.subCategorySubtitle(sub.id),
+                categoryId: sub.id,
+                palette: palette,
+                locked: locked,
+                onTap: () {
+                  if (locked) {
+                    _showPremiumLockDialog(context);
+                    return;
+                  }
+                  onSubcategoryTap?.call(category, sub);
+                },
+              ),
+            );
+          }
+        }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                const _PixelBadge(),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    t.browseTitle,
-                    style: AppTheme.body.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: palette.accent,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: categories.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1.0,
-              ),
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                final locked = !membershipController.canAccess(category.id);
-                return _CategoryCard(
-                  category: category,
-                  title: t.mainCategoryTitle(category.id),
-                  lines: t.mainCategoryLines(category.id),
-                  locked: locked,
-                  onTap: () {
-                    if (locked) {
-                      _showPremiumLockDialog(context);
-                      return;
-                    }
-                    onCategoryTap?.call(category);
-                  },
-                );
-              },
-            ),
-          ],
+          children: tiles,
         );
       },
     );
   }
 }
 
-class _PixelBadge extends StatelessWidget {
-  const _PixelBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    const colors = [
-      Color(0xFFFF9B5C),
-      Color(0xFF5B8DEF),
-      Color(0xFFFFC48A),
-      Color(0xFF8EC5FF),
-    ];
-
-    return SizedBox(
-      width: 16,
-      height: 16,
-      child: GridView.count(
-        crossAxisCount: 2,
-        physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: 2,
-        crossAxisSpacing: 2,
-        children: [
-          for (final color in colors) ColoredBox(color: color),
-        ],
-      ),
-    );
-  }
-}
-
-class _CategoryCard extends StatelessWidget {
-  const _CategoryCard({
-    required this.category,
+class _SubcategoryRow extends StatelessWidget {
+  const _SubcategoryRow({
     required this.title,
-    required this.lines,
+    required this.subtitle,
+    required this.categoryId,
+    required this.palette,
     required this.locked,
     this.onTap,
   });
 
-  final MainCategory category;
   final String title;
-  final List<String> lines;
+  final String subtitle;
+  final String categoryId;
+  final AppPalette palette;
   final bool locked;
   final VoidCallback? onTap;
 
+  static const _ink = Color(0xFF3A3834);
+  static const _caption = Color(0xFF8E877E);
+
   @override
   Widget build(BuildContext context) {
-    final clean = visualStyleController.isClean;
+    final tone = CategorySky.of(categoryId, palette);
+    final row = Row(
+      children: [
+        Container(
+          width: 46,
+          height: 46,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: tone.plate,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: tone.plateLine, width: 1),
+          ),
+          child: CategoryPixelIcon(categoryId: categoryId, size: 28),
+        ),
+        const SizedBox(width: 13),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTheme.body.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                  color: _ink,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                subtitle,
+                style: AppTheme.body.copyWith(
+                  fontSize: 11.5,
+                  height: 1.3,
+                  color: _caption,
+                ),
+              ),
+            ],
+          ),
+        ),
+        AppPixelIcon(
+          locked ? AppGlyph.lock : AppGlyph.chevronRight,
+          size: 18,
+          color: CategorySky.ink(palette),
+        ),
+      ],
+    );
+
+    final body = Opacity(
+      opacity: locked ? 0.62 : 1,
+      child: DashedBorder(
+        color: CategorySky.border(palette),
+        strokeWidth: 1.5,
+        dashLength: 4,
+        gapLength: 3.5,
+        radius: 16,
+        padding: const EdgeInsets.fromLTRB(12, 11, 12, 11),
+        backgroundColor: tone.card,
+        alwaysDashed: true,
+        child: row,
+      ),
+    );
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(clean ? 18 : 10),
-        child: Opacity(
-          opacity: locked ? 0.55 : 1,
-          child: DashedBorder(
-            color: category.border,
-            radius: clean ? 18 : 10,
-            strokeWidth: 2,
-            dashLength: 4,
-            gapLength: 3,
-            backgroundColor: category.background,
-            padding: const EdgeInsets.fromLTRB(10, 14, 10, 12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                PixelIcon(
-                  kind: category.pixelIcon,
-                  color: category.accent,
-                  size: clean ? 30 : 34,
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: AppTheme.body.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFF2F4A6E),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      ' >',
-                      style: AppTheme.body.copyWith(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF2F4A6E),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                for (final line in lines)
-                  Text(
-                    line,
-                    textAlign: TextAlign.center,
-                    style: AppTheme.body.copyWith(
-                      fontSize: 11,
-                      height: 1.35,
-                      color: AppColors.muted,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
+        borderRadius: BorderRadius.circular(16),
+        child: body,
       ),
     );
   }

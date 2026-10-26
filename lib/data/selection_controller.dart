@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/quote_repository.dart';
+import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 
 class SelectionController extends ChangeNotifier {
@@ -33,18 +34,14 @@ class SelectionController extends ChangeNotifier {
   List<Quote> get _fallbackBubble => [
         Quote(
           id: 'fallback',
-          text: localeController.isKorean
-              ? '오늘도 잘하고 있어.'
-              : "You're doing well today.",
+          text: AppStrings.current.doingWell,
         ),
       ];
 
   List<Quote> get _fallbackFortune => [
         Quote(
           id: 'fortune_fallback',
-          text: localeController.isKorean
-              ? '오늘도 좋은 일이 생길 거예요.'
-              : 'Something good is waiting today.',
+          text: AppStrings.current.fortuneFallbackLine,
         ),
       ];
 

@@ -6,6 +6,7 @@ import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/together_room_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
@@ -95,6 +96,13 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: localeController,
+      builder: (context, _) => _buildScreen(context),
+    );
+  }
+
+  Widget _buildScreen(BuildContext context) {
     final t = AppStrings.current;
     final palette = context.palette;
 

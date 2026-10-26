@@ -76,13 +76,13 @@ class SpeechBubble extends StatelessWidget {
                       padding: const EdgeInsets.all(2),
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 160),
-                        child: Icon(
-                          isSaved
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
+                        child: CustomPaint(
                           key: ValueKey(isSaved),
-                          size: 20,
-                          color: AppColors.heart,
+                          size: const Size.square(18),
+                          painter: _PixelHeartPainter(
+                            color: AppColors.heart,
+                            filled: isSaved,
+                          ),
                         ),
                       ),
                     ),
@@ -179,15 +179,23 @@ class _RectBubblePainter extends CustomPainter {
         ..style = PaintingStyle.fill
         ..isAntiAlias = soft,
     );
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = border
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = soft ? 1 : 1.5
-        ..strokeJoin = StrokeJoin.round
-        ..isAntiAlias = soft,
-    );
+    final stroke = Paint()
+      ..color = border
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = soft ? 1.4 : 1.6
+      ..strokeCap = StrokeCap.butt
+      ..strokeJoin = StrokeJoin.miter
+      ..isAntiAlias = soft;
+    const dash = 5.0;
+    const gap = 3.5;
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        final end = (distance + dash).clamp(0.0, metric.length);
+        canvas.drawPath(metric.extractPath(distance, end), stroke);
+        distance = end + gap;
+      }
+    }
   }
 
   @override
@@ -198,5 +206,48 @@ class _RectBubblePainter extends CustomPainter {
         oldDelegate.radius != radius ||
         oldDelegate.tailHeight != tailHeight ||
         oldDelegate.soft != soft;
+  }
+}
+
+class _PixelHeartPainter extends CustomPainter {
+  const _PixelHeartPainter({required this.color, required this.filled});
+
+  final Color color;
+  final bool filled;
+
+  static const _pixels = <List<int>>[
+    [2, 2], [3, 2], [5, 2], [6, 2],
+    [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3], [7, 3],
+    [1, 4], [2, 4], [3, 4], [4, 4], [5, 4], [6, 4], [7, 4],
+    [2, 5], [3, 5], [4, 5], [5, 5], [6, 5],
+    [3, 6], [4, 6], [5, 6],
+    [4, 7],
+  ];
+
+  static const _inner = <List<int>>[
+    [2, 3], [3, 3], [4, 3], [5, 3], [6, 3],
+    [2, 4], [3, 4], [4, 4], [5, 4], [6, 4],
+    [3, 5], [4, 5], [5, 5],
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final unit = size.width / 9;
+    final paint = Paint()
+      ..color = color
+      ..isAntiAlias = false;
+    final hidden = filled ? const <String>{} : {for (final p in _inner) '${p[0]},${p[1]}'};
+    for (final p in _pixels) {
+      if (hidden.contains('${p[0]},${p[1]}')) continue;
+      canvas.drawRect(
+        Rect.fromLTWH(p[0] * unit, p[1] * unit, unit + 0.4, unit + 0.4),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PixelHeartPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.filled != filled;
   }
 }

@@ -10,6 +10,8 @@ import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
+import 'package:quotation/widgets/app_pixel_icon.dart';
+import 'package:quotation/widgets/hamfoot_icon.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key, this.asSettings = false});
@@ -306,10 +308,8 @@ class _ShopTile extends StatelessWidget {
                 child: Image.asset(
                   character.assetPath,
                   fit: BoxFit.contain,
-                  filterQuality: visualStyleController.isClean
-                      ? FilterQuality.medium
-                      : FilterQuality.none,
-                  isAntiAlias: visualStyleController.isClean,
+                  filterQuality: FilterQuality.none,
+                  isAntiAlias: false,
                 ),
               ),
               if (locked)
@@ -320,10 +320,10 @@ class _ShopTile extends StatelessWidget {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(6),
-                    child: Icon(
-                      ad ? Icons.ondemand_video_rounded : Icons.lock_rounded,
+                    child: AppPixelIcon(
+                      ad ? AppGlyph.play : AppGlyph.lock,
                       color: accent,
-                      size: 22,
+                      size: 18,
                     ),
                   ),
                 ),
@@ -339,14 +339,9 @@ class _ShopTile extends StatelessWidget {
                       height: 28,
                     ),
                     onPressed: onFavorite,
-                    icon: Icon(
-                      favorite
-                          ? Icons.star_rounded
-                          : Icons.star_border_rounded,
-                      color: favorite
-                          ? const Color(0xFFFFB020)
-                          : AppColors.muted,
-                      size: 20,
+                    icon: HamfootIcon(
+                      size: 22,
+                      active: favorite,
                     ),
                   ),
                 ),
