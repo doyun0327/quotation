@@ -34,6 +34,24 @@ class MainActivity : FlutterActivity() {
           refreshWidget(DdayWidgetProvider(), DdayWidgetProvider::class.java)
           result.success(true)
         }
+        "scheduleMorningFortunes" -> {
+          val items = call.argument<List<*>>("items") ?: emptyList<Any>()
+          val parsed =
+              items.mapNotNull { entry ->
+                val map = entry as? Map<*, *> ?: return@mapNotNull null
+                mapOf<String, Any?>(
+                    "at" to map["at"],
+                    "title" to map["title"],
+                    "body" to map["body"],
+                )
+              }
+          MorningFortuneAlarm.schedule(applicationContext, parsed)
+          result.success(true)
+        }
+        "cancelMorningFortunes" -> {
+          MorningFortuneAlarm.cancel(applicationContext)
+          result.success(true)
+        }
         else -> result.notImplemented()
       }
     }
@@ -73,27 +91,17 @@ class MainActivity : FlutterActivity() {
     if (!manager.isRequestPinAppWidgetSupported) return false
     val provider = ComponentName(applicationContext, DailyWordWidgetProvider::class.java)
     val prefs = es.antonborri.home_widget.HomeWidgetPlugin.getData(applicationContext)
-    val quote =
-        prefs.getString("quoteText", null)?.trim().orEmpty().ifEmpty {
-          prefs.getString("flutter.quoteText", null)?.trim().orEmpty()
-        }
-    val characterId =
-        prefs.getString("characterId", null)
-            ?: prefs.getString("flutter.characterId", null)
-            ?: "basic"
     val bitmap =
         DailyWordWidgetProvider.buildPinBitmap(
             context = applicationContext,
             widgetData = prefs,
-            quote = quote,
-            characterId = characterId,
         )
     val views =
         DdayWidgetProvider().wrapPinPreview(
             context = applicationContext,
             bitmap = bitmap,
-            widthDp = 200f,
-            heightDp = 86f,
+            widthDp = 300f,
+            heightDp = 168f,
         )
     val extras =
         Bundle().apply {

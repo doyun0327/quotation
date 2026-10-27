@@ -161,11 +161,12 @@ class SettingsOutlineButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = context.palette.accent;
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.orange,
-        side: const BorderSide(color: AppColors.orange, width: 1.5),
+        foregroundColor: accent,
+        side: BorderSide(color: accent, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         minimumSize: const Size(0, 30),
         shape: RoundedRectangleBorder(

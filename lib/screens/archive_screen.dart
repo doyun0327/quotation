@@ -70,16 +70,6 @@ class ArchiveScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                child: Text(
-                  t.archiveHint,
-                  style: AppTheme.body.copyWith(
-                    fontSize: 12,
-                    color: AppColors.muted,
-                  ),
-                ),
-              ),
               Expanded(
                 child: groups.isEmpty
                     ? Center(

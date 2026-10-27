@@ -13,7 +13,6 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
@@ -456,7 +455,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         listenable: Listenable.merge([
           ddayController,
           characterController,
-          visualStyleController,
           localeController,
           authController,
         ]),
@@ -721,10 +719,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                     width: 72,
                                     height: 72,
                                     fit: BoxFit.cover,
-                                    filterQuality: visualStyleController.isClean
-                                        ? FilterQuality.medium
-                                        : FilterQuality.none,
-                                    isAntiAlias: visualStyleController.isClean,
+                                    filterQuality: FilterQuality.none,
+                                    isAntiAlias: false,
                                   ),
                           );
                         },

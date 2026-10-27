@@ -76,12 +76,12 @@ abstract final class CategorySky {
       );
     }
     return SkyTone(
-      icon: white,
-      shine: soft,
-      detail: accent,
-      plate: accent,
-      plateLine: deep,
-      card: soft,
+      icon: accent,
+      shine: white,
+      detail: deep,
+      plate: soft,
+      plateLine: Color.lerp(accent, white, 0.62)!,
+      card: Color.lerp(soft, white, 0.72)!,
     );
   }
 }

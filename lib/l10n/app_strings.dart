@@ -153,7 +153,7 @@ class AppStrings {
   String togetherWidgetChangedBodyFor(String name) => _t('$name - 위젯을 수정했어요!', '$name updated the widget!', '$nameさんがウィジェットを更新しました！');
   String get ddayInviteAcceptTitle => _t('초대 코드 입력', 'Enter invite code', '招待コードを入力');
   String get ddayInviteAcceptSubtitle => _t('친구가 보낸 6자리 코드를 입력하세요.', 'Enter the 6-digit code from your friend.', '友だちからもらった6桁のコードを入力してください。');
-  String get ddayInviteAcceptAction => _t('초대 수락', 'Accept invite', '招待を受ける');
+  String get ddayInviteAcceptAction => _t('입장', 'Enter', '入室');
   String get ddayInviteAcceptSuccess =>
       _t('같은 방에 참여했어요! 위젯에 반영돼요', 'Joined the room! It will show on the widget', '同じルームに参加しました！ウィジェットに反映されます');
   String get ddayInviteAcceptFailed =>
@@ -193,6 +193,70 @@ class AppStrings {
       _t('아직 친구가 없어요. 초대해 보세요', 'No friends yet — invite someone', 'まだ友だちがいません。招待してみてください');
   String get togetherLatestCheerFallback =>
       _t('응원을 남겨 보세요', 'Leave a cheer', '応援を残してみてください');
+  String get safetyReport => _t('신고', 'Report', '通報');
+  String get safetyReportTitle =>
+      _t('응원 문구 신고', 'Report this cheer', '応援メッセージを通報');
+  String get safetyReportBody => _t(
+        '불쾌한 문구를 운영자에게 알립니다. 확인한 뒤 문구를 지우거나 이용을 제한합니다.',
+        'This tells the operator. They review the cheer and can remove it or limit the account.',
+        '不快なメッセージを運営に知らせます。確認のうえ、文章の削除や利用制限を行います。',
+      );
+  String get safetyReasonHarassment =>
+      _t('괴롭힘', 'Harassment', '嫌がらせ');
+  String get safetyReasonSexual =>
+      _t('성적 내용', 'Sexual content', '性的な内容');
+  String get safetyReasonSpam => _t('스팸', 'Spam', 'スパム');
+  String get safetyReasonOther => _t('기타', 'Other', 'その他');
+  String get safetyNoteHint => _t(
+        '추가로 알릴 내용 (선택)',
+        'Extra details (optional)',
+        '追加で伝えること（任意）',
+      );
+  String get safetyBlockUser =>
+      _t('이 사용자 차단', 'Block this person', 'このユーザーをブロック');
+  String get safetyBlockHint => _t(
+        '차단하면 이 기기에서 그 사람의 문구와 캐릭터가 보이지 않습니다.',
+        'Blocking hides their cheer and character on this device.',
+        'ブロックすると、この端末ではその人のメッセージとキャラクターが非表示になります。',
+      );
+  String get safetySubmit => _t('신고하기', 'Submit report', '通報する');
+  String get safetySent => _t(
+        '신고를 접수했어요. 확인 후 조치합니다.',
+        'Report received. We will review it.',
+        '通報を受け付けました。確認して対応します。',
+      );
+  String get safetyNeedLogin => _t(
+        '신고하려면 로그인이 필요해요. 잠시 후 다시 시도해 주세요.',
+        'Sign-in is required to report. Please try again.',
+        '通報にはログインが必要です。しばらくしてからもう一度お試しください。',
+      );
+  String get safetyFailed => _t(
+        '신고를 보내지 못했어요. 잠시 후 다시 시도해 주세요.',
+        'Could not send the report. Please try again.',
+        '通報を送れませんでした。しばらくしてからもう一度お試しください。',
+      );
+  String get safetyCheerHidden => _t(
+        '차단한 사용자의 문구는 숨겼어요',
+        'A blocked person’s cheer is hidden',
+        'ブロックした人のメッセージは非表示です',
+      );
+  String get safetyNoCheer => _t(
+        '지금 신고할 응원 문구가 없어요. 방에 있는 친구는 아래에서 차단할 수 있어요.',
+        'There is no cheer to report. You can still block a friend below.',
+        '今通報できる応援メッセージはありません。下の友だちはブロックできます。',
+      );
+  String get safetyOwnCheer => _t(
+        '내가 쓴 문구는 신고할 수 없어요. 다른 사람의 문구가 있을 때 이유와 함께 보낼 수 있어요.',
+        'You can’t report your own cheer. When someone else writes one, you can send a reason.',
+        '自分が書いたメッセージは通報できません。ほかの人のメッセージがあるときに理由を選んで送れます。',
+      );
+  String get safetyFriends =>
+      _t('같은 방 친구', 'People in this room', 'このルームの人');
+  String get safetyBlocked =>
+      _t('차단한 사용자', 'Blocked people', 'ブロックした人');
+  String get safetyUnblock => _t('차단 해제', 'Unblock', 'ブロック解除');
+  String get safetyBlockedDone =>
+      _t('이 기기에서 차단했어요', 'Blocked on this device', 'この端末でブロックしました');
   String togetherFriendCountLabel(int n) =>
       _t('친구 $n명', '$n friends', '友だち $n人');
   String get save => _t('저장', 'Save', '保存');
@@ -211,7 +275,6 @@ class AppStrings {
   String get readerCategories => _t('카테고리', 'Categories', 'カテゴリー');
 
   String get archiveTitle => _t('보관함', 'Archive', '保存');
-  String get archiveHint => _t('하트로 담아둔 문장을 카테고리별로 모아봤어요', 'Hearted quotes are grouped by category', 'ハートで保存した文章をカテゴリーごとに集めました');
   String get archiveEmptyTitle =>
       _t('아직 담아둔 문장이 없어요', 'No saved quotes yet', 'まだ保存した文章がありません');
   String get archiveEmptyHint =>
@@ -377,7 +440,6 @@ class AppStrings {
       _t('이용약관 및 개인정보처리방침', 'Terms & Privacy', '利用規約とプライバシーポリシー');
   String get termsSubtitle =>
       _t('서비스 이용 관련 정보를 확인하세요', 'Review terms and privacy policy', 'サービスの利用に関する情報を確認してください');
-  String get termsToast => _t('이용약관', 'Terms', '利用規約');
   String get appInfoTitle => _t('앱 정보', 'App info', 'アプリ情報');
   String get appInfoSubtitle =>
       _t('버전 및 앱 정보를 확인하세요', 'Version and app details', 'バージョンとアプリ情報を確認してください');

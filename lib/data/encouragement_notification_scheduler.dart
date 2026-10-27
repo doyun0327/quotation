@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:quotation/data/encouragement_message_loader.dart';
@@ -26,6 +27,9 @@ abstract final class EncouragementNotificationScheduler {
 
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+  static const _morningChannel = MethodChannel(
+    'com.quotation.quotation/widget_pin',
+  );
 
   static bool _initialized = false;
   static Future<void> _rescheduleChain = Future<void>.value();
@@ -74,12 +78,31 @@ abstract final class EncouragementNotificationScheduler {
   }
 
   static Future<void> _syncLocalTimezone() async {
+    final deviceOffset = DateTime.now().timeZoneOffset;
     try {
       final info = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(info.identifier));
-    } catch (_) {
+      final named = tz.getLocation(info.identifier);
+      if (tz.TZDateTime.now(named).timeZoneOffset == deviceOffset) {
+        tz.setLocalLocation(named);
+        return;
+      }
+    } catch (_) {}
+
+    if (deviceOffset == const Duration(hours: 9)) {
       tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+      return;
     }
+    if (deviceOffset == Duration.zero) {
+      tz.setLocalLocation(tz.UTC);
+      return;
+    }
+    for (final location in tz.timeZoneDatabase.locations.values) {
+      if (tz.TZDateTime.now(location).timeZoneOffset == deviceOffset) {
+        tz.setLocalLocation(location);
+        return;
+      }
+    }
+    tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
   }
 
   static Future<bool> isEnabled() async {
@@ -109,6 +132,11 @@ abstract final class EncouragementNotificationScheduler {
       }
     }
     await _plugin.cancel(id: _debugEveningId);
+    if (!kIsWeb) {
+      try {
+        await _morningChannel.invokeMethod('cancelMorningFortunes');
+      } catch (_) {}
+    }
   }
 
   static Future<void> reschedule() {
@@ -144,18 +172,19 @@ abstract final class EncouragementNotificationScheduler {
     final fortunes = QuoteRepository.fortuneQuotesForLocale();
     final fortuneTitle = AppStrings.current.todaysFortune;
     final fortuneFallback = AppStrings.current.fortuneFallbackLine;
+    final mornings = <Map<String, Object>>[];
+    final wallNow = DateTime.now();
 
     for (var i = 0; i < _scheduleDays; i++) {
       final day = DateTime(now.year, now.month, now.day).add(Duration(days: i));
-      await _scheduleAt(
-        id: _fortuneBase + i,
-        day: day,
-        hour: _fortuneHour,
-        now: now,
-        title: fortuneTitle,
-        body: _fortuneBody(day, fortunes, fortuneFallback),
-        payload: 'fortune:$i',
-      );
+      final morningAt = DateTime(day.year, day.month, day.day, _fortuneHour);
+      if (morningAt.isAfter(wallNow)) {
+        mornings.add({
+          'at': morningAt.millisecondsSinceEpoch,
+          'title': fortuneTitle,
+          'body': _fortuneBody(day, fortunes, fortuneFallback),
+        });
+      }
       final lunchToday = _afternoonIsLunch(day);
       final slot = lunchToday ? EncouragementSlot.lunch : EncouragementSlot.evening;
       final pool = lunchToday ? lunch : evening;
@@ -169,6 +198,14 @@ abstract final class EncouragementNotificationScheduler {
         slot: slot,
         messages: messages,
       );
+    }
+
+    if (!kIsWeb) {
+      try {
+        await _morningChannel.invokeMethod('scheduleMorningFortunes', {
+          'items': mornings,
+        });
+      } catch (_) {}
     }
   }
 

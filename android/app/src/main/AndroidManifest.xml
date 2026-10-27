@@ -89,6 +89,16 @@
                 android:resource="@xml/dday_widget_info" />
         </receiver>
 
+        <receiver
+            android:name=".MorningFortuneReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.quotation.quotation.MORNING_FORTUNE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>

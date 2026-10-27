@@ -82,5 +82,23 @@ service cloud.firestore {
       allow update: if signedIn() && (isRoomMember() || isJoiningSelf());
       allow delete: if signedIn() && resource.data.hostUid == request.auth.uid;
     }
+
+    match /content_reports/{reportId} {
+      allow create: if signedIn()
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.roomId is string
+        && request.resource.data.roomId.size() > 0
+        && request.resource.data.roomId.size() < 200
+        && request.resource.data.reason in ['harassment', 'sexual', 'spam', 'other']
+        && request.resource.data.status == 'open'
+        && request.resource.data.contentText is string
+        && request.resource.data.contentText.size() <= 500
+        && request.resource.data.note is string
+        && request.resource.data.note.size() <= 300
+        && request.resource.data.targetUid is string
+        && request.resource.data.targetName is string
+        && request.resource.data.blockRequested is bool;
+      allow read, update, delete: if false;
+    }
   }
 }

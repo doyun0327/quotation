@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Dearly</string>
-    <string name="widget_description">Shows the character and speech bubble from the home screen</string>
-    <string name="widget_character_label">Character 4×2</string>
+    <string name="widget_description">Shows the home screen character, date, and quote</string>
+    <string name="widget_character_label">Character and quote</string>
     <string name="dday_widget_description">Shows the cheer widget you decorate with friends</string>
     <string name="dday_widget_label">Together</string>
     <string name="dday_widget_label_s">Together 2×2</string>

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
 import 'package:quotation/data/auth_controller.dart';
+import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/character_controller.dart';
@@ -62,6 +63,7 @@ Future<void> main() async {
     selectionController.syncAfterQuotesReady();
   });
   await ddayController.load();
+  await blockedUsersController.load();
   selectionController.syncAfterQuotesReady();
   selectionController.addListener(HomeWidgetSync.syncFromHome);
   themeController.addListener(HomeWidgetSync.syncThemeOnly);

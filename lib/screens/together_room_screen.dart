@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
@@ -8,11 +9,11 @@ import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/dday_invite_screen.dart';
+import 'package:quotation/screens/safety_report_sheet.dart';
 import 'package:quotation/screens/dday_widget_decorate_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
@@ -42,7 +43,7 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
         ddayController,
         localeController,
         characterController,
-        visualStyleController,
+        blockedUsersController,
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
@@ -105,6 +106,18 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                           ],
                         ),
                       ),
+                      if (room.hasFriend)
+                        IconButton(
+                          tooltip: t.safetyReport,
+                          onPressed: () => showSafetyReportSheet(
+                            context: context,
+                            room: room,
+                          ),
+                          icon: Icon(
+                            Icons.flag_outlined,
+                            color: palette.accent,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -139,9 +152,14 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                           final local = room.latestCheer?.trim();
                           // Typed text wins immediately. Cloud fills in only when
                           // nothing has been saved on this device yet.
-                          final text = (local != null && local.isNotEmpty)
+                          final raw = (local != null && local.isNotEmpty)
                               ? local
                               : cheer?.text;
+                          final text = blockedUsersController.visibleCheer(
+                            room.id,
+                            raw,
+                            authorUid: cheer?.authorUid,
+                          );
                           return _RoomWidgetPreview(
                             room: room,
                             cheerText: text,
@@ -202,6 +220,7 @@ class _FriendsCard extends StatelessWidget {
                   children: [
                     _CharBubble(asset: me.assetPath, label: _koMe(t)),
                     for (final f in friends)
+                      if (!blockedUsersController.isBlocked(f.uid))
                       _CharBubble(
                         asset: AppCharacter.byId(f.characterId).assetPath,
                         label: _friendLabel(f),
@@ -218,10 +237,10 @@ class _FriendsCard extends StatelessWidget {
                   child: SizedBox(
                     width: 36,
                     height: 36,
-                    child: AppPixelIcon(
-                      AppGlyph.add,
+                    child: Icon(
+                      Icons.add_rounded,
                       color: palette.accent,
-                      size: 16,
+                      size: 22,
                     ),
                   ),
                 ),
@@ -322,6 +341,12 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
     final cheer = cheerText?.trim();
     final label = (cheer != null && cheer.isNotEmpty) ? cheer : '';
     final friendId = room.friendCharacterId;
+    final friendBlocked = friendId != null &&
+        room.friends.any(
+          (friend) =>
+              friend.characterId == friendId &&
+              blockedUsersController.isBlocked(friend.uid),
+        );
     final meX = ddayController.meOffsetXForRoom(room.id).toDouble();
     final meY = ddayController.meOffsetYForRoom(room.id).toDouble();
     final friendX = ddayController.friendOffsetXForRoom(room.id).toDouble();
@@ -350,7 +375,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             charH: 96 * charBase,
             label: label,
             me: characterController.character,
-            friend: room.hasFriend && friendId != null
+            friend: room.hasFriend && friendId != null && !friendBlocked
                 ? AppCharacter.byId(friendId)
                 : null,
             meX: meX,
@@ -359,7 +384,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             friendY: friendY,
             textX: textX,
             textY: textY,
-            isPixel: visualStyleController.isPixel,
+            isPixel: true,
             meScale: ddayController.charScaleForRoom(room.id),
             friendScale: ddayController.friendScaleForRoom(room.id),
             textScale: ddayController.textScaleForRoom(room.id),

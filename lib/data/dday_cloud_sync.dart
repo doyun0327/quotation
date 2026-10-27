@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/dday_friend_models.dart';
@@ -182,6 +183,17 @@ class DdayCloudSync {
     _subs.add(guestSub);
   }
 
+  static String? _cheerForDevice(String roomId, Map<String, dynamic> data) {
+    final text = (data['latestCheer'] as String?)?.trim();
+    final author = data['latestCheerAuthorUid'] as String?;
+    final visible = blockedUsersController.visibleCheer(
+      roomId,
+      text,
+      authorUid: author,
+    );
+    return visible.isEmpty ? null : visible;
+  }
+
   static Future<TogetherLayoutNotice?> _applyMembershipDoc(
     String ddayId,
     Map<String, dynamic> data,
@@ -195,7 +207,17 @@ class DdayCloudSync {
         .map((e) => DdayFriendMember.fromJson(Map<String, dynamic>.from(e as Map)))
         .where((m) => m.uid.isNotEmpty)
         .toList();
-    final latestCheer = (data['latestCheer'] as String?)?.trim();
+    final rawCheer = (data['latestCheer'] as String?)?.trim() ?? '';
+    final latestCheer = _cheerForDevice(ddayId, data);
+    if (rawCheer.isNotEmpty && (latestCheer == null || latestCheer.isEmpty)) {
+      final stored = ddayController.items.where((e) => e.id == ddayId);
+      final localCheer = stored.isEmpty
+          ? ''
+          : (stored.first.latestCheer ?? '').trim();
+      if (localCheer.isEmpty || localCheer == rawCheer) {
+        await ddayController.setRoomCheer(ddayId, '');
+      }
+    }
 
     if (ddayId == TogetherTestRoom.roomId && !togetherTestRoom.enabled) {
       if (ddayController.items.any((e) => e.id == ddayId)) {

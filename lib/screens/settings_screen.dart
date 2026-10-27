@@ -3,6 +3,7 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
+import 'package:quotation/screens/legal_screen.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
@@ -341,7 +342,13 @@ class SettingsScreen extends StatelessWidget {
                             icon: Icons.description_outlined,
                             title: t.termsTitle,
                             subtitle: t.termsSubtitle,
-                            onTap: () => _toast(context, t.termsToast),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const LegalScreen(),
+                                ),
+                              );
+                            },
                           ),
                           SettingsItem(
                             icon: Icons.info_outline_rounded,

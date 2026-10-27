@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/quote_models.dart';
@@ -16,7 +17,8 @@ import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
-/// Mirrors the home-screen speech-bubble quote + theme onto the Android widget.
+
+/// Mirrors the home-screen character, date, and quote onto the Android widget.
 abstract final class HomeWidgetSync {
   static const androidProviderName = 'DailyWordWidgetProvider';
   static const androidProviderQualified =
@@ -194,8 +196,8 @@ abstract final class HomeWidgetSync {
 
     final quote = selectionController.bubbleQuote ??
         Quote(
-          id: 'fallback',
-          text: AppStrings.current.doingWell,
+          id: 'greeting_today',
+          text: AppStrings.current.homeGreeting,
         );
     final categoryId = selectionController.mainCategoryId;
     final categoryTitle = AppStrings.current.mainCategoryTitle(categoryId);
@@ -490,7 +492,10 @@ abstract final class HomeWidgetSync {
     final rooms = <String, Map<String, Object>>{};
     for (final item in ddayController.items) {
       final textScale = ddayController.textScaleForRoom(item.id);
-      final cheer = item.latestCheer?.trim() ?? '';
+      final cheer = blockedUsersController.visibleCheer(
+        item.id,
+        item.latestCheer,
+      );
       final box = hosts[item.id] ??
           TogetherWidgetSize.s42.homeSize(_screenWidthDp().toDouble());
       final inner = TogetherCheerLayout.innerSize(
@@ -618,8 +623,10 @@ abstract final class HomeWidgetSync {
       await HomeWidget.saveWidgetData<String>(keyDdayDuoPose, 'handhold');
       return;
     }
-    final cheer = item.latestCheer?.trim();
-    final rawLabel = (cheer != null && cheer.isNotEmpty) ? cheer : '';
+    final rawLabel = blockedUsersController.visibleCheer(
+      item.id,
+      item.latestCheer,
+    );
     final host = await loadHostPreviewSize();
     final box = host?.size ?? widgetSize.homeSize(_screenWidthDp().toDouble());
     final corner = host?.cornerDp ?? TogetherWidgetSize.defaultCornerDp;
