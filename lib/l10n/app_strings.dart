@@ -534,7 +534,7 @@ class AppStrings {
       case 'pen':
         return _t('볼펜', 'Pen', 'ペン');
       case 'notebook':
-        return _t('공책', 'Notebook', 'ノート');
+        return _t('편지', 'Letter', '手紙');
       case 'sport':
         return _t('운동', 'Sport', '運動');
       case 'medal':
