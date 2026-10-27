@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:quotation/data/archive_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -208,7 +207,8 @@ class _ArchiveQuoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = DateFormat('yyyy. MM. dd').format(item.savedAt);
+    final author = item.author?.trim() ?? '';
+    final palette = context.palette;
 
     return DashedBorder(
       color: borderColor,
@@ -216,28 +216,56 @@ class _ArchiveQuoteCard extends StatelessWidget {
       strokeWidth: 2,
       dashLength: 4,
       gapLength: 3,
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(14, 12, 8, 10),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            item.text,
-            style: AppTheme.body.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              height: 1.45,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.text,
+                  style: AppTheme.body.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    height: 1.45,
+                  ),
+                ),
+                if (author.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    '- $author',
+                    style: AppTheme.body.copyWith(
+                      fontSize: 11,
+                      color: AppColors.muted,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            [
-              if (item.author != null && item.author!.trim().isNotEmpty)
-                '- ${item.author}',
-              date,
-            ].where((e) => e.isNotEmpty).join('  ·  '),
-            style: AppTheme.body.copyWith(
-              fontSize: 11,
-              color: AppColors.muted,
+          IconButton(
+            tooltip: AppStrings.current.archiveRemove,
+            onPressed: () {
+              archiveController.remove(item.id);
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppStrings.current.removedFromArchive,
+                      style: AppTheme.body.copyWith(color: Colors.white),
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: AppColors.ink,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+            },
+            icon: HamfootIcon(
+              size: 22,
+              color: palette.accent,
             ),
           ),
         ],

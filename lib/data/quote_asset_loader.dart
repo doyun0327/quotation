@@ -24,6 +24,8 @@ abstract final class QuoteAssetLoader {
       'assets/quotes/ko/famous_quotes_400_ko.json';
   static const famousEnPath =
       'assets/quotes/en/famous_quotes_400_en.json';
+  static const courageKoPath =
+      'assets/quotes/ko/courage_challenge_quotes_400.json';
 
   static Future<List<Quote>> loadChristianKo() => _loadList(
         path: christianKoPath,
@@ -56,6 +58,36 @@ abstract final class QuoteAssetLoader {
         idPrefix: korean ? 'daily_love_ko_' : 'daily_love_en_',
         authorOf: (_) => '',
       );
+
+  /// Korean courage lines. The file stores each sentence in `lines`.
+  static Future<List<Quote>> loadCourageKo() async {
+    final raw = await rootBundle.loadString(courageKoPath);
+    final decoded = jsonDecode(raw);
+    final items = decoded is Map<String, dynamic> ? decoded['items'] : decoded;
+    if (items is! List) return const [];
+
+    return [
+      for (final item in items)
+        if (item is Map<String, dynamic>)
+          Quote(
+            id: 'comfort_courage_ko_${item['id']}',
+            text: _lines(item),
+            author: '',
+          ),
+    ].where((quote) => quote.text.isNotEmpty).toList(growable: false);
+  }
+
+  static String _lines(Map<String, dynamic> item) {
+    final lines = item['lines'];
+    if (lines is List) {
+      final parts = [
+        for (final line in lines)
+          if (line is String && line.trim().isNotEmpty) line.trim(),
+      ];
+      if (parts.isNotEmpty) return parts.join('\n');
+    }
+    return _text(item['text']);
+  }
 
   /// Famous quotes. Only `quote` and `author` are kept.
   static Future<List<Quote>> loadFamous({required bool korean}) => _loadList(

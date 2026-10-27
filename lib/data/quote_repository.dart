@@ -15,6 +15,7 @@ abstract final class QuoteRepository {
   static List<Quote> _fortuneEn = const [];
   static List<Quote> _famousKo = const [];
   static List<Quote> _famousEn = const [];
+  static List<Quote> _courageKo = const [];
   static Map<String, List<Quote>> _japanese = const {};
 
   static List<MainCategory> categories = _buildCategories();
@@ -48,6 +49,12 @@ abstract final class QuoteRepository {
     if (mainId == 'literature' && subId == 'quotes') {
       final loaded = _byLanguage(_famousKo, _famousEn);
       if (loaded.isNotEmpty) return loaded;
+    }
+    if (localeController.isKorean &&
+        mainId == 'comfort' &&
+        subId == 'courage' &&
+        _courageKo.isNotEmpty) {
+      return _courageKo;
     }
     return _overrides[key] ?? quoteBank[key] ?? const <Quote>[];
   }
@@ -133,6 +140,7 @@ abstract final class QuoteRepository {
         QuoteAssetLoader.loadFortune(korean: false),
         QuoteAssetLoader.loadFamous(korean: true),
         QuoteAssetLoader.loadFamous(korean: false),
+        QuoteAssetLoader.loadCourageKo(),
         QuoteAssetLoader.loadJapanese(),
       ]);
       final christian = results[0] as List<Quote>;
@@ -145,7 +153,8 @@ abstract final class QuoteRepository {
       _fortuneEn = results[7] as List<Quote>;
       _famousKo = results[8] as List<Quote>;
       _famousEn = results[9] as List<Quote>;
-      _japanese = results[10] as Map<String, List<Quote>>;
+      _courageKo = results[10] as List<Quote>;
+      _japanese = results[11] as Map<String, List<Quote>>;
       var changed = false;
 
       if (christian.isNotEmpty) {
@@ -163,6 +172,7 @@ abstract final class QuoteRepository {
           _loveEn.isNotEmpty ||
           _famousKo.isNotEmpty ||
           _famousEn.isNotEmpty ||
+          _courageKo.isNotEmpty ||
           _japanese.isNotEmpty) {
         categories = _buildCategories();
       }

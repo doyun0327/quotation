@@ -108,26 +108,27 @@ class DdayInviteRepository {
       SetOptions(merge: true),
     );
 
-    // Reuse pending invite for this dday if still valid.
+    // Single-field query so this works before a composite index is built.
     final existing = await _db
         .collection('dday_invites')
-        .where('ddayId', isEqualTo: ddayId)
         .where('hostUid', isEqualTo: uid)
-        .where('status', isEqualTo: 'pending')
-        .limit(1)
+        .limit(40)
         .get();
-    if (existing.docs.isNotEmpty) {
-      final doc = existing.docs.first;
-      final code = doc.data()['code'] as String;
-      final expiresAt = (doc.data()['expiresAt'] as Timestamp?)?.toDate();
-      if (expiresAt == null || expiresAt.isAfter(DateTime.now())) {
-        return DdayInviteResult(
-          code: code,
-          inviteId: doc.id,
-          shareUrl: DdayInviteLimits.shareUrl(code),
-        );
+    for (final doc in existing.docs) {
+      final data = doc.data();
+      if (data['ddayId'] != ddayId || data['status'] != 'pending') continue;
+      final code = data['code'] as String?;
+      if (code == null || code.isEmpty) continue;
+      final expiresAt = (data['expiresAt'] as Timestamp?)?.toDate();
+      if (expiresAt != null && !expiresAt.isAfter(DateTime.now())) {
+        await doc.reference.update({'status': 'expired'});
+        continue;
       }
-      await doc.reference.update({'status': 'expired'});
+      return DdayInviteResult(
+        code: code,
+        inviteId: doc.id,
+        shareUrl: DdayInviteLimits.shareUrl(code),
+      );
     }
 
     final code = await _uniqueCode();
@@ -156,10 +157,10 @@ class DdayInviteRepository {
       final hit = await _db
           .collection('dday_invites')
           .where('code', isEqualTo: code)
-          .where('status', isEqualTo: 'pending')
-          .limit(1)
+          .limit(3)
           .get();
-      if (hit.docs.isEmpty) return code;
+      final pending = hit.docs.any((doc) => doc.data()['status'] == 'pending');
+      if (!pending) return code;
     }
     throw StateError('code_exhausted');
   }
@@ -185,12 +186,14 @@ class DdayInviteRepository {
     final invites = await _db
         .collection('dday_invites')
         .where('code', isEqualTo: code)
-        .where('status', isEqualTo: 'pending')
-        .limit(1)
+        .limit(5)
         .get();
-    if (invites.docs.isEmpty) throw StateError('invite_not_found');
+    final pending = invites.docs
+        .where((doc) => doc.data()['status'] == 'pending')
+        .toList();
+    if (pending.isEmpty) throw StateError('invite_not_found');
 
-    final inviteDoc = invites.docs.first;
+    final inviteDoc = pending.first;
     final invite = inviteDoc.data();
     final hostUid = invite['hostUid'] as String? ?? '';
     final ddayId = invite['ddayId'] as String? ?? '';
@@ -290,11 +293,12 @@ class DdayInviteRepository {
     if (uid == null) return;
     final snaps = await _db
         .collection('dday_invites')
-        .where('ddayId', isEqualTo: ddayId)
         .where('hostUid', isEqualTo: uid)
-        .where('status', isEqualTo: 'pending')
+        .limit(40)
         .get();
     for (final doc in snaps.docs) {
+      final data = doc.data();
+      if (data['ddayId'] != ddayId || data['status'] != 'pending') continue;
       await doc.reference.update({'status': 'revoked'});
     }
     await _db.collection('dday_memberships').doc(ddayId).set(

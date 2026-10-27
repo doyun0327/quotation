@@ -124,44 +124,54 @@ class HomeScreen extends StatelessWidget {
           final bubbleText = bubble?.text ?? AppStrings.current.homeGreeting;
           final bubbleId = bubble?.id ?? 'greeting_today';
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const _BrandHeader(),
-                const SizedBox(height: 20),
-                _HomeQuoteCard(
-                  date: _today,
-                  message: bubbleText,
-                  isSaved: archiveController.contains(bubbleId),
-                  onDateTap: selectionController.reshuffle,
-                  onCharacterTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const ShopScreen(asSettings: true),
-                      ),
-                    );
-                  },
-                  onHeartTap: () {
-                    if (bubble != null) {
-                      _toggleQuote(context, bubble);
-                    }
-                  },
-                  onMessageTap: () {
-                    if (bubble != null) {
-                      _openBubbleDetail(context, bubble);
-                    }
-                  },
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const _BrandHeader(),
+                    const SizedBox(height: 20),
+                    _HomeQuoteCard(
+                      date: _today,
+                      message: bubbleText,
+                      isSaved: archiveController.contains(bubbleId),
+                      onDateTap: selectionController.reshuffle,
+                      onCharacterTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const ShopScreen(asSettings: true),
+                          ),
+                        );
+                      },
+                      onHeartTap: () {
+                        if (bubble != null) {
+                          _toggleQuote(context, bubble);
+                        }
+                      },
+                      onMessageTap: () {
+                        if (bubble != null) {
+                          _openBubbleDetail(context, bubble);
+                        }
+                      },
+                    ),
+                    const CharacterWidgetHintBanner(),
+                  ],
                 ),
-                const CharacterWidgetHintBanner(),
-                const SizedBox(height: 18),
-                CategoryBrowseSection(
-                  onSubcategoryTap: (category, sub) =>
-                      _openSubcategory(context, category, sub),
+              ),
+              const SizedBox(height: 18),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                  child: CategoryBrowseSection(
+                    onSubcategoryTap: (category, sub) =>
+                        _openSubcategory(context, category, sub),
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),

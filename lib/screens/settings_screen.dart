@@ -3,6 +3,7 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
+import 'package:quotation/screens/account_deletion_screen.dart';
 import 'package:quotation/screens/legal_screen.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
@@ -346,6 +347,19 @@ class SettingsScreen extends StatelessWidget {
                               Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (_) => const LegalScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          SettingsItem(
+                            icon: Icons.person_off_outlined,
+                            title: t.accountDeleteTitle,
+                            subtitle: t.accountDeleteSubtitle,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) =>
+                                      const AccountDeletionScreen(),
                                 ),
                               );
                             },

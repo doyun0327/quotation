@@ -23,6 +23,8 @@ class DdayInviteScreen extends StatefulWidget {
 
 class _DdayInviteScreenState extends State<DdayInviteScreen> {
   bool _busy = false;
+  bool _rehomed = false;
+  late String _roomId;
   String? _code;
   String? _shareUrl;
   String? _error;
@@ -30,6 +32,7 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
   @override
   void initState() {
     super.initState();
+    _roomId = widget.item.id;
     WidgetsBinding.instance.addPostFrameCallback((_) => _ensureInvite());
   }
 
@@ -50,13 +53,7 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
         }
       }
 
-      final result = await DdayInviteRepository.createOrGetInvite(
-        ddayId: widget.item.id,
-        title: widget.item.title,
-        targetDate: widget.item.targetDate,
-        iconId: widget.item.iconId,
-        repeatYearly: widget.item.repeatYearly,
-      );
+      final result = await _createInvite();
       if (!mounted) return;
       setState(() {
         _code = result.code;
@@ -79,20 +76,71 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
     }
   }
 
+  DdayItem get _room {
+    final matches =
+        ddayController.items.where((e) => e.id == _roomId).toList();
+    return matches.isEmpty ? widget.item : matches.first;
+  }
+
+  Future<DdayInviteResult> _createInvite() async {
+    final room = _room;
+    try {
+      return await DdayInviteRepository.createOrGetInvite(
+        ddayId: _roomId,
+        title: room.title,
+        targetDate: room.targetDate,
+        iconId: room.iconId,
+        repeatYearly: room.repeatYearly,
+      );
+    } catch (e) {
+      final detail = e.toString();
+      final foreign = detail.contains('not_member') || detail.contains('not_host');
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (!foreign || _rehomed || uid == null) rethrow;
+      // The room still lives on an older Firebase account. Move it to the
+      // account that is signed in now, then create the invite there.
+      _rehomed = true;
+      final newId = DateTime.now().microsecondsSinceEpoch.toString();
+      await ddayController.rekeyRoom(_roomId, newId, cloudOwnerUid: uid);
+      _roomId = newId;
+      final moved = _room;
+      return DdayInviteRepository.createOrGetInvite(
+        ddayId: _roomId,
+        title: moved.title,
+        targetDate: moved.targetDate,
+        iconId: moved.iconId,
+        repeatYearly: moved.repeatYearly,
+      );
+    }
+  }
+
+  Future<void> _copy(BuildContext context, String value, String message) async {
+    await Clipboard.setData(ClipboardData(text: value));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   Future<void> _share() async {
     final code = _code;
     final url = _shareUrl;
     if (code == null || url == null) return;
     final t = AppStrings.current;
-    await SharePlus.instance.share(
-      ShareParams(
-        text: t.ddayInviteShareText(
-          widget.item.title,
-          code,
-          url,
+    final text = t.ddayInviteShareText(_room.title, code, url);
+    try {
+      await SharePlus.instance.share(
+        ShareParams(
+          text: text,
+          subject: t.ddayInviteTitle,
+          title: t.ddayInviteShare,
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      debugPrint('invite share: $e');
+      if (!mounted) return;
+      await _copy(context, url, t.ddayInviteLinkCopied);
+    }
   }
 
   @override
@@ -128,10 +176,7 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
       body: ListenableBuilder(
         listenable: ddayController,
         builder: (context, _) {
-          final matches = ddayController.items
-              .where((e) => e.id == widget.item.id)
-              .toList();
-          final item = matches.isEmpty ? widget.item : matches.first;
+          final item = _room;
           final liveFriends = item.friends;
 
           return ListView(
@@ -226,21 +271,31 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      SelectableText(
+                        _shareUrl!,
+                        textAlign: TextAlign.center,
+                        style: AppTheme.body.copyWith(
+                          fontSize: 13,
+                          color: AppColors.muted,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        alignment: WrapAlignment.center,
                         children: [
                           TextButton.icon(
-                            onPressed: () async {
-                              await Clipboard.setData(
-                                ClipboardData(text: _code!),
-                              );
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(t.ddayInviteCodeCopied)),
-                              );
-                            },
+                            onPressed: () => _copy(context, _code!, t.ddayInviteCodeCopied),
                             icon: const Icon(Icons.copy_rounded, size: 18),
                             label: Text(t.ddayInviteCopyCode),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => _copy(
+                              context,
+                              _shareUrl!,
+                              t.ddayInviteLinkCopied,
+                            ),
+                            icon: const Icon(Icons.link_rounded, size: 18),
+                            label: Text(t.ddayInviteCopyLink),
                           ),
                         ],
                       ),

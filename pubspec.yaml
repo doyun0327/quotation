@@ -1,7 +1,7 @@
 name: quotation
 description: "Quotation app"
 publish_to: 'none'
-version: 1.0.4+8
+version: 1.0.5+9
 
 environment:
   sdk: ^3.12.2
@@ -28,6 +28,7 @@ dependencies:
   google_mobile_ads: ^9.2.0
   purchases_flutter: ^10.17.0
   image_picker: ^1.2.4
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:

@@ -137,7 +137,10 @@ class AppStrings {
   String get ddayInviteCodeLabel => _t('초대 코드', 'Invite code', '招待コード');
   String get ddayInviteCopyCode => _t('코드 복사', 'Copy code', 'コードをコピー');
   String get ddayInviteCodeCopied => _t('코드를 복사했어요', 'Code copied', 'コードをコピーしました');
-  String get ddayInviteShare => _t('초대 링크 공유', 'Share invite link', '招待リンクを共有');
+  String get ddayInviteCopyLink => _t('링크 복사', 'Copy link', 'リンクをコピー');
+  String get ddayInviteLinkCopied =>
+      _t('초대 링크를 복사했어요', 'Invite link copied', '招待リンクをコピーしました');
+  String get ddayInviteShare => _t('SNS로 공유', 'Share', 'SNSで共有');
   String ddayInviteShareText(String title, String code, String url) => _t('「$title」 같이 방에 초대해요!\n코드: $code\n$url', 'Join my Together room "$title"!\nCode: $code\n$url', '「$title」の一緒ルームに招待します！\nコード: $code\n$url');
   String ddayInviteSlotsLeft(int n) =>
       _t('남은 자리 $n명', '$n spots left', '残り $n人');
@@ -439,6 +442,38 @@ class AppStrings {
       _t('이용약관 및 개인정보처리방침', 'Terms & Privacy', '利用規約とプライバシーポリシー');
   String get termsSubtitle =>
       _t('서비스 이용 관련 정보를 확인하세요', 'Review terms and privacy policy', 'サービスの利用に関する情報を確認してください');
+  String get accountDeleteTitle =>
+      _t('계정 삭제 요청', 'Delete account', 'アカウント削除の依頼');
+  String get accountDeleteSubtitle => _t(
+        '계정과 관련 클라우드 데이터 삭제를 요청합니다',
+        'Request deletion of your account and cloud data',
+        'アカウントと関連クラウドデータの削除を依頼します',
+      );
+  String get accountDeleteBody => _t(
+        '계정과 클라우드에 저장된 프로필·같이 방 표시 이름·알림 토큰 삭제를 요청할 수 있어요.\n\n'
+            '계정에 쓰는 이메일로 메일을 보내 주세요. 다른 주소에서 보낼 때는 어떤 계정을 지울지 적어 주세요.\n\n'
+            '합리적 기간 안에 처리하고, 법령상 남겨야 하는 항목이 있으면 알려 드려요. '
+            '구독은 Google Play에서 따로 해지해야 해요. 기기에만 있는 데이터는 앱을 삭제하면 지워집니다.',
+        'You can request deletion of your account and cloud profile, Together display name, and notification token.\n\n'
+            'Email us from the address on the account. If you write from another address, say which account to delete.\n\n'
+            'We process requests within a reasonable time and tell you if a record must be kept by law. '
+            'Cancel a subscription in Google Play separately. On-device data is removed when you uninstall.',
+        'アカウントとクラウドのプロフィール、一緒ルームの表示名、通知トークンの削除を依頼できます。\n\n'
+            'アカウントのメールから送ってください。別のアドレスから送る場合は、削除するアカウントを書いてください。\n\n'
+            '合理的な期間内に処理し、法令上残すものがあればお知らせします。'
+            '定期購入は Google Play で別途解約してください。端末だけのデータはアプリ削除で消えます。',
+      );
+  String get accountDeleteMailCta =>
+      _t('삭제 요청 메일 보내기', 'Email deletion request', '削除依頼メールを送る');
+  String get accountDeleteWebCta =>
+      _t('웹에서 안내 보기', 'Open web instructions', 'ウェブで案内を見る');
+  String get accountDeleteMailBody => _t(
+        'Dearly 계정과 관련 클라우드 데이터 삭제를 요청합니다.\n\n계정 이메일: ',
+        'Please delete my Dearly account and related cloud data.\n\nAccount email: ',
+        'Dearlyアカウントと関連クラウドデータの削除を依頼します。\n\nアカウントのメール: ',
+      );
+  String get accountDeleteMailFailed =>
+      _t('메일 앱을 열지 못했어요', 'Could not open mail', 'メールアプリを開けませんでした');
   String get appInfoTitle => _t('앱 정보', 'App info', 'アプリ情報');
   String get appInfoSubtitle =>
       _t('버전 및 앱 정보를 확인하세요', 'Version and app details', 'バージョンとアプリ情報を確認してください');

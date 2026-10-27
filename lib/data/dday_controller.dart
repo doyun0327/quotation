@@ -120,6 +120,7 @@ class DdayItem {
   }
 
   DdayItem copyWith({
+    String? id,
     String? title,
     DateTime? targetDate,
     String? iconId,
@@ -134,7 +135,7 @@ class DdayItem {
     bool clearLatestCheer = false,
   }) {
     return DdayItem(
-      id: id,
+      id: id ?? this.id,
       title: title ?? this.title,
       targetDate: targetDate ?? this.targetDate,
       iconId: iconId ?? this.iconId,
@@ -635,6 +636,27 @@ class DdayController extends ChangeNotifier {
     _items.add(item);
     await _persist();
     unawaited(DdayCloudSync.pushDday(item));
+  }
+
+  /// Points a local room at a new cloud id after the signed-in account
+  /// can no longer write the previous membership.
+  Future<void> rekeyRoom(
+    String oldId,
+    String newId, {
+    required String cloudOwnerUid,
+  }) async {
+    final index = _items.indexWhere((e) => e.id == oldId);
+    if (index < 0) return;
+    _items[index] = _items[index].copyWith(
+      id: newId,
+      cloudOwnerUid: cloudOwnerUid,
+    );
+    final offsets = _roomOffsets.remove(oldId);
+    if (offsets != null) _roomOffsets[newId] = offsets;
+    if (_localCheerIds.remove(oldId)) _localCheerIds.add(newId);
+    await _persist();
+    await _persistRoomOffsets();
+    notifyListeners();
   }
 
   Future<void> update(DdayItem item) async {

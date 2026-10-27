@@ -260,8 +260,23 @@ class AuthController extends ChangeNotifier {
         accessToken: auth.accessToken,
         idToken: auth.idToken,
       );
-      final result =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+      final current = FirebaseAuth.instance.currentUser;
+      UserCredential result;
+      if (current != null && current.isAnonymous) {
+        try {
+          result = await current.linkWithCredential(credential);
+        } on FirebaseAuthException catch (e) {
+          // This Google account already has a Firebase user. Switch to it.
+          if (e.code != 'credential-already-in-use' &&
+              e.code != 'email-already-in-use' &&
+              e.code != 'provider-already-linked') {
+            rethrow;
+          }
+          result = await FirebaseAuth.instance.signInWithCredential(credential);
+        }
+      } else {
+        result = await FirebaseAuth.instance.signInWithCredential(credential);
+      }
       final fbUser = result.user;
       if (fbUser == null) return false;
       await _setUser(
