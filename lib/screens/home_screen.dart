@@ -172,6 +172,21 @@ class HomeScreen extends StatelessWidget {
 class _BrandHeader extends StatelessWidget {
   const _BrandHeader();
 
+  /// Brand lockup stays pixel and at a fixed size.
+  static const _title = TextStyle(
+    fontFamily: 'PressStart2P',
+    fontSize: 18,
+    color: AppColors.ink,
+    height: 1.4,
+  );
+
+  static const _subtitle = TextStyle(
+    fontFamily: 'PressStart2P',
+    fontSize: 8,
+    color: AppColors.muted,
+    height: 1.4,
+  );
+
   @override
   Widget build(BuildContext context) {
     final t = AppStrings.current;
@@ -180,15 +195,14 @@ class _BrandHeader extends StatelessWidget {
       children: [
         Text(
           t.brandTitle,
-          style: AppTheme.pixel.copyWith(fontSize: 18),
+          textScaler: TextScaler.noScaling,
+          style: _title,
         ),
         const SizedBox(height: 8),
         Text(
           t.brandSubtitle,
-          style: AppTheme.pixel.copyWith(
-            fontSize: 8,
-            color: AppColors.muted,
-          ),
+          textScaler: TextScaler.noScaling,
+          style: _subtitle,
         ),
       ],
     );

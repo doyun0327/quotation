@@ -20,6 +20,7 @@ import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/data/together_fcm.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/firebase_options.dart';
+import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/character_select_screen.dart';
 import 'package:quotation/screens/main_shell.dart';
@@ -114,7 +115,7 @@ class _QuotationAppState extends State<QuotationApp> {
 
   Future<void> _maybeAskNickname() async {
     if (!mounted || _askingNickname || !authController.isReady) return;
-    if (authController.nickname != null) return;
+    if (authController.isBusy || authController.nickname != null) return;
     final navContext = appNavigatorKey.currentContext;
     if (navContext == null) return;
     _askingNickname = true;
@@ -154,22 +155,27 @@ class _QuotationAppState extends State<QuotationApp> {
             }
             return MediaQuery(
               data: data,
-              child: Column(
+              child: Stack(
                 children: [
-                  Expanded(
-                    child: KeyedSubtree(
-                      key: ValueKey(
-                        '${visualStyleController.style.id}_'
-                        '${characterController.character.id}',
+                  Column(
+                    children: [
+                      Expanded(
+                        child: KeyedSubtree(
+                          key: ValueKey(
+                            '${visualStyleController.style.id}_'
+                            '${characterController.character.id}',
+                          ),
+                          child: child ?? const SizedBox.shrink(),
+                        ),
                       ),
-                      child: child ?? const SizedBox.shrink(),
-                    ),
+                      if (showAd)
+                        const SafeArea(
+                          top: false,
+                          child: BottomBannerAd(),
+                        ),
+                    ],
                   ),
-                  if (showAd)
-                    const SafeArea(
-                      top: false,
-                      child: BottomBannerAd(),
-                    ),
+                  const Positioned.fill(child: _LoginOverlay()),
                 ],
               ),
             );
@@ -179,6 +185,44 @@ class _QuotationAppState extends State<QuotationApp> {
               : CharacterSelectScreen(
                   onFinished: () => setState(() {}),
                 ),
+        );
+      },
+    );
+  }
+}
+
+class _LoginOverlay extends StatelessWidget {
+  const _LoginOverlay();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: Listenable.merge([authController, localeController]),
+      builder: (context, _) {
+        if (!authController.isSigningIn) {
+          return const IgnorePointer(child: SizedBox.expand());
+        }
+        return AbsorbPointer(
+          child: ColoredBox(
+            color: const Color(0x99000000),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(color: Colors.white),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppStrings.current.googleLoggingIn,
+                    style: AppTheme.body.copyWith(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );

@@ -10,95 +10,119 @@ import 'package:quotation/widgets/language_row.dart';
 Future<void> showNicknameDialog(
   BuildContext context, {
   bool requiredName = false,
-}) async {
-  final controller = TextEditingController(text: authController.nickname ?? '');
-  var error = '';
-  await showDialog<void>(
+}) {
+  return showDialog<void>(
     context: context,
     barrierDismissible: !requiredName,
-    builder: (context) {
-      return PopScope(
-        canPop: !requiredName,
-        child: StatefulBuilder(
-          builder: (context, setLocal) {
-            Future<void> save() async {
-              final t = AppStrings.current;
-              final name = controller.text.trim();
-              if (name.isEmpty) {
-                setLocal(() => error = t.nicknameRequired);
-                return;
-              }
-              final ok = await authController.setNickname(name);
-              if (!context.mounted) return;
-              if (!ok) {
-                setLocal(() => error = t.nicknameRequired);
-                return;
-              }
-              Navigator.of(context).pop();
-            }
+    builder: (context) => _NicknameDialog(requiredName: requiredName),
+  );
+}
 
-            return ListenableBuilder(
-              listenable: localeController,
-              builder: (context, _) {
-                final t = AppStrings.current;
-                return AlertDialog(
-                  title: Text(
-                    t.nicknameTitle,
-                    style: AppTheme.body.copyWith(fontWeight: FontWeight.w900),
-                  ),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (requiredName) ...[
-                        Text(
-                          t.languageTitle,
-                          style: AppTheme.body.copyWith(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        LanguageRow(
-                          selectedId: localeController.language.id,
-                          onSelected: localeController.setLanguage,
-                        ),
-                      ],
-                      Text(
-                        t.nicknameHint,
-                        style: AppTheme.body.copyWith(fontSize: 13),
+class _NicknameDialog extends StatefulWidget {
+  const _NicknameDialog({required this.requiredName});
+
+  final bool requiredName;
+
+  @override
+  State<_NicknameDialog> createState() => _NicknameDialogState();
+}
+
+class _NicknameDialogState extends State<_NicknameDialog> {
+  late final TextEditingController _controller;
+  String _error = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: authController.nickname ?? '');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final t = AppStrings.current;
+    final name = _controller.text.trim();
+    if (name.isEmpty) {
+      setState(() => _error = t.nicknameRequired);
+      return;
+    }
+    final ok = await authController.setNickname(name);
+    if (!mounted) return;
+    if (!ok) {
+      setState(() => _error = t.nicknameRequired);
+      return;
+    }
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: !widget.requiredName,
+      child: ListenableBuilder(
+        listenable: localeController,
+        builder: (context, _) {
+          final t = AppStrings.current;
+          return AlertDialog(
+            title: Text(
+              t.nicknameTitle,
+              style: AppTheme.body.copyWith(fontWeight: FontWeight.w900),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (widget.requiredName) ...[
+                    Text(
+                      t.languageTitle,
+                      style: AppTheme.body.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
                       ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: controller,
-                        autofocus: !requiredName,
-                        maxLength: 16,
-                        textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => save(),
-                        decoration: InputDecoration(
-                          hintText: t.nicknameTitle,
-                          errorText: error.isEmpty ? null : error,
-                        ),
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    if (!requiredName)
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text(t.togetherCheerCancel),
-                      ),
-                    FilledButton(
-                      onPressed: save,
-                      child: Text(t.nicknameSave),
+                    ),
+                    LanguageRow(
+                      selectedId: localeController.language.id,
+                      onSelected: localeController.setLanguage,
                     ),
                   ],
-                );
-              },
-            );
-          },
-        ),
-      );
-    },
-  );
-  controller.dispose();
+                  Text(
+                    t.nicknameHint,
+                    style: AppTheme.body.copyWith(fontSize: 13),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _controller,
+                    autofocus: !widget.requiredName,
+                    maxLength: 16,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _save(),
+                    decoration: InputDecoration(
+                      hintText: t.nicknameTitle,
+                      errorText: _error.isEmpty ? null : _error,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              if (!widget.requiredName)
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(t.togetherCheerCancel),
+                ),
+              FilledButton(
+                onPressed: _save,
+                child: Text(t.nicknameSave),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 }

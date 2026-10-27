@@ -85,14 +85,6 @@ class ArchiveScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              t.archiveEmptyHint,
-                              style: AppTheme.body.copyWith(
-                                fontSize: 12,
-                                color: AppColors.muted,
-                              ),
-                            ),
                           ],
                         ),
                       )

@@ -277,8 +277,6 @@ class AppStrings {
   String get archiveTitle => _t('보관함', 'Archive', '保存');
   String get archiveEmptyTitle =>
       _t('아직 담아둔 문장이 없어요', 'No saved quotes yet', 'まだ保存した文章がありません');
-  String get archiveEmptyHint =>
-      _t('문장 카드의 ♥ 를 눌러 보관해 보세요', 'Tap ♥ on a quote to save it', '文章カードの♥をタップして保存してみてください');
 
   String get settingsTitle => _t('설정', 'Settings', '設定');
   String get characterSection => _t('캐릭터', 'Character', 'キャラクター');
@@ -382,6 +380,7 @@ class AppStrings {
       _t('Google 로그인', 'Google sign-in', 'Googleログイン');
   String get googleLoginSuccess =>
       _t('Google 로그인 완료', 'Signed in with Google', 'Googleログインが完了しました');
+  String get googleLoggingIn => _t('로그인 중', 'Signing in', 'ログイン中');
   String get googleLogoutSuccess =>
       _t('로그아웃했어요', 'Signed out', 'ログアウトしました');
   String get googleLoginCanceled =>

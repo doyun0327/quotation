@@ -83,6 +83,7 @@ class AuthController extends ChangeNotifier {
   AuthUser? _user;
   String? _nickname;
   bool _busy = false;
+  bool _signingIn = false;
   bool _ready = false;
   String? _lastError;
   String? _lastErrorDetail;
@@ -112,6 +113,7 @@ class AuthController extends ChangeNotifier {
     return null;
   }
   bool get isBusy => _busy;
+  bool get isSigningIn => _signingIn;
   bool get isReady => _ready;
   String? get lastError => _lastError;
   String? get lastErrorDetail => _lastErrorDetail;
@@ -194,6 +196,7 @@ class AuthController extends ChangeNotifier {
   Future<bool> signIn() async {
     if (_busy) return false;
     _busy = true;
+    _signingIn = true;
     _lastError = null;
     _lastErrorDetail = null;
     notifyListeners();
@@ -240,6 +243,7 @@ class AuthController extends ChangeNotifier {
       return false;
     } finally {
       _busy = false;
+      _signingIn = false;
       notifyListeners();
     }
   }
