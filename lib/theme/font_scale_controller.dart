@@ -21,14 +21,14 @@ enum FontScaleOption {
   static FontScaleOption byId(String id) {
     return FontScaleOption.values.firstWhere(
       (option) => option.id == id,
-      orElse: () => FontScaleOption.medium,
+      orElse: () => FontScaleOption.small,
     );
   }
 }
 
 class FontScaleController extends ChangeNotifier {
   FontScaleController({FontScaleOption? initial})
-      : _option = initial ?? FontScaleOption.medium;
+      : _option = initial ?? FontScaleOption.small;
 
   FontScaleOption _option;
 

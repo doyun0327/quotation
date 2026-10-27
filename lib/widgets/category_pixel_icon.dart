@@ -401,20 +401,32 @@ class _CategoryPixelPainter extends CustomPainter {
     if (rows.isEmpty) return;
     final height = rows.length;
     final width = rows.map((row) => row.length).reduce((a, b) => a > b ? a : b);
+    var minX = width;
+    var maxX = -1;
+    var minY = height;
+    var maxY = -1;
+    for (var y = 0; y < height; y++) {
+      final row = rows[y];
+      for (var x = 0; x < row.length; x++) {
+        if (_colorOf(row[x]) == null) continue;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+    if (maxX < 0) return;
+
     final unit = size.shortestSide / (width > height ? width : height);
-    final ox = (size.width - width * unit) / 2;
-    final oy = (size.height - height * unit) / 2;
+    final contentW = (maxX - minX + 1) * unit;
+    final contentH = (maxY - minY + 1) * unit;
+    final ox = (size.width - contentW) / 2 - minX * unit;
+    final oy = (size.height - contentH) / 2 - minY * unit;
 
     for (var y = 0; y < height; y++) {
       final row = rows[y];
       for (var x = 0; x < row.length; x++) {
-        final cell = row[x];
-        final color = switch (cell) {
-          '#' => main,
-          '+' => light,
-          '*' => accent,
-          _ => null,
-        };
+        final color = _colorOf(row[x]);
         if (color == null) continue;
         canvas.drawRect(
           Rect.fromLTWH(ox + x * unit, oy + y * unit, unit + 0.35, unit + 0.35),
@@ -424,6 +436,15 @@ class _CategoryPixelPainter extends CustomPainter {
         );
       }
     }
+  }
+
+  Color? _colorOf(String cell) {
+    return switch (cell) {
+      '#' => main,
+      '+' => light,
+      '*' => accent,
+      _ => null,
+    };
   }
 
   @override

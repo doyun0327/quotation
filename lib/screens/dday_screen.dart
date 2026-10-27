@@ -290,7 +290,7 @@ class _TogetherRoomCard extends StatelessWidget {
                   color: palette.accent.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: DdayPixelIcon(kind: item.iconKind, size: 22),
+                child: DdayPixelIcon(kind: item.iconKind, size: 26),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -311,27 +311,6 @@ class _TogetherRoomCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (item.hasFriend) ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 1,
-                            ),
-                            decoration: BoxDecoration(
-                              color: palette.accent.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              t.ddayDuoBadge,
-                              style: AppTheme.body.copyWith(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                color: palette.accent,
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                     if (cheer.isNotEmpty) ...[

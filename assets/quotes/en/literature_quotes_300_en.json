@@ -1,0 +1,2408 @@
+{
+  "category": "literature_and_classic_wisdom",
+  "language": "en",
+  "count": 300,
+  "note": "These are original literary-style reflections inspired by timeless themes, not verified quotations from the named authors or copyrighted book passages.",
+  "items": [
+    {
+      "id": "literature_1_001",
+      "line_count": 1,
+      "text": "Every life becomes a story when we learn to read its quiet moments.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_002",
+      "line_count": 1,
+      "text": "Love is the courage to see another person clearly and stay kind.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_003",
+      "line_count": 1,
+      "text": "Hope is a small lamp that refuses to argue with the dark.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_004",
+      "line_count": 1,
+      "text": "Time teaches gently at first, then leaves the lesson in our hands.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_005",
+      "line_count": 1,
+      "text": "A brave heart does not wait for fear to disappear.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_006",
+      "line_count": 1,
+      "text": "Some doors open only after we stop knocking on the wrong ones.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_007",
+      "line_count": 1,
+      "text": "Memory is a room where yesterday keeps changing its light.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_008",
+      "line_count": 1,
+      "text": "Friendship is the art of making silence feel welcome.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_009",
+      "line_count": 1,
+      "text": "To grow is to become a stranger to an old version of yourself.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_010",
+      "line_count": 1,
+      "text": "Dreams are maps drawn before the road exists.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_011",
+      "line_count": 1,
+      "text": "Kindness is strength that has learned a softer voice.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_012",
+      "line_count": 1,
+      "text": "Even a long winter is only one chapter of the year.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_013",
+      "line_count": 1,
+      "text": "The world grows wider whenever curiosity wakes.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_014",
+      "line_count": 1,
+      "text": "Truth may arrive quietly, but it asks us to rearrange everything.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_015",
+      "line_count": 1,
+      "text": "Loneliness can be a room for listening, not only a room for pain.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_016",
+      "line_count": 1,
+      "text": "Small acts of courage are how a life changes direction.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_017",
+      "line_count": 1,
+      "text": "Wisdom begins when certainty makes room for wonder.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_018",
+      "line_count": 1,
+      "text": "Every goodbye carries a seed of becoming.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_019",
+      "line_count": 1,
+      "text": "Beauty often waits where hurry forgets to look.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_020",
+      "line_count": 1,
+      "text": "An honest heart is a home that needs fewer locks.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_021",
+      "line_count": 1,
+      "text": "Sometimes the road forward begins with forgiving your own footsteps.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_022",
+      "line_count": 1,
+      "text": "Joy is not always loud; sometimes it is simply enough.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_023",
+      "line_count": 1,
+      "text": "Books lend us other lives so we can return to our own with clearer eyes.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_024",
+      "line_count": 1,
+      "text": "A promise is a bridge built from words and kept by actions.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_025",
+      "line_count": 1,
+      "text": "The heart remembers what the calendar cannot measure.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_026",
+      "line_count": 1,
+      "text": "Change is the river asking us to learn its current.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_027",
+      "line_count": 1,
+      "text": "Hope does not deny the storm; it teaches the hands to build.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_028",
+      "line_count": 1,
+      "text": "To listen well is to give another soul a little more room.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_029",
+      "line_count": 1,
+      "text": "Patience is faith moving at the speed of roots.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_030",
+      "line_count": 1,
+      "text": "Wonder is the beginning of every meaningful journey.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_031",
+      "line_count": 1,
+      "text": "A quiet heart can turn an ordinary hour into a lasting memory.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_032",
+      "line_count": 1,
+      "text": "A curious mind can turn an ordinary hour into a lasting memory.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_033",
+      "line_count": 1,
+      "text": "A kind word can turn an ordinary hour into a lasting memory.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_034",
+      "line_count": 1,
+      "text": "A difficult day can turn an ordinary hour into a lasting memory.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_035",
+      "line_count": 1,
+      "text": "A true friend can turn an ordinary hour into a lasting memory.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_036",
+      "line_count": 1,
+      "text": "A brave choice can turn an ordinary hour into a lasting memory.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_037",
+      "line_count": 1,
+      "text": "A remembered dream can turn an ordinary hour into a lasting memory.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_038",
+      "line_count": 1,
+      "text": "A patient soul can turn an ordinary hour into a lasting memory.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_039",
+      "line_count": 1,
+      "text": "A book opened at midnight can turn an ordinary hour into a lasting memory.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_040",
+      "line_count": 1,
+      "text": "A road taken slowly can turn an ordinary hour into a lasting memory.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_041",
+      "line_count": 1,
+      "text": "A lost thing can turn an ordinary hour into a lasting memory.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_042",
+      "line_count": 1,
+      "text": "A new beginning can turn an ordinary hour into a lasting memory.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_043",
+      "line_count": 1,
+      "text": "An honest answer can turn an ordinary hour into a lasting memory.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_044",
+      "line_count": 1,
+      "text": "A small kindness can turn an ordinary hour into a lasting memory.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_045",
+      "line_count": 1,
+      "text": "A long silence can turn an ordinary hour into a lasting memory.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_046",
+      "line_count": 1,
+      "text": "A forgiven mistake can turn an ordinary hour into a lasting memory.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_047",
+      "line_count": 1,
+      "text": "A hopeful thought can turn an ordinary hour into a lasting memory.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_048",
+      "line_count": 1,
+      "text": "A life well lived can turn an ordinary hour into a lasting memory.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_049",
+      "line_count": 1,
+      "text": "A moment of wonder can turn an ordinary hour into a lasting memory.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_050",
+      "line_count": 1,
+      "text": "A tender goodbye can turn an ordinary hour into a lasting memory.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_051",
+      "line_count": 1,
+      "text": "A quiet heart often reveals the door that noise kept hidden.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_052",
+      "line_count": 1,
+      "text": "A curious mind often reveals the door that noise kept hidden.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_053",
+      "line_count": 1,
+      "text": "A kind word often reveals the door that noise kept hidden.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_054",
+      "line_count": 1,
+      "text": "A difficult day often reveals the door that noise kept hidden.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_055",
+      "line_count": 1,
+      "text": "A true friend often reveals the door that noise kept hidden.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_056",
+      "line_count": 1,
+      "text": "A brave choice often reveals the door that noise kept hidden.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_057",
+      "line_count": 1,
+      "text": "A remembered dream often reveals the door that noise kept hidden.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_058",
+      "line_count": 1,
+      "text": "A patient soul often reveals the door that noise kept hidden.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_059",
+      "line_count": 1,
+      "text": "A book opened at midnight often reveals the door that noise kept hidden.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_060",
+      "line_count": 1,
+      "text": "A road taken slowly often reveals the door that noise kept hidden.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_061",
+      "line_count": 1,
+      "text": "A lost thing often reveals the door that noise kept hidden.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_062",
+      "line_count": 1,
+      "text": "A new beginning often reveals the door that noise kept hidden.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_063",
+      "line_count": 1,
+      "text": "An honest answer often reveals the door that noise kept hidden.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_064",
+      "line_count": 1,
+      "text": "A small kindness often reveals the door that noise kept hidden.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_065",
+      "line_count": 1,
+      "text": "A long silence often reveals the door that noise kept hidden.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_066",
+      "line_count": 1,
+      "text": "A forgiven mistake often reveals the door that noise kept hidden.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_067",
+      "line_count": 1,
+      "text": "A hopeful thought often reveals the door that noise kept hidden.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_068",
+      "line_count": 1,
+      "text": "A life well lived often reveals the door that noise kept hidden.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_069",
+      "line_count": 1,
+      "text": "A moment of wonder often reveals the door that noise kept hidden.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_070",
+      "line_count": 1,
+      "text": "A tender goodbye often reveals the door that noise kept hidden.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_071",
+      "line_count": 1,
+      "text": "A quiet heart makes room for a future fear could not imagine.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_072",
+      "line_count": 1,
+      "text": "A curious mind makes room for a future fear could not imagine.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_073",
+      "line_count": 1,
+      "text": "A kind word makes room for a future fear could not imagine.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_074",
+      "line_count": 1,
+      "text": "A difficult day makes room for a future fear could not imagine.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_075",
+      "line_count": 1,
+      "text": "A true friend makes room for a future fear could not imagine.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_076",
+      "line_count": 1,
+      "text": "A brave choice makes room for a future fear could not imagine.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_077",
+      "line_count": 1,
+      "text": "A remembered dream makes room for a future fear could not imagine.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_078",
+      "line_count": 1,
+      "text": "A patient soul makes room for a future fear could not imagine.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_079",
+      "line_count": 1,
+      "text": "A book opened at midnight makes room for a future fear could not imagine.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_080",
+      "line_count": 1,
+      "text": "A road taken slowly makes room for a future fear could not imagine.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_081",
+      "line_count": 1,
+      "text": "A lost thing makes room for a future fear could not imagine.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_082",
+      "line_count": 1,
+      "text": "A new beginning makes room for a future fear could not imagine.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_083",
+      "line_count": 1,
+      "text": "An honest answer makes room for a future fear could not imagine.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_084",
+      "line_count": 1,
+      "text": "A small kindness makes room for a future fear could not imagine.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_085",
+      "line_count": 1,
+      "text": "A long silence makes room for a future fear could not imagine.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_086",
+      "line_count": 1,
+      "text": "A forgiven mistake makes room for a future fear could not imagine.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_087",
+      "line_count": 1,
+      "text": "A hopeful thought makes room for a future fear could not imagine.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_088",
+      "line_count": 1,
+      "text": "A life well lived makes room for a future fear could not imagine.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_089",
+      "line_count": 1,
+      "text": "A moment of wonder makes room for a future fear could not imagine.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_090",
+      "line_count": 1,
+      "text": "A tender goodbye makes room for a future fear could not imagine.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_091",
+      "line_count": 1,
+      "text": "A quiet heart teaches us to carry tenderness without shame.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_092",
+      "line_count": 1,
+      "text": "A curious mind teaches us to carry tenderness without shame.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_093",
+      "line_count": 1,
+      "text": "A kind word teaches us to carry tenderness without shame.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_094",
+      "line_count": 1,
+      "text": "A difficult day teaches us to carry tenderness without shame.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_095",
+      "line_count": 1,
+      "text": "A true friend teaches us to carry tenderness without shame.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_096",
+      "line_count": 1,
+      "text": "A brave choice teaches us to carry tenderness without shame.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_097",
+      "line_count": 1,
+      "text": "A remembered dream teaches us to carry tenderness without shame.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_098",
+      "line_count": 1,
+      "text": "A patient soul teaches us to carry tenderness without shame.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_099",
+      "line_count": 1,
+      "text": "A book opened at midnight teaches us to carry tenderness without shame.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_1_100",
+      "line_count": 1,
+      "text": "A road taken slowly teaches us to carry tenderness without shame.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_001",
+      "line_count": 2,
+      "text": "The heart is not made wiser by avoiding every storm.\nIt learns the sky by walking through changing weather.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_002",
+      "line_count": 2,
+      "text": "A book can open a window in a room we thought was closed.\nSometimes a single sentence lets the whole world breathe.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_003",
+      "line_count": 2,
+      "text": "Love does not ask us to become smaller.\nIt gives us courage to stand in our full light.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_004",
+      "line_count": 2,
+      "text": "The future is not a locked room.\nIt is a page waiting for the honesty of our next line.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_005",
+      "line_count": 2,
+      "text": "A mistake is not the end of a story.\nIt may be the chapter where understanding finally begins.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_006",
+      "line_count": 2,
+      "text": "Friendship is not measured by how often we speak.\nIt is measured by how safe silence feels between us.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_007",
+      "line_count": 2,
+      "text": "The night does not defeat the stars.\nIt gives their quiet brightness somewhere to be seen.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_008",
+      "line_count": 2,
+      "text": "We cannot keep every season from changing.\nWe can learn what each one is asking us to notice.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_009",
+      "line_count": 2,
+      "text": "Courage is rarely a trumpet at the gate.\nMore often, it is one steady step after another.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_010",
+      "line_count": 2,
+      "text": "Memory can soften the edges of an old sorrow.\nTime cannot erase it, but it can teach it a gentler shape.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_011",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_012",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_013",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_014",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_015",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_016",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_017",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_018",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_019",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_020",
+      "line_count": 2,
+      "text": "does not need a perfect beginning.\nIt needs a person willing to begin.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_021",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_022",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_023",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_024",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_025",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_026",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_027",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_028",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_029",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_030",
+      "line_count": 2,
+      "text": "can survive the distance between two lives.\nCare keeps finding ways to cross it.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_031",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_032",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_033",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_034",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_035",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_036",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_037",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_038",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_039",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_040",
+      "line_count": 2,
+      "text": "is sometimes hidden inside an ordinary day.\nAttention is the key that lets us see it.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_041",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_042",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_043",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_044",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_045",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_046",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_047",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_048",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_049",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_050",
+      "line_count": 2,
+      "text": "asks us to release what no longer fits.\nOnly then can our hands welcome what is next.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_051",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_052",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_053",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_054",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_055",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_056",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_057",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_058",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_059",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_060",
+      "line_count": 2,
+      "text": "grows stronger when it is shared.\nJoy, unlike a candle, does not diminish by lighting another.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_061",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_062",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_063",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_064",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_065",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_066",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_067",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_068",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_069",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_070",
+      "line_count": 2,
+      "text": "can make uncertainty feel less like an enemy.\nWe learn the road by walking it together.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_071",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_072",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_073",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_074",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_075",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_076",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_077",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_078",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_079",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_080",
+      "line_count": 2,
+      "text": "becomes meaningful through the choices we repeat.\nCharacter is the shape those choices leave behind.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_081",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_082",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_083",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_084",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_085",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_086",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_087",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_088",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_089",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_090",
+      "line_count": 2,
+      "text": "reminds us that we are still becoming.\nNo honest life is ever a finished sentence.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_091",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_092",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_093",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_094",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_095",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_096",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_097",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_098",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_099",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_2_100",
+      "line_count": 2,
+      "text": "can turn pain into understanding.\nNot because suffering is good, but because love can grow after it.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_001",
+      "line_count": 3,
+      "text": "There are days when the world seems written in a language we cannot read.\nStill, we keep turning the pages.\nMeaning often arrives after we have found the courage to continue.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_002",
+      "line_count": 3,
+      "text": "A person is not only what the past has made of them.\nThey are also what they choose to practice today.\nThat is why even a small change can begin a new life.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_003",
+      "line_count": 3,
+      "text": "The most important journeys do not always carry us far from home.\nSometimes they lead us deeper into our own hearts.\nWe return different because we finally learned how to look.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_004",
+      "line_count": 3,
+      "text": "Do not mistake a quiet season for an empty one.\nRoots work where no one applauds.\nWhat grows slowly may still become strong enough to shelter others.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_005",
+      "line_count": 3,
+      "text": "Books cannot live our lives for us.\nBut they can lend us courage, language, and a wider view.\nThen we close the cover and meet the world more awake.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_006",
+      "line_count": 3,
+      "text": "Love is not the absence of difficult conversations.\nIt is the willingness to remain honest and gentle through them.\nTrust grows where both can be true at once.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_007",
+      "line_count": 3,
+      "text": "A dream may begin as a fragile thing.\nProtect it with effort, revise it with wisdom, and let it change.\nThe dream that survives reality is stronger than the one untouched by it.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_008",
+      "line_count": 3,
+      "text": "Time does not make every wound disappear.\nSometimes it teaches us how to hold the tender place.\nHealing can mean carrying the story without letting it write every ending.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_009",
+      "line_count": 3,
+      "text": "A brave life is not a life without fear.\nIt is a life in which fear is allowed to speak but not to decide.\nThe next step belongs to the person who takes it.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_010",
+      "line_count": 3,
+      "text": "We often search for meaning in grand declarations.\nYet a meal shared, a promise kept, or a hand held can answer us.\nThe ordinary becomes luminous when we give it our attention.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_011",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_012",
+      "line_count": 3,
+      "text": "When a chapter closes,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_013",
+      "line_count": 3,
+      "text": "When the heart feels tired,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_014",
+      "line_count": 3,
+      "text": "When the world grows loud,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_015",
+      "line_count": 3,
+      "text": "When a friendship is tested,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_016",
+      "line_count": 3,
+      "text": "When a dream changes shape,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_017",
+      "line_count": 3,
+      "text": "When sorrow visits,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_018",
+      "line_count": 3,
+      "text": "When we begin again,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_019",
+      "line_count": 3,
+      "text": "When success comes slowly,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_020",
+      "line_count": 3,
+      "text": "When silence settles,\nremember that growth rarely announces its arrival.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_021",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_022",
+      "line_count": 3,
+      "text": "When a chapter closes,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_023",
+      "line_count": 3,
+      "text": "When the heart feels tired,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_024",
+      "line_count": 3,
+      "text": "When the world grows loud,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_025",
+      "line_count": 3,
+      "text": "When a friendship is tested,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_026",
+      "line_count": 3,
+      "text": "When a dream changes shape,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_027",
+      "line_count": 3,
+      "text": "When sorrow visits,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_028",
+      "line_count": 3,
+      "text": "When we begin again,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_029",
+      "line_count": 3,
+      "text": "When success comes slowly,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_030",
+      "line_count": 3,
+      "text": "When silence settles,\nlet the old page rest without calling the story a failure.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_031",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_032",
+      "line_count": 3,
+      "text": "When a chapter closes,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_033",
+      "line_count": 3,
+      "text": "When the heart feels tired,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_034",
+      "line_count": 3,
+      "text": "When the world grows loud,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_035",
+      "line_count": 3,
+      "text": "When a friendship is tested,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_036",
+      "line_count": 3,
+      "text": "When a dream changes shape,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_037",
+      "line_count": 3,
+      "text": "When sorrow visits,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_038",
+      "line_count": 3,
+      "text": "When we begin again,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_039",
+      "line_count": 3,
+      "text": "When success comes slowly,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_040",
+      "line_count": 3,
+      "text": "When silence settles,\noffer yourself the patience you would give a dear friend.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_041",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_042",
+      "line_count": 3,
+      "text": "When a chapter closes,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_043",
+      "line_count": 3,
+      "text": "When the heart feels tired,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_044",
+      "line_count": 3,
+      "text": "When the world grows loud,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_045",
+      "line_count": 3,
+      "text": "When a friendship is tested,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_046",
+      "line_count": 3,
+      "text": "When a dream changes shape,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_047",
+      "line_count": 3,
+      "text": "When sorrow visits,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_048",
+      "line_count": 3,
+      "text": "When we begin again,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_049",
+      "line_count": 3,
+      "text": "When success comes slowly,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_050",
+      "line_count": 3,
+      "text": "When silence settles,\nmake room for the small truth beneath the noise.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_051",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_052",
+      "line_count": 3,
+      "text": "When a chapter closes,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_053",
+      "line_count": 3,
+      "text": "When the heart feels tired,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_054",
+      "line_count": 3,
+      "text": "When the world grows loud,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_055",
+      "line_count": 3,
+      "text": "When a friendship is tested,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_056",
+      "line_count": 3,
+      "text": "When a dream changes shape,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_057",
+      "line_count": 3,
+      "text": "When sorrow visits,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_058",
+      "line_count": 3,
+      "text": "When we begin again,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_059",
+      "line_count": 3,
+      "text": "When success comes slowly,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_060",
+      "line_count": 3,
+      "text": "When silence settles,\nchoose honesty over winning and tenderness over pride.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_061",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_062",
+      "line_count": 3,
+      "text": "When a chapter closes,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_063",
+      "line_count": 3,
+      "text": "When the heart feels tired,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_064",
+      "line_count": 3,
+      "text": "When the world grows loud,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_065",
+      "line_count": 3,
+      "text": "When a friendship is tested,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_066",
+      "line_count": 3,
+      "text": "When a dream changes shape,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_067",
+      "line_count": 3,
+      "text": "When sorrow visits,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_068",
+      "line_count": 3,
+      "text": "When we begin again,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_069",
+      "line_count": 3,
+      "text": "When success comes slowly,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_070",
+      "line_count": 3,
+      "text": "When silence settles,\nallow the future to surprise the plans you made.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_071",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_072",
+      "line_count": 3,
+      "text": "When a chapter closes,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_073",
+      "line_count": 3,
+      "text": "When the heart feels tired,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_074",
+      "line_count": 3,
+      "text": "When the world grows loud,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_075",
+      "line_count": 3,
+      "text": "When a friendship is tested,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_076",
+      "line_count": 3,
+      "text": "When a dream changes shape,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_077",
+      "line_count": 3,
+      "text": "When sorrow visits,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_078",
+      "line_count": 3,
+      "text": "When we begin again,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_079",
+      "line_count": 3,
+      "text": "When success comes slowly,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_080",
+      "line_count": 3,
+      "text": "When silence settles,\ndo not demand that pain explain itself at once.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_081",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_082",
+      "line_count": 3,
+      "text": "When a chapter closes,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_083",
+      "line_count": 3,
+      "text": "When the heart feels tired,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_084",
+      "line_count": 3,
+      "text": "When the world grows loud,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_085",
+      "line_count": 3,
+      "text": "When a friendship is tested,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_086",
+      "line_count": 3,
+      "text": "When a dream changes shape,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_087",
+      "line_count": 3,
+      "text": "When sorrow visits,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_088",
+      "line_count": 3,
+      "text": "When we begin again,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_089",
+      "line_count": 3,
+      "text": "When success comes slowly,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_090",
+      "line_count": 3,
+      "text": "When silence settles,\nbegin with one sincere action, however small.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_091",
+      "line_count": 3,
+      "text": "When the road grows uncertain,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "friendship",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_092",
+      "line_count": 3,
+      "text": "When a chapter closes,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "dreams",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_093",
+      "line_count": 3,
+      "text": "When the heart feels tired,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "wisdom",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_094",
+      "line_count": 3,
+      "text": "When the world grows loud,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "solitude",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_095",
+      "line_count": 3,
+      "text": "When a friendship is tested,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "love",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_096",
+      "line_count": 3,
+      "text": "When a dream changes shape,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "life",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_097",
+      "line_count": 3,
+      "text": "When sorrow visits,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "courage",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_098",
+      "line_count": 3,
+      "text": "When we begin again,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "hope",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_099",
+      "line_count": 3,
+      "text": "When success comes slowly,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "growth",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    },
+    {
+      "id": "literature_3_100",
+      "line_count": 3,
+      "text": "When silence settles,\nkeep working without confusing delay with denial.\nA meaningful life is built from such quiet acts of faith.",
+      "theme": "time",
+      "author": "Original literary-style reflection",
+      "source_type": "original"
+    }
+  ]
+}

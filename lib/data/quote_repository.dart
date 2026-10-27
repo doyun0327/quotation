@@ -6,16 +6,10 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/widgets/pixel_icons.dart';
 
 abstract final class QuoteRepository {
-  static final Map<String, List<Quote>> _overrides = {};
-  static List<Quote> _gratitudeKo = const [];
-  static List<Quote> _gratitudeEn = const [];
-  static List<Quote> _loveKo = const [];
-  static List<Quote> _loveEn = const [];
+  static Map<String, List<Quote>> _korean = const {};
+  static Map<String, List<Quote>> _english = const {};
   static List<Quote> _fortuneKo = const [];
   static List<Quote> _fortuneEn = const [];
-  static List<Quote> _famousKo = const [];
-  static List<Quote> _famousEn = const [];
-  static List<Quote> _courageKo = const [];
   static Map<String, List<Quote>> _japanese = const {};
 
   static List<MainCategory> categories = _buildCategories();
@@ -38,25 +32,15 @@ abstract final class QuoteRepository {
       if (japanese != null && japanese.isNotEmpty) return japanese;
       return const <Quote>[];
     }
-    if (mainId == 'daily' && subId == 'gratitude') {
-      final loaded = _byLanguage(_gratitudeKo, _gratitudeEn);
-      if (loaded.isNotEmpty) return loaded;
+    final loaded = _byLanguage(
+      _korean[key] ?? const <Quote>[],
+      _english[key] ?? const <Quote>[],
+    );
+    if (loaded.isNotEmpty) return loaded;
+    if (localeController.isKorean) {
+      return quoteBank[key] ?? const <Quote>[];
     }
-    if (mainId == 'daily' && subId == 'love') {
-      final loaded = _byLanguage(_loveKo, _loveEn);
-      if (loaded.isNotEmpty) return loaded;
-    }
-    if (mainId == 'literature' && subId == 'quotes') {
-      final loaded = _byLanguage(_famousKo, _famousEn);
-      if (loaded.isNotEmpty) return loaded;
-    }
-    if (localeController.isKorean &&
-        mainId == 'comfort' &&
-        subId == 'courage' &&
-        _courageKo.isNotEmpty) {
-      return _courageKo;
-    }
-    return _overrides[key] ?? quoteBank[key] ?? const <Quote>[];
+    return const <Quote>[];
   }
 
   /// Korean and English files stay on their own language.
@@ -130,52 +114,22 @@ abstract final class QuoteRepository {
   static Future<void> initialize() async {
     try {
       final results = await Future.wait<Object>([
-        QuoteAssetLoader.loadChristianKo(),
-        QuoteAssetLoader.loadBuddhismKo(),
-        QuoteAssetLoader.loadGratitude(korean: true),
-        QuoteAssetLoader.loadGratitude(korean: false),
-        QuoteAssetLoader.loadLove(korean: true),
-        QuoteAssetLoader.loadLove(korean: false),
+        QuoteAssetLoader.loadCategoryDecks(),
         QuoteAssetLoader.loadFortune(korean: true),
         QuoteAssetLoader.loadFortune(korean: false),
-        QuoteAssetLoader.loadFamous(korean: true),
-        QuoteAssetLoader.loadFamous(korean: false),
-        QuoteAssetLoader.loadCourageKo(),
         QuoteAssetLoader.loadJapanese(),
       ]);
-      final christian = results[0] as List<Quote>;
-      final buddhism = results[1] as List<Quote>;
-      _gratitudeKo = results[2] as List<Quote>;
-      _gratitudeEn = results[3] as List<Quote>;
-      _loveKo = results[4] as List<Quote>;
-      _loveEn = results[5] as List<Quote>;
-      _fortuneKo = results[6] as List<Quote>;
-      _fortuneEn = results[7] as List<Quote>;
-      _famousKo = results[8] as List<Quote>;
-      _famousEn = results[9] as List<Quote>;
-      _courageKo = results[10] as List<Quote>;
-      _japanese = results[11] as Map<String, List<Quote>>;
-      var changed = false;
-
-      if (christian.isNotEmpty) {
-        _overrides['faith:christian'] = christian;
-        changed = true;
-      }
-      if (buddhism.isNotEmpty) {
-        _overrides['faith:buddhism'] = buddhism;
-        changed = true;
-      }
-      if (changed ||
-          _gratitudeKo.isNotEmpty ||
-          _gratitudeEn.isNotEmpty ||
-          _loveKo.isNotEmpty ||
-          _loveEn.isNotEmpty ||
-          _famousKo.isNotEmpty ||
-          _famousEn.isNotEmpty ||
-          _courageKo.isNotEmpty ||
-          _japanese.isNotEmpty) {
-        categories = _buildCategories();
-      }
+      final decks = results[0]
+          as ({
+            Map<String, List<Quote>> korean,
+            Map<String, List<Quote>> english,
+          });
+      _korean = decks.korean;
+      _english = decks.english;
+      _fortuneKo = results[1] as List<Quote>;
+      _fortuneEn = results[2] as List<Quote>;
+      _japanese = results[3] as Map<String, List<Quote>>;
+      categories = _buildCategories();
     } catch (_) {
       // Keep quote_bank fallback when asset load fails.
     }
@@ -338,16 +292,17 @@ MainCategory _buildLiterature() => MainCategory(
           iconBackground: const Color(0xFFFFF1DC),
           quotes: QuoteRepository.quotesFor('literature', 'quotes'),
         ),
-        SubCategory(
-          id: 'writers',
-          title: '작가의 문장',
-          subtitle: '책 속에서 건진 위로',
-          bannerText: '문학이 건네는 따뜻한 손길.',
-          icon: Icons.menu_book_rounded,
-          iconColor: const Color(0xFFC4894A),
-          iconBackground: const Color(0xFFFFF4E8),
-          quotes: QuoteRepository.quotesFor('literature', 'writers'),
-        ),
+        // 작가의 문장 — 목록에서 숨김
+        // SubCategory(
+        //   id: 'writers',
+        //   title: '작가의 문장',
+        //   subtitle: '책 속에서 건진 위로',
+        //   bannerText: '문학이 건네는 따뜻한 손길.',
+        //   icon: Icons.menu_book_rounded,
+        //   iconColor: const Color(0xFFC4894A),
+        //   iconBackground: const Color(0xFFFFF4E8),
+        //   quotes: QuoteRepository.quotesFor('literature', 'writers'),
+        // ),
       ],
     );
 

@@ -60,7 +60,6 @@ class AppStrings {
   String get ddaySave => _t('방 저장', 'Save room', 'ルームを保存');
   String get ddayPinWidget => _t('위젯에 표시', 'Show on widget', 'ウィジェットに表示');
   String get ddayPinnedWidget => _t('위젯에 표시 중', 'On widget', 'ウィジェットに表示中');
-  String get ddayDuoBadge => _t('같이', 'Together', '一緒');
   String get ddayDuoTestSection =>
       _t('위젯 꾸미기', 'Customize widget', 'ウィジェットを飾る');
   String get ddayDuoTestUpdatedToast =>
@@ -131,7 +130,6 @@ class AppStrings {
 
   String get ddayInviteTitle => _t('친구 초대', 'Invite friends', '友だちを招待');
   String get ddayInviteOpen => _t('초대 코드·링크 만들기', 'Create invite', '招待コード・リンクを作る');
-  String get ddayInviteSubtitle => _t('초대를 수락한 친구만 같은 방에 들어와요.', 'Only friends who accept join the room.', '招待を受けた友だちだけが同じルームに入れます。');
   String ddayInviteFriendCount(int n) =>
       _t('친구 $n명', 'Friends $n', '友だち $n人');
   String get ddayInviteCodeLabel => _t('초대 코드', 'Invite code', '招待コード');
@@ -428,7 +426,7 @@ class AppStrings {
       _t('무료 회원으로 전환했어요', 'Switched to free', '無料会員に切り替えました');
   String get premiumLockedTitle =>
       _t('프리미엄 전용', 'Premium only', 'プレミアム限定');
-  String get premiumLockedBody => _t('이 카테고리는 프리미엄 회원만 볼 수 있어요. 행복한 일상은 무료로 이용할 수 있어요.', 'This category is for premium members. Happy Everyday is free.', 'このカテゴリーはプレミアム会員だけが見られます。幸せな日常は無料で利用できます。');
+  String get premiumLockedBody => _t('이 카테고리는 프리미엄 회원만 볼 수 있어요.', 'This category is for premium members.', 'このカテゴリーはプレミアム会員だけが見られます。');
   String get premiumLockedDismiss => _t('닫기', 'Close', '閉じる');
   String get premiumLockedCta => _t('월 구독하기', 'Subscribe monthly', '月額で登録');
 

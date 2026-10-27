@@ -240,14 +240,6 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                t.ddayInviteSubtitle,
-                                style: AppTheme.body.copyWith(
-                                  fontSize: 12,
-                                  color: AppColors.muted,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
                                 t.ddayInviteFriendCount(
                                   widget.existing!.friendCount,
                                 ),

@@ -1,0 +1,1813 @@
+{
+  "category": "지친 하루의 위로",
+  "language": "ko",
+  "count": 300,
+  "line_counts": {
+    "1": 50,
+    "2": 200,
+    "3": 50
+  },
+  "note": "모두 새로 작성한 위로 문구이며, 실제 유명인의 직접 인용문은 아닙니다.",
+  "items": [
+    {
+      "id": "tired_day_1_001",
+      "line_count": 1,
+      "text": "오늘도 여기까지 온 너는 충분히 잘했어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_002",
+      "line_count": 1,
+      "text": "아무것도 하지 못한 날에도 너의 가치는 그대로야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_003",
+      "line_count": 1,
+      "text": "오늘의 피곤함은 네가 애써 살아왔다는 흔적이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_004",
+      "line_count": 1,
+      "text": "괜찮아, 모든 일을 오늘 끝낼 필요는 없어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_005",
+      "line_count": 1,
+      "text": "잠깐 쉬어 가도 네가 뒤처지는 건 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_006",
+      "line_count": 1,
+      "text": "오늘은 버티는 것만으로도 충분한 하루였어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_007",
+      "line_count": 1,
+      "text": "너 자신에게도 다정한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_008",
+      "line_count": 1,
+      "text": "잘하지 못한 날도 삶의 소중한 일부야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_009",
+      "line_count": 1,
+      "text": "마음이 지쳤다면 잠시 멈춰도 괜찮아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_010",
+      "line_count": 1,
+      "text": "내일의 너에게 오늘의 무거움을 모두 넘기지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_011",
+      "line_count": 1,
+      "text": "느린 걸음도 분명 앞으로 가고 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_012",
+      "line_count": 1,
+      "text": "오늘의 실수 하나가 너의 전부를 설명하진 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_013",
+      "line_count": 1,
+      "text": "누구보다 먼저 네 마음을 돌봐 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_014",
+      "line_count": 1,
+      "text": "쉬는 시간은 낭비가 아니라 회복이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_015",
+      "line_count": 1,
+      "text": "지친 마음에도 다시 피어날 힘은 남아 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_016",
+      "line_count": 1,
+      "text": "오늘 하루가 힘들었다고 네 인생까지 힘든 건 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_017",
+      "line_count": 1,
+      "text": "완벽하지 않아도 충분히 사랑받을 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_018",
+      "line_count": 1,
+      "text": "모든 날이 빛날 필요는 없어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_019",
+      "line_count": 1,
+      "text": "네가 견딘 시간은 결코 헛되지 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_020",
+      "line_count": 1,
+      "text": "오늘은 스스로에게 조금 더 너그러워지자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_021",
+      "line_count": 1,
+      "text": "마음이 느려지는 날에는 속도보다 숨이 중요해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_022",
+      "line_count": 1,
+      "text": "괜찮은 척하지 않아도 괜찮아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_023",
+      "line_count": 1,
+      "text": "잠시 멈춘다고 길을 잃는 것은 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_024",
+      "line_count": 1,
+      "text": "너의 노력은 당장 보이지 않아도 사라지지 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_025",
+      "line_count": 1,
+      "text": "오늘의 너도 누군가에게는 소중한 사람이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_026",
+      "line_count": 1,
+      "text": "잘 쉬는 것도 내일을 위한 용기야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_027",
+      "line_count": 1,
+      "text": "모든 답을 지금 알 필요는 없어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_028",
+      "line_count": 1,
+      "text": "너무 오래 애썼다면 이제는 기대어도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_029",
+      "line_count": 1,
+      "text": "오늘의 무거운 마음도 언젠가는 가벼워질 거야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_030",
+      "line_count": 1,
+      "text": "네 마음이 보내는 신호를 외면하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_031",
+      "line_count": 1,
+      "text": "작은 한숨 뒤에도 새로운 시작은 가능해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_032",
+      "line_count": 1,
+      "text": "하루를 잘 마치는 기준은 성과만이 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_033",
+      "line_count": 1,
+      "text": "힘들다는 말은 약함이 아니라 솔직함이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_034",
+      "line_count": 1,
+      "text": "너는 쉬어야 할 때 쉬어도 되는 사람이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_035",
+      "line_count": 1,
+      "text": "오늘 못한 일보다 오늘 견딘 마음을 봐 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_036",
+      "line_count": 1,
+      "text": "남들과 다른 속도도 너만의 속도야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_037",
+      "line_count": 1,
+      "text": "지친 날에는 큰 결심보다 따뜻한 물 한 잔이면 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_038",
+      "line_count": 1,
+      "text": "내일은 오늘과 조금 다른 얼굴로 찾아올 거야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_039",
+      "line_count": 1,
+      "text": "지금의 마음이 영원히 계속되지는 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_040",
+      "line_count": 1,
+      "text": "너는 매일 강할 필요가 없어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_041",
+      "line_count": 1,
+      "text": "하루의 끝에서 자신을 탓하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_042",
+      "line_count": 1,
+      "text": "잠들기 전만큼은 걱정을 잠시 내려놓자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_043",
+      "line_count": 1,
+      "text": "잘 버텨 온 너에게 오늘은 수고했다고 말해 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_044",
+      "line_count": 1,
+      "text": "작은 평온도 충분히 큰 행복이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_045",
+      "line_count": 1,
+      "text": "모든 것을 감당하지 않아도 너는 괜찮은 사람이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_046",
+      "line_count": 1,
+      "text": "오늘의 눈물은 내일의 너를 약하게 만들지 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_047",
+      "line_count": 1,
+      "text": "마음이 쉬어야 다시 걸을 힘도 생겨.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_048",
+      "line_count": 1,
+      "text": "너의 존재는 생산성으로 증명할 필요가 없어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_049",
+      "line_count": 1,
+      "text": "지금은 해결보다 위로가 먼저일 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_1_050",
+      "line_count": 1,
+      "text": "오늘도 살아낸 너에게 따뜻한 밤이 오길.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_001",
+      "line_count": 2,
+      "text": "하루 종일 애썼다면\n이제는 아무것도 증명하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_002",
+      "line_count": 2,
+      "text": "오늘의 결과가 마음에 들지 않아도\n네가 쏟은 노력까지 사라지는 건 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_003",
+      "line_count": 2,
+      "text": "모든 사람의 기대를 채우려다\n정작 네 마음을 비워 두지는 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_004",
+      "line_count": 2,
+      "text": "지친 마음은 게으른 마음이 아니야.\n그만큼 오래 애써 왔다는 뜻일 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_005",
+      "line_count": 2,
+      "text": "오늘 다 해결하지 못한 문제는\n내일의 조금 더 맑은 마음으로 바라봐도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_006",
+      "line_count": 2,
+      "text": "남들보다 늦게 도착해도 괜찮아.\n너의 삶은 누구와 겨루는 경주가 아니니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_007",
+      "line_count": 2,
+      "text": "괜찮지 않은 날에는 괜찮은 척하지 마.\n솔직한 마음도 돌봄이 필요한 너의 일부야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_008",
+      "line_count": 2,
+      "text": "하루가 뜻대로 되지 않았다고\n너 자신까지 실패한 것은 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_009",
+      "line_count": 2,
+      "text": "아무도 네 수고를 알아주지 않는 것 같아도\n네가 견뎌 낸 시간은 분명히 존재해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_010",
+      "line_count": 2,
+      "text": "잠시 아무것도 하지 않는 시간을 가져 봐.\n마음에도 숨을 고를 틈이 필요하니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_011",
+      "line_count": 2,
+      "text": "오늘의 너에게 필요한 건\n더 큰 채찍이 아니라 따뜻한 휴식일지도 몰라.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_012",
+      "line_count": 2,
+      "text": "모든 일에 답을 찾으려 하지 않아도 돼.\n어떤 마음은 시간이 지나며 천천히 풀려.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_013",
+      "line_count": 2,
+      "text": "실수한 장면만 반복해서 떠올리지 마.\n오늘 네가 잘해 낸 순간도 분명 있었을 거야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_014",
+      "line_count": 2,
+      "text": "누군가의 속도에 너를 맞추지 않아도 돼.\n네가 걷는 길에는 네게 맞는 리듬이 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_015",
+      "line_count": 2,
+      "text": "마음이 무너지는 날도 삶의 일부야.\n무너졌다는 이유로 너를 미워하지는 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_016",
+      "line_count": 2,
+      "text": "오늘은 조금 덜 해도 괜찮아.\n너의 건강과 평온도 중요한 일이니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_017",
+      "line_count": 2,
+      "text": "기운이 없는 자신을 탓하지 마.\n충전이 필요한 날은 누구에게나 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_018",
+      "line_count": 2,
+      "text": "내일을 걱정하느라 오늘의 밤을 잃지 마.\n지금 이 순간만큼은 숨을 천천히 쉬어 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_019",
+      "line_count": 2,
+      "text": "네가 모든 사람에게 좋은 사람일 수는 없어.\n대신 너 자신에게는 다정한 사람이 되어 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_020",
+      "line_count": 2,
+      "text": "하루의 가치는 얼마나 많이 해냈는지로만\n정해지는 것이 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_021",
+      "line_count": 2,
+      "text": "눈앞이 흐릿한 날에는 멀리 보지 않아도 돼.\n지금 발밑의 한 걸음이면 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_022",
+      "line_count": 2,
+      "text": "지금의 어려움이 네 미래 전체는 아니야.\n삶은 생각보다 여러 번 방향을 바꾸니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_023",
+      "line_count": 2,
+      "text": "남에게 건네던 위로를 오늘은 너에게도 줘.\n너 역시 따뜻한 말을 들을 자격이 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_024",
+      "line_count": 2,
+      "text": "오늘 아무도 네 편이 아닌 것처럼 느껴져도\n적어도 너 자신을 적으로 만들지는 말자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_025",
+      "line_count": 2,
+      "text": "참아 온 마음이 한꺼번에 밀려온다면\n그동안 정말 애썼다는 신호일 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_026",
+      "line_count": 2,
+      "text": "계획대로 되지 않은 하루에도\n예상하지 못한 배움과 쉼이 남을 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_027",
+      "line_count": 2,
+      "text": "너의 가치는 바쁜 일정표에 있지 않아.\n그저 존재한다는 사실만으로도 소중해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_028",
+      "line_count": 2,
+      "text": "힘든 날에는 이유를 완벽히 설명하지 않아도 돼.\n그저 힘들다고 말하는 것만으로 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_029",
+      "line_count": 2,
+      "text": "오늘의 작은 선택 하나를 칭찬해 줘.\n계속 살아가려는 마음도 용기니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_030",
+      "line_count": 2,
+      "text": "마음이 지친 날에는 잠시 거리를 둬도 돼.\n모든 일에 즉시 답할 필요는 없어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_031",
+      "line_count": 2,
+      "text": "다른 사람의 칭찬이 없어도\n네가 기울인 정성의 의미는 사라지지 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_032",
+      "line_count": 2,
+      "text": "오늘은 버티는 것만으로 하루를 채웠다면\n그것만으로도 충분히 애쓴 거야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_033",
+      "line_count": 2,
+      "text": "마음속 날씨가 흐리다고 해서\n네 안의 햇살까지 사라진 것은 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_034",
+      "line_count": 2,
+      "text": "잘하고 있는지 확신이 들지 않을 때도\n너는 조금씩 배우고 자라고 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_035",
+      "line_count": 2,
+      "text": "너무 많은 것을 혼자 해결하려 하지 마.\n도움을 청하는 것도 자신을 지키는 방법이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_036",
+      "line_count": 2,
+      "text": "지금 당장 괜찮아지지 않아도 괜찮아.\n회복은 서두른다고 빨라지는 일이 아니니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_037",
+      "line_count": 2,
+      "text": "어제의 너와 오늘의 너를 비교하기보다\n오늘의 네 마음이 무엇을 필요로 하는지 물어봐.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_038",
+      "line_count": 2,
+      "text": "모든 관계를 붙잡아야 하는 건 아니야.\n너를 계속 아프게 하는 곳에서는 쉬어도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_039",
+      "line_count": 2,
+      "text": "오늘의 어둠을 평생의 운명으로 여기지 마.\n아침은 때가 되면 다시 찾아오니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_040",
+      "line_count": 2,
+      "text": "잘 쉬고 나서 다시 시작해도 늦지 않아.\n회복도 앞으로 나아가는 과정이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_041",
+      "line_count": 2,
+      "text": "네가 견딘 일을 작게 여기지 마.\n누구에게나 보이지 않는 싸움이 있으니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_042",
+      "line_count": 2,
+      "text": "기대에 미치지 못한 날에도\n너는 여전히 존중받아야 할 사람이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_043",
+      "line_count": 2,
+      "text": "오늘은 마음의 짐을 하나만 내려놓자.\n모든 것을 한 번에 가볍게 할 필요는 없어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_044",
+      "line_count": 2,
+      "text": "지금의 너에게 필요한 만큼만 해도 돼.\n하루를 살아내는 방식은 사람마다 다르니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_045",
+      "line_count": 2,
+      "text": "아무것도 바뀌지 않은 것처럼 보여도\n견디는 동안 너는 조금씩 달라지고 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_046",
+      "line_count": 2,
+      "text": "힘든 하루가 너의 다정함을 빼앗지 않게\n오늘은 너 자신에게 먼저 다정해지자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_047",
+      "line_count": 2,
+      "text": "눈물이 난다면 억지로 참지 않아도 돼.\n마음이 흘려보내야 할 것들도 있으니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_048",
+      "line_count": 2,
+      "text": "모든 일이 네 책임은 아니야.\n네가 할 수 있는 몫과 내려놓을 몫을 나눠 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_049",
+      "line_count": 2,
+      "text": "하루의 끝에 완벽한 결론이 없어도 돼.\n내일 다시 생각할 여백을 남겨 두자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_050",
+      "line_count": 2,
+      "text": "너는 이미 여러 어려운 날을 지나왔어.\n이번에도 한 걸음씩 지나갈 수 있을 거야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_051",
+      "line_count": 2,
+      "text": "세상이 너무 빠르게 느껴질 때는\n네 호흡이 따라갈 수 있는 속도로 돌아오자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_052",
+      "line_count": 2,
+      "text": "오늘의 너를 미워하는 말 대신\n수고했다는 말을 한 번 건네 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_053",
+      "line_count": 2,
+      "text": "누군가에게 기대는 순간이 있어도 괜찮아.\n사람은 서로의 무게를 나누며 살아가니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_054",
+      "line_count": 2,
+      "text": "네가 가진 힘을 매일 증명하지 않아도 돼.\n잠시 약해지는 시간도 삶에 필요해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_055",
+      "line_count": 2,
+      "text": "걱정이 내일을 먼저 살아 버리게 두지 마.\n오늘은 오늘만큼만 살아도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_056",
+      "line_count": 2,
+      "text": "잘되지 않은 일 하나 때문에\n네가 해낸 수많은 일을 잊지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_057",
+      "line_count": 2,
+      "text": "마음이 복잡할수록 작은 일부터 해 보자.\n물 한 잔, 깊은 숨, 잠깐의 휴식부터.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_058",
+      "line_count": 2,
+      "text": "오늘은 목표를 향해 달리지 않아도 돼.\n잠시 멈춰 방향을 살피는 것도 중요한 걸음이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_059",
+      "line_count": 2,
+      "text": "너를 이해하지 못하는 사람이 있다고 해서\n네 마음이 틀렸다는 뜻은 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_060",
+      "line_count": 2,
+      "text": "기운이 다한 날에는 자신을 다그치지 마.\n배터리가 비었다면 먼저 충전해야 하니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_061",
+      "line_count": 2,
+      "text": "오늘의 아픔에 당장 의미를 붙이지 않아도 돼.\n그저 아픈 마음을 돌보는 것부터 시작하자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_062",
+      "line_count": 2,
+      "text": "너의 하루를 남의 기준으로 채점하지 마.\n네가 느낀 작은 평온도 충분히 의미 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_063",
+      "line_count": 2,
+      "text": "한 번에 멀리 가려 하지 않아도 돼.\n오늘 가능한 만큼만 걸어도 길은 이어져.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_064",
+      "line_count": 2,
+      "text": "좋은 날만이 좋은 인생을 만드는 건 아니야.\n힘든 날을 건너는 마음도 삶의 일부야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_065",
+      "line_count": 2,
+      "text": "네가 쉬는 동안 세상이 멈추지는 않겠지만\n너의 마음은 다시 숨을 쉴 수 있을 거야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_066",
+      "line_count": 2,
+      "text": "모든 사람의 마음을 만족시킬 수는 없어.\n그러니 네 마음까지 버려 가며 애쓰지는 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_067",
+      "line_count": 2,
+      "text": "오늘은 마음의 문을 잠시 닫아도 돼.\n조용히 회복한 뒤 다시 열면 되니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_068",
+      "line_count": 2,
+      "text": "작은 진전은 눈에 잘 띄지 않을 뿐\n아무 일도 일어나지 않은 것은 아니야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_069",
+      "line_count": 2,
+      "text": "실패한 하루를 보냈다고 생각된다면\n그 하루를 보낸 너에게 먼저 다정해져 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_070",
+      "line_count": 2,
+      "text": "마음이 무거운 날에는 결정을 미뤄도 돼.\n피곤한 마음은 세상을 더 어둡게 볼 수 있으니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_071",
+      "line_count": 2,
+      "text": "너는 다른 사람의 문제를 모두 해결할 의무가 없어.\n네 삶을 지키는 일도 중요한 책임이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_072",
+      "line_count": 2,
+      "text": "오늘의 너에게 필요한 것은 정답보다 쉼일 수 있어.\n잠깐 멈춘 뒤 다시 바라봐도 늦지 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_073",
+      "line_count": 2,
+      "text": "조금 나아진 것만으로도 충분히 기뻐해도 돼.\n회복은 작은 변화들이 모여 이루어지니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_074",
+      "line_count": 2,
+      "text": "너의 마음이 보내는 신호를 무시하지 마.\n지친다는 말은 돌봄이 필요하다는 뜻일 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_075",
+      "line_count": 2,
+      "text": "오늘 못한 일을 세며 잠들지 말고\n오늘 끝까지 해낸 일을 하나 떠올려 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_076",
+      "line_count": 2,
+      "text": "삶이 잠시 막다른 길처럼 느껴져도\n아직 보지 못한 방향이 남아 있을 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_077",
+      "line_count": 2,
+      "text": "마음이 쉬어야 다시 사랑할 힘도 생겨.\n너 자신을 돌보는 일을 뒤로 미루지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_078",
+      "line_count": 2,
+      "text": "너의 속도가 느려진 날에도\n삶은 너를 기다릴 여지를 남겨 두고 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_079",
+      "line_count": 2,
+      "text": "오늘의 감정이 너의 전부는 아니야.\n감정은 머물다 떠나는 날씨와도 같으니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_080",
+      "line_count": 2,
+      "text": "누구나 때로는 길을 잃어.\n길을 다시 찾는 시간도 여정의 일부야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_081",
+      "line_count": 2,
+      "text": "지금까지 잘해 온 자신을 잊지 마.\n오늘 힘들다는 사실이 그 모든 노력을 지우지는 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_082",
+      "line_count": 2,
+      "text": "하루를 마무리할 때는 자신에게 판결을 내리지 마.\n오늘을 살았다는 사실부터 인정해 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_083",
+      "line_count": 2,
+      "text": "내일의 걱정은 내일의 네가 마주할 수 있어.\n오늘의 너는 오늘의 쉼을 누려도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_084",
+      "line_count": 2,
+      "text": "너는 쉬어야만 겨우 가치 있는 사람이 되는 게 아니야.\n쉬기 전에도, 쉬는 동안에도 소중한 사람이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_085",
+      "line_count": 2,
+      "text": "오늘은 작은 기쁨 하나만 찾아도 충분해.\n따뜻한 이불과 편안한 숨도 기쁨이 될 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_086",
+      "line_count": 2,
+      "text": "마음이 지쳐 있다면 모든 말을 마음에 담지 마.\n때로는 흘려보내는 것이 자신을 지키는 일이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_087",
+      "line_count": 2,
+      "text": "너를 위한 시간을 이기적인 일로 여기지 마.\n돌봄은 오래 살아가기 위한 기본이니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_088",
+      "line_count": 2,
+      "text": "세상에 보여 줄 성과가 없는 날에도\n너의 하루는 충분히 살아 낼 가치가 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_089",
+      "line_count": 2,
+      "text": "오늘의 어려움이 너의 가능성을 정하지 않아.\n아직 펼쳐지지 않은 장면이 많이 남아 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_090",
+      "line_count": 2,
+      "text": "마음이 어두울 때는 혼자서 모든 답을 찾지 마.\n믿을 만한 사람에게 손을 내밀어도 괜찮아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_091",
+      "line_count": 2,
+      "text": "너의 한계를 인정하는 것은 포기가 아니야.\n지킬 것을 지키며 다시 나아갈 준비야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_092",
+      "line_count": 2,
+      "text": "오늘은 잘 버텼다는 사실만 기억하자.\n나머지 평가는 내일의 햇살에 맡겨도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_093",
+      "line_count": 2,
+      "text": "작은 쉼표가 문장을 끝내지는 않아.\n그저 다음 말을 위한 숨을 마련할 뿐이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_094",
+      "line_count": 2,
+      "text": "누군가에게는 평범한 하루였어도\n너에게 힘겨웠다면 그 마음은 존중받아야 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_095",
+      "line_count": 2,
+      "text": "모든 것을 잘하려는 마음을 잠시 내려놓자.\n충분히 괜찮은 하루도 아름다울 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_096",
+      "line_count": 2,
+      "text": "네가 흘린 눈물을 부끄러워하지 마.\n마음이 견뎌 온 시간을 보여 주는 방식일 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_097",
+      "line_count": 2,
+      "text": "오늘은 네가 너를 지켜 주는 사람이 되어 줘.\n가장 가까이에서 네 마음을 돌볼 수 있는 사람은 너니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_098",
+      "line_count": 2,
+      "text": "내가 바꿀 수 없는 일에 마음을 다 쓰지 말자.\n남겨 둔 힘으로 내가 할 수 있는 일을 하자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_099",
+      "line_count": 2,
+      "text": "하루가 길고 버거웠다면 이제 끝내도 돼.\n오늘의 너는 충분히 애썼어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_100",
+      "line_count": 2,
+      "text": "회복은 늘 눈에 보이는 모습으로 오지 않아.\n어제보다 조금 덜 아픈 것도 변화야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_101",
+      "line_count": 2,
+      "text": "다시 시작하기 위해 모든 것을 잊을 필요는 없어.\n배운 것을 안고 다른 걸음을 내디디면 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_102",
+      "line_count": 2,
+      "text": "오늘의 너에게 친절을 베풀어 줘.\n너도 위로받아야 하는 사람 중 한 명이니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_103",
+      "line_count": 2,
+      "text": "끝내지 못한 일보다 먼저 네 숨을 살펴보자.\n숨을 고른 뒤에도 길은 그 자리에 있을 거야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_104",
+      "line_count": 2,
+      "text": "지친 마음은 더 열심히 하라는 명령이 아니야.\n잠시 돌봐 달라는 부탁일 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_105",
+      "line_count": 2,
+      "text": "오늘은 멋지게 이겨 내지 않아도 돼.\n그저 무사히 하루를 건너오는 것으로 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_106",
+      "line_count": 2,
+      "text": "누구나 자신만 아는 무게를 들고 살아가.\n그러니 네 무게를 가볍게 여기지 말자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_107",
+      "line_count": 2,
+      "text": "내일의 빛을 오늘 밤에 모두 확인할 필요는 없어.\n어둠 속에서는 쉬는 것만으로도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_108",
+      "line_count": 2,
+      "text": "네가 한 걸음 물러나도 삶이 끝나는 건 아니야.\n때로는 물러남이 더 나은 방향을 보여 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_109",
+      "line_count": 2,
+      "text": "오늘의 실망이 내일의 희망을 빼앗지 않게 하자.\n아직 이야기는 끝나지 않았으니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_110",
+      "line_count": 2,
+      "text": "마음이 지칠 때는 해야 할 일보다 필요한 일을 먼저 보자.\n잠, 식사, 물, 그리고 잠깐의 평온부터.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_111",
+      "line_count": 2,
+      "text": "너는 누군가에게 유용해서만 소중한 것이 아니야.\n그 자체로 존중받을 이유가 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_112",
+      "line_count": 2,
+      "text": "오늘을 견딘 너에게 조용한 칭찬을 건네자.\n아무도 보지 못한 노력도 너는 알고 있으니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_113",
+      "line_count": 2,
+      "text": "삶은 매일 반짝이는 장면만으로 이루어지지 않아.\n평범하고 지친 날도 삶을 이루는 소중한 조각이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_114",
+      "line_count": 2,
+      "text": "잠깐 쉬었다고 네가 쌓아 온 것이 사라지지는 않아.\n오히려 오래 걸어갈 힘을 되찾을 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_115",
+      "line_count": 2,
+      "text": "모든 답을 찾지 못한 채 잠들어도 괜찮아.\n밤은 문제를 풀기보다 마음을 쉬게 하는 시간이니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_116",
+      "line_count": 2,
+      "text": "오늘은 네 편이 되어 주자.\n그것만으로도 내일을 맞을 힘이 조금 생길 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_117",
+      "line_count": 2,
+      "text": "오늘의 너에게\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_118",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_119",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n한 번에 하나씩만 바라봐도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_120",
+      "line_count": 2,
+      "text": "잠들기 전에는\n잠시 멈추는 선택을 허락해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_121",
+      "line_count": 2,
+      "text": "실수한 뒤에도\n너의 가치를 의심하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_122",
+      "line_count": 2,
+      "text": "계획이 어긋나면\n오늘을 무사히 지나온 자신을 인정해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_123",
+      "line_count": 2,
+      "text": "기운이 바닥난 날에는\n마음이 편안해질 때까지 서두르지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_124",
+      "line_count": 2,
+      "text": "누군가와 비교하게 되면\n다시 시작할 기회는 생각보다 자주 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_125",
+      "line_count": 2,
+      "text": "답을 찾지 못해도\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_126",
+      "line_count": 2,
+      "text": "내일이 두려울 때\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_127",
+      "line_count": 2,
+      "text": "오늘의 너에게\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_128",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n한 번에 하나씩만 바라봐도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_129",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n잠시 멈추는 선택을 허락해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_130",
+      "line_count": 2,
+      "text": "잠들기 전에는\n너의 가치를 의심하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_131",
+      "line_count": 2,
+      "text": "실수한 뒤에도\n오늘을 무사히 지나온 자신을 인정해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_132",
+      "line_count": 2,
+      "text": "계획이 어긋나면\n마음이 편안해질 때까지 서두르지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_133",
+      "line_count": 2,
+      "text": "기운이 바닥난 날에는\n다시 시작할 기회는 생각보다 자주 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_134",
+      "line_count": 2,
+      "text": "누군가와 비교하게 되면\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_135",
+      "line_count": 2,
+      "text": "답을 찾지 못해도\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_136",
+      "line_count": 2,
+      "text": "내일이 두려울 때\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_137",
+      "line_count": 2,
+      "text": "오늘의 너에게\n한 번에 하나씩만 바라봐도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_138",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n잠시 멈추는 선택을 허락해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_139",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n너의 가치를 의심하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_140",
+      "line_count": 2,
+      "text": "잠들기 전에는\n오늘을 무사히 지나온 자신을 인정해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_141",
+      "line_count": 2,
+      "text": "실수한 뒤에도\n마음이 편안해질 때까지 서두르지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_142",
+      "line_count": 2,
+      "text": "계획이 어긋나면\n다시 시작할 기회는 생각보다 자주 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_143",
+      "line_count": 2,
+      "text": "기운이 바닥난 날에는\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_144",
+      "line_count": 2,
+      "text": "누군가와 비교하게 되면\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_145",
+      "line_count": 2,
+      "text": "답을 찾지 못해도\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_146",
+      "line_count": 2,
+      "text": "내일이 두려울 때\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_147",
+      "line_count": 2,
+      "text": "오늘의 너에게\n잠시 멈추는 선택을 허락해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_148",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n너의 가치를 의심하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_149",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n오늘을 무사히 지나온 자신을 인정해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_150",
+      "line_count": 2,
+      "text": "잠들기 전에는\n마음이 편안해질 때까지 서두르지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_151",
+      "line_count": 2,
+      "text": "실수한 뒤에도\n다시 시작할 기회는 생각보다 자주 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_152",
+      "line_count": 2,
+      "text": "계획이 어긋나면\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_153",
+      "line_count": 2,
+      "text": "기운이 바닥난 날에는\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_154",
+      "line_count": 2,
+      "text": "누군가와 비교하게 되면\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_155",
+      "line_count": 2,
+      "text": "답을 찾지 못해도\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_156",
+      "line_count": 2,
+      "text": "내일이 두려울 때\n한 번에 하나씩만 바라봐도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_157",
+      "line_count": 2,
+      "text": "오늘의 너에게\n너의 가치를 의심하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_158",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n오늘을 무사히 지나온 자신을 인정해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_159",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n마음이 편안해질 때까지 서두르지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_160",
+      "line_count": 2,
+      "text": "잠들기 전에는\n다시 시작할 기회는 생각보다 자주 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_161",
+      "line_count": 2,
+      "text": "실수한 뒤에도\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_162",
+      "line_count": 2,
+      "text": "계획이 어긋나면\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_163",
+      "line_count": 2,
+      "text": "기운이 바닥난 날에는\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_164",
+      "line_count": 2,
+      "text": "누군가와 비교하게 되면\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_165",
+      "line_count": 2,
+      "text": "답을 찾지 못해도\n한 번에 하나씩만 바라봐도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_166",
+      "line_count": 2,
+      "text": "내일이 두려울 때\n잠시 멈추는 선택을 허락해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_167",
+      "line_count": 2,
+      "text": "오늘의 너에게\n오늘을 무사히 지나온 자신을 인정해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_168",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n마음이 편안해질 때까지 서두르지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_169",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n다시 시작할 기회는 생각보다 자주 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_170",
+      "line_count": 2,
+      "text": "잠들기 전에는\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_171",
+      "line_count": 2,
+      "text": "실수한 뒤에도\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_172",
+      "line_count": 2,
+      "text": "계획이 어긋나면\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_173",
+      "line_count": 2,
+      "text": "기운이 바닥난 날에는\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_174",
+      "line_count": 2,
+      "text": "누군가와 비교하게 되면\n한 번에 하나씩만 바라봐도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_175",
+      "line_count": 2,
+      "text": "답을 찾지 못해도\n잠시 멈추는 선택을 허락해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_176",
+      "line_count": 2,
+      "text": "내일이 두려울 때\n너의 가치를 의심하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_177",
+      "line_count": 2,
+      "text": "오늘의 너에게\n마음이 편안해질 때까지 서두르지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_178",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n다시 시작할 기회는 생각보다 자주 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_179",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_180",
+      "line_count": 2,
+      "text": "잠들기 전에는\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_181",
+      "line_count": 2,
+      "text": "실수한 뒤에도\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_182",
+      "line_count": 2,
+      "text": "계획이 어긋나면\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_183",
+      "line_count": 2,
+      "text": "기운이 바닥난 날에는\n한 번에 하나씩만 바라봐도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_184",
+      "line_count": 2,
+      "text": "누군가와 비교하게 되면\n잠시 멈추는 선택을 허락해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_185",
+      "line_count": 2,
+      "text": "답을 찾지 못해도\n너의 가치를 의심하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_186",
+      "line_count": 2,
+      "text": "내일이 두려울 때\n오늘을 무사히 지나온 자신을 인정해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_187",
+      "line_count": 2,
+      "text": "오늘의 너에게\n다시 시작할 기회는 생각보다 자주 찾아와.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_188",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_189",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_190",
+      "line_count": 2,
+      "text": "잠들기 전에는\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_191",
+      "line_count": 2,
+      "text": "실수한 뒤에도\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_192",
+      "line_count": 2,
+      "text": "계획이 어긋나면\n한 번에 하나씩만 바라봐도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_193",
+      "line_count": 2,
+      "text": "기운이 바닥난 날에는\n잠시 멈추는 선택을 허락해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_194",
+      "line_count": 2,
+      "text": "누군가와 비교하게 되면\n너의 가치를 의심하지 않았으면 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_195",
+      "line_count": 2,
+      "text": "답을 찾지 못해도\n오늘을 무사히 지나온 자신을 인정해 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_196",
+      "line_count": 2,
+      "text": "내일이 두려울 때\n마음이 편안해질 때까지 서두르지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_197",
+      "line_count": 2,
+      "text": "오늘의 너에게\n도움을 청하는 일을 부끄러워하지 마.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_198",
+      "line_count": 2,
+      "text": "마음이 무거울 때\n작은 평온부터 다시 모아 보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_199",
+      "line_count": 2,
+      "text": "세상이 버거운 날에는\n조금 더 따뜻한 말을 건네 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_2_200",
+      "line_count": 2,
+      "text": "잠들기 전에는\n모든 것을 혼자 감당하지 않아도 돼.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_001",
+      "line_count": 3,
+      "text": "오늘 하루가 마음처럼 흘러가지 않았더라도\n그것이 네가 부족한 사람이라는 뜻은 아니야.\n너는 결과와 상관없이 존중받아야 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_002",
+      "line_count": 3,
+      "text": "하루 종일 웃으며 버텼다면\n이제는 억지로 괜찮은 표정을 짓지 않아도 돼.\n편안한 곳에서 마음을 내려놓아도 괜찮아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_003",
+      "line_count": 3,
+      "text": "오늘 해내지 못한 일들이 마음에 남겠지만\n네가 견뎌 낸 순간들도 함께 기억해 줘.\n하루는 성과만으로 평가할 수 없으니까.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_004",
+      "line_count": 3,
+      "text": "남들의 걸음이 너무 빨라 보이는 날에는\n잠시 멈춰 네 호흡을 들어 봐.\n너에게 맞는 속도로 가도 충분해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_005",
+      "line_count": 3,
+      "text": "지친 마음에 더 큰 노력을 요구하지 마.\n지금 필요한 것은 비난이 아니라 돌봄일 수 있어.\n너 자신에게도 다정한 사람이 되어 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_006",
+      "line_count": 3,
+      "text": "오늘의 걱정이 밤까지 따라오더라도\n모든 문제를 잠들기 전에 풀 필요는 없어.\n내일의 너에게 생각할 시간을 남겨 두자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_007",
+      "line_count": 3,
+      "text": "누구에게도 말하지 못한 마음이 있다면\n그 마음을 억지로 작게 만들지 마.\n말할 준비가 될 때까지 천천히 보듬어 줘.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_008",
+      "line_count": 3,
+      "text": "실수한 순간이 자꾸 떠오르는 밤에는\n그때의 너도 최선을 다하려던 사람이었음을 기억해.\n배움은 자기 미움 없이도 시작될 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_009",
+      "line_count": 3,
+      "text": "아무것도 이룬 것이 없는 하루처럼 보여도\n너는 먹고 숨 쉬고 견디며 오늘을 지나왔어.\n그것 또한 결코 작지 않은 일이야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_010",
+      "line_count": 3,
+      "text": "앞이 보이지 않을 때 멀리까지 걷겠다고 다짐하지 마.\n지금 발앞의 한 걸음만 살펴도 괜찮아.\n길은 그렇게 조금씩 모습을 드러내기도 해.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_011",
+      "line_count": 3,
+      "text": "마음이 지친 날에는\n자신을 더 몰아붙이기보다 잠시 쉬어 가자.\n회복한 마음은 다시 길을 찾을 힘을 얻을 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_012",
+      "line_count": 3,
+      "text": "모든 사람을 만족시키려 애쓰다 보면\n정작 가장 가까운 자신의 마음을 놓치기 쉬워.\n오늘은 네 마음의 목소리도 들어 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_013",
+      "line_count": 3,
+      "text": "어제보다 나아지지 않은 것 같아도\n보이지 않는 곳에서 힘을 모으고 있을 수 있어.\n성장은 늘 눈에 띄는 모습으로 오지는 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_014",
+      "line_count": 3,
+      "text": "슬픔이 오래 머무는 것처럼 느껴질 때\n당장 괜찮아져야 한다고 자신을 재촉하지 마.\n마음에는 저마다의 계절과 속도가 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_015",
+      "line_count": 3,
+      "text": "하루를 잘 보냈다는 기준을 조금 바꿔 보자.\n얼마나 많이 해냈는지보다 어떻게 견뎠는지 살펴봐.\n스스로를 지킨 하루도 충분히 의미 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_016",
+      "line_count": 3,
+      "text": "누군가의 말이 오래 마음에 남는다면\n그 말이 너의 모든 모습을 설명하게 두지 마.\n너는 한 사람의 평가보다 훨씬 넓은 존재야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_017",
+      "line_count": 3,
+      "text": "쉬는 동안 뒤처질까 봐 불안하다면\n쉼은 길을 포기하는 일이 아니라 힘을 돌보는 일이야.\n오래 걷기 위해 잠시 앉아도 괜찮아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_018",
+      "line_count": 3,
+      "text": "오늘의 어두운 기분을 미래의 예언으로 여기지 마.\n피곤한 마음은 내일마저 어둡게 그릴 수 있어.\n먼저 쉬고, 다시 바라보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_019",
+      "line_count": 3,
+      "text": "무엇을 해야 할지 모르겠는 날에는\n거창한 답보다 작은 필요부터 챙겨 보자.\n물 한 잔과 깊은 숨도 시작이 될 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_020",
+      "line_count": 3,
+      "text": "너의 노력은 언제나 박수받는 것은 아니지만\n아무도 보지 못했다고 의미가 사라지는 건 아니야.\n너 스스로 그 수고를 알아봐 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_021",
+      "line_count": 3,
+      "text": "마음이 지친 날에는\n자신을 더 몰아붙이기보다 잠시 쉬어 가자.\n회복한 마음은 다시 길을 찾을 힘을 얻을 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_022",
+      "line_count": 3,
+      "text": "모든 사람을 만족시키려 애쓰다 보면\n정작 가장 가까운 자신의 마음을 놓치기 쉬워.\n오늘은 네 마음의 목소리도 들어 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_023",
+      "line_count": 3,
+      "text": "어제보다 나아지지 않은 것 같아도\n보이지 않는 곳에서 힘을 모으고 있을 수 있어.\n성장은 늘 눈에 띄는 모습으로 오지는 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_024",
+      "line_count": 3,
+      "text": "슬픔이 오래 머무는 것처럼 느껴질 때\n당장 괜찮아져야 한다고 자신을 재촉하지 마.\n마음에는 저마다의 계절과 속도가 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_025",
+      "line_count": 3,
+      "text": "하루를 잘 보냈다는 기준을 조금 바꿔 보자.\n얼마나 많이 해냈는지보다 어떻게 견뎠는지 살펴봐.\n스스로를 지킨 하루도 충분히 의미 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_026",
+      "line_count": 3,
+      "text": "누군가의 말이 오래 마음에 남는다면\n그 말이 너의 모든 모습을 설명하게 두지 마.\n너는 한 사람의 평가보다 훨씬 넓은 존재야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_027",
+      "line_count": 3,
+      "text": "쉬는 동안 뒤처질까 봐 불안하다면\n쉼은 길을 포기하는 일이 아니라 힘을 돌보는 일이야.\n오래 걷기 위해 잠시 앉아도 괜찮아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_028",
+      "line_count": 3,
+      "text": "오늘의 어두운 기분을 미래의 예언으로 여기지 마.\n피곤한 마음은 내일마저 어둡게 그릴 수 있어.\n먼저 쉬고, 다시 바라보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_029",
+      "line_count": 3,
+      "text": "무엇을 해야 할지 모르겠는 날에는\n거창한 답보다 작은 필요부터 챙겨 보자.\n물 한 잔과 깊은 숨도 시작이 될 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_030",
+      "line_count": 3,
+      "text": "너의 노력은 언제나 박수받는 것은 아니지만\n아무도 보지 못했다고 의미가 사라지는 건 아니야.\n너 스스로 그 수고를 알아봐 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_031",
+      "line_count": 3,
+      "text": "마음이 지친 날에는\n자신을 더 몰아붙이기보다 잠시 쉬어 가자.\n회복한 마음은 다시 길을 찾을 힘을 얻을 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_032",
+      "line_count": 3,
+      "text": "모든 사람을 만족시키려 애쓰다 보면\n정작 가장 가까운 자신의 마음을 놓치기 쉬워.\n오늘은 네 마음의 목소리도 들어 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_033",
+      "line_count": 3,
+      "text": "어제보다 나아지지 않은 것 같아도\n보이지 않는 곳에서 힘을 모으고 있을 수 있어.\n성장은 늘 눈에 띄는 모습으로 오지는 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_034",
+      "line_count": 3,
+      "text": "슬픔이 오래 머무는 것처럼 느껴질 때\n당장 괜찮아져야 한다고 자신을 재촉하지 마.\n마음에는 저마다의 계절과 속도가 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_035",
+      "line_count": 3,
+      "text": "하루를 잘 보냈다는 기준을 조금 바꿔 보자.\n얼마나 많이 해냈는지보다 어떻게 견뎠는지 살펴봐.\n스스로를 지킨 하루도 충분히 의미 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_036",
+      "line_count": 3,
+      "text": "누군가의 말이 오래 마음에 남는다면\n그 말이 너의 모든 모습을 설명하게 두지 마.\n너는 한 사람의 평가보다 훨씬 넓은 존재야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_037",
+      "line_count": 3,
+      "text": "쉬는 동안 뒤처질까 봐 불안하다면\n쉼은 길을 포기하는 일이 아니라 힘을 돌보는 일이야.\n오래 걷기 위해 잠시 앉아도 괜찮아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_038",
+      "line_count": 3,
+      "text": "오늘의 어두운 기분을 미래의 예언으로 여기지 마.\n피곤한 마음은 내일마저 어둡게 그릴 수 있어.\n먼저 쉬고, 다시 바라보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_039",
+      "line_count": 3,
+      "text": "무엇을 해야 할지 모르겠는 날에는\n거창한 답보다 작은 필요부터 챙겨 보자.\n물 한 잔과 깊은 숨도 시작이 될 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_040",
+      "line_count": 3,
+      "text": "너의 노력은 언제나 박수받는 것은 아니지만\n아무도 보지 못했다고 의미가 사라지는 건 아니야.\n너 스스로 그 수고를 알아봐 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_041",
+      "line_count": 3,
+      "text": "마음이 지친 날에는\n자신을 더 몰아붙이기보다 잠시 쉬어 가자.\n회복한 마음은 다시 길을 찾을 힘을 얻을 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_042",
+      "line_count": 3,
+      "text": "모든 사람을 만족시키려 애쓰다 보면\n정작 가장 가까운 자신의 마음을 놓치기 쉬워.\n오늘은 네 마음의 목소리도 들어 주자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_043",
+      "line_count": 3,
+      "text": "어제보다 나아지지 않은 것 같아도\n보이지 않는 곳에서 힘을 모으고 있을 수 있어.\n성장은 늘 눈에 띄는 모습으로 오지는 않아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_044",
+      "line_count": 3,
+      "text": "슬픔이 오래 머무는 것처럼 느껴질 때\n당장 괜찮아져야 한다고 자신을 재촉하지 마.\n마음에는 저마다의 계절과 속도가 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_045",
+      "line_count": 3,
+      "text": "하루를 잘 보냈다는 기준을 조금 바꿔 보자.\n얼마나 많이 해냈는지보다 어떻게 견뎠는지 살펴봐.\n스스로를 지킨 하루도 충분히 의미 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_046",
+      "line_count": 3,
+      "text": "누군가의 말이 오래 마음에 남는다면\n그 말이 너의 모든 모습을 설명하게 두지 마.\n너는 한 사람의 평가보다 훨씬 넓은 존재야.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_047",
+      "line_count": 3,
+      "text": "쉬는 동안 뒤처질까 봐 불안하다면\n쉼은 길을 포기하는 일이 아니라 힘을 돌보는 일이야.\n오래 걷기 위해 잠시 앉아도 괜찮아.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_048",
+      "line_count": 3,
+      "text": "오늘의 어두운 기분을 미래의 예언으로 여기지 마.\n피곤한 마음은 내일마저 어둡게 그릴 수 있어.\n먼저 쉬고, 다시 바라보자.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_049",
+      "line_count": 3,
+      "text": "무엇을 해야 할지 모르겠는 날에는\n거창한 답보다 작은 필요부터 챙겨 보자.\n물 한 잔과 깊은 숨도 시작이 될 수 있어.",
+      "category": "지친 하루의 위로"
+    },
+    {
+      "id": "tired_day_3_050",
+      "line_count": 3,
+      "text": "너의 노력은 언제나 박수받는 것은 아니지만\n아무도 보지 못했다고 의미가 사라지는 건 아니야.\n너 스스로 그 수고를 알아봐 주자.",
+      "category": "지친 하루의 위로"
+    }
+  ]
+}

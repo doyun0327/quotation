@@ -9,7 +9,6 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:share_plus/share_plus.dart';
 
 /// Host screen: create an invite code and link for a D-Day.
 class DdayInviteScreen extends StatefulWidget {
@@ -26,7 +25,6 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
   bool _rehomed = false;
   late String _roomId;
   String? _code;
-  String? _shareUrl;
   String? _error;
 
   @override
@@ -53,12 +51,9 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
         }
       }
 
-      final result = await _createInvite();
+      final result = await _createInvite().timeout(const Duration(seconds: 15));
       if (!mounted) return;
-      setState(() {
-        _code = result.code;
-        _shareUrl = result.shareUrl;
-      });
+      setState(() => _code = result.code);
     } catch (e) {
       if (!mounted) return;
       final detail = e.toString();
@@ -122,27 +117,6 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
     );
   }
 
-  Future<void> _share() async {
-    final code = _code;
-    final url = _shareUrl;
-    if (code == null || url == null) return;
-    final t = AppStrings.current;
-    final text = t.ddayInviteShareText(_room.title, code, url);
-    try {
-      await SharePlus.instance.share(
-        ShareParams(
-          text: text,
-          subject: t.ddayInviteTitle,
-          title: t.ddayInviteShare,
-        ),
-      );
-    } catch (e) {
-      debugPrint('invite share: $e');
-      if (!mounted) return;
-      await _copy(context, url, t.ddayInviteLinkCopied);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -182,14 +156,6 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
             children: [
-              Text(
-                t.ddayInviteSubtitle,
-                style: AppTheme.body.copyWith(
-                  fontSize: 13,
-                  color: AppColors.muted,
-                ),
-              ),
-              const SizedBox(height: 16),
               Text(
                 item.title,
                 style: AppTheme.body.copyWith(
@@ -270,56 +236,14 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
                           color: palette.accent,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      SelectableText(
-                        _shareUrl!,
-                        textAlign: TextAlign.center,
-                        style: AppTheme.body.copyWith(
-                          fontSize: 13,
-                          color: AppColors.muted,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () => _copy(context, _code!, t.ddayInviteCodeCopied),
-                            icon: const Icon(Icons.copy_rounded, size: 18),
-                            label: Text(t.ddayInviteCopyCode),
-                          ),
-                          TextButton.icon(
-                            onPressed: () => _copy(
-                              context,
-                              _shareUrl!,
-                              t.ddayInviteLinkCopied,
-                            ),
-                            icon: const Icon(Icons.link_rounded, size: 18),
-                            label: Text(t.ddayInviteCopyLink),
-                          ),
-                        ],
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () =>
+                            _copy(context, _code!, t.ddayInviteCodeCopied),
+                        icon: const Icon(Icons.copy_rounded, size: 18),
+                        label: Text(t.ddayInviteCopyCode),
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 52,
-                  child: FilledButton.icon(
-                    onPressed: _share,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: palette.accent,
-                      shape: const StadiumBorder(),
-                    ),
-                    icon: const Icon(Icons.ios_share_rounded),
-                    label: Text(
-                      t.ddayInviteShare,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
                   ),
                 ),
               ],
