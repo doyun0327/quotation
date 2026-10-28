@@ -36,6 +36,18 @@ class UserProfileSync {
     if (trimmed.isEmpty) return;
     await upsertCurrentUser(displayName: trimmed);
     try {
+      final asHost = await _db
+          .collection('dday_memberships')
+          .where('hostUid', isEqualTo: user.uid)
+          .get();
+      for (final doc in asHost.docs) {
+        if (doc.data()['hostDisplayName'] != trimmed) {
+          await doc.reference.set(
+            {'hostDisplayName': trimmed},
+            SetOptions(merge: true),
+          );
+        }
+      }
       final asGuest = await _db
           .collection('dday_memberships')
           .where('guestUids', arrayContains: user.uid)

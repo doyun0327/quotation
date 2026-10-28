@@ -57,10 +57,12 @@ class DdayInviteRepository {
     }
 
     await UserProfileSync.upsertCurrentUser();
+    final hostName = FirebaseAuth.instance.currentUser?.displayName?.trim();
     await ref.set(
       {
         'hostUid': uid,
         'hostCharacterId': characterController.character.id,
+        if (hostName != null && hostName.isNotEmpty) 'hostDisplayName': hostName,
         'members': <Map<String, dynamic>>[],
         'guestUids': <String>[],
         'maxGuests': DdayInviteLimits.maxFriends,
@@ -214,6 +216,7 @@ class DdayInviteRepository {
     final guestName = guestProfile?['displayName'] as String? ??
         FirebaseAuth.instance.currentUser?.displayName;
     final hostProfile = await UserProfileSync.fetchUser(hostUid);
+    final hostName = (hostProfile?['displayName'] as String?)?.trim();
     final hostCharacterId =
         hostProfile?['characterId'] as String? ?? 'basic';
 
@@ -255,6 +258,7 @@ class DdayInviteRepository {
         {
           'hostUid': hostUid,
           'hostCharacterId': resolvedHostChar,
+          if (hostName != null && hostName.isNotEmpty) 'hostDisplayName': hostName,
           'members': members,
           'guestUids': guestUids,
           'maxGuests': DdayInviteLimits.maxFriends,

@@ -139,7 +139,11 @@ class AppStrings {
   String get ddayInviteLinkCopied =>
       _t('초대 링크를 복사했어요', 'Invite link copied', '招待リンクをコピーしました');
   String get ddayInviteShare => _t('SNS로 공유', 'Share', 'SNSで共有');
-  String ddayInviteShareText(String title, String code, String url) => _t('「$title」 같이 방에 초대해요!\n코드: $code\n$url', 'Join my Together room "$title"!\nCode: $code\n$url', '「$title」の一緒ルームに招待します！\nコード: $code\n$url');
+  String ddayInviteShareText(String title, String code, String url) => _t(
+        '우리 같이 위젯 꾸밀래? 💙\n「$title」\n코드: $code\n$url',
+        'Want to decorate a widget together? 💙\n"$title"\nCode: $code\n$url',
+        '一緒にウィジェットを飾ろう？ 💙\n「$title」\nコード: $code\n$url',
+      );
   String ddayInviteSlotsLeft(int n) =>
       _t('남은 자리 $n명', '$n spots left', '残り $n人');
   String get ddayInviteFull => _t('이 방은 방장 포함 ${DdayInviteLimits.maxPeople}명까지예요', 'This room is full (${DdayInviteLimits.maxPeople} people, including the host)', 'このルームはホストを含めて${DdayInviteLimits.maxPeople}人までです');
@@ -247,12 +251,10 @@ class AppStrings {
         '今通報できる応援メッセージはありません。下の友だちはブロックできます。',
       );
   String get safetyOwnCheer => _t(
-        '내가 쓴 문구는 신고할 수 없어요. 다른 사람의 문구가 있을 때 이유와 함께 보낼 수 있어요.',
-        'You can’t report your own cheer. When someone else writes one, you can send a reason.',
-        '自分が書いたメッセージは通報できません。ほかの人のメッセージがあるときに理由を選んで送れます。',
+        '불쾌한 문구는 신고할 수 있어요.',
+        'You can report an unpleasant message.',
+        '不快なメッセージは通報できます。',
       );
-  String get safetyFriends =>
-      _t('같은 방 친구', 'People in this room', 'このルームの人');
   String get safetyBlocked =>
       _t('차단한 사용자', 'Blocked people', 'ブロックした人');
   String get safetyUnblock => _t('차단 해제', 'Unblock', 'ブロック解除');

@@ -104,6 +104,13 @@ class AuthController extends ChangeNotifier {
     return email.isEmpty ? null : email;
   }
 
+  /// Firebase uid for shared-room ordering. Stable before sign-in too.
+  String get viewerUid {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null && uid.isNotEmpty) return uid;
+    return 'local';
+  }
+
   /// Name shown to friends. Survives anonymous auth, which has no Google name.
   String? get nickname {
     final saved = _nickname?.trim();

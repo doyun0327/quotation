@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
+import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/character_controller.dart';
+import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/selection_controller.dart';
@@ -75,6 +77,8 @@ abstract final class HomeWidgetSync {
   static const keyDdayRoomsJson = 'ddayRoomsJson';
   static const keyDdayWidgetBindings = 'ddayWidgetBindings';
   static const keyDdayPendingRoomId = 'ddayPendingRoomId';
+  static const keyDdayKnownWidgetIds = 'ddayKnownWidgetIds';
+  static const keyDdayLegacyRoomId = 'ddayLegacyRoomId';
   static const keyDdayHostByRoom = 'ddayHostByRoom';
   static const keyDdayTitle = 'ddayTitle';
   static const keyDdayLabel = 'ddayLabel';
@@ -292,8 +296,8 @@ abstract final class HomeWidgetSync {
     } catch (_) {}
   }
 
-  /// Saves every room, then updates the home widget for [roomId].
-  /// Pins a new widget only when none is on the home screen yet.
+  /// Saves every room, then updates only the home widget for [roomId].
+  /// A room that is not on the home screen yet gets its own widget.
   ///
   /// Returns `true` when the add-to-home sheet was shown.
   static Future<bool> syncAndOfferPinTogetherWidget({
@@ -302,17 +306,29 @@ abstract final class HomeWidgetSync {
     if (!_isAndroid) return false;
     try {
       final id = roomId ?? ddayController.widgetDday?.id ?? '';
-      await _saveDday();
+      final legacyRoom =
+          await HomeWidget.getWidgetData<String>(keyDdayRoomId) ?? '';
       final installed = await _installedTogetherIds();
-      if (id.isNotEmpty && installed.isNotEmpty) {
-        final showed = await _showRoomOnHomeWidget(id, installed);
-        if (showed) {
-          await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, '');
-          await _pushTogetherWidget();
-          return false;
-        }
+      final bindings = await _readBindings();
+      final hasThisRoom = installed.any((widgetId) => bindings['$widgetId'] == id);
+      if (id.isNotEmpty && !hasThisRoom) {
+        await _keepOtherRoomWidgets(
+          roomId: id,
+          legacyRoom: legacyRoom,
+          installed: installed,
+          bindings: bindings,
+        );
       }
-      if (id.isEmpty) {
+      await HomeWidget.saveWidgetData<String>(
+        keyDdayKnownWidgetIds,
+        jsonEncode({
+          for (final widgetId in installed) '$widgetId': true,
+        }),
+      );
+      await HomeWidget.saveWidgetData<String>(keyDdayLegacyRoomId, legacyRoom);
+      await _saveDday();
+      if (id.isEmpty || _roomAlreadyPlaced(id, installed, bindings)) {
+        await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, '');
         await _pushTogetherWidget();
         return false;
       }
@@ -325,6 +341,41 @@ abstract final class HomeWidgetSync {
       debugPrint('syncAndOfferPinTogetherWidget: $e');
       return false;
     }
+  }
+
+  /// A widget already tied to another room stays there.
+  /// An unbound widget that was showing [legacyRoom] is claimed only for that room.
+  static Future<void> _keepOtherRoomWidgets({
+    required String roomId,
+    required String legacyRoom,
+    required List<int> installed,
+    required Map<String, String> bindings,
+  }) async {
+    final unbound = installed
+        .where((widgetId) => (bindings['$widgetId'] ?? '').isEmpty)
+        .toList();
+    if (unbound.isEmpty) return;
+    if (legacyRoom.isEmpty || legacyRoom == roomId) {
+      if (legacyRoom == roomId) {
+        bindings['${unbound.first}'] = roomId;
+      }
+    } else {
+      for (final widgetId in unbound) {
+        bindings['$widgetId'] = legacyRoom;
+      }
+    }
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayWidgetBindings,
+      jsonEncode(bindings),
+    );
+  }
+
+  static bool _roomAlreadyPlaced(
+    String roomId,
+    List<int> installed,
+    Map<String, String> bindings,
+  ) {
+    return installed.any((widgetId) => bindings['$widgetId'] == roomId);
   }
 
   static bool _isTogetherProvider(String? className) {
@@ -361,28 +412,6 @@ abstract final class HomeWidgetSync {
       if (widgetId != null) ids.add(widgetId);
     }
     return ids;
-  }
-
-  /// Points a widget already on the home screen at [roomId] and returns true.
-  /// Returns false when every placed widget belongs to a different room.
-  static Future<bool> _showRoomOnHomeWidget(
-    String roomId,
-    List<int> installed,
-  ) async {
-    final bindings = await _readBindings();
-    if (installed.any((id) => bindings['$id'] == roomId)) return true;
-    final unbound =
-        installed.where((id) => (bindings['$id'] ?? '').isEmpty).toList();
-    final target = unbound.isNotEmpty
-        ? unbound.first
-        : (installed.length == 1 ? installed.first : null);
-    if (target == null) return false;
-    bindings['$target'] = roomId;
-    await HomeWidget.saveWidgetData<String>(
-      keyDdayWidgetBindings,
-      jsonEncode(bindings),
-    );
-    return true;
   }
 
   static Future<Map<String, Size>> _readHostByRoom() async {
@@ -515,6 +544,23 @@ abstract final class HomeWidgetSync {
         debugPrint('cheer wrap: $e');
       }
       final themeId = ddayController.bgThemeForRoom(item.id);
+      final placed = TogetherCrowdLayout.withUserScale(
+        placed: TogetherCrowdLayout.resolve(
+          people: TogetherCrowdLayout.roster(
+            myUid: authController.viewerUid,
+            myCharacterId: meId,
+            hostUid: item.cloudOwnerUid,
+            friends: item.friends,
+          ),
+          canvasW: box.width,
+          canvasH: box.height,
+          charFactor: TogetherWidgetSize.s42.charFactor,
+          saved: ddayController.crowdForRoom(item.id),
+        ),
+        myUid: authController.viewerUid,
+        meScale: ddayController.charScaleForRoom(item.id),
+        friendScale: ddayController.friendScaleForRoom(item.id),
+      );
       rooms[item.id] = {
         'label': label,
         'me': meId,
@@ -534,6 +580,7 @@ abstract final class HomeWidgetSync {
             ) ??
             '',
         'textColor': _hex(Color(ddayController.textColorForRoom(item.id))),
+        'chars': TogetherCrowdLayout.widgetChars(placed),
       };
     }
     await HomeWidget.saveWidgetData<String>(

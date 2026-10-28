@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
@@ -73,7 +74,9 @@ abstract final class TogetherCheerRepository {
       await DdayInviteRepository.ensureHostMembership(roomId);
 
       final now = FieldValue.serverTimestamp();
-      final authorName = user.displayName?.trim();
+      final authorName = authController.nickname?.trim().isNotEmpty == true
+          ? authController.nickname!.trim()
+          : user.displayName?.trim();
       final payload = <String, dynamic>{
         'latestCheer': trimmed,
         'latestCheerAuthorUid': user.uid,

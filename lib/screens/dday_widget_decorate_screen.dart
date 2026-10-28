@@ -8,6 +8,7 @@ import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
+import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
@@ -64,6 +65,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   TogetherWidgetSize? _hostForSize;
   double _hostCornerDp = TogetherWidgetSize.defaultCornerDp;
   bool _dragging = false;
+  bool _crowdDirty = false;
+  List<TogetherPlaced> _placed = const [];
+  String _placedKey = '';
   bool _savingCheer = false;
   final bool _loggingIn = false;
 
@@ -103,6 +107,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         rooms.isEmpty ? '' : (rooms.first.latestCheer?.trim() ?? '');
     _cheerDraft.value = _cheerCtrl.text;
     _cheerCtrl.addListener(_onCheerEdited);
+    _adoptCrowd();
     ddayController.addListener(_syncFromController);
   }
 
@@ -131,7 +136,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _textScale != textScale ||
         _bgThemeId != theme ||
         _textColor != color;
-    if (layoutChanged) {
+    final crowdChanged = _adoptCrowd();
+    if (layoutChanged || crowdChanged) {
       setState(() {
         _meX = meX;
         _meY = meY;
@@ -176,6 +182,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       _hostForSize = host.forSize;
       _hostCornerDp = host.cornerDp;
       if (_dragging) return;
+      _adoptCrowd();
       final id = widget.roomId;
       _meX = ddayController.meOffsetXForRoom(id).toDouble();
       _meY = ddayController.meOffsetYForRoom(id).toDouble();
@@ -196,13 +203,32 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     super.dispose();
   }
 
+  String _nicknameOr(String? raw, String fallback) {
+    final name = raw?.trim();
+    if (name != null && name.isNotEmpty) return name;
+    return fallback;
+  }
+
+  String _friendNickname(DdayItem? room, AppStrings t) {
+    final friends = room?.friends ?? const [];
+    for (final friend in friends) {
+      if (friend.uid == _pickedFriendUid) {
+        return _nicknameOr(friend.displayName, t.togetherFriendFallbackName);
+      }
+    }
+    if (friends.isNotEmpty) {
+      return _nicknameOr(friends.first.displayName, t.togetherFriendFallbackName);
+    }
+    return t.togetherFriendFallbackName;
+  }
+
   DdayItem? get _room {
     final matches =
         ddayController.items.where((e) => e.id == widget.roomId);
     return matches.isEmpty ? null : matches.first;
   }
 
-  Future<bool> _saveCheerIfNeeded() async {
+  Future<bool> _saveCheerIfNeeded({bool quiet = false}) async {
     final t = AppStrings.current;
     final text = _cheerCtrl.text.trim();
     final existing = _room?.latestCheer?.trim() ?? '';
@@ -226,6 +252,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     if (!mounted) return false;
     setState(() => _savingCheer = false);
     if (result.ok) return true;
+    if (quiet) return false;
     final message = switch (result.errorCode) {
       'not_signed_in' => t.togetherCheerNeedLogin,
       'permission' => t.togetherCheerPermission,
@@ -239,6 +266,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   Future<void> _persist({bool applyToHome = false, bool toast = false}) async {
     if (applyToHome) {
+      await _saveCheerIfNeeded(quiet: !toast);
       await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
     }
     await ddayController.setDuoOffsets(
@@ -260,13 +288,24 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       notifyFriends: applyToHome,
       canvasW: _previewSize.width,
       canvasH: _previewSize.height,
+      crowdKey: _crowdDirty ? _placedKey : null,
+      crowd: _crowdDirty
+          ? [
+              for (final person in _placed)
+                (
+                  uid: person.uid,
+                  x: person.x.round(),
+                  y: person.y.round(),
+                ),
+            ]
+          : null,
     );
+    if (_crowdDirty) _crowdDirty = false;
     if (applyToHome) {
       await ddayController.applyRoomToHomeWidget(widget.roomId);
       await HomeWidgetSync.syncAndOfferPinTogetherWidget(
         roomId: widget.roomId,
       );
-      await _saveCheerIfNeeded();
       if (toast && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppStrings.current.togetherWidgetSyncToast)),
@@ -280,6 +319,103 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         SnackBar(content: Text(AppStrings.current.ddayDuoTestUpdatedToast)),
       );
     }
+  }
+
+  bool _adoptCrowd() {
+    final room = _room;
+    if (room == null) return false;
+    final people = TogetherCrowdLayout.roster(
+      myUid: authController.viewerUid,
+      myCharacterId: characterController.character.id,
+      hostUid: room.cloudOwnerUid,
+      friends: room.friends,
+    );
+    final key = TogetherCrowdLayout.keyFor(people);
+    if (_crowdDirty && key == _placedKey) return false;
+    final next = TogetherCrowdLayout.resolve(
+      people: people,
+      canvasW: _previewSize.width,
+      canvasH: _previewSize.height,
+      charFactor: _widgetSize.charFactor,
+      saved: ddayController.crowdForRoom(room.id),
+    );
+    if (key == _placedKey && _samePlaced(_placed, next)) return false;
+    _placed = next;
+    _placedKey = key;
+    _crowdDirty = false;
+    return true;
+  }
+
+  bool _samePlaced(List<TogetherPlaced> a, List<TogetherPlaced> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].uid != b[i].uid ||
+          a[i].x.round() != b[i].x.round() ||
+          a[i].y.round() != b[i].y.round() ||
+          a[i].scale != b[i].scale) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void _movePerson(String uid, double dx, double dy) {
+    final size = _previewSize;
+    final next = <TogetherPlaced>[];
+    for (final person in _placed) {
+      if (person.uid != uid) {
+        next.add(person);
+        continue;
+      }
+      final fitted = TogetherCharacterBounds.me(
+        x: person.x + dx,
+        y: person.y + dy,
+        width: size.width,
+        height: size.height,
+        charW: charW * _widgetSize.charFactor * person.scale,
+        charH: charH * _widgetSize.charFactor * person.scale,
+      );
+      next.add(person.copyWith(x: fitted.x, y: fitted.y));
+    }
+    _placed = next;
+    _crowdDirty = true;
+    _dragTick.value++;
+  }
+
+  List<TogetherPreviewSprite> _crowdSprites() {
+    final myUid = authController.viewerUid;
+    return [
+      for (final person in _placed)
+        TogetherPreviewSprite(
+          keyId: person.uid,
+          assetPath: person.uid == myUid
+              ? characterController.assetPath
+              : AppCharacter.byId(person.characterId).assetPath,
+          x: person.x,
+          y: person.y,
+          scale: person.scale *
+              TogetherCrowdLayout.userFactor(
+                person.uid == myUid ? _meScale : _friendScale,
+              ),
+          highlight: person.uid == myUid
+              ? _focus == _DecorateFocus.me
+              : _focus == _DecorateFocus.friend &&
+                  _pickedFriendUid == person.uid,
+          onSelect: () {
+            if (person.uid == myUid) {
+              _selectMe();
+            } else {
+              _selectFriendMember(person.uid);
+            }
+          },
+          onPan: (person.uid == myUid
+                  ? _focus == _DecorateFocus.me
+                  : _focus == _DecorateFocus.friend &&
+                      _pickedFriendUid == person.uid)
+              ? (dx, dy) => _movePerson(person.uid, dx, dy)
+              : null,
+        ),
+    ];
   }
 
   double _spriteW(int scale) =>
@@ -520,6 +656,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             meY: _meY,
                             friendX: _friendX,
                             friendY: _friendY,
+                            crowd: _crowdSprites(),
                             textX: _textX,
                             textY: _textY,
                             isPixel: isPixel,
@@ -592,10 +729,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         _RoomMember(
                           isMe: true,
                           assetPath: characterController.assetPath,
-                          nickname: authController.nickname ??
-                              t.characterName(
-                                characterController.character.id,
-                              ),
+                          nickname: _nicknameOr(
+                            authController.nickname,
+                            t.meLabel,
+                          ),
                         ),
                         for (final friend in live?.friends ?? const [])
                           _RoomMember(
@@ -603,11 +740,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             assetPath: AppCharacter.byId(
                               friend.characterId,
                             ).assetPath,
-                            nickname: () {
-                              final name = friend.displayName?.trim();
-                              if (name != null && name.isNotEmpty) return name;
-                              return t.characterName(friend.characterId);
-                            }(),
+                            nickname: _nicknameOr(
+                              friend.displayName,
+                              t.togetherFriendFallbackName,
+                            ),
                           ),
                       ],
                       meSelected: _focus == _DecorateFocus.me,
@@ -779,15 +915,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     Text(
                       t.ddayDecorateCharScaleFor(
                         _scaleMe || !liveHasFriend
-                            ? t.ddayDecorateMeChip(
-                                authController.nickname?.trim().isNotEmpty ==
-                                        true
-                                    ? authController.nickname!.trim()
-                                    : t.nicknameTitle,
-                              )
-                            : t.ddayDecorateFriendChip(
-                                t.characterName(liveFriendId ?? ''),
-                              ),
+                            ? _nicknameOr(authController.nickname, t.meLabel)
+                            : _friendNickname(live, t),
                       ),
                       style: AppTheme.body.copyWith(
             fontFamily: 'Galmuri',

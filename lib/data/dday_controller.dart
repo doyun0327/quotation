@@ -4,6 +4,7 @@ import 'dart:ui' show Size;
 
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
+import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
@@ -229,7 +230,7 @@ class _RoomOffsets {
   const _RoomOffsets({
     this.meX = 0,
     this.meY = 0,
-    this.friendX = 0,
+    this.friendX = DdayController.defaultFriendOffsetX,
     this.friendY = 0,
     this.textX = 0,
     this.textY = 0,
@@ -242,6 +243,8 @@ class _RoomOffsets {
     this.textColor = 0xFFF26B8A,
     this.shape = 'square',
     this.widgetSize = 's42',
+    this.crowdKey = '',
+    this.crowd = const [],
   });
 
   final int meX;
@@ -259,6 +262,8 @@ class _RoomOffsets {
   final int textColor;
   final String shape;
   final String widgetSize;
+  final String crowdKey;
+  final List<TogetherCrowdSaved> crowd;
 
   Map<String, dynamic> toJson() => {
         'meX': meX,
@@ -276,14 +281,27 @@ class _RoomOffsets {
         'textColor': textColor,
         'shape': shape,
         'widgetSize': widgetSize,
+        if (crowdKey.isNotEmpty) 'crowdKey': crowdKey,
+        if (crowd.isNotEmpty)
+          'crowd': [
+            for (final slot in crowd)
+              {'uid': slot.uid, 'x': slot.x, 'y': slot.y},
+          ],
       };
 
   factory _RoomOffsets.fromJson(Map<String, dynamic> json) {
+    final meX = json['meX'] as int? ?? 0;
+    final meY = json['meY'] as int? ?? 0;
+    var friendX = json['friendX'] as int? ?? 0;
+    final friendY = json['friendY'] as int? ?? 0;
+    if (meX == 0 && meY == 0 && friendX == 0 && friendY == 0) {
+      friendX = DdayController.defaultFriendOffsetX;
+    }
     return _RoomOffsets(
-      meX: json['meX'] as int? ?? 0,
-      meY: json['meY'] as int? ?? 0,
-      friendX: json['friendX'] as int? ?? 0,
-      friendY: json['friendY'] as int? ?? 0,
+      meX: meX,
+      meY: meY,
+      friendX: friendX,
+      friendY: friendY,
       textX: json['textX'] as int? ?? 0,
       textY: json['textY'] as int? ?? 0,
       charScale: json['charScale'] as int? ?? 100,
@@ -297,7 +315,25 @@ class _RoomOffsets {
       textColor: json['textColor'] as int? ?? 0xFFF26B8A,
       shape: 'square',
       widgetSize: json['widgetSize'] as String? ?? 's42',
+      crowdKey: json['crowdKey'] as String? ?? '',
+      crowd: _crowdFromJson(json['crowd']),
     );
+  }
+
+  static List<TogetherCrowdSaved> _crowdFromJson(Object? raw) {
+    if (raw is! List) return const [];
+    final out = <TogetherCrowdSaved>[];
+    for (final entry in raw) {
+      if (entry is! Map) continue;
+      final uid = entry['uid']?.toString() ?? '';
+      if (uid.isEmpty) continue;
+      out.add((
+        uid: uid,
+        x: (entry['x'] as num?)?.toInt() ?? 0,
+        y: (entry['y'] as num?)?.toInt() ?? 0,
+      ));
+    }
+    return out;
   }
 
   _RoomOffsets copyWith({
@@ -316,6 +352,8 @@ class _RoomOffsets {
     int? textColor,
     String? shape,
     String? widgetSize,
+    String? crowdKey,
+    List<TogetherCrowdSaved>? crowd,
   }) {
     return _RoomOffsets(
       meX: meX ?? this.meX,
@@ -333,6 +371,8 @@ class _RoomOffsets {
       textColor: textColor ?? this.textColor,
       shape: shape ?? this.shape,
       widgetSize: widgetSize ?? this.widgetSize,
+      crowdKey: crowdKey ?? this.crowdKey,
+      crowd: crowd ?? this.crowd,
     );
   }
 }
@@ -341,6 +381,9 @@ class DdayController extends ChangeNotifier {
   static const _prefsKey = 'dday_items_v1';
   static const _offsetsPrefsKey = 'dday_duo_offsets_v3';
   static const _legacyOffsetsPrefsKey = 'dday_duo_offsets_v2';
+  /// First placement puts the friend beside me so the two sprites do not stack.
+  static const defaultFriendOffsetX = 96;
+
   static const duoOffsetMinX = -480;
   static const duoOffsetMaxX = 480;
   /// Feet stay inside the widget. The editor tightens this to the live background.
@@ -484,6 +527,8 @@ class DdayController extends ChangeNotifier {
       textColor: o.textColor,
       shape: TogetherWidgetShape.byId(o.shape).id,
       widgetSize: TogetherWidgetSize.byId(o.widgetSize).id,
+      crowdKey: o.crowdKey,
+      crowd: o.crowd,
     );
   }
 
@@ -503,6 +548,9 @@ class DdayController extends ChangeNotifier {
   TogetherWidgetShape shapeForRoom(String roomId) =>
       TogetherWidgetShape.byId(_offsetsForRoom(roomId).shape);
   TogetherWidgetSize widgetSizeForRoom(String roomId) => TogetherWidgetSize.s42;
+  String crowdKeyForRoom(String roomId) => _offsetsForRoom(roomId).crowdKey;
+  List<TogetherCrowdSaved> crowdForRoom(String roomId) =>
+      _offsetsForRoom(roomId).crowd;
 
   Future<void> _persistRoomOffsets() async {
     final prefs = await SharedPreferences.getInstance();
@@ -537,6 +585,8 @@ class DdayController extends ChangeNotifier {
     bool notifyFriends = false,
     double? canvasW,
     double? canvasH,
+    String? crowdKey,
+    List<TogetherCrowdSaved>? crowd,
   }) async {
     final targetId = roomId ?? widgetDday?.id;
     if (targetId == null) return;
@@ -558,6 +608,8 @@ class DdayController extends ChangeNotifier {
       textColor: textColor,
       shape: shape?.id,
       widgetSize: widgetSize?.id,
+      crowdKey: crowdKey,
+      crowd: crowd,
     );
     final same = cur.meX == next.meX &&
         cur.meY == next.meY &&
@@ -573,7 +625,8 @@ class DdayController extends ChangeNotifier {
         cur.bgTheme == next.bgTheme &&
         cur.textColor == next.textColor &&
         cur.shape == next.shape &&
-        cur.widgetSize == next.widgetSize;
+        cur.widgetSize == next.widgetSize &&
+        _sameCrowd(cur, next);
     if (same) {
       if (!fromCloud && notifyFriends) {
         unawaited(
@@ -597,16 +650,30 @@ class DdayController extends ChangeNotifier {
     }
     await _persistRoomOffsets();
     notifyListeners();
-    if (!fromCloud && notifyFriends) {
+    if (!fromCloud) {
       unawaited(
         DdayCloudSync.pushSharedLayout(
           roomId: targetId,
-          notifyFriends: true,
+          notifyFriends: notifyFriends,
           canvasW: canvasW,
           canvasH: canvasH,
         ),
       );
     }
+  }
+
+  bool _sameCrowd(_RoomOffsets a, _RoomOffsets b) {
+    if (a.crowdKey != b.crowdKey || a.crowd.length != b.crowd.length) {
+      return false;
+    }
+    for (var i = 0; i < a.crowd.length; i++) {
+      final left = a.crowd[i];
+      final right = b.crowd[i];
+      if (left.uid != right.uid || left.x != right.x || left.y != right.y) {
+        return false;
+      }
+    }
+    return true;
   }
 
   int _clampX(int value) => value.clamp(duoOffsetMinX, duoOffsetMaxX).toInt();
@@ -751,7 +818,8 @@ class DdayController extends ChangeNotifier {
     final sameFriends = cur.friends.length == next.length &&
         List.generate(next.length, (i) {
           return cur.friends[i].uid == next[i].uid &&
-              cur.friends[i].characterId == next[i].characterId;
+              cur.friends[i].characterId == next[i].characterId &&
+              (cur.friends[i].displayName ?? '') == (next[i].displayName ?? '');
         }).every((e) => e);
     final incomingCheer = (latestCheer == null || latestCheer.trim().isEmpty)
         ? null

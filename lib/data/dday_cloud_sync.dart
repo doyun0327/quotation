@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
+import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
@@ -202,11 +204,31 @@ class DdayCloudSync {
   }) async {
     final hostUid = data['hostUid'] as String? ?? '';
     final hostCharacterId = data['hostCharacterId'] as String? ?? 'basic';
+    var hostName = (data['hostDisplayName'] as String?)?.trim() ?? '';
+    if (hostName.isEmpty && hostUid.isNotEmpty && hostUid != myUid) {
+      final profile = await UserProfileSync.fetchUser(hostUid);
+      hostName = (profile?['displayName'] as String?)?.trim() ?? '';
+    }
     final membersRaw = data['members'] as List<dynamic>? ?? [];
     final members = membersRaw
         .map((e) => DdayFriendMember.fromJson(Map<String, dynamic>.from(e as Map)))
         .where((m) => m.uid.isNotEmpty)
         .toList();
+    final namedMembers = <DdayFriendMember>[];
+    for (final member in members) {
+      var name = member.displayName?.trim() ?? '';
+      if (name.isEmpty) {
+        final profile = await UserProfileSync.fetchUser(member.uid);
+        name = (profile?['displayName'] as String?)?.trim() ?? '';
+      }
+      namedMembers.add(
+        DdayFriendMember(
+          uid: member.uid,
+          characterId: member.characterId,
+          displayName: name.isEmpty ? null : name,
+        ),
+      );
+    }
     final rawCheer = (data['latestCheer'] as String?)?.trim() ?? '';
     final latestCheer = _cheerForDevice(ddayId, data);
     if (rawCheer.isNotEmpty && (latestCheer == null || latestCheer.isEmpty)) {
@@ -229,11 +251,15 @@ class DdayCloudSync {
     // Friends shown to me: if I'm host → guests; if I'm guest → host + other guests.
     final List<DdayFriendMember> friendsForMe;
     if (myUid == hostUid) {
-      friendsForMe = members;
+      friendsForMe = namedMembers;
     } else {
       friendsForMe = [
-        DdayFriendMember(uid: hostUid, characterId: hostCharacterId),
-        ...members.where((m) => m.uid != myUid),
+        DdayFriendMember(
+          uid: hostUid,
+          characterId: hostCharacterId,
+          displayName: hostName.isEmpty ? null : hostName,
+        ),
+        ...namedMembers.where((m) => m.uid != myUid),
       ].toList();
     }
     final shownFriends = (ddayId == TogetherTestRoom.roomId &&
@@ -282,6 +308,7 @@ class DdayCloudSync {
     if (actor.isEmpty || actor != myUid) {
       await _applySharedLayout(ddayId, data, myUid == hostUid);
     }
+    await _rememberCrowd(ddayId, myUid);
 
     final stamp = _layoutStamp(data['layoutNotifyAt']);
     final unseen = stamp.isNotEmpty && _seenLayoutNotify[ddayId] != stamp;
@@ -318,6 +345,44 @@ class DdayCloudSync {
     return value?.toString() ?? '';
   }
 
+  /// Stores the current arrangement so a new friend can be added without
+  /// moving people who are already on the widget.
+  static Future<void> _rememberCrowd(String ddayId, String myUid) async {
+    final matches = ddayController.items.where((e) => e.id == ddayId);
+    if (matches.isEmpty || myUid.isEmpty) return;
+    final room = matches.first;
+    final people = TogetherCrowdLayout.roster(
+      myUid: myUid,
+      myCharacterId: characterController.character.id,
+      hostUid: room.cloudOwnerUid,
+      friends: room.friends,
+    );
+    if (people.isEmpty) return;
+    final key = TogetherCrowdLayout.keyFor(people);
+    final saved = ddayController.crowdForRoom(ddayId);
+    if (key == ddayController.crowdKeyForRoom(ddayId) &&
+        saved.length == people.length) {
+      return;
+    }
+    final canvas = await _localCanvas(ddayId);
+    final placed = TogetherCrowdLayout.resolve(
+      people: people,
+      canvasW: canvas.width,
+      canvasH: canvas.height,
+      saved: saved,
+    );
+    if (placed.isEmpty) return;
+    await ddayController.setDuoOffsets(
+      roomId: ddayId,
+      crowdKey: key,
+      crowd: [
+        for (final slot in placed)
+          (uid: slot.uid, x: slot.x.round(), y: slot.y.round()),
+      ],
+      fromCloud: true,
+    );
+  }
+
   /// Host-centric layout → viewer-relative me/friend offsets.
   static Future<void> _applySharedLayout(
     String roomId,
@@ -334,7 +399,8 @@ class DdayCloudSync {
         !data.containsKey('layoutBgColor') &&
         !data.containsKey('layoutBgOpacity') &&
         !data.containsKey('layoutTextColor') &&
-        !data.containsKey('layoutTextX')) {
+        !data.containsKey('layoutTextX') &&
+        !data.containsKey('layoutCrowdKey')) {
       return;
     }
     final local = await _localCanvas(roomId);
@@ -372,6 +438,10 @@ class DdayCloudSync {
     final sizeId = data['layoutWidgetSize'] as String?;
     final widgetSize =
         sizeId == null ? null : TogetherWidgetSize.byId(sizeId);
+    final crowdKey = data['layoutCrowdKey'] as String?;
+    final crowd = (crowdKey == null || crowdKey.isEmpty)
+        ? null
+        : _crowdPoints(data['layoutCrowd'], ax, ay);
     if (iAmHost) {
       await ddayController.setDuoOffsets(
         roomId: roomId,
@@ -388,6 +458,8 @@ class DdayCloudSync {
         textColor: textColor,
         shape: shape,
         widgetSize: widgetSize,
+        crowdKey: crowd == null ? null : crowdKey,
+        crowd: crowd,
         fromCloud: true,
       );
     } else {
@@ -406,9 +478,31 @@ class DdayCloudSync {
         textColor: textColor,
         shape: shape,
         widgetSize: widgetSize,
+        crowdKey: crowd == null ? null : crowdKey,
+        crowd: crowd,
         fromCloud: true,
       );
     }
+  }
+
+  static List<TogetherCrowdSaved> _crowdPoints(
+    Object? raw,
+    int Function(int) ax,
+    int Function(int) ay,
+  ) {
+    if (raw is! List) return const [];
+    final out = <TogetherCrowdSaved>[];
+    for (final entry in raw) {
+      if (entry is! Map) continue;
+      final uid = entry['uid']?.toString() ?? '';
+      if (uid.isEmpty) continue;
+      out.add((
+        uid: uid,
+        x: ax((entry['x'] as num?)?.toInt() ?? 0),
+        y: ay((entry['y'] as num?)?.toInt() ?? 0),
+      ));
+    }
+    return out;
   }
 
   /// Push duo offsets as shared host/guest layout for a room.
@@ -462,6 +556,8 @@ class DdayCloudSync {
     final textColor = ddayController.textColorForRoom(item.id);
     const shape = TogetherWidgetShape.square;
     final widgetSize = ddayController.widgetSizeForRoom(item.id);
+    final crowdKey = ddayController.crowdKeyForRoom(item.id);
+    final crowd = ddayController.crowdForRoom(item.id);
     var hostUid = item.cloudOwnerUid ?? '';
     try {
       final mem = await _db.collection('dday_memberships').doc(item.id).get();
@@ -502,6 +598,12 @@ class DdayCloudSync {
           'layoutTextColor': textColor,
           'layoutShape': shape.id,
           'layoutWidgetSize': widgetSize.id,
+          if (crowdKey.isNotEmpty) 'layoutCrowdKey': crowdKey,
+          if (crowdKey.isNotEmpty)
+            'layoutCrowd': [
+              for (final slot in crowd)
+                {'uid': slot.uid, 'x': slot.x, 'y': slot.y},
+            ],
           'layoutUpdatedBy': uid,
           'layoutUpdatedByName':
               FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',

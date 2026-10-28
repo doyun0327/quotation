@@ -18,6 +18,7 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.TypedValue
 import androidx.core.content.res.ResourcesCompat
+import org.json.JSONArray
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -181,6 +182,7 @@ object DdayWidgetVisuals {
       charScale: Int,
       friendScale: Int,
       sizeCharFactor: Float,
+      chars: JSONArray? = null,
   ): Bitmap {
     val density = context.resources.displayMetrics.density
     val w = px(context, widthDp).coerceAtLeast(8)
@@ -268,6 +270,42 @@ object DdayWidgetVisuals {
     }
 
     val hasFriend = friendId.isNotBlank()
+
+    if (chars != null && chars.length() > 0) {
+      for (i in 0 until chars.length()) {
+        val obj = chars.optJSONObject(i) ?: continue
+        val id = obj.optString("id").ifBlank { "basic" }
+        val offsetX = obj.optInt("x", 0)
+        val offsetY = obj.optInt("y", 0)
+        val spriteScale = (obj.optInt("s", 100) / 100f).coerceIn(0.28f, 1.2f)
+        val spriteWDp = (72f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(16)
+        val spriteHDp = (96f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(20)
+        val spriteW = (spriteWDp * density).toInt().coerceAtLeast(8)
+        val spriteH = (spriteHDp * density).toInt().coerceAtLeast(8)
+        val bmp =
+            characterBitmap(
+                context = context,
+                characterId = id,
+                widthDp = spriteWDp,
+                heightDp = spriteHDp,
+                isPixel = isPixel,
+            )
+        val left =
+            (originX + (4f + offsetX) * density).coerceIn(
+                originX,
+                (originX + contentW - spriteW).coerceAtLeast(originX),
+            )
+        val top =
+            (originY + contentH - offsetY * density - spriteH).coerceIn(
+                originY,
+                (originY + contentH - spriteH).coerceAtLeast(originY),
+            )
+        canvas.drawBitmap(bmp, left, top, charPaint)
+        bmp.recycle()
+      }
+      canvas.restore()
+      return bitmap
+    }
 
     val meBmp =
         characterBitmap(

@@ -7,6 +7,31 @@ import 'package:quotation/data/together_cheer_layout.dart';
 
 typedef TogetherWidgetPanDelta = void Function(double dx, double dy);
 
+/// One character drawn on the shared widget.
+class TogetherPreviewSprite {
+  const TogetherPreviewSprite({
+    required this.keyId,
+    required this.assetPath,
+    required this.x,
+    required this.y,
+    required this.scale,
+    this.highlight = false,
+    this.onPan,
+    this.onSelect,
+  });
+
+  final String keyId;
+  final String assetPath;
+  final double x;
+  final double y;
+
+  /// Multiplies [TogetherWidgetPreview.charW] and charH.
+  final double scale;
+  final bool highlight;
+  final TogetherWidgetPanDelta? onPan;
+  final VoidCallback? onSelect;
+}
+
 Widget _backgroundImage(String path, bool isPixel) {
   final quality = isPixel ? FilterQuality.none : FilterQuality.medium;
   if (path.startsWith('assets/')) {
@@ -68,6 +93,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.highlightFriend = false,
     this.onDragStart,
     this.onDragEnd,
+    this.crowd,
   });
 
   final double width;
@@ -108,6 +134,9 @@ class TogetherWidgetPreview extends StatelessWidget {
   final bool highlightFriend;
   final VoidCallback? onDragStart;
   final VoidCallback? onDragEnd;
+
+  /// When set, these sprites replace the single me/friend pair.
+  final List<TogetherPreviewSprite>? crowd;
 
   /// Same dp as the home widget: measured launcher cell, else One UI span.
   static Size sizeForShape(
@@ -289,6 +318,30 @@ class TogetherWidgetPreview extends StatelessWidget {
             ),
           );
 
+    final orderedCrowd = crowd == null
+        ? const <TogetherPreviewSprite>[]
+        : (List<TogetherPreviewSprite>.of(crowd!)
+          ..sort((a, b) {
+            if (a.highlight == b.highlight) return 0;
+            return a.highlight ? 1 : -1;
+          }));
+    final crowdWidgets = [
+      for (final person in orderedCrowd)
+        Positioned(
+          key: ValueKey('together-${person.keyId}'),
+          left: 4 + person.x,
+          bottom: person.y,
+          child: sprite(
+            asset: person.assetPath,
+            spriteW: charW * person.scale,
+            spriteH: charH * person.scale,
+            highlight: person.highlight,
+            onPan: person.onPan,
+            onSelect: person.onSelect,
+          ),
+        ),
+    ];
+
     final hasImage = bgAssetPath != null && bgAssetPath!.isNotEmpty;
 
     return Container(
@@ -342,7 +395,9 @@ class TogetherWidgetPreview extends StatelessWidget {
               ),
             ),
           ),
-          if (highlightMe && friendSprite != null) ...[
+          if (crowd != null)
+            ...crowdWidgets
+          else if (highlightMe && friendSprite != null) ...[
             friendSprite,
             meSprite,
           ] else ...[

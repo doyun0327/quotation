@@ -15,6 +15,7 @@ import kotlin.math.roundToInt
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetPlugin
 import es.antonborri.home_widget.HomeWidgetProvider
+import org.json.JSONArray
 import org.json.JSONObject
 
 /** Legacy / fallback receiver (2×2). Prefer size-specific subclasses when pinning. */
@@ -89,10 +90,12 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val cornerDp = DdayWidgetVisuals.systemWidgetCornerDp(context)
 
     val roomId = bindRoom(widgetData, widgetId)
+    if (roomId.isBlank()) return
     val room = readJson(widgetData, "ddayRoomsJson").optJSONObject(roomId)
     val label = roomStr(room, "label", readString(widgetData, "ddayLabel"))
     val meId = roomStr(room, "me", readString(widgetData, "ddayCharMe")).ifBlank { "basic" }
     val friendId = roomStr(room, "friend", readString(widgetData, "ddayCharFriend"))
+    val chars = room?.optJSONArray("chars") ?: JSONArray()
     val style = readString(widgetData, "visualStyle").ifBlank { "pixel" }
     val meOffsetX = roomInt(room, "meX", readInt(widgetData, "ddayMeOffsetX", 0))
     val meOffsetY = roomInt(room, "meY", readInt(widgetData, "ddayMeOffsetY", 0))
@@ -136,6 +139,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             charScale = charScale,
             friendScale = friendScale,
             sizeCharFactor = DdayWidgetVisuals.charFactor(sizeId),
+            chars = chars,
         )
 
     val views =
@@ -203,6 +207,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val label = roomStr(room, "label", readString(prefs, "ddayLabel"))
     val meId = roomStr(room, "me", readString(prefs, "ddayCharMe")).ifBlank { "basic" }
     val friendId = roomStr(room, "friend", readString(prefs, "ddayCharFriend"))
+    val chars = room?.optJSONArray("chars") ?: JSONArray()
     val style = readString(prefs, "visualStyle").ifBlank { "pixel" }
     val meOffsetX = roomInt(room, "meX", readInt(prefs, "ddayMeOffsetX", 0))
     val meOffsetY = roomInt(room, "meY", readInt(prefs, "ddayMeOffsetY", 0))
@@ -255,6 +260,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             charScale = charScale,
             friendScale = friendScale,
             sizeCharFactor = DdayWidgetVisuals.charFactor(normalized),
+            chars = chars,
         )
     val preview = scaleForPinSheet(bitmap, isPixel)
     return wrapPinPreview(context, preview, canvasW, canvasH)
@@ -300,6 +306,14 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val existing = bindings.optString(key, "")
     if (existing.isNotBlank()) return existing
     val pending = readString(prefs, "ddayPendingRoomId")
+    val known = readJson(prefs, "ddayKnownWidgetIds")
+    if (known.has(key)) {
+      val legacy = readString(prefs, "ddayLegacyRoomId")
+      if (legacy.isBlank() || legacy == pending) return ""
+      bindings.put(key, legacy)
+      prefs.edit().putString("ddayWidgetBindings", bindings.toString()).apply()
+      return legacy
+    }
     val fallback = readString(prefs, "ddayRoomId")
     val room = if (pending.isNotBlank()) pending else fallback
     if (room.isBlank()) return ""

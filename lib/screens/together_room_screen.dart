@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
+import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
@@ -44,6 +46,7 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
         localeController,
         characterController,
         blockedUsersController,
+        authController,
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
@@ -218,7 +221,7 @@ class _FriendsCard extends StatelessWidget {
                   spacing: 12,
                   runSpacing: 10,
                   children: [
-                    _CharBubble(asset: me.assetPath, label: _koMe(t)),
+                    _CharBubble(asset: me.assetPath, label: _meName(t)),
                     for (final f in friends)
                       if (!blockedUsersController.isBlocked(f.uid))
                       _CharBubble(
@@ -252,7 +255,11 @@ class _FriendsCard extends StatelessWidget {
     );
   }
 
-  String _koMe(AppStrings t) => t.meLabel;
+  String _meName(AppStrings t) {
+    final name = authController.nickname?.trim();
+    if (name != null && name.isNotEmpty) return name;
+    return t.meLabel;
+  }
 
   String _friendLabel(DdayFriendMember f) {
     final name = f.displayName?.trim();
@@ -361,6 +368,24 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
       _hostForSize,
     );
     final charBase = widgetSize.charFactor;
+    final people = TogetherCrowdLayout.roster(
+      myUid: authController.viewerUid,
+      myCharacterId: characterController.character.id,
+      hostUid: room.cloudOwnerUid,
+      friends: room.friends,
+    );
+    final placed = TogetherCrowdLayout.withUserScale(
+      placed: TogetherCrowdLayout.resolve(
+        people: people,
+        canvasW: previewSize.width,
+        canvasH: previewSize.height,
+        charFactor: charBase,
+        saved: ddayController.crowdForRoom(room.id),
+      ),
+      myUid: authController.viewerUid,
+      meScale: ddayController.charScaleForRoom(room.id),
+      friendScale: ddayController.friendScaleForRoom(room.id),
+    );
 
     return Material(
       color: Colors.transparent,
@@ -382,6 +407,18 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             meY: meY,
             friendX: friendX,
             friendY: friendY,
+            crowd: [
+              for (final slot in placed)
+                TogetherPreviewSprite(
+                  keyId: slot.uid,
+                  assetPath: slot.uid == authController.viewerUid
+                      ? characterController.assetPath
+                      : AppCharacter.byId(slot.characterId).assetPath,
+                  x: slot.x,
+                  y: slot.y,
+                  scale: slot.scale,
+                ),
+            ],
             textX: textX,
             textY: textY,
             isPixel: true,

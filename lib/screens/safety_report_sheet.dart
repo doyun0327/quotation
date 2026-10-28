@@ -311,13 +311,6 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
                     ],
                     if (friends.isNotEmpty) ...[
                       const SizedBox(height: 18),
-                      Text(
-                        t.safetyFriends,
-                        style: AppTheme.body.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
                       for (final friend in friends)
                         _friendRow(t, friend, target),
                     ],
