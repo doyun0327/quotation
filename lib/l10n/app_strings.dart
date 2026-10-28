@@ -393,6 +393,16 @@ class AppStrings {
   String get googleLoginFailed =>
       _t('Google 로그인에 실패했어요', 'Google sign-in failed', 'Googleログインに失敗しました');
   String googleLoginFailedDetail(String detail) => _t('Google 로그인 실패: $detail', 'Google sign-in failed: $detail', 'Googleログイン失敗: $detail');
+  String get loginMethodTitle =>
+      _t('로그인 방법 선택', 'Choose how to sign in', 'ログイン方法を選択');
+  String get appleLoginTitle =>
+      _t('Apple로 로그인', 'Sign in with Apple', 'Appleでサインイン');
+  String get appleLoginSuccess =>
+      _t('Apple 로그인 완료', 'Signed in with Apple', 'Appleログインが完了しました');
+  String get appleLoginConfigError => _t('Apple 로그인 설정 오류예요. Firebase에서 Apple 제공업체를 켜고 Xcode에 Sign in with Apple 기능을 추가해 주세요', 'Apple sign-in config error. Enable the Apple provider in Firebase and add the Sign in with Apple capability in Xcode', 'Appleサインインの設定エラーです。FirebaseでAppleプロバイダを有効にし、XcodeでSign in with Apple機能を追加してください');
+  String get appleLoginFailed =>
+      _t('Apple 로그인에 실패했어요', 'Apple sign-in failed', 'Appleログインに失敗しました');
+  String appleLoginFailedDetail(String detail) => _t('Apple 로그인 실패: $detail', 'Apple sign-in failed: $detail', 'Appleログイン失敗: $detail');
 
   String get languageSection => _t('앱 언어', 'App language', 'アプリの言語');
   String get languageTitle => _t('앱 언어', 'App language', 'アプリの言語');

@@ -13,9 +13,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos.',
@@ -51,5 +49,16 @@ class DefaultFirebaseOptions {
     messagingSenderId: '313256890607',
     projectId: 'dearly-cf730',
     storageBucket: 'dearly-cf730.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAuUK41NsVEe6cMHZe4EWxauzgmtBmQftw',
+    appId: '1:313256890607:ios:1583f8c5346058cf994b1a',
+    messagingSenderId: '313256890607',
+    projectId: 'dearly-cf730',
+    storageBucket: 'dearly-cf730.firebasestorage.app',
+    iosClientId:
+        '313256890607-mu1tu53b288lskhiaou3mb7vsolin1gv.apps.googleusercontent.com',
+    iosBundleId: 'com.dearly.quoteswidget',
   );
 }
