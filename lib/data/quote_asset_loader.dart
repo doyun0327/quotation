@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:quotation/data/quote_models.dart';
 
 /// How a deck's author line is built. Most files keep a plain author, or none.
-enum _AuthorStyle { plain, scripture, buddhist }
+enum _AuthorStyle { plain, scripture, buddhist, reference }
 
 class _Deck {
   const _Deck(
@@ -12,17 +12,19 @@ class _Deck {
     this.ko,
     this.en,
     this.koAuthor = _AuthorStyle.plain,
+    this.enAuthor = _AuthorStyle.plain,
   });
 
   final String key;
   final String? ko;
   final String? en;
   final _AuthorStyle koAuthor;
+  final _AuthorStyle enAuthor;
 }
 
 abstract final class QuoteAssetLoader {
   static const christianKoPath =
-      'assets/quotes/ko/bible_reflections_1000_audited.json';
+      'assets/quotes/ko/bible_reflections_400.json';
   static const christianEnPath =
       'assets/quotes/en/christian_quotes_400_en.json';
   static const buddhismKoPath =
@@ -98,6 +100,7 @@ abstract final class QuoteAssetLoader {
       ko: christianKoPath,
       en: christianEnPath,
       koAuthor: _AuthorStyle.scripture,
+      enAuthor: _AuthorStyle.reference,
     ),
     _Deck('literature:quotes', ko: famousKoPath, en: famousEnPath),
     _Deck('literature:writers', en: writersEnPath),
@@ -121,7 +124,7 @@ abstract final class QuoteAssetLoader {
       final en = await _loadDeck(
         deck.en,
         idPrefix: '${deck.key.replaceAll(':', '_')}_en_',
-        authorStyle: _AuthorStyle.plain,
+        authorStyle: deck.enAuthor,
       );
       if (ko.isNotEmpty) korean[deck.key] = ko;
       if (en.isNotEmpty) english[deck.key] = en;
@@ -155,7 +158,7 @@ abstract final class QuoteAssetLoader {
     'comfort:dream':
         'assets/quotes/jp/japanese_dream_motivation_quotes_300.json',
     'faith:buddhism': 'assets/quotes/jp/japanese_buddhism_quotes_300.json',
-    'faith:christian': 'assets/quotes/jp/japanese_christian_quotes_300.json',
+    'faith:christian': 'assets/quotes/jp/japanese_christian_quotes_400.json',
     'literature:quotes': 'assets/quotes/jp/japanese_famous_quotes_200.json',
     'literature:writers':
         'assets/quotes/jp/japanese_literary_book_quotes_300.json',
@@ -193,6 +196,7 @@ abstract final class QuoteAssetLoader {
           _AuthorStyle.plain => _plainAuthor,
           _AuthorStyle.scripture => _scriptureAuthor,
           _AuthorStyle.buddhist => _buddhistAuthor,
+          _AuthorStyle.reference => _referenceAuthor,
         },
       );
     } catch (_) {
@@ -201,6 +205,8 @@ abstract final class QuoteAssetLoader {
   }
 
   static String _japaneseAuthor(Map<String, dynamic> item) {
+    final reference = _text(item['reference']);
+    if (reference.isNotEmpty) return reference;
     final author = _text(item['author']);
     final book = _text(item['book']);
     if (author.isNotEmpty && book.isNotEmpty) return '$author · $book';
@@ -220,6 +226,10 @@ abstract final class QuoteAssetLoader {
   static String _scriptureAuthor(Map<String, dynamic> item) {
     final reference = _text(item['reference']);
     return reference.isNotEmpty ? reference : '성경';
+  }
+
+  static String _referenceAuthor(Map<String, dynamic> item) {
+    return _text(item['reference']);
   }
 
   static String _buddhistAuthor(Map<String, dynamic> item) {

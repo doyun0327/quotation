@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
@@ -13,6 +14,45 @@ class AccountDeletionScreen extends StatelessWidget {
   static const contactEmail = 'idoyun781@gmail.com';
   static const webUrl =
       'https://doyun0327.github.io/quotation/delete-account.html';
+
+  Future<void> _deleteInApp(BuildContext context) async {
+    final t = AppStrings.current;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            t.accountDeleteTitle,
+            style: AppTheme.body.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          content: Text(
+            t.accountDeleteConfirmBody,
+            style: AppTheme.body.copyWith(fontSize: 14, height: 1.45),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(t.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(t.accountDeleteNow),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true || !context.mounted) return;
+    final ok = await authController.deleteAccount();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(ok ? t.accountDeleteDone : t.accountDeleteFailed)),
+    );
+    if (ok) Navigator.of(context).maybePop();
+  }
 
   Future<void> _sendMail(BuildContext context) async {
     final t = AppStrings.current;
@@ -50,7 +90,7 @@ class AccountDeletionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
     return ListenableBuilder(
-      listenable: localeController,
+      listenable: Listenable.merge([localeController, authController]),
       builder: (context, _) {
         final t = AppStrings.current;
         return Scaffold(
@@ -98,6 +138,25 @@ class AccountDeletionScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
+                      FilledButton(
+                        onPressed: authController.isBusy
+                            ? null
+                            : () => _deleteInApp(context),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: palette.accent,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: Text(
+                          t.accountDeleteNow,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       FilledButton(
                         onPressed: () => _sendMail(context),
                         style: FilledButton.styleFrom(

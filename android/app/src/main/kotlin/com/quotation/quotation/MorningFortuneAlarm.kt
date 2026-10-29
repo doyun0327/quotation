@@ -90,9 +90,9 @@ object MorningFortuneAlarm {
       val pending =
           PendingIntent.getBroadcast(context, REQUEST_BASE + i, intent, flags)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending)
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending)
       } else {
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, at, pending)
+        alarmManager.set(AlarmManager.RTC_WAKEUP, at, pending)
       }
     }
   }

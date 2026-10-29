@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
@@ -43,6 +44,7 @@ class DdayCloudSync {
   static void Function(TogetherLayoutNotice notice)? onRemoteWidgetEdit;
 
   static Future<void> start() async {
+    if (!CloudConsent.accepted) return;
     await stop();
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
@@ -62,6 +64,7 @@ class DdayCloudSync {
   }
 
   static Future<void> pushOwnedDdays() async {
+    if (!CloudConsent.accepted) return;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
     for (final item in ddayController.items) {
@@ -94,6 +97,7 @@ class DdayCloudSync {
   }
 
   static Future<void> pushDday(DdayItem item) async {
+    if (!CloudConsent.accepted) return;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
     if (item.cloudOwnerUid != null && item.cloudOwnerUid != uid) return;
@@ -531,6 +535,7 @@ class DdayCloudSync {
     double? canvasW,
     double? canvasH,
   }) async {
+    if (!CloudConsent.accepted) return;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     DdayItem? item = ddayController.widgetDday;
     if (roomId != null) {

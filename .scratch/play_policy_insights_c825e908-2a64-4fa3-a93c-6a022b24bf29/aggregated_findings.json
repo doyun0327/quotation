@@ -1,0 +1,324 @@
+{
+    "findings": [
+        {
+            "psl_constant": "PHOTOS",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\pubspec.yaml",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\widget_album_background.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\dday_cloud_sync.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\home_widget_sync.dart"
+            ],
+            "evidence": "image_picker is declared in pubspec.yaml (line 30) and imported only by lib/data/widget_album_background.dart. The listed plugin registrant files (.dart_tool dartpad/web_plugin_registrant.dart, .dart_tool/flutter_build/dart_plugin_registrant.dart, and android GeneratedPluginRegistrant.java) are not present. WidgetAlbumBackground.save (lines 45-63) copies an XFile into the app documents directory (widget_backgrounds) and stores the local path in SharedPreferences under widget_album_backgrounds. The class comment states the gallery photo is stored on this device only. No ImagePicker.pickImage call or photo-byte upload was found. dday_cloud_sync.dart line 433 drops an album theme read from Firestore, and line 597 omits layoutBgTheme when the theme is album, so the photo and its path are not written to dday_memberships. home_widget_sync.dart lines 577-589 passes the local path as bgAsset into HomeWidget.saveWidgetData for this app's own widget, which stays on device. The quote-card SharePlus share in quote_list_screen.dart writes a rendered app image, not a user photo from image_picker.",
+            "recommendation": "Keep gallery backgrounds on device and continue omitting the album theme from Firestore. No Play Data Safety declaration is required for photos while image bytes and paths are not sent off device.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_1.json",
+            "finding_id": "1"
+        },
+        {
+            "psl_constant": "FILES_AND_DOCS",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\pubspec.yaml",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\widget_album_background.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\home_widget_sync.dart"
+            ],
+            "evidence": "The FILES_AND_DOCS hits are shared_preferences plugin registrations. Those registrant files are not present on disk. shared_preferences is declared in pubspec.yaml (line 20, pinned android artifact at line 40) and is used as on-device key-value storage. The only file-related value is widget_album_background.dart lines 11-26 and 61-62, which JSON-encodes local absolute paths of widget background files into SharedPreferences. Those paths are read back on device (pathFor, lines 28-32) and copied into the same app's home-widget prefs (home_widget_sync.dart lines 577-589). No document picker, file upload, or network write of file names or document contents was found on this path. Cloud layout sync omits the album theme, so those local paths are not included in the Firestore payload.",
+            "recommendation": "Treat SharedPreferences and app-document paths as on-device state. No Play Data Safety declaration is required for files and documents unless a later change uploads file names or document bytes.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_1.json",
+            "finding_id": "2"
+        },
+        {
+            "psl_constant": "USER_ACCOUNT",
+            "policy_id": "prominent_disclosure_policy",
+            "issue_summary": "Silent Background Transfer: Policy violation. Data is sent without prior disclosure.",
+            "severity": "CRITICAL",
+            "files_involved": [
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\main.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\auth_controller.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\user_profile_sync.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\legal\\legal_copy.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\screens\\legal_screen.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\pubspec.yaml"
+            ],
+            "evidence": "pubspec.yaml depends on firebase_auth and google_sign_in. The cited plugin-registrant files are not in the source tree; transmission is in app code. main.dart:89 calls authController.initialize() during startup, before any consent UI. AuthController.initialize (auth_controller.dart:162 and :168) calls ensureAnonymous(), which calls FirebaseAuth.instance.signInAnonymously() at auth_controller.dart:191. That Firebase Auth API creates or resumes a user account and sends the account credential to Google Firebase, a first-party service provider. The same initialize path calls _restoreGoogleAccount() (auth_controller.dart:407-412), which uses GoogleSignIn.signInSilently() and _linkFirebase(); UserProfileSync.upsertCurrentUser() (user_profile_sync.dart:12-24) then writes the Firebase uid document with email and displayName to Cloud Firestore. LegalScreen only renders LegalCopy. The terms treat install or continued use as agreement (legal_copy.dart:175) and the privacy section describes Google sign-in fields (legal_copy.dart:237-242). Neither screen gates signInAnonymously, and there is no affirmative in-app consent before the account identifier leaves the device.",
+            "recommendation": "Obtain prominent in-app disclosure and affirmative consent before FirebaseAuth.instance.signInAnonymously() and silent Google restore, stating that an account identifier is sent to Firebase for app functionality. Declare User IDs in the Play Data Safety form as collected and sent to the Firebase service provider.",
+            "is_transferred": true,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "MISSING",
+            "purpose": "App functionality",
+            "linked_to_user": true,
+            "worker_file": "worker_data_safety_part_2.json",
+            "finding_id": "3"
+        },
+        {
+            "psl_constant": "WEB_BROWSING_HISTORY",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\pubspec.yaml",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\screens\\account_deletion_screen.dart"
+            ],
+            "evidence": "The cited WebView plugin-registrant files are not present in the source tree, and pubspec.yaml has no WebView dependency. The only off-app navigation is url_launcher in account_deletion_screen.dart:36-39, which opens a deletion page with LaunchMode.externalApplication (and a mailto link at line 27). The app does not read, store, or upload websites the user visited. This does not match browsing-history collection.",
+            "recommendation": "No browsing-history declaration is indicated by this code. Keep WebView or in-app browser history out of analytics payloads if one is added later.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_2.json",
+            "finding_id": "4"
+        },
+        {
+            "psl_constant": "NAME",
+            "policy_id": "data_safety_section",
+            "issue_summary": "User-Initiated Collection: Disclosure exempt, but must be declared in Play Store form.",
+            "severity": "IMPORTANT",
+            "files_involved": [
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\auth_controller.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\user_profile_sync.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\widgets\\nickname_dialog.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\l10n\\app_strings.dart"
+            ],
+            "evidence": "The nickname is the user-facing name. nickname_dialog.dart:53 calls authController.setNickname when the user taps Save. setNickname (auth_controller.dart:322-362) calls FirebaseAuth updateDisplayName at line 329 and UserProfileSync.syncDisplayName at line 362. syncDisplayName (user_profile_sync.dart:32-71) writes displayName to Firestore users/{uid} and to dday_memberships host and member fields. The destination is Firebase, a first-party service provider. The hint at app_strings.dart:364 says the name is shown to friends. The user explicitly submits the name, so prominent disclosure is exempt, and the value is still collected off-device and linked to the Firebase account.",
+            "recommendation": "Declare Name in the Play Data Safety form as collected for app functionality and sent to Firebase so friends can see the nickname. Keep the save button as the action that triggers the upload.",
+            "is_transferred": true,
+            "user_initiated": true,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "App functionality",
+            "linked_to_user": true,
+            "worker_file": "worker_data_safety_part_2.json",
+            "finding_id": "5"
+        },
+        {
+            "psl_constant": "NAME",
+            "policy_id": "prominent_disclosure_policy",
+            "issue_summary": "**Silent Background Transfer**: Policy violation. Data is sent without prior disclosure.",
+            "severity": "CRITICAL",
+            "files_involved": [
+                "lib/data/together_cheer_repository.dart",
+                "lib/data/auth_controller.dart",
+                "lib/data/user_profile_sync.dart",
+                "lib/data/dday_cloud_sync.dart",
+                "lib/legal/legal_copy.dart",
+                "lib/screens/legal_screen.dart"
+            ],
+            "evidence": "Nickname is read from authController.nickname and written to Firestore dday_memberships as latestCheerAuthorName in TogetherCheerRepository.save (lib/data/together_cheer_repository.dart lines 77-95). AuthController.setNickname stores that name as the Firebase display name and calls UserProfileSync.syncDisplayName (lib/data/auth_controller.dart lines 321-362). UserProfileSync.upsertCurrentUser writes displayName to users/{uid} (lib/data/user_profile_sync.dart lines 12-25). DdayCloudSync.start calls upsertCurrentUser on every cloud start (lib/data/dday_cloud_sync.dart line 50), and AuthController starts that sync from authStateChanges and ensureAnonymous without a new user gesture (lib/data/auth_controller.dart lines 149-152 and 181-186). Destination is developer Firebase Firestore (first party). legal_copy.dart lines 113 and 242 state that the nickname is stored and shown to room members, and legal_screen.dart only displays that policy; it does not gate Firebase or the sync.",
+            "recommendation": "Show a prominent in-app notice that the nickname and display name are uploaded to Firebase for Together, and get affirmative consent before DdayCloudSync or UserProfileSync runs. Declare Name in the Play Data Safety form.",
+            "is_transferred": true,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "MISSING",
+            "purpose": "App functionality",
+            "linked_to_user": true,
+            "worker_file": "worker_data_safety_part_3.json",
+            "finding_id": "6"
+        },
+        {
+            "psl_constant": "PERFORMANCE_DIAGNOSTICS",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "lib/data/billing_controller.dart",
+                "lib/l10n/app_strings.dart"
+            ],
+            "evidence": "The Debug hit in lib/data/billing_controller.dart lines 108-110 only calls Purchases.setLogLevel(LogLevel.debug) when kDebugMode is true, which sets local RevenueCat log verbosity and does not send battery, latency, framerate, or other performance metrics off-device. The Debug hits in lib/l10n/app_strings.dart lines 436-439 are labels for a local evening-notification test. No crash or performance telemetry SDK is wired to these sites.",
+            "recommendation": "Leave Performance diagnostics undeclared in the Play Data Safety form unless a telemetry SDK is later added. Keep debug log level changes inside kDebugMode.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_3.json",
+            "finding_id": "7"
+        },
+        {
+            "psl_constant": "EMAIL",
+            "policy_id": "prominent_disclosure_policy",
+            "issue_summary": "**Silent Background Transfer**: Policy violation. Data is sent without prior disclosure.",
+            "severity": "CRITICAL",
+            "files_involved": [
+                "lib/data/auth_controller.dart",
+                "lib/data/user_profile_sync.dart",
+                "lib/data/dday_cloud_sync.dart",
+                "lib/legal/legal_copy.dart",
+                "lib/screens/legal_screen.dart"
+            ],
+            "evidence": "Email is taken from Firebase User.email, providerData, and the Google account (lib/data/auth_controller.dart lines 38-54 and 97-105) and written to Firestore users/{uid}.email by UserProfileSync.upsertCurrentUser (lib/data/user_profile_sync.dart lines 17-22). That write runs from DdayCloudSync.start (lib/data/dday_cloud_sync.dart line 50), which AuthController starts from authStateChanges and ensureAnonymous (lib/data/auth_controller.dart lines 149-152 and 181-186), and from silent Google restore via _restoreGoogleAccount calling _linkFirebase (lib/data/auth_controller.dart lines 292 and 407-412). The email is stored under the Firebase uid, so it is linked to the account. Firestore is first-party. legal_copy.dart lines 109 and 238 mention the email address, but legal_screen.dart does not gate this upload.",
+            "recommendation": "Obtain affirmative in-app consent that states the email address is stored in Firebase before upsertCurrentUser or silent Google restore runs. Declare Email in the Play Data Safety form.",
+            "is_transferred": true,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "MISSING",
+            "purpose": "App functionality",
+            "linked_to_user": true,
+            "worker_file": "worker_data_safety_part_3.json",
+            "finding_id": "8"
+        },
+        {
+            "psl_constant": "MUSIC",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\dday_cloud_sync.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\dday_controller.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\home_widget_sync.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\together_bg_themes.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\widget_album_background.dart"
+            ],
+            "evidence": "Pattern 'album' does not refer to a user's music files. TogetherBgTheme.albumId is the string 'album' for a device-gallery photo used as a Together widget background (together_bg_themes.dart:16). WidgetAlbumBackground stores that JPEG under the app documents directory and SharedPreferences and is documented as on-device only (widget_album_background.dart:9-63). dday_controller.dart:8 and home_widget_sync.dart:16 only import that local helper. dday_cloud_sync.dart omits the album theme from Firestore: incoming layoutBgTheme equal to albumId is dropped (line 433) and pushSharedLayout writes layoutBgTheme only when bgTheme != TogetherBgTheme.albumId (line 597). No audio, MediaStore, or music-file egress was found.",
+            "recommendation": "No Play Data Safety declaration is needed for music files. The album hits are an on-device widget photo, and that theme id is withheld from cloud layout sync.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_4.json",
+            "finding_id": "9"
+        },
+        {
+            "psl_constant": "PERSONAL_INFO_OTHER",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\safety_report_repository.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\legal\\legal_copy.dart",
+                "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\screens\\safety_report_sheet.dart"
+            ],
+            "evidence": "Pattern 'sex' does not match date of birth, gender identity, veteran status, or other personal attributes. safety_report_repository.dart:9 defines SafetyReportReason.sexual = 'sexual' as one of four content-report categories (harassment, sexual, spam, other). safety_report_sheet.dart:254-256 shows that string as a radio option the user may select before tapping submit. legal_copy.dart:202 is terms prose ('sexual involving a minor') and does not collect a field. No gender, birth date, or similar personal-info field is read or sent.",
+            "recommendation": "No Play Data Safety declaration is needed for other personal info such as date of birth or gender. The matches are a moderation reason code and terms text, not that data type.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Local functionality only",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_4.json",
+            "finding_id": "10"
+        },
+        {
+            "psl_constant": "AUDIO",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "C:/Users/Administrator/Desktop/Quotation/lib/l10n/app_strings.dart",
+                "C:/Users/Administrator/Desktop/Quotation/lib/legal/legal_copy.dart"
+            ],
+            "evidence": "The pattern 'record' at lib/l10n/app_strings.dart:459 ('tell you if a record must be kept by law') and lib/legal/legal_copy.dart:256 and :275 ('records we must keep for law' / 'a record must be kept by law') is legal-retention wording. It does not refer to a user's voice, voicemail, or sound recording, and the cited lines do not capture, store, or upload audio.",
+            "recommendation": "No AUDIO declaration or prominent disclosure is required. These matches are retention-policy text, not voice collection.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Not collected",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_5.json",
+            "finding_id": "11"
+        },
+        {
+            "psl_constant": "EMAILS",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "C:/Users/Administrator/Desktop/Quotation/lib/screens/account_deletion_screen.dart"
+            ],
+            "evidence": "lib/screens/account_deletion_screen.dart:17-34 _sendMail builds a mailto URI to the developer address idoyun781@gmail.com with a static subject ('Dearly account deletion request') and the template AppStrings.accountDeleteMailBody, then calls launchUrl only after the user taps the button at line 102. It does not read the user's mailbox, subject lines, senders, recipients, or stored email content, so it is outside the EMAILS data type.",
+            "recommendation": "Do not declare the EMAILS data type. This screen opens a user-tapped deletion-request composer and does not access the user's emails.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Not collected",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_5.json",
+            "finding_id": "12"
+        },
+        {
+            "psl_constant": "RACE_ETHNICITY",
+            "policy_id": "data_safety_section",
+            "issue_summary": "Data Safety Compliant (Local-Only)",
+            "severity": "SUGGESTION",
+            "files_involved": [
+                "C:/Users/Administrator/Desktop/Quotation/lib/screens/quote_list_screen.dart"
+            ],
+            "evidence": "lib/screens/quote_list_screen.dart:458 matches 'race' only as the substring inside the Image.errorBuilder parameter name stackTrace. That callback paints a local fallback color when an asset fails to load. It does not read, store, or transmit race or ethnicity.",
+            "recommendation": "No race or ethnicity declaration or prominent disclosure is required. The match is an image error-handler parameter, not demographic data.",
+            "is_transferred": false,
+            "user_initiated": false,
+            "is_third_party": false,
+            "prominent_disclosure_status": "EXEMPT",
+            "purpose": "Not collected",
+            "linked_to_user": false,
+            "worker_file": "worker_data_safety_part_5.json",
+            "finding_id": "13"
+        },
+        {
+            "policy_id": "exact_alarm_policy",
+            "issue_summary": "USE_EXACT_ALARM is not justified. The app is a quotation companion (package com.quotation.quotation, launcher MainActivity) whose only exact alarm posts a local daily encouragement notification, not an alarm clock, timer, or calendar.",
+            "severity": "IMPORTANT",
+            "files_involved": [
+                "C:/Users/Administrator/Desktop/Quotation/android/app/src/main/AndroidManifest.xml",
+                "C:/Users/Administrator/Desktop/Quotation/android/app/src/main/kotlin/com/quotation/quotation/MorningFortuneAlarm.kt",
+                "C:/Users/Administrator/Desktop/Quotation/android/app/src/main/kotlin/com/quotation/quotation/DailyWordWidgetProvider.kt"
+            ],
+            "evidence": "AndroidManifest.xml lines 7-8 declare android.permission.SCHEDULE_EXACT_ALARM and android.permission.USE_EXACT_ALARM. The MAIN/LAUNCHER activity is .MainActivity (lines 17-33) with home-widget and dearly://invite filters; there is no alarm-clock, timer, or calendar intent handler. MorningFortuneAlarm.arm() (MorningFortuneAlarm.kt lines 92-96) calls AlarmManager.setExactAndAllowWhileIdle(RTC_WAKEUP) on API 23+ or AlarmManager.setExact otherwise, so MorningFortuneReceiver can post notification channel daily_encouragement (MorningFortuneAlarm.kt lines 122-133, description 'Fortune at 8:00 and one afternoon encouragement'). That is a local daily notification, not second-critical clock or calendar functionality; the app remains useful without it. DailyWordWidgetProvider.scheduleHourlyRefresh (DailyWordWidgetProvider.kt lines 430-440) already uses AlarmManager.setInexactRepeating for hourly widget refresh and does not need an exact alarm.",
+            "recommendation": "Remove android.permission.USE_EXACT_ALARM. Deliver the morning encouragement with inexact AlarmManager scheduling or WorkManager, matching the hourly widget refresh. If exact delivery is still required, keep only the already-declared SCHEDULE_EXACT_ALARM permission, which the user can revoke, and stop relying on the auto-granted USE_EXACT_ALARM permission.",
+            "worker_file": "worker_permissions_and_apis.json",
+            "finding_id": "14"
+        },
+        {
+            "policy_id": "login_credentials",
+            "issue_summary": "Settings exposes a Google sign-in flow backed by Firebase Auth, so Play Console needs reviewer credentials and a public account-deletion URL.",
+            "severity": "IMPORTANT",
+            "files_involved": [
+                "C:/Users/Administrator/Desktop/Quotation/lib/screens/settings_screen.dart",
+                "C:/Users/Administrator/Desktop/Quotation/lib/data/auth_controller.dart",
+                "C:/Users/Administrator/Desktop/Quotation/lib/config/google_auth_config.dart"
+            ],
+            "evidence": "settings_screen.dart lines 37-39 and 158-164 show an Account section Login button that calls authController.signIn(). auth_controller.dart lines 203-223 launch GoogleSignIn (scopes email and profile, serverClientId from GoogleAuthConfig). Lines 258-292 exchange the Google id token for a Firebase credential via linkWithCredential or signInWithCredential and then call UserProfileSync.upsertCurrentUser(). google_auth_config.dart lines 9-14 define the Google OAuth server client ID. initialize() also creates a Firebase session with signInAnonymously (auth_controller.dart lines 181-192), so Google sign-in is not the only session, but a signed-in Google/Firebase identity path is implemented in the app.",
+            "recommendation": "In Play Console, submit active non-expiring reviewer demo credentials so reviewers can exercise the Google/Firebase signed-in path, and submit a public account-deletion web link. The app already defines https://doyun0327.github.io/quotation/delete-account.html in account_deletion_screen.dart lines 14-15.",
+            "worker_file": "worker_user_account.json",
+            "finding_id": "15"
+        },
+        {
+            "policy_id": "account_deletion",
+            "issue_summary": "The app creates Firebase and Google accounts and syncs a profile, but Settings has no deletion action, and the unused deletion screen only opens email or a web page.",
+            "severity": "IMPORTANT",
+            "files_involved": [
+                "C:/Users/Administrator/Desktop/Quotation/lib/data/auth_controller.dart",
+                "C:/Users/Administrator/Desktop/Quotation/lib/screens/settings_screen.dart",
+                "C:/Users/Administrator/Desktop/Quotation/lib/screens/account_deletion_screen.dart"
+            ],
+            "evidence": "auth_controller.dart line 191 calls FirebaseAuth.instance.signInAnonymously() during initialize, and lines 266-292 link or sign in with a Google credential and then call UserProfileSync.upsertCurrentUser(). settings_screen.dart lines 138-168 (Account section) only offer nickname editing and Login/Logout. Logout calls signOut() (auth_controller.dart lines 302-318), which signs out of Firebase and Google and removes local auth prefs (lines 418-425) but does not delete the user. AccountDeletionScreen (account_deletion_screen.dart lines 17-47) only launches a mailto to idoyun781@gmail.com or https://doyun0327.github.io/quotation/delete-account.html. No other Dart file references AccountDeletionScreen, and the auth and deletion code contain no Firebase user.delete() or other remote account-purge call.",
+            "recommendation": "Add a discoverable control under Settings > Account that starts account deletion in the app and deletes remote records (Firebase Auth user deletion plus synced profile and cloud data). A mail draft, an external page, or signOut() does not by itself satisfy the in-app deletion requirement. Keep the public deletion URL for the Play Console data-deletion field.",
+            "worker_file": "worker_user_account.json",
+            "finding_id": "16"
+        }
+    ]
+}

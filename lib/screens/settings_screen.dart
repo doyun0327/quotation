@@ -5,6 +5,7 @@ import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/screens/account_deletion_screen.dart';
 import 'package:quotation/screens/legal_screen.dart';
+import 'package:quotation/widgets/cloud_consent_dialog.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
@@ -37,6 +38,11 @@ class SettingsScreen extends StatelessWidget {
 
   Future<void> _signIn(BuildContext context) async {
     final t = AppStrings.current;
+    if (!authController.hasCloudConsent) {
+      final accepted = await showCloudConsentDialog(context);
+      if (!context.mounted || !accepted) return;
+      await authController.acceptCloudDisclosure();
+    }
     final ok = await authController.signIn();
     if (!context.mounted) return;
     if (ok) {
@@ -165,6 +171,18 @@ class SettingsScreen extends StatelessWidget {
                                       : _signIn(context),
                             ),
                             onTap: () => showNicknameDialog(context),
+                          ),
+                          SettingsItem(
+                            icon: Icons.person_off_outlined,
+                            title: t.accountDeleteTitle,
+                            subtitle: t.accountDeleteSubtitle,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const AccountDeletionScreen(),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -352,23 +370,17 @@ class SettingsScreen extends StatelessWidget {
                             },
                           ),
                           SettingsItem(
-                            icon: Icons.person_off_outlined,
-                            title: t.accountDeleteTitle,
-                            subtitle: t.accountDeleteSubtitle,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) =>
-                                      const AccountDeletionScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          SettingsItem(
                             icon: Icons.info_outline_rounded,
                             title: t.appInfoTitle,
-                            subtitle: t.appInfoSubtitle,
-                            onTap: () => _toast(context, t.appInfoToast),
+                            subtitle: '',
+                            trailing: Text(
+                              'v1.0.0',
+                              style: AppTheme.body.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.muted,
+                              ),
+                            ),
                           ),
                         ],
                       ),

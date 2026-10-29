@@ -122,15 +122,17 @@ class SettingsItem extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 10,
-                        color: AppColors.muted,
-                        height: 1.35,
+                    if (subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: AppTheme.body.copyWith(
+                          fontSize: 10,
+                          color: AppColors.muted,
+                          height: 1.35,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

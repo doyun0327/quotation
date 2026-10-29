@@ -129,9 +129,14 @@ class _DdayScreenState extends State<DdayScreen> {
                             ),
                           );
                         },
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: palette.accent,
+                          overlayColor: palette.accent.withValues(alpha: 0.08),
+                        ),
                         icon: AppPixelIcon(
                           AppGlyph.qr,
-                          size: 20,
+                          size: 22,
                           color: palette.accent,
                         ),
                         tooltip: t.ddayInviteEnterCodeMenu,

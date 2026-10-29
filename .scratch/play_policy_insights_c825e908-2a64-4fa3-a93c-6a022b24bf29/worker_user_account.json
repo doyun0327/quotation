@@ -1,0 +1,29 @@
+{
+  "domain": "User Account and Identity",
+  "findings": [
+    {
+      "policy_id": "login_credentials",
+      "issue_summary": "Settings exposes a Google sign-in flow backed by Firebase Auth, so Play Console needs reviewer credentials and a public account-deletion URL.",
+      "severity": "IMPORTANT",
+      "files_involved": [
+        "C:/Users/Administrator/Desktop/Quotation/lib/screens/settings_screen.dart",
+        "C:/Users/Administrator/Desktop/Quotation/lib/data/auth_controller.dart",
+        "C:/Users/Administrator/Desktop/Quotation/lib/config/google_auth_config.dart"
+      ],
+      "evidence": "settings_screen.dart lines 37-39 and 158-164 show an Account section Login button that calls authController.signIn(). auth_controller.dart lines 203-223 launch GoogleSignIn (scopes email and profile, serverClientId from GoogleAuthConfig). Lines 258-292 exchange the Google id token for a Firebase credential via linkWithCredential or signInWithCredential and then call UserProfileSync.upsertCurrentUser(). google_auth_config.dart lines 9-14 define the Google OAuth server client ID. initialize() also creates a Firebase session with signInAnonymously (auth_controller.dart lines 181-192), so Google sign-in is not the only session, but a signed-in Google/Firebase identity path is implemented in the app.",
+      "recommendation": "In Play Console, submit active non-expiring reviewer demo credentials so reviewers can exercise the Google/Firebase signed-in path, and submit a public account-deletion web link. The app already defines https://doyun0327.github.io/quotation/delete-account.html in account_deletion_screen.dart lines 14-15."
+    },
+    {
+      "policy_id": "account_deletion",
+      "issue_summary": "The app creates Firebase and Google accounts and syncs a profile, but Settings has no deletion action, and the unused deletion screen only opens email or a web page.",
+      "severity": "IMPORTANT",
+      "files_involved": [
+        "C:/Users/Administrator/Desktop/Quotation/lib/data/auth_controller.dart",
+        "C:/Users/Administrator/Desktop/Quotation/lib/screens/settings_screen.dart",
+        "C:/Users/Administrator/Desktop/Quotation/lib/screens/account_deletion_screen.dart"
+      ],
+      "evidence": "auth_controller.dart line 191 calls FirebaseAuth.instance.signInAnonymously() during initialize, and lines 266-292 link or sign in with a Google credential and then call UserProfileSync.upsertCurrentUser(). settings_screen.dart lines 138-168 (Account section) only offer nickname editing and Login/Logout. Logout calls signOut() (auth_controller.dart lines 302-318), which signs out of Firebase and Google and removes local auth prefs (lines 418-425) but does not delete the user. AccountDeletionScreen (account_deletion_screen.dart lines 17-47) only launches a mailto to idoyun781@gmail.com or https://doyun0327.github.io/quotation/delete-account.html. No other Dart file references AccountDeletionScreen, and the auth and deletion code contain no Firebase user.delete() or other remote account-purge call.",
+      "recommendation": "Add a discoverable control under Settings > Account that starts account deletion in the app and deletes remote records (Firebase Auth user deletion plus synced profile and cloud data). A mail draft, an external page, or signOut() does not by itself satisfy the in-app deletion requirement. Keep the public deletion URL for the Play Console data-deletion field."
+    }
+  ]
+}

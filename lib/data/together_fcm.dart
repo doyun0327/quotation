@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/dday_controller.dart';
@@ -184,7 +185,9 @@ abstract final class TogetherFcm {
 
   static Future<void> _writeToken(String? token) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null || token == null || token.isEmpty) return;
+    if (!CloudConsent.accepted || uid == null || token == null || token.isEmpty) {
+      return;
+    }
     try {
       await FirebaseFirestore.instance.collection('users').doc(uid).set(
         {

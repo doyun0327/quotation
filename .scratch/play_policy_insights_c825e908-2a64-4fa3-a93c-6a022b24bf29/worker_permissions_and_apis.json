@@ -1,0 +1,17 @@
+{
+  "domain": "Permissions and APIs",
+  "findings": [
+    {
+      "policy_id": "exact_alarm_policy",
+      "issue_summary": "USE_EXACT_ALARM is not justified. The app is a quotation companion (package com.quotation.quotation, launcher MainActivity) whose only exact alarm posts a local daily encouragement notification, not an alarm clock, timer, or calendar.",
+      "severity": "IMPORTANT",
+      "files_involved": [
+        "C:/Users/Administrator/Desktop/Quotation/android/app/src/main/AndroidManifest.xml",
+        "C:/Users/Administrator/Desktop/Quotation/android/app/src/main/kotlin/com/quotation/quotation/MorningFortuneAlarm.kt",
+        "C:/Users/Administrator/Desktop/Quotation/android/app/src/main/kotlin/com/quotation/quotation/DailyWordWidgetProvider.kt"
+      ],
+      "evidence": "AndroidManifest.xml lines 7-8 declare android.permission.SCHEDULE_EXACT_ALARM and android.permission.USE_EXACT_ALARM. The MAIN/LAUNCHER activity is .MainActivity (lines 17-33) with home-widget and dearly://invite filters; there is no alarm-clock, timer, or calendar intent handler. MorningFortuneAlarm.arm() (MorningFortuneAlarm.kt lines 92-96) calls AlarmManager.setExactAndAllowWhileIdle(RTC_WAKEUP) on API 23+ or AlarmManager.setExact otherwise, so MorningFortuneReceiver can post notification channel daily_encouragement (MorningFortuneAlarm.kt lines 122-133, description 'Fortune at 8:00 and one afternoon encouragement'). That is a local daily notification, not second-critical clock or calendar functionality; the app remains useful without it. DailyWordWidgetProvider.scheduleHourlyRefresh (DailyWordWidgetProvider.kt lines 430-440) already uses AlarmManager.setInexactRepeating for hourly widget refresh and does not need an exact alarm.",
+      "recommendation": "Remove android.permission.USE_EXACT_ALARM. Deliver the morning encouragement with inexact AlarmManager scheduling or WorkManager, matching the hourly widget refresh. If exact delivery is still required, keep only the already-declared SCHEDULE_EXACT_ALARM permission, which the user can revoke, and stop relying on the auto-granted USE_EXACT_ALARM permission."
+    }
+  ]
+}

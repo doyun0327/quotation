@@ -1,0 +1,45 @@
+{
+  "domain": "Data Safety and Privacy",
+  "findings": [
+    {
+      "psl_constant": "MUSIC",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\dday_cloud_sync.dart",
+        "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\dday_controller.dart",
+        "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\home_widget_sync.dart",
+        "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\together_bg_themes.dart",
+        "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\widget_album_background.dart"
+      ],
+      "evidence": "Pattern 'album' does not refer to a user's music files. TogetherBgTheme.albumId is the string 'album' for a device-gallery photo used as a Together widget background (together_bg_themes.dart:16). WidgetAlbumBackground stores that JPEG under the app documents directory and SharedPreferences and is documented as on-device only (widget_album_background.dart:9-63). dday_controller.dart:8 and home_widget_sync.dart:16 only import that local helper. dday_cloud_sync.dart omits the album theme from Firestore: incoming layoutBgTheme equal to albumId is dropped (line 433) and pushSharedLayout writes layoutBgTheme only when bgTheme != TogetherBgTheme.albumId (line 597). No audio, MediaStore, or music-file egress was found.",
+      "recommendation": "No Play Data Safety declaration is needed for music files. The album hits are an on-device widget photo, and that theme id is withheld from cloud layout sync.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "PERSONAL_INFO_OTHER",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\safety_report_repository.dart",
+        "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\legal\\legal_copy.dart",
+        "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\screens\\safety_report_sheet.dart"
+      ],
+      "evidence": "Pattern 'sex' does not match date of birth, gender identity, veteran status, or other personal attributes. safety_report_repository.dart:9 defines SafetyReportReason.sexual = 'sexual' as one of four content-report categories (harassment, sexual, spam, other). safety_report_sheet.dart:254-256 shows that string as a radio option the user may select before tapping submit. legal_copy.dart:202 is terms prose ('sexual involving a minor') and does not collect a field. No gender, birth date, or similar personal-info field is read or sent.",
+      "recommendation": "No Play Data Safety declaration is needed for other personal info such as date of birth or gender. The matches are a moderation reason code and terms text, not that data type.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Local functionality only",
+      "linked_to_user": false
+    }
+  ]
+}

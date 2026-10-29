@@ -6,6 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
+import 'package:quotation/data/cloud_consent.dart';
+import 'package:quotation/widgets/cloud_consent_dialog.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
@@ -65,6 +67,7 @@ Future<void> main() async {
   });
   await ddayController.load();
   await blockedUsersController.load();
+  await CloudConsent.load();
   selectionController.syncAfterQuotesReady();
   selectionController.addListener(HomeWidgetSync.syncFromHome);
   themeController.addListener(HomeWidgetSync.syncThemeOnly);
@@ -99,22 +102,48 @@ class QuotationApp extends StatefulWidget {
 
 class _QuotationAppState extends State<QuotationApp> {
   bool _askingNickname = false;
+  bool _askingConsent = false;
 
   @override
   void initState() {
     super.initState();
-    authController.addListener(_maybeAskNickname);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeAskNickname());
+    authController.addListener(_onAuthReady);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onAuthReady());
   }
 
   @override
   void dispose() {
-    authController.removeListener(_maybeAskNickname);
+    authController.removeListener(_onAuthReady);
     super.dispose();
   }
 
+  Future<void> _onAuthReady() async {
+    if (!mounted || !authController.isReady || _askingConsent) return;
+    if (CloudConsent.choice == CloudConsentChoice.unknown) {
+      final navContext = appNavigatorKey.currentContext;
+      if (navContext == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _onAuthReady();
+        });
+        return;
+      }
+      _askingConsent = true;
+      final accepted = await showCloudConsentDialog(navContext);
+      if (accepted) {
+        await authController.acceptCloudDisclosure();
+      } else {
+        await authController.declineCloudDisclosure();
+      }
+      _askingConsent = false;
+    }
+    if (mounted) await _maybeAskNickname();
+  }
+
   Future<void> _maybeAskNickname() async {
-    if (!mounted || _askingNickname || !authController.isReady) return;
+    if (!mounted || _askingNickname || _askingConsent || !authController.isReady) {
+      return;
+    }
+    if (CloudConsent.choice == CloudConsentChoice.unknown) return;
     if (authController.isBusy || authController.nickname != null) return;
     final navContext = appNavigatorKey.currentContext;
     if (navContext == null) return;

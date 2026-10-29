@@ -149,9 +149,9 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                             final kind = DdayIconKind.all[index];
                             final selected = _icon == kind;
                             return Material(
-                              color: selected
-                                  ? const Color(0xFFEFF5FF)
-                                  : const Color(0xFFF7F9FC),
+                              color: Colors.white,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
                               child: InkWell(
                                 onTap: () => setState(() => _icon = kind),
@@ -159,6 +159,7 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                                 child: Container(
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
+                                    color: Colors.white,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: selected ? accent : _cardBorder,

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:quotation/config/google_auth_config.dart';
+import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/data/user_profile_sync.dart';
@@ -88,6 +89,7 @@ class AuthController extends ChangeNotifier {
   String? _lastError;
   String? _lastErrorDetail;
   bool _startedCloud = false;
+  bool _sessionStarted = false;
   GoogleSignIn? _googleSignIn;
   StreamSubscription<User?>? _authSub;
 
@@ -124,6 +126,7 @@ class AuthController extends ChangeNotifier {
   bool get isReady => _ready;
   String? get lastError => _lastError;
   String? get lastErrorDetail => _lastErrorDetail;
+  bool get hasCloudConsent => CloudConsent.accepted;
 
   GoogleSignIn get _client {
     return _googleSignIn ??= GoogleSignIn(
@@ -137,6 +140,7 @@ class AuthController extends ChangeNotifier {
   Future<void> initialize() async {
     if (_ready) return;
 
+    await CloudConsent.load();
     final prefs = await SharedPreferences.getInstance();
     _user = AuthUser.fromPrefs(prefs);
     final saved = prefs.getString(_prefsNickname)?.trim();
@@ -146,7 +150,34 @@ class AuthController extends ChangeNotifier {
         : (legacy != null && legacy.isNotEmpty ? legacy : null);
     notifyListeners();
 
+    if (CloudConsent.accepted) {
+      await _startCloudSession();
+    }
+
+    _ready = true;
+    notifyListeners();
+  }
+
+  /// After the person agrees to the Firebase disclosure.
+  Future<void> acceptCloudDisclosure() async {
+    await CloudConsent.accept();
+    await _startCloudSession();
+    notifyListeners();
+  }
+
+  /// Keeps quotes and widgets on the device and does not open a Firebase session.
+  Future<void> declineCloudDisclosure() async {
+    await CloudConsent.decline();
+    await _stopRemoteSession();
+    notifyListeners();
+  }
+
+  Future<void> _startCloudSession() async {
+    if (!CloudConsent.accepted || _sessionStarted) return;
+    _sessionStarted = true;
+
     _authSub = FirebaseAuth.instance.authStateChanges().listen((fbUser) async {
+      if (!CloudConsent.accepted) return;
       if (fbUser == null || fbUser.isAnonymous) return;
       await _setUser(AuthUser.fromFirebase(fbUser));
       unawaited(DdayCloudSync.start());
@@ -167,10 +198,21 @@ class AuthController extends ChangeNotifier {
       debugPrint('Auth init: $e');
       await ensureAnonymous();
     }
-
-    _ready = true;
-    notifyListeners();
     unawaited(togetherTestRoom.restoreIfEnabled());
+  }
+
+  Future<void> _stopRemoteSession() async {
+    _sessionStarted = false;
+    _startedCloud = false;
+    await _authSub?.cancel();
+    _authSub = null;
+    try {
+      await DdayCloudSync.stop();
+      await FirebaseAuth.instance.signOut();
+      await _client.signOut();
+    } catch (e) {
+      debugPrint('stop remote session: $e');
+    }
   }
 
   /// Test sessions skip the Google sheet and use anonymous Firebase auth.
@@ -179,6 +221,7 @@ class AuthController extends ChangeNotifier {
   }
 
   Future<bool> ensureAnonymous() async {
+    if (!CloudConsent.accepted) return false;
     final current = FirebaseAuth.instance.currentUser;
     if (current != null) {
       if (!_startedCloud) {
@@ -202,6 +245,10 @@ class AuthController extends ChangeNotifier {
 
   Future<bool> signIn() async {
     if (_busy) return false;
+    if (!CloudConsent.accepted) {
+      _lastError = 'consent';
+      return false;
+    }
     _busy = true;
     _signingIn = true;
     _lastError = null;
@@ -318,10 +365,59 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Saves a friend-facing nickname and mirrors it to Firebase.
+  /// Deletes the Firebase user, profile, and cloud room data from the app.
+  Future<bool> deleteAccount() async {
+    if (_busy) return false;
+    _busy = true;
+    notifyListeners();
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await UserProfileSync.deleteRemoteAccount(user.uid);
+        await _deleteAuthUser(user);
+      }
+      await _stopRemoteSession();
+      try {
+        await _client.disconnect();
+      } catch (_) {}
+      await _clearUser();
+      await CloudConsent.reset();
+      return true;
+    } catch (e) {
+      debugPrint('deleteAccount: $e');
+      return false;
+    } finally {
+      _busy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _deleteAuthUser(User user) async {
+    try {
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code != 'requires-recent-login') rethrow;
+      final account = await _client.signIn();
+      if (account == null) rethrow;
+      final auth = await account.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: auth.accessToken,
+        idToken: auth.idToken,
+      );
+      await user.reauthenticateWithCredential(credential);
+      await FirebaseAuth.instance.currentUser?.delete();
+    }
+  }
+
+  /// Saves a friend-facing nickname and mirrors it to Firebase after consent.
   Future<bool> setNickname(String raw) async {
     final name = raw.trim();
     if (name.isEmpty || name.length > 16) return false;
+    _nickname = name;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefsNickname, name);
+    notifyListeners();
+    if (!CloudConsent.accepted) return true;
     await ensureAnonymous();
     try {
       final fb = FirebaseAuth.instance.currentUser;
@@ -332,9 +428,6 @@ class AuthController extends ChangeNotifier {
     } catch (e) {
       debugPrint('updateDisplayName: $e');
     }
-    _nickname = name;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefsNickname, name);
     final current = _user;
     final fb = FirebaseAuth.instance.currentUser;
     if (current != null) {
@@ -405,6 +498,7 @@ class AuthController extends ChangeNotifier {
 
   /// Brings back the Gmail address when Firebase only has an anonymous session.
   Future<void> _restoreGoogleAccount() async {
+    if (!CloudConsent.accepted) return;
     try {
       final account = await _client.signInSilently();
       if (account == null || account.email.trim().isEmpty) return;

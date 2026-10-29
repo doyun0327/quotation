@@ -1,0 +1,57 @@
+{
+  "domain": "Data Safety and Privacy",
+  "findings": [
+    {
+      "psl_constant": "AUDIO",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "C:/Users/Administrator/Desktop/Quotation/lib/l10n/app_strings.dart",
+        "C:/Users/Administrator/Desktop/Quotation/lib/legal/legal_copy.dart"
+      ],
+      "evidence": "The pattern 'record' at lib/l10n/app_strings.dart:459 ('tell you if a record must be kept by law') and lib/legal/legal_copy.dart:256 and :275 ('records we must keep for law' / 'a record must be kept by law') is legal-retention wording. It does not refer to a user's voice, voicemail, or sound recording, and the cited lines do not capture, store, or upload audio.",
+      "recommendation": "No AUDIO declaration or prominent disclosure is required. These matches are retention-policy text, not voice collection.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Not collected",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "EMAILS",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "C:/Users/Administrator/Desktop/Quotation/lib/screens/account_deletion_screen.dart"
+      ],
+      "evidence": "lib/screens/account_deletion_screen.dart:17-34 _sendMail builds a mailto URI to the developer address idoyun781@gmail.com with a static subject ('Dearly account deletion request') and the template AppStrings.accountDeleteMailBody, then calls launchUrl only after the user taps the button at line 102. It does not read the user's mailbox, subject lines, senders, recipients, or stored email content, so it is outside the EMAILS data type.",
+      "recommendation": "Do not declare the EMAILS data type. This screen opens a user-tapped deletion-request composer and does not access the user's emails.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Not collected",
+      "linked_to_user": false
+    },
+    {
+      "psl_constant": "RACE_ETHNICITY",
+      "policy_id": "data_safety_section",
+      "issue_summary": "Data Safety Compliant (Local-Only)",
+      "severity": "SUGGESTION",
+      "files_involved": [
+        "C:/Users/Administrator/Desktop/Quotation/lib/screens/quote_list_screen.dart"
+      ],
+      "evidence": "lib/screens/quote_list_screen.dart:458 matches 'race' only as the substring inside the Image.errorBuilder parameter name stackTrace. That callback paints a local fallback color when an asset fails to load. It does not read, store, or transmit race or ethnicity.",
+      "recommendation": "No race or ethnicity declaration or prominent disclosure is required. The match is an image error-handler parameter, not demographic data.",
+      "is_transferred": false,
+      "user_initiated": false,
+      "is_third_party": false,
+      "prominent_disclosure_status": "EXEMPT",
+      "purpose": "Not collected",
+      "linked_to_user": false
+    }
+  ]
+}

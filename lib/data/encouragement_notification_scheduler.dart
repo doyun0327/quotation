@@ -273,7 +273,7 @@ abstract final class EncouragementNotificationScheduler {
       title: title,
       body: body,
       notificationDetails: _details(body),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: payload,
     );
   }

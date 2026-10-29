@@ -359,6 +359,21 @@ class AppStrings {
       _t('글자 크기: $name', 'Font size: $name', '文字サイズ: $name');
 
   String get accountSection => _t('계정', 'Account', 'アカウント');
+  String get cloudConsentTitle => _t(
+        '친구와 위젯을 공유하려면 로그인이 필요해요!',
+        'Sign in to share a widget with a friend',
+        '友だちとウィジェットを共有するにはログインが必要です',
+      );
+  String get cloudConsentBody => _t(
+        '로그인하면 이름, 이메일 등 계정 정보가 안전하게 저장돼요.\n\n'
+            '로그인하지 않으면 친구와 위젯을 공유할 수 없어요.',
+        'When you sign in, your name, email, and other account details are stored securely.\n\n'
+            'Without signing in, you can’t share a widget with a friend.',
+        'ログインすると、名前やメールなどのアカウント情報が安全に保存されます。\n\n'
+            'ログインしないと、友だちとウィジェットを共有できません。',
+      );
+  String get cloudConsentAccept => _t('동의', 'Agree', '同意');
+  String get cloudConsentDecline => _t('취소', 'Cancel', 'キャンセル');
   String get nicknameTitle => _t('닉네임', 'Nickname', 'ニックネーム');
   String get nicknameHint =>
       _t('친구에게 보일 이름', 'Name your friends will see', '友だちに表示される名前');
@@ -445,23 +460,40 @@ class AppStrings {
   String get accountDeleteTitle =>
       _t('계정 삭제 요청', 'Delete account', 'アカウント削除の依頼');
   String get accountDeleteSubtitle => _t(
-        '계정과 관련 클라우드 데이터 삭제를 요청합니다',
-        'Request deletion of your account and cloud data',
-        'アカウントと関連クラウドデータの削除を依頼します',
+        '앱에서 Firebase 계정과 클라우드 데이터를 삭제합니다',
+        'Delete your Firebase account and cloud data in the app',
+        'アプリで Firebase アカウントとクラウドデータを削除します',
       );
   String get accountDeleteBody => _t(
-        '계정과 클라우드에 저장된 프로필·같이 방 표시 이름·알림 토큰 삭제를 요청할 수 있어요.\n\n'
-            '계정에 쓰는 이메일로 메일을 보내 주세요. 다른 주소에서 보낼 때는 어떤 계정을 지울지 적어 주세요.\n\n'
-            '합리적 기간 안에 처리하고, 법령상 남겨야 하는 항목이 있으면 알려 드려요. '
+        '아래 버튼으로 이 앱에서 Firebase 계정, 프로필, 같이 방 클라우드 데이터를 바로 삭제할 수 있어요.\n\n'
+            '메일이 필요할 때는 계정에 쓰는 이메일로 보내 주세요. 다른 주소에서 보낼 때는 어떤 계정을 지울지 적어 주세요.\n\n'
+            '법령상 남겨야 하는 항목이 있으면 알려 드려요. '
             '구독은 Google Play에서 따로 해지해야 해요. 기기에만 있는 데이터는 앱을 삭제하면 지워집니다.',
-        'You can request deletion of your account and cloud profile, Together display name, and notification token.\n\n'
-            'Email us from the address on the account. If you write from another address, say which account to delete.\n\n'
-            'We process requests within a reasonable time and tell you if a record must be kept by law. '
+        'The button below deletes your Firebase account, profile, and Together cloud data from this app.\n\n'
+            'If you also email us, write from the address on the account. From another address, say which account to delete.\n\n'
+            'We will tell you if a record must be kept by law. '
             'Cancel a subscription in Google Play separately. On-device data is removed when you uninstall.',
-        'アカウントとクラウドのプロフィール、一緒ルームの表示名、通知トークンの削除を依頼できます。\n\n'
-            'アカウントのメールから送ってください。別のアドレスから送る場合は、削除するアカウントを書いてください。\n\n'
-            '合理的な期間内に処理し、法令上残すものがあればお知らせします。'
+        '下のボタンで、このアプリから Firebase アカウント、プロフィール、一緒ルームのクラウドデータを削除できます。\n\n'
+            'メールでも依頼する場合は、アカウントのメールから送ってください。別のアドレスから送るときは、削除するアカウントを書いてください。\n\n'
+            '法令上残すものがあればお知らせします。'
             '定期購入は Google Play で別途解約してください。端末だけのデータはアプリ削除で消えます。',
+      );
+  String get accountDeleteNow =>
+      _t('앱에서 계정 삭제', 'Delete account in the app', 'アプリでアカウントを削除');
+  String get accountDeleteConfirmBody => _t(
+        'Firebase 계정, 프로필, 같이 방 클라우드 데이터를 지웁니다. 이 작업은 되돌릴 수 없어요.',
+        'This deletes your Firebase account, profile, and Together cloud data. It cannot be undone.',
+        'Firebase アカウント、プロフィール、一緒ルームのクラウドデータを削除します。この操作は元に戻せません。',
+      );
+  String get accountDeleteDone => _t(
+        '계정과 클라우드 데이터를 삭제했어요',
+        'Account and cloud data deleted',
+        'アカウントとクラウドデータを削除しました',
+      );
+  String get accountDeleteFailed => _t(
+        '계정 삭제를 끝내지 못했어요. 잠시 후 다시 시도해 주세요.',
+        'Could not finish account deletion. Please try again shortly.',
+        'アカウント削除を完了できませんでした。しばらくしてからもう一度お試しください。',
       );
   String get accountDeleteMailCta =>
       _t('삭제 요청 메일 보내기', 'Email deletion request', '削除依頼メールを送る');

@@ -12,7 +12,7 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if signedIn();
       allow create, update: if isSelf(uid);
-      allow delete: if false;
+      allow delete: if isSelf(uid);
     }
 
     match /ddays/{ddayId} {

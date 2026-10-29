@@ -1,0 +1,72 @@
+{
+    "3": {
+        "psl_constant": "USER_ACCOUNT",
+        "policy_id": "prominent_disclosure_policy",
+        "issue_summary": "Silent Background Transfer: Policy violation. Data is sent without prior disclosure.",
+        "severity": "CRITICAL",
+        "files_involved": [
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\main.dart",
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\auth_controller.dart",
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\user_profile_sync.dart",
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\legal\\legal_copy.dart",
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\screens\\legal_screen.dart",
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\pubspec.yaml"
+        ],
+        "evidence": "pubspec.yaml depends on firebase_auth and google_sign_in. The cited plugin-registrant files are not in the source tree; transmission is in app code. main.dart:89 calls authController.initialize() during startup, before any consent UI. AuthController.initialize (auth_controller.dart:162 and :168) calls ensureAnonymous(), which calls FirebaseAuth.instance.signInAnonymously() at auth_controller.dart:191. That Firebase Auth API creates or resumes a user account and sends the account credential to Google Firebase, a first-party service provider. The same initialize path calls _restoreGoogleAccount() (auth_controller.dart:407-412), which uses GoogleSignIn.signInSilently() and _linkFirebase(); UserProfileSync.upsertCurrentUser() (user_profile_sync.dart:12-24) then writes the Firebase uid document with email and displayName to Cloud Firestore. LegalScreen only renders LegalCopy. The terms treat install or continued use as agreement (legal_copy.dart:175) and the privacy section describes Google sign-in fields (legal_copy.dart:237-242). Neither screen gates signInAnonymously, and there is no affirmative in-app consent before the account identifier leaves the device.",
+        "recommendation": "Obtain prominent in-app disclosure and affirmative consent before FirebaseAuth.instance.signInAnonymously() and silent Google restore, stating that an account identifier is sent to Firebase for app functionality. Declare User IDs in the Play Data Safety form as collected and sent to the Firebase service provider.",
+        "is_transferred": true,
+        "user_initiated": false,
+        "is_third_party": false,
+        "prominent_disclosure_status": "MISSING",
+        "purpose": "App functionality",
+        "linked_to_user": true,
+        "worker_file": "worker_data_safety_part_2.json",
+        "finding_id": "3"
+    },
+    "5": {
+        "psl_constant": "NAME",
+        "policy_id": "data_safety_section",
+        "issue_summary": "User-Initiated Collection: Disclosure exempt, but must be declared in Play Store form.",
+        "severity": "IMPORTANT",
+        "files_involved": [
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\auth_controller.dart",
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\data\\user_profile_sync.dart",
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\widgets\\nickname_dialog.dart",
+            "C:\\Users\\Administrator\\Desktop\\Quotation\\lib\\l10n\\app_strings.dart"
+        ],
+        "evidence": "The nickname is the user-facing name. nickname_dialog.dart:53 calls authController.setNickname when the user taps Save. setNickname (auth_controller.dart:322-362) calls FirebaseAuth updateDisplayName at line 329 and UserProfileSync.syncDisplayName at line 362. syncDisplayName (user_profile_sync.dart:32-71) writes displayName to Firestore users/{uid} and to dday_memberships host and member fields. The destination is Firebase, a first-party service provider. The hint at app_strings.dart:364 says the name is shown to friends. The user explicitly submits the name, so prominent disclosure is exempt, and the value is still collected off-device and linked to the Firebase account.",
+        "recommendation": "Declare Name in the Play Data Safety form as collected for app functionality and sent to Firebase so friends can see the nickname. Keep the save button as the action that triggers the upload.",
+        "is_transferred": true,
+        "user_initiated": true,
+        "is_third_party": false,
+        "prominent_disclosure_status": "EXEMPT",
+        "purpose": "App functionality",
+        "linked_to_user": true,
+        "worker_file": "worker_data_safety_part_2.json",
+        "finding_id": "5"
+    },
+    "6": {
+        "psl_constant": "NAME",
+        "policy_id": "prominent_disclosure_policy",
+        "issue_summary": "**Silent Background Transfer**: Policy violation. Data is sent without prior disclosure.",
+        "severity": "CRITICAL",
+        "files_involved": [
+            "lib/data/together_cheer_repository.dart",
+            "lib/data/auth_controller.dart",
+            "lib/data/user_profile_sync.dart",
+            "lib/data/dday_cloud_sync.dart",
+            "lib/legal/legal_copy.dart",
+            "lib/screens/legal_screen.dart"
+        ],
+        "evidence": "Nickname is read from authController.nickname and written to Firestore dday_memberships as latestCheerAuthorName in TogetherCheerRepository.save (lib/data/together_cheer_repository.dart lines 77-95). AuthController.setNickname stores that name as the Firebase display name and calls UserProfileSync.syncDisplayName (lib/data/auth_controller.dart lines 321-362). UserProfileSync.upsertCurrentUser writes displayName to users/{uid} (lib/data/user_profile_sync.dart lines 12-25). DdayCloudSync.start calls upsertCurrentUser on every cloud start (lib/data/dday_cloud_sync.dart line 50), and AuthController starts that sync from authStateChanges and ensureAnonymous without a new user gesture (lib/data/auth_controller.dart lines 149-152 and 181-186). Destination is developer Firebase Firestore (first party). legal_copy.dart lines 113 and 242 state that the nickname is stored and shown to room members, and legal_screen.dart only displays that policy; it does not gate Firebase or the sync.",
+        "recommendation": "Show a prominent in-app notice that the nickname and display name are uploaded to Firebase for Together, and get affirmative consent before DdayCloudSync or UserProfileSync runs. Declare Name in the Play Data Safety form.",
+        "is_transferred": true,
+        "user_initiated": false,
+        "is_third_party": false,
+        "prominent_disclosure_status": "MISSING",
+        "purpose": "App functionality",
+        "linked_to_user": true,
+        "worker_file": "worker_data_safety_part_3.json",
+        "finding_id": "6"
+    }
+}

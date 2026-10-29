@@ -231,13 +231,17 @@ const _rows = <AppGlyph, List<String>>{
     '...#........',
   ],
   AppGlyph.qr: [
-    '###..#.###..',
-    '#.#..#.#.#..',
-    '###..#.###..',
-    '....##......',
     '###.....###.',
-    '#.#..#.#.#..',
-    '###..#.###..',
+    '#.#.....#.#.',
+    '###.....###.',
+    '............',
+    '....##......',
+    '...#..#.....',
+    '..######....',
+    '............',
+    '###.....###.',
+    '#.#.....#.#.',
+    '###.....###.',
   ],
 };
 
@@ -263,7 +267,7 @@ class _AppPixelPainter extends CustomPainter {
       for (var x = 0; x < row.length; x++) {
         if (row[x] == '.') continue;
         canvas.drawRect(
-          Rect.fromLTWH(ox + x * unit, oy + y * unit, unit + 0.3, unit + 0.3),
+          Rect.fromLTWH(ox + x * unit, oy + y * unit, unit + 0.08, unit + 0.08),
           paint,
         );
       }

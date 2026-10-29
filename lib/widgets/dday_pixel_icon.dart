@@ -85,7 +85,6 @@ List<String> _pixelsFor(DdayIconKind kind) {
         '.DPPPPPPPPPPPPD.',
         '..DCCCCCCCCCCD..',
         '.DCWCWCWWCWCWCD.',
-        '.DCCCCCCCCCCCCD.',
         '.DDDDDDDDDDDDDD.',
         '................',
         '................',
@@ -231,7 +230,6 @@ List<String> _pixelsFor(DdayIconKind kind) {
         '.DWWDDWWWWDDWWD.',
         '.DWWWWWDDWWWWWD.',
         '.DWWWWWDDWWWWWD.',
-        '.DWWWWWWWWWWWWD.',
         '.DDDDDDDDDDDDDD.',
         '................',
         '................',
@@ -331,7 +329,7 @@ List<String> _pixelsFor(DdayIconKind kind) {
 
 Color? _colorFor(String ch) {
   return switch (ch) {
-    'D' => const Color(0xFF4A4158),
+    'D' => const Color(0xFF6E657C),
     'R' => const Color(0xFFFF6B8A),
     'P' => const Color(0xFFFF9EBE),
     'Y' => const Color(0xFFFFD56A),
@@ -374,7 +372,7 @@ class _PixelIconPainter extends CustomPainter {
     }
     if (maxX < 0) return;
 
-    final unit = size.shortestSide / (width > height ? width : height);
+    final unit = size.shortestSide / ((width > height ? width : height) + 2);
     final contentW = (maxX - minX + 1) * unit;
     final contentH = (maxY - minY + 1) * unit;
     final ox = (size.width - contentW) / 2 - minX * unit;
@@ -393,8 +391,8 @@ class _PixelIconPainter extends CustomPainter {
           Rect.fromLTWH(
             ox + x * unit,
             oy + y * unit,
-            unit + 0.35,
-            unit + 0.35,
+            unit + 0.08,
+            unit + 0.08,
           ),
           paint,
         );

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/character_controller.dart';
 
 /// Mirrors local profile into `users/{uid}` for invite/membership.
@@ -10,6 +11,7 @@ class UserProfileSync {
   static final _db = FirebaseFirestore.instance;
 
   static Future<void> upsertCurrentUser({String? displayName}) async {
+    if (!CloudConsent.accepted) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     final name = (displayName ?? user.displayName)?.trim();
@@ -30,6 +32,7 @@ class UserProfileSync {
 
   /// Writes the nickname onto this user's membership rows so friends see it.
   static Future<void> syncDisplayName(String name) async {
+    if (!CloudConsent.accepted) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     final trimmed = name.trim();
@@ -76,6 +79,7 @@ class UserProfileSync {
   }
 
   static Future<void> syncCharacter() async {
+    if (!CloudConsent.accepted) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     try {
@@ -142,5 +146,61 @@ class UserProfileSync {
   static Future<Map<String, dynamic>?> fetchUser(String uid) async {
     final snap = await _db.collection('users').doc(uid).get();
     return snap.data();
+  }
+
+  /// Removes this account's profile, hosted rooms, invites, and guest membership.
+  static Future<void> deleteRemoteAccount(String uid) async {
+    if (uid.isEmpty) return;
+    final db = _db;
+
+    final hostedDays = await db
+        .collection('ddays')
+        .where('ownerUid', isEqualTo: uid)
+        .get();
+    for (final doc in hostedDays.docs) {
+      await doc.reference.delete();
+    }
+
+    final hostedRooms = await db
+        .collection('dday_memberships')
+        .where('hostUid', isEqualTo: uid)
+        .get();
+    for (final doc in hostedRooms.docs) {
+      await doc.reference.delete();
+    }
+
+    final guestRooms = await db
+        .collection('dday_memberships')
+        .where('guestUids', arrayContains: uid)
+        .get();
+    for (final doc in guestRooms.docs) {
+      final data = doc.data();
+      final guests = (data['guestUids'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .where((id) => id != uid)
+          .toList();
+      final members = (data['members'] as List<dynamic>? ?? [])
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .where((member) => member['uid'] != uid)
+          .toList();
+      await doc.reference.set(
+        {
+          'guestUids': guests,
+          'members': members,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    }
+
+    final invites = await db
+        .collection('dday_invites')
+        .where('hostUid', isEqualTo: uid)
+        .get();
+    for (final doc in invites.docs) {
+      await doc.reference.delete();
+    }
+
+    await db.collection('users').doc(uid).delete();
   }
 }
