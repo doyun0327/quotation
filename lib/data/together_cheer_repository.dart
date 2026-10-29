@@ -100,6 +100,7 @@ abstract final class TogetherCheerRepository {
         friends: room?.friends ?? const [],
         cloudOwnerUid: room?.cloudOwnerUid,
         latestCheer: trimmed,
+        latestCheerAuthorUid: user.uid,
       );
       await HomeWidgetSync.syncDday();
 

@@ -31,9 +31,10 @@ class MainActivity : FlutterActivity() {
           result.success(true)
         }
         "refreshTogetherWidget" -> {
-          refreshWidget(DdayWidgetProvider(), DdayWidgetProvider::class.java)
+          refreshTogetherWidgets()
           result.success(true)
         }
+        "togetherWidgetState" -> result.success(togetherWidgetState())
         "scheduleMorningFortunes" -> {
           val items = call.argument<List<*>>("items") ?: emptyList<Any>()
           val parsed =
@@ -108,6 +109,57 @@ class MainActivity : FlutterActivity() {
           putParcelable(AppWidgetManager.EXTRA_APPWIDGET_PREVIEW, views)
         }
     return manager.requestPinAppWidget(provider, extras, null)
+  }
+
+  private fun togetherProviderClasses(): List<Class<out AppWidgetProvider>> =
+      listOf(
+          DdayWidgetProvider::class.java,
+          DdayWidgetProviderSq::class.java,
+          DdayWidgetProviderXl::class.java,
+          DdayWidgetProviderM::class.java,
+          DdayWidgetProviderS::class.java,
+          DdayWidgetProviderTall::class.java,
+      )
+
+  private fun togetherWidgetIds(): List<Int> {
+    val manager = AppWidgetManager.getInstance(applicationContext)
+    return togetherProviderClasses()
+        .flatMap { clazz ->
+          manager.getAppWidgetIds(ComponentName(applicationContext, clazz)).toList()
+        }
+        .distinct()
+  }
+
+  /** Ids already on the home screen, plus the room each one is locked to. */
+  private fun togetherWidgetState(): Map<String, Any> {
+    val prefs = es.antonborri.home_widget.HomeWidgetPlugin.getData(applicationContext)
+    val bindings = mutableMapOf<String, String>()
+    fun absorb(raw: String?) {
+      if (raw.isNullOrBlank()) return
+      try {
+        val obj = org.json.JSONObject(raw)
+        val keys = obj.keys()
+        while (keys.hasNext()) {
+          val key = keys.next()
+          val value = obj.optString(key, "")
+          if (value.isNotBlank()) bindings[key] = value
+        }
+      } catch (_: Exception) {}
+    }
+    absorb(prefs.getString("ddayWidgetBindings", null))
+    absorb(prefs.getString("flutter.ddayWidgetBindings", null))
+    return mapOf("ids" to togetherWidgetIds(), "bindings" to bindings)
+  }
+
+  private fun refreshTogetherWidgets() {
+    val manager = AppWidgetManager.getInstance(applicationContext)
+    for (clazz in togetherProviderClasses()) {
+      val ids = manager.getAppWidgetIds(ComponentName(applicationContext, clazz))
+      if (ids.isEmpty()) continue
+      val provider =
+          clazz.getDeclaredConstructor().newInstance() as AppWidgetProvider
+      provider.onUpdate(applicationContext, manager, ids)
+    }
   }
 
   /** Draws placed widgets immediately. A broadcast to the provider can be dropped. */

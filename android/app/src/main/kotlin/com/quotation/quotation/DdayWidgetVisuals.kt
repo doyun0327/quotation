@@ -300,7 +300,15 @@ object DdayWidgetVisuals {
                 originY,
                 (originY + contentH - spriteH).coerceAtLeast(originY),
             )
-        canvas.drawBitmap(bmp, left, top, charPaint)
+        val degrees = obj.optInt("r", 0)
+        if (degrees % 360 != 0) {
+          canvas.save()
+          canvas.rotate(degrees.toFloat(), left + spriteW / 2f, top + spriteH / 2f)
+          canvas.drawBitmap(bmp, left, top, charPaint)
+          canvas.restore()
+        } else {
+          canvas.drawBitmap(bmp, left, top, charPaint)
+        }
         bmp.recycle()
       }
       canvas.restore()

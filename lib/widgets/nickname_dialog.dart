@@ -77,19 +77,6 @@ class _NicknameDialogState extends State<_NicknameDialog> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (widget.requiredName) ...[
-                    Text(
-                      t.languageTitle,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    LanguageRow(
-                      selectedId: localeController.language.id,
-                      onSelected: localeController.setLanguage,
-                    ),
-                  ],
                   Text(
                     t.nicknameHint,
                     style: AppTheme.body.copyWith(fontSize: 13),
@@ -106,6 +93,21 @@ class _NicknameDialogState extends State<_NicknameDialog> {
                       errorText: _error.isEmpty ? null : _error,
                     ),
                   ),
+                  if (widget.requiredName) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      t.languageTitle,
+                      style: AppTheme.body.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    LanguageRow(
+                      selectedId: localeController.language.id,
+                      onSelected: localeController.setLanguage,
+                      nativeNames: true,
+                    ),
+                  ],
                 ],
               ),
             ),

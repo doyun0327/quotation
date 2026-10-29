@@ -26,6 +26,18 @@ enum AppLanguage {
   final String labelJa;
   final String mark;
 
+  /// The name of this language, written in that language.
+  String get ownName {
+    switch (this) {
+      case AppLanguage.korean:
+        return labelKo;
+      case AppLanguage.english:
+        return labelEn;
+      case AppLanguage.japanese:
+        return labelJa;
+    }
+  }
+
   String label(AppLanguage current) {
     switch (current) {
       case AppLanguage.korean:

@@ -296,15 +296,18 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                   uid: person.uid,
                   x: person.x.round(),
                   y: person.y.round(),
+                  rotation: person.rotationDegrees,
                 ),
             ]
           : null,
     );
     if (_crowdDirty) _crowdDirty = false;
     if (applyToHome) {
+      final previousRoom = ddayController.widgetDday?.id;
       await ddayController.applyRoomToHomeWidget(widget.roomId);
       await HomeWidgetSync.syncAndOfferPinTogetherWidget(
         roomId: widget.roomId,
+        previousRoomId: previousRoom,
       );
       if (toast && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -352,7 +355,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       if (a[i].uid != b[i].uid ||
           a[i].x.round() != b[i].x.round() ||
           a[i].y.round() != b[i].y.round() ||
-          a[i].scale != b[i].scale) {
+          a[i].scale != b[i].scale ||
+          a[i].rotationDegrees != b[i].rotationDegrees) {
         return false;
       }
     }
@@ -382,6 +386,20 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _dragTick.value++;
   }
 
+  void _rotatePerson(String uid, double degrees) {
+    final next = <TogetherPlaced>[];
+    for (final person in _placed) {
+      if (person.uid != uid) {
+        next.add(person);
+        continue;
+      }
+      next.add(person.copyWith(rotation: degrees));
+    }
+    _placed = next;
+    _crowdDirty = true;
+    _dragTick.value++;
+  }
+
   List<TogetherPreviewSprite> _crowdSprites() {
     final myUid = authController.viewerUid;
     return [
@@ -397,6 +415,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
               TogetherCrowdLayout.userFactor(
                 person.uid == myUid ? _meScale : _friendScale,
               ),
+          rotation: person.rotation,
+          onRotate: (person.uid == myUid
+                  ? _focus == _DecorateFocus.me
+                  : _focus == _DecorateFocus.friend &&
+                      _pickedFriendUid == person.uid)
+              ? (delta) => _rotatePerson(person.uid, delta)
+              : null,
           highlight: person.uid == myUid
               ? _focus == _DecorateFocus.me
               : _focus == _DecorateFocus.friend &&

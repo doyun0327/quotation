@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:quotation/data/character_controller.dart';
@@ -15,9 +16,11 @@ class TogetherPreviewSprite {
     required this.x,
     required this.y,
     required this.scale,
+    this.rotation = 0,
     this.highlight = false,
     this.onPan,
     this.onSelect,
+    this.onRotate,
   });
 
   final String keyId;
@@ -27,9 +30,13 @@ class TogetherPreviewSprite {
 
   /// Multiplies [TogetherWidgetPreview.charW] and charH.
   final double scale;
+
+  /// Clockwise degrees. The rotate handle exists only while [onRotate] is set.
+  final double rotation;
   final bool highlight;
   final TogetherWidgetPanDelta? onPan;
   final VoidCallback? onSelect;
+  final ValueChanged<double>? onRotate;
 }
 
 Widget _backgroundImage(String path, bool isPixel) {
@@ -259,32 +266,56 @@ class TogetherWidgetPreview extends StatelessWidget {
       required bool highlight,
       required TogetherWidgetPanDelta? onPan,
       required VoidCallback? onSelect,
+      double rotation = 0,
+      ValueChanged<double>? onRotate,
     }) {
-      return panTarget(
-        onPan: onPan,
-        onSelect: onSelect,
-        child: SizedBox(
-          width: spriteW,
-          height: spriteH,
-          child: Stack(
-            children: [
-              Image.asset(
-                asset,
-                width: spriteW,
-                height: spriteH,
-                fit: BoxFit.contain,
-                filterQuality:
-                    isPixel ? FilterQuality.none : FilterQuality.medium,
-                isAntiAlias: !isPixel,
-              ),
-              if (highlight)
-                const Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(painter: _PixelSelectPainter()),
-                  ),
+      const knob = 28.0;
+      final orbit = spriteH / 2 + 20;
+      final rad = rotation * math.pi / 180;
+      return SizedBox(
+        width: spriteW,
+        height: spriteH,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            panTarget(
+              onPan: onPan,
+              onSelect: onSelect,
+              child: Transform.rotate(
+                alignment: Alignment.center,
+                angle: rotation * math.pi / 180,
+                child: Image.asset(
+                  asset,
+                  width: spriteW,
+                  height: spriteH,
+                  fit: BoxFit.contain,
+                  filterQuality:
+                      isPixel ? FilterQuality.none : FilterQuality.medium,
+                  isAntiAlias: !isPixel,
                 ),
-            ],
-          ),
+              ),
+            ),
+            if (highlight)
+              const Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(painter: _PixelSelectPainter()),
+                ),
+              ),
+            if (highlight && onRotate != null)
+              Positioned(
+                left: spriteW / 2 + math.sin(rad) * orbit - knob / 2,
+                top: spriteH / 2 - math.cos(rad) * orbit - knob / 2,
+                width: knob,
+                height: knob,
+                child: _RotateKnob(
+                  spriteHeight: spriteH,
+                  rotation: rotation,
+                  onRotate: onRotate,
+                  onDragStart: onDragStart,
+                  onDragEnd: onDragEnd,
+                ),
+              ),
+          ],
         ),
       );
     }
@@ -338,6 +369,8 @@ class TogetherWidgetPreview extends StatelessWidget {
             highlight: person.highlight,
             onPan: person.onPan,
             onSelect: person.onSelect,
+            rotation: person.rotation,
+            onRotate: person.onRotate,
           ),
         ),
     ];
@@ -355,7 +388,7 @@ class TogetherWidgetPreview extends StatelessWidget {
       ),
       clipBehavior: Clip.hardEdge,
       child: Stack(
-        clipBehavior: Clip.hardEdge,
+        clipBehavior: Clip.none,
         children: [
           if (hasImage)
             Positioned.fill(
@@ -479,6 +512,68 @@ class _PixelSelectPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// Drag handle shown above the selected character in the widget decorator.
+class _RotateKnob extends StatefulWidget {
+  const _RotateKnob({
+    required this.spriteHeight,
+    required this.rotation,
+    required this.onRotate,
+    this.onDragStart,
+    this.onDragEnd,
+  });
+
+  final double spriteHeight;
+  final double rotation;
+  final ValueChanged<double> onRotate;
+  final VoidCallback? onDragStart;
+  final VoidCallback? onDragEnd;
+
+  @override
+  State<_RotateKnob> createState() => _RotateKnobState();
+}
+
+class _RotateKnobState extends State<_RotateKnob> {
+  /// Degrees of the finger around the sprite center. 0 keeps the picture upright.
+  double _degrees(Offset global) {
+    final box = context.findRenderObject() as RenderBox;
+    final knob = box.localToGlobal(box.size.center(Offset.zero));
+    final rad = widget.rotation * math.pi / 180;
+    final orbit = widget.spriteHeight / 2 + 20;
+    final center = knob -
+        Offset(math.sin(rad) * orbit, -math.cos(rad) * orbit);
+    final delta = global - center;
+    return math.atan2(delta.dx, -delta.dy) * 180 / math.pi;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onPanStart: (details) {
+        widget.onDragStart?.call();
+        widget.onRotate(_degrees(details.globalPosition));
+      },
+      onPanUpdate: (details) {
+        widget.onRotate(_degrees(details.globalPosition));
+      },
+      onPanEnd: (_) => widget.onDragEnd?.call(),
+      onPanCancel: () => widget.onDragEnd?.call(),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFF4A4158), width: 1.4),
+        ),
+        child: const Icon(
+          Icons.rotate_right_rounded,
+          size: 16,
+          color: Color(0xFF4A4158),
+        ),
+      ),
+    );
+  }
 }
 
 /// Keeps a character sprite fully inside the widget background.

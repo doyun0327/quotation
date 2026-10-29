@@ -298,25 +298,35 @@ abstract final class HomeWidgetSync {
 
   /// Saves every room, then updates only the home widget for [roomId].
   /// A room that is not on the home screen yet gets its own widget.
+  /// Widgets already on the home screen stay on their room.
   ///
   /// Returns `true` when the add-to-home sheet was shown.
   static Future<bool> syncAndOfferPinTogetherWidget({
     String? roomId,
+    String? previousRoomId,
   }) async {
     if (!_isAndroid) return false;
     try {
       final id = roomId ?? ddayController.widgetDday?.id ?? '';
-      final legacyRoom =
+      final savedRoom =
           await HomeWidget.getWidgetData<String>(keyDdayRoomId) ?? '';
-      final installed = await _installedTogetherIds();
-      final bindings = await _readBindings();
-      final hasThisRoom = installed.any((widgetId) => bindings['$widgetId'] == id);
+      final previous = previousRoomId?.trim() ?? '';
+      final legacyRoom = savedRoom.isNotEmpty ? savedRoom : previous;
+      final state = await _togetherWidgetState();
+      final installed = state.ids;
+      final bindings = state.bindings;
+      final hasThisRoom =
+          installed.any((widgetId) => bindings['$widgetId'] == id);
       if (id.isNotEmpty && !hasThisRoom) {
-        await _keepOtherRoomWidgets(
+        _lockExistingWidgets(
           roomId: id,
           legacyRoom: legacyRoom,
           installed: installed,
           bindings: bindings,
+        );
+        await HomeWidget.saveWidgetData<String>(
+          keyDdayWidgetBindings,
+          jsonEncode(bindings),
         );
       }
       await HomeWidget.saveWidgetData<String>(
@@ -325,7 +335,8 @@ abstract final class HomeWidgetSync {
           for (final widgetId in installed) '$widgetId': true,
         }),
       );
-      await HomeWidget.saveWidgetData<String>(keyDdayLegacyRoomId, legacyRoom);
+      final kept = legacyRoom == id ? '' : legacyRoom;
+      await HomeWidget.saveWidgetData<String>(keyDdayLegacyRoomId, kept);
       await _saveDday();
       if (id.isEmpty || _roomAlreadyPlaced(id, installed, bindings)) {
         await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, '');
@@ -343,31 +354,57 @@ abstract final class HomeWidgetSync {
     }
   }
 
-  /// A widget already tied to another room stays there.
-  /// An unbound widget that was showing [legacyRoom] is claimed only for that room.
-  static Future<void> _keepOtherRoomWidgets({
+  /// Widgets already on the home screen keep the room they were showing.
+  static void _lockExistingWidgets({
     required String roomId,
     required String legacyRoom,
     required List<int> installed,
     required Map<String, String> bindings,
-  }) async {
-    final unbound = installed
-        .where((widgetId) => (bindings['$widgetId'] ?? '').isEmpty)
-        .toList();
-    if (unbound.isEmpty) return;
-    if (legacyRoom.isEmpty || legacyRoom == roomId) {
+  }) {
+    final keep = legacyRoom.isNotEmpty && legacyRoom != roomId ? legacyRoom : '';
+    if (keep.isEmpty) {
       if (legacyRoom == roomId) {
-        bindings['${unbound.first}'] = roomId;
+        final unbound = installed
+            .where((widgetId) => (bindings['$widgetId'] ?? '').isEmpty)
+            .toList();
+        if (unbound.isNotEmpty) bindings['${unbound.first}'] = roomId;
       }
-    } else {
-      for (final widgetId in unbound) {
-        bindings['$widgetId'] = legacyRoom;
+      return;
+    }
+    for (final widgetId in installed) {
+      if ((bindings['$widgetId'] ?? '').isEmpty) {
+        bindings['$widgetId'] = keep;
       }
     }
-    await HomeWidget.saveWidgetData<String>(
-      keyDdayWidgetBindings,
-      jsonEncode(bindings),
-    );
+  }
+
+  static Future<({List<int> ids, Map<String, String> bindings})>
+      _togetherWidgetState() async {
+    try {
+      final raw = await _pinChannel.invokeMethod<dynamic>('togetherWidgetState');
+      if (raw is Map) {
+        final ids = <int>[];
+        final idRaw = raw['ids'];
+        if (idRaw is List) {
+          for (final entry in idRaw) {
+            final id = entry is int ? entry : int.tryParse('$entry');
+            if (id != null) ids.add(id);
+          }
+        }
+        final bindings = <String, String>{};
+        final bindingRaw = raw['bindings'];
+        if (bindingRaw is Map) {
+          for (final entry in bindingRaw.entries) {
+            final room = entry.value?.toString() ?? '';
+            if (room.isNotEmpty) bindings['${entry.key}'] = room;
+          }
+        }
+        return (ids: ids, bindings: bindings);
+      }
+    } catch (e) {
+      debugPrint('togetherWidgetState: $e');
+    }
+    return (ids: await _installedTogetherIds(), bindings: await _readBindings());
   }
 
   static bool _roomAlreadyPlaced(

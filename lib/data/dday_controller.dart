@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' show Size;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
@@ -285,7 +286,12 @@ class _RoomOffsets {
         if (crowd.isNotEmpty)
           'crowd': [
             for (final slot in crowd)
-              {'uid': slot.uid, 'x': slot.x, 'y': slot.y},
+              {
+                'uid': slot.uid,
+                'x': slot.x,
+                'y': slot.y,
+                'rotation': slot.rotation,
+              },
           ],
       };
 
@@ -331,6 +337,9 @@ class _RoomOffsets {
         uid: uid,
         x: (entry['x'] as num?)?.toInt() ?? 0,
         y: (entry['y'] as num?)?.toInt() ?? 0,
+        rotation: (entry['rotation'] as num?)?.toInt() ??
+            (entry['r'] as num?)?.toInt() ??
+            0,
       ));
     }
     return out;
@@ -423,7 +432,8 @@ class DdayController extends ChangeNotifier {
   int get duoFriendOffsetX => _duoFriendOffsetX;
   int get duoFriendOffsetY => _duoFriendOffsetY;
 
-  /// Rooms whose cheer was typed locally and must not be replaced by a stale cloud copy.
+  /// Rooms with a cheer this phone just saved, until that same text comes back.
+  /// A friend's cheer still replaces it.
   final Set<String> _localCheerIds = {};
 
   DdayItem? get widgetDday {
@@ -669,7 +679,10 @@ class DdayController extends ChangeNotifier {
     for (var i = 0; i < a.crowd.length; i++) {
       final left = a.crowd[i];
       final right = b.crowd[i];
-      if (left.uid != right.uid || left.x != right.x || left.y != right.y) {
+      if (left.uid != right.uid ||
+          left.x != right.x ||
+          left.y != right.y ||
+          left.rotation != right.rotation) {
         return false;
       }
     }
@@ -784,22 +797,26 @@ class DdayController extends ChangeNotifier {
     }
   }
 
-  Future<void> upsertFromCloud(DdayItem item) async {
+  Future<void> upsertFromCloud(
+    DdayItem item, {
+    String? cheerAuthorUid,
+  }) async {
     final index = _items.indexWhere((e) => e.id == item.id);
     if (index < 0) {
       _items.add(item);
     } else {
       final existing = _items[index];
-      final incoming = item.latestCheer?.trim();
-      final keepLocal = _localCheerIds.contains(item.id) ||
-          incoming == null ||
-          incoming.isEmpty;
+      final cheer = _cheerFromCloud(
+        roomId: item.id,
+        current: existing.latestCheer,
+        incoming: item.latestCheer,
+        incomingAuthorUid: cheerAuthorUid,
+      );
       _items[index] = item.copyWith(
         pinnedForWidget: existing.pinnedForWidget,
         favorite: existing.favorite,
-        latestCheer: keepLocal ? existing.latestCheer : incoming,
-        clearLatestCheer: keepLocal &&
-            (existing.latestCheer == null || existing.latestCheer!.isEmpty),
+        latestCheer: cheer,
+        clearLatestCheer: cheer == null || cheer.isEmpty,
       );
     }
     await _persist();
@@ -810,6 +827,7 @@ class DdayController extends ChangeNotifier {
     required List<DdayFriendMember> friends,
     String? cloudOwnerUid,
     String? latestCheer,
+    String? latestCheerAuthorUid,
   }) async {
     final index = _items.indexWhere((e) => e.id == ddayId);
     if (index < 0) return;
@@ -821,16 +839,12 @@ class DdayController extends ChangeNotifier {
               cur.friends[i].characterId == next[i].characterId &&
               (cur.friends[i].displayName ?? '') == (next[i].displayName ?? '');
         }).every((e) => e);
-    final incomingCheer = (latestCheer == null || latestCheer.trim().isEmpty)
-        ? null
-        : latestCheer.trim();
-    if (_localCheerIds.contains(ddayId) &&
-        (incomingCheer ?? '') == (cur.latestCheer ?? '')) {
-      _localCheerIds.remove(ddayId);
-    }
-    final nextCheer = (_localCheerIds.contains(ddayId) || incomingCheer == null)
-        ? cur.latestCheer
-        : incomingCheer;
+    final nextCheer = _cheerFromCloud(
+      roomId: ddayId,
+      current: cur.latestCheer,
+      incoming: latestCheer,
+      incomingAuthorUid: latestCheerAuthorUid,
+    );
     final sameCheer = (cur.latestCheer ?? '') == (nextCheer ?? '');
     if (sameFriends &&
         cur.cloudOwnerUid == cloudOwnerUid &&
@@ -844,6 +858,29 @@ class DdayController extends ChangeNotifier {
       clearLatestCheer: nextCheer == null,
     );
     await _persist();
+  }
+
+  /// Room cheer is shared. Keep a local edit only when the cloud copy is still
+  /// this phone's older text, so a friend's cheer replaces the widget.
+  String? _cheerFromCloud({
+    required String roomId,
+    required String? current,
+    String? incoming,
+    String? incomingAuthorUid,
+  }) {
+    final remote = incoming?.trim();
+    final next = (remote == null || remote.isEmpty) ? null : remote;
+    if (!_localCheerIds.contains(roomId)) return next ?? current;
+    final mine = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final fromMe = incomingAuthorUid != null &&
+        incomingAuthorUid.isNotEmpty &&
+        mine.isNotEmpty &&
+        incomingAuthorUid == mine;
+    if (next == null || (fromMe && next != (current ?? '').trim())) {
+      return current;
+    }
+    _localCheerIds.remove(roomId);
+    return next;
   }
 
   Future<void> _persist() async {

@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:quotation/data/dday_friend_models.dart';
 
-typedef TogetherCrowdSaved = ({String uid, int x, int y});
+typedef TogetherCrowdSaved = ({String uid, int x, int y, int rotation});
 
 /// One person in a shared room, in stable draw order.
 class TogetherCrowdPerson {
@@ -20,6 +20,7 @@ class TogetherPlaced {
     required this.x,
     required this.y,
     required this.scale,
+    this.rotation = 0,
   });
 
   final String uid;
@@ -32,13 +33,22 @@ class TogetherPlaced {
   /// 1 draws the sprite at 72×96.
   final double scale;
 
-  TogetherPlaced copyWith({double? x, double? y}) {
+  /// Clockwise degrees. Only the widget decorator edits this.
+  final double rotation;
+
+  int get rotationDegrees {
+    final n = rotation.round() % 360;
+    return n < 0 ? n + 360 : n;
+  }
+
+  TogetherPlaced copyWith({double? x, double? y, double? rotation}) {
     return TogetherPlaced(
       uid: uid,
       characterId: characterId,
       x: x ?? this.x,
       y: y ?? this.y,
       scale: scale,
+      rotation: rotation ?? this.rotation,
     );
   }
 }
@@ -121,6 +131,7 @@ abstract final class TogetherCrowdLayout {
           x: byUid[person.uid]!.x.toDouble(),
           y: byUid[person.uid]!.y.toDouble(),
           scale: scale,
+          rotation: byUid[person.uid]!.rotation.toDouble(),
         ),
     ];
     final newcomers = [
@@ -229,6 +240,7 @@ abstract final class TogetherCrowdLayout {
           x: slot.x,
           y: slot.y,
           scale: slot.scale * (slot.uid == myUid ? me : friend),
+          rotation: slot.rotation,
         ),
     ];
   }
@@ -241,6 +253,7 @@ abstract final class TogetherCrowdLayout {
           'x': slot.x.round(),
           'y': slot.y.round(),
           's': (slot.scale * 100).round().clamp(28, 120),
+          'r': slot.rotationDegrees,
         },
     ];
   }

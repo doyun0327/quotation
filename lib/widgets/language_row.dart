@@ -9,10 +9,12 @@ class LanguageRow extends StatelessWidget {
     super.key,
     required this.selectedId,
     required this.onSelected,
+    this.nativeNames = false,
   });
 
   final String selectedId;
   final ValueChanged<AppLanguage> onSelected;
+  final bool nativeNames;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class LanguageRow extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        language.label(current),
+                        nativeNames ? language.ownName : language.label(current),
                         style: AppTheme.body.copyWith(
                           fontSize: 11,
                           fontWeight: selectedId == language.id

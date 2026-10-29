@@ -417,6 +417,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
                   x: slot.x,
                   y: slot.y,
                   scale: slot.scale,
+                  rotation: slot.rotation,
                 ),
             ],
             textX: textX,

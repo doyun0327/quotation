@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/archive_controller.dart';
+import 'package:quotation/data/auth_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
@@ -314,6 +315,27 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
                             ),
                             if (_showTapHint) const _CharacterTapHint(),
                           ],
+                        ),
+                        ListenableBuilder(
+                          listenable: authController,
+                          builder: (context, _) {
+                            final name = authController.nickname?.trim() ?? '';
+                            if (name.isEmpty) return const SizedBox.shrink();
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                              child: Text(
+                                name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: AppTheme.body.copyWith(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF3C4C60),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

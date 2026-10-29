@@ -293,6 +293,7 @@ class DdayCloudSync {
               ? null
               : latestCheer,
         ),
+        cheerAuthorUid: data['latestCheerAuthorUid'] as String?,
       );
     } else {
       await ddayController.applyFriendsFromCloud(
@@ -302,6 +303,7 @@ class DdayCloudSync {
         latestCheer: (latestCheer == null || latestCheer.isEmpty)
             ? null
             : latestCheer,
+        latestCheerAuthorUid: data['latestCheerAuthorUid'] as String?,
       );
     }
 
@@ -381,13 +383,18 @@ class DdayCloudSync {
       crowdKey: key,
       crowd: [
         for (final slot in placed)
-          (uid: slot.uid, x: slot.x.round(), y: slot.y.round()),
+          (
+            uid: slot.uid,
+            x: slot.x.round(),
+            y: slot.y.round(),
+            rotation: slot.rotationDegrees,
+          ),
       ],
       fromCloud: true,
     );
   }
 
-  /// Host-centric layout → viewer-relative me/friend offsets.
+  /// Host-centric layout → this phone, so both widgets match.
   static Future<void> _applySharedLayout(
     String roomId,
     Map<String, dynamic> data,
@@ -504,6 +511,9 @@ class DdayCloudSync {
         uid: uid,
         x: ax((entry['x'] as num?)?.toInt() ?? 0),
         y: ay((entry['y'] as num?)?.toInt() ?? 0),
+        rotation: (entry['rotation'] as num?)?.toInt() ??
+            (entry['r'] as num?)?.toInt() ??
+            0,
       ));
     }
     return out;
@@ -607,7 +617,12 @@ class DdayCloudSync {
           if (crowdKey.isNotEmpty)
             'layoutCrowd': [
               for (final slot in crowd)
-                {'uid': slot.uid, 'x': slot.x, 'y': slot.y},
+                {
+                  'uid': slot.uid,
+                  'x': slot.x,
+                  'y': slot.y,
+                  'rotation': slot.rotation,
+                },
             ],
           'layoutUpdatedBy': uid,
           'layoutUpdatedByName':

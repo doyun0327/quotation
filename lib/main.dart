@@ -118,7 +118,13 @@ class _QuotationAppState extends State<QuotationApp> {
   }
 
   Future<void> _onAuthReady() async {
-    if (!mounted || !authController.isReady || _askingConsent) return;
+    if (!mounted || !authController.isReady || _askingConsent || _askingNickname) {
+      return;
+    }
+    if (authController.nickname == null) {
+      final asked = await _maybeAskNickname();
+      if (!asked || !mounted) return;
+    }
     if (CloudConsent.choice == CloudConsentChoice.unknown) {
       final navContext = appNavigatorKey.currentContext;
       if (navContext == null) {
@@ -136,23 +142,28 @@ class _QuotationAppState extends State<QuotationApp> {
       }
       _askingConsent = false;
     }
-    if (mounted) await _maybeAskNickname();
   }
 
-  Future<void> _maybeAskNickname() async {
+  Future<bool> _maybeAskNickname() async {
     if (!mounted || _askingNickname || _askingConsent || !authController.isReady) {
-      return;
+      return false;
     }
-    if (CloudConsent.choice == CloudConsentChoice.unknown) return;
-    if (authController.isBusy || authController.nickname != null) return;
+    if (authController.isBusy || authController.nickname != null) return true;
     final navContext = appNavigatorKey.currentContext;
-    if (navContext == null) return;
+    if (navContext == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _onAuthReady();
+      });
+      return false;
+    }
     _askingNickname = true;
     await showNicknameDialog(navContext, requiredName: true);
     _askingNickname = false;
-    if (mounted && authController.nickname == null) {
-      _maybeAskNickname();
+    if (!mounted) return false;
+    if (authController.nickname == null) {
+      return _maybeAskNickname();
     }
+    return true;
   }
 
   @override

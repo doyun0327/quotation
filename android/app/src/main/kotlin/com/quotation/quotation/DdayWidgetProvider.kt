@@ -299,9 +299,9 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     return w to h
   }
 
-  /** Keep each home-widget instance on its own room. A new widget takes [ddayPendingRoomId]. */
+  /** Keep each home-widget instance on its own room. Only a newly pinned widget takes the pending room. */
   private fun bindRoom(prefs: SharedPreferences, widgetId: Int): String {
-    val bindings = readJson(prefs, "ddayWidgetBindings")
+    val bindings = mergedBindings(prefs)
     val key = widgetId.toString()
     val existing = bindings.optString(key, "")
     if (existing.isNotBlank()) return existing
@@ -311,19 +311,46 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
       val legacy = readString(prefs, "ddayLegacyRoomId")
       if (legacy.isBlank() || legacy == pending) return ""
       bindings.put(key, legacy)
-      prefs.edit().putString("ddayWidgetBindings", bindings.toString()).apply()
+      writeBindings(prefs, bindings).apply()
       return legacy
     }
     val fallback = readString(prefs, "ddayRoomId")
     val room = if (pending.isNotBlank()) pending else fallback
     if (room.isBlank()) return ""
     bindings.put(key, room)
-    val editor = prefs.edit().putString("ddayWidgetBindings", bindings.toString())
+    val editor = writeBindings(prefs, bindings)
     if (pending.isNotBlank()) {
       editor.remove("ddayPendingRoomId").remove("flutter.ddayPendingRoomId")
     }
     editor.apply()
     return room
+  }
+
+  private fun mergedBindings(prefs: SharedPreferences): JSONObject {
+    val merged = JSONObject()
+    fun absorb(raw: String?) {
+      if (raw.isNullOrBlank()) return
+      try {
+        val obj = JSONObject(raw)
+        val keys = obj.keys()
+        while (keys.hasNext()) {
+          val key = keys.next()
+          val value = obj.optString(key, "")
+          if (value.isNotBlank()) merged.put(key, value)
+        }
+      } catch (_: Exception) {}
+    }
+    absorb(prefs.getString("ddayWidgetBindings", null))
+    absorb(prefs.getString("flutter.ddayWidgetBindings", null))
+    return merged
+  }
+
+  private fun writeBindings(
+      prefs: SharedPreferences,
+      bindings: JSONObject,
+  ): SharedPreferences.Editor {
+    val raw = bindings.toString()
+    return prefs.edit().putString("ddayWidgetBindings", raw).putString("flutter.ddayWidgetBindings", raw)
   }
 
   private fun readJson(prefs: SharedPreferences, key: String): JSONObject {
