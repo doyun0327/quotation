@@ -69,6 +69,108 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
+  /// iPhone gets a provider chooser; other platforms go straight to Google.
+  Future<void> _chooseSignIn(BuildContext context) async {
+    if (!AuthController.isAppleSignInAvailable) {
+      await _signIn(context);
+      return;
+    }
+    final t = AppStrings.current;
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: AppColors.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                t.loginMethodTitle,
+                textAlign: TextAlign.center,
+                style: AppTheme.body.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: () => Navigator.of(sheetContext).pop('apple'),
+                icon: const Icon(Icons.apple, size: 22),
+                label: Text(t.appleLoginTitle),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  textStyle: AppTheme.body.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton(
+                onPressed: () => Navigator.of(sheetContext).pop('google'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.ink,
+                  minimumSize: const Size.fromHeight(48),
+                  side: const BorderSide(color: AppColors.ink, width: 1.2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  textStyle: AppTheme.body.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                child: Text(t.googleLoginTitle),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (!context.mounted) return;
+    switch (choice) {
+      case 'apple':
+        await _signInWithApple(context);
+      case 'google':
+        await _signIn(context);
+    }
+  }
+
+  Future<void> _signInWithApple(BuildContext context) async {
+    final t = AppStrings.current;
+    final ok = await authController.signInWithApple();
+    if (!context.mounted) return;
+    if (ok) {
+      _toast(context, t.appleLoginSuccess);
+      return;
+    }
+    switch (authController.lastError) {
+      case 'canceled':
+        _toast(context, t.googleLoginCanceled);
+      case 'config':
+        _toast(context, t.appleLoginConfigError);
+      default:
+        final detail = authController.lastErrorDetail;
+        _toast(
+          context,
+          detail == null || detail.isEmpty
+              ? t.appleLoginFailed
+              : t.appleLoginFailedDetail(detail),
+        );
+    }
+  }
+
   Future<void> _subscribe(BuildContext context) async {
     final code = await billingController.buyMonthly();
     if (!context.mounted || code == null) return;
@@ -168,7 +270,7 @@ class SettingsScreen extends StatelessWidget {
                                   ? null
                                   : () => signedIn
                                       ? _signOut(context)
-                                      : _signIn(context),
+                                      : _chooseSignIn(context),
                             ),
                             onTap: () => showNicknameDialog(context),
                           ),

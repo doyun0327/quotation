@@ -302,6 +302,89 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  /// Sign in with Apple is offered on iPhone/iPad only (native sheet).
+  static bool get isAppleSignInAvailable =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
+  /// Native Apple sheet → Firebase. Upgrades the anonymous user when possible.
+  Future<bool> signInWithApple() async {
+    if (_busy) return false;
+    _busy = true;
+    _signingIn = true;
+    _lastError = null;
+    _lastErrorDetail = null;
+    notifyListeners();
+
+    try {
+      if (!_ready) await initialize();
+
+      final provider = AppleAuthProvider()
+        ..addScope('email')
+        ..addScope('name');
+      final current = FirebaseAuth.instance.currentUser;
+      UserCredential result;
+      if (current != null && current.isAnonymous) {
+        try {
+          result = await current.linkWithProvider(provider);
+        } on FirebaseAuthException catch (e) {
+          // This Apple ID already has a Firebase user. Switch to it.
+          final existing = e.credential;
+          if (e.code != 'credential-already-in-use' || existing == null) {
+            rethrow;
+          }
+          result = await FirebaseAuth.instance.signInWithCredential(existing);
+        }
+      } else {
+        result = await FirebaseAuth.instance.signInWithProvider(provider);
+      }
+
+      final fbUser = result.user;
+      if (fbUser == null) {
+        _lastError = 'failed';
+        return false;
+      }
+      // Apple shares the name only on the very first authorization.
+      final appleName = result.additionalUserInfo?.profile?['name'];
+      if ((fbUser.displayName ?? '').trim().isEmpty && appleName is String) {
+        try {
+          await fbUser.updateDisplayName(appleName);
+        } catch (_) {}
+      }
+      await _setUser(
+        AuthUser.fromFirebase(FirebaseAuth.instance.currentUser ?? fbUser),
+      );
+      await UserProfileSync.upsertCurrentUser();
+      await DdayCloudSync.start();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      final message = e.message ?? '';
+      _lastErrorDetail = '${e.code} $message'.trim();
+      debugPrint('AppleSignIn FirebaseAuthException: $_lastErrorDetail');
+      // ASAuthorizationError.canceled (1001) when the sheet is dismissed.
+      if (e.code.contains('cancel') ||
+          message.contains('1001') ||
+          message.toLowerCase().contains('cancel')) {
+        _lastError = 'canceled';
+      } else if (e.code == 'operation-not-allowed' ||
+          e.code == 'invalid-credential' ||
+          message.contains('1000')) {
+        _lastError = 'config';
+      } else {
+        _lastError = 'failed';
+      }
+      return false;
+    } catch (e) {
+      _lastError = 'failed';
+      _lastErrorDetail = e.toString();
+      debugPrint('AppleSignIn error: $e');
+      return false;
+    } finally {
+      _busy = false;
+      _signingIn = false;
+      notifyListeners();
+    }
+  }
+
   /// Exchange Google tokens for Firebase session (no browser).
   Future<bool> _linkFirebase(GoogleSignInAccount account) async {
     final auth = await account.authentication;

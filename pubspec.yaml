@@ -20,10 +20,12 @@ dependencies:
   shared_preferences: ^2.5.6
   # 6.x uses classic Google Sign-In (clearer Android errors than Credential Manager in 7.x).
   google_sign_in: ^6.2.2
-  firebase_core: ^5.0.0
-  firebase_auth: ^7.0.0
-  cloud_firestore: ^7.0.0
-  firebase_messaging: ^17.0.0
+  # Firebase iOS SDK 12.x line: google_sign_in_ios (GoogleSignIn-iOS 8/9) is not
+  # yet compatible with SDK 13 (app-check / gtm-session-fetcher conflicts).
+  firebase_core: ^4.15.2
+  firebase_auth: ^6.7.1
+  cloud_firestore: ^6.10.2
+  firebase_messaging: ^16.7.1
   app_links: ^7.2.2
   google_mobile_ads: ^9.2.0
   purchases_flutter: ^10.17.0
