@@ -586,6 +586,8 @@ abstract final class HomeWidgetSync {
           people: TogetherCrowdLayout.roster(
             myUid: authController.viewerUid,
             myCharacterId: meId,
+            myName: authController.nickname?.trim() ?? '',
+            myIds: authController.myIds,
             hostUid: item.cloudOwnerUid,
             friends: item.friends,
           ),

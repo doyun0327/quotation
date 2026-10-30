@@ -113,6 +113,13 @@ class AuthController extends ChangeNotifier {
     return 'local';
   }
 
+  /// Every id this phone has used for the signed-in person.
+  Set<String> get myIds => {
+        viewerUid,
+        if (FirebaseAuth.instance.currentUser?.uid case final uid?) uid,
+        'local',
+      };
+
   /// Name shown to friends. Survives anonymous auth, which has no Google name.
   String? get nickname {
     final saved = _nickname?.trim();

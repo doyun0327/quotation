@@ -64,12 +64,49 @@ abstract final class TogetherCrowdLayout {
   static String keyFor(List<TogetherCrowdPerson> people) =>
       people.map((p) => p.uid).join('|');
 
+  /// The signed-in person, plus a default-character copy saved under another id.
+  static bool isCurrentUser(
+    DdayFriendMember friend, {
+    required Set<String> myIds,
+    required String myName,
+    required String myCharacterId,
+  }) {
+    if (friend.uid.isEmpty || friend.uid == 'local' || myIds.contains(friend.uid)) {
+      return true;
+    }
+    final name = friend.displayName?.trim() ?? '';
+    return myName.isNotEmpty &&
+        name == myName &&
+        friend.characterId == 'basic' &&
+        myCharacterId != 'basic';
+  }
+
+  static List<DdayFriendMember> withoutMe(
+    List<DdayFriendMember> friends, {
+    required Set<String> myIds,
+    required String myName,
+    required String myCharacterId,
+  }) {
+    return [
+      for (final friend in friends)
+        if (!isCurrentUser(
+          friend,
+          myIds: myIds,
+          myName: myName,
+          myCharacterId: myCharacterId,
+        ))
+          friend,
+    ];
+  }
+
   /// Host first, then everyone else by uid, so every phone draws the same order.
   static List<TogetherCrowdPerson> roster({
     required String myUid,
     required String myCharacterId,
     required String? hostUid,
     required List<DdayFriendMember> friends,
+    String myName = '',
+    Set<String> myIds = const {},
   }) {
     final people = <TogetherCrowdPerson>[
       TogetherCrowdPerson(
@@ -77,8 +114,16 @@ abstract final class TogetherCrowdLayout {
         characterId: myCharacterId.isEmpty ? 'basic' : myCharacterId,
       ),
     ];
+    final ids = {myUid, 'local', ...myIds};
     for (final friend in friends) {
-      if (friend.uid.isEmpty || friend.uid == myUid) continue;
+      if (isCurrentUser(
+        friend,
+        myIds: ids,
+        myName: myName,
+        myCharacterId: myCharacterId,
+      )) {
+        continue;
+      }
       people.add(
         TogetherCrowdPerson(uid: friend.uid, characterId: friend.characterId),
       );

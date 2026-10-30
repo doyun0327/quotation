@@ -229,7 +229,12 @@ class _FriendsCard extends StatelessWidget {
     final t = AppStrings.current;
     final palette = context.palette;
     final me = characterController.character;
-    final friends = room.friends;
+    final friends = TogetherCrowdLayout.withoutMe(
+      room.friends,
+      myIds: authController.myIds,
+      myName: authController.nickname?.trim() ?? '',
+      myCharacterId: me.id,
+    );
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -399,6 +404,8 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
     final people = TogetherCrowdLayout.roster(
       myUid: authController.viewerUid,
       myCharacterId: characterController.character.id,
+      myName: authController.nickname?.trim() ?? '',
+      myIds: authController.myIds,
       hostUid: room.cloudOwnerUid,
       friends: room.friends,
     );

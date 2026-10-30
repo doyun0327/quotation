@@ -330,6 +330,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final people = TogetherCrowdLayout.roster(
       myUid: authController.viewerUid,
       myCharacterId: characterController.character.id,
+      myName: authController.nickname?.trim() ?? '',
+      myIds: authController.myIds,
       hostUid: room.cloudOwnerUid,
       friends: room.friends,
     );
@@ -741,7 +743,12 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             t.meLabel,
                           ),
                         ),
-                        for (final friend in live?.friends ?? const [])
+                        for (final friend in TogetherCrowdLayout.withoutMe(
+                          live?.friends ?? const [],
+                          myIds: authController.myIds,
+                          myName: authController.nickname?.trim() ?? '',
+                          myCharacterId: characterController.character.id,
+                        ))
                           _RoomMember(
                             friendUid: friend.uid,
                             assetPath: AppCharacter.byId(

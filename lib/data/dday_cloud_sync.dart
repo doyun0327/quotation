@@ -270,7 +270,12 @@ class DdayCloudSync {
             friendsForMe.isEmpty &&
             togetherTestRoom.enabled)
         ? [TogetherTestRoom.placeholderFriend()]
-        : _withLayoutCharacters(friendsForMe, data['layoutCrowd']);
+        : TogetherCrowdLayout.withoutMe(
+            _withLayoutCharacters(friendsForMe, data['layoutCrowd']),
+            myIds: {myUid, 'local'},
+            myName: FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
+            myCharacterId: characterController.character.id,
+          );
 
     final hasLocal = ddayController.items.any((e) => e.id == ddayId);
 
@@ -360,6 +365,8 @@ class DdayCloudSync {
     final people = TogetherCrowdLayout.roster(
       myUid: myUid,
       myCharacterId: characterController.character.id,
+      myName: FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
+      myIds: {myUid, 'local'},
       hostUid: room.cloudOwnerUid,
       friends: room.friends,
     );
@@ -585,6 +592,8 @@ class DdayCloudSync {
     final people = TogetherCrowdLayout.roster(
       myUid: uid,
       myCharacterId: characterController.character.id,
+      myName: FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
+      myIds: {uid, 'local'},
       hostUid: hostUid.isEmpty ? item.cloudOwnerUid : hostUid,
       friends: item.friends,
     );
