@@ -29,14 +29,6 @@ class TogetherBgTheme {
       assetPath: 'assets/images/widgetbackground/widget_background2.png',
     ),
     TogetherBgTheme(
-      id: 'widget_background3',
-      assetPath: 'assets/images/widgetbackground/widget_background3.png',
-    ),
-    TogetherBgTheme(
-      id: 'widget_background4',
-      assetPath: 'assets/images/widgetbackground/widget_backgournd4.png',
-    ),
-    TogetherBgTheme(
       id: 'widget_background5',
       assetPath: 'assets/images/widgetbackground/widget_background5.png',
     ),

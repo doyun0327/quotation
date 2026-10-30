@@ -49,8 +49,7 @@ service cloud.firestore {
       }
 
       function isGuest() {
-        return resource.data.keys().hasAll(['guestUids'])
-            && request.auth.uid in resource.data.guestUids;
+        return request.auth.uid in resource.data.get('guestUids', []);
       }
 
       function isRoomMember() {

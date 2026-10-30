@@ -36,9 +36,11 @@ class DdayCloudSync {
   DdayCloudSync._();
 
   static final _db = FirebaseFirestore.instance;
-  static final List<StreamSubscription<dynamic>> _subs = [];
+  static final Map<String, StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>>
+      _roomSubs = {};
   static final Map<String, String> _seenLayoutNotify = {};
   static bool _started = false;
+  static bool _roomsHooked = false;
 
   /// Fired after a friend's applied layout is saved on this phone.
   static void Function(TogetherLayoutNotice notice)? onRemoteWidgetEdit;
@@ -49,17 +51,64 @@ class DdayCloudSync {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
     _started = true;
+    if (!_roomsHooked) {
+      ddayController.addListener(_onRoomsChanged);
+      _roomsHooked = true;
+    }
     await UserProfileSync.upsertCurrentUser();
     await pushOwnedDdays();
     await pullMemberships();
-    await _listenOwnedAndJoined(uid);
+    _bindRoomWatches();
+  }
+
+  static void _onRoomsChanged() {
+    if (!_started) return;
+    _bindRoomWatches();
+  }
+
+  /// Each open room listens to its own membership document.
+  /// A document read is allowed for any signed-in user, so a friend sees
+  /// character, background, and cheer updates without a collection query.
+  static void _bindRoomWatches() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    final ids = ddayController.items.map((e) => e.id).toSet();
+    for (final id in _roomSubs.keys.toList()) {
+      if (ids.contains(id)) continue;
+      _roomSubs.remove(id)?.cancel();
+    }
+    for (final id in ids) {
+      if (_roomSubs.containsKey(id)) continue;
+      var first = true;
+      _roomSubs[id] = _db.collection('dday_memberships').doc(id).snapshots().listen(
+        (snap) async {
+          final data = snap.data();
+          if (data == null || !_started) return;
+          final notify = !first;
+          first = false;
+          try {
+            final notice = await _applyMembershipDoc(
+              snap.id,
+              data,
+              uid,
+              notifyRemote: notify,
+            );
+            await HomeWidgetSync.syncDday();
+            if (notice != null) onRemoteWidgetEdit?.call(notice);
+          } catch (e) {
+            debugPrint('room watch $id: $e');
+          }
+        },
+        onError: (Object e) => debugPrint('room watch $id: $e'),
+      );
+    }
   }
 
   static Future<void> stop() async {
-    for (final s in _subs) {
+    for (final s in _roomSubs.values) {
       await s.cancel();
     }
-    _subs.clear();
+    _roomSubs.clear();
     _started = false;
   }
 
@@ -138,55 +187,6 @@ class DdayCloudSync {
     } catch (e) {
       debugPrint('pullMemberships: $e');
     }
-  }
-
-  static Future<void> _listenOwnedAndJoined(String uid) async {
-    final hostSub = _db
-        .collection('dday_memberships')
-        .where('hostUid', isEqualTo: uid)
-        .snapshots()
-        .listen((snap) async {
-      final notices = <TogetherLayoutNotice>[];
-      for (final change in snap.docChanges) {
-        final data = change.doc.data();
-        if (data == null) continue;
-        final notice = await _applyMembershipDoc(
-          change.doc.id,
-          data,
-          uid,
-          notifyRemote: change.type == DocumentChangeType.modified,
-        );
-        if (notice != null) notices.add(notice);
-      }
-      await HomeWidgetSync.syncDday();
-      for (final notice in notices) {
-        onRemoteWidgetEdit?.call(notice);
-      }
-    });
-    final guestSub = _db
-        .collection('dday_memberships')
-        .where('guestUids', arrayContains: uid)
-        .snapshots()
-        .listen((snap) async {
-      final notices = <TogetherLayoutNotice>[];
-      for (final change in snap.docChanges) {
-        final data = change.doc.data();
-        if (data == null) continue;
-        final notice = await _applyMembershipDoc(
-          change.doc.id,
-          data,
-          uid,
-          notifyRemote: change.type == DocumentChangeType.modified,
-        );
-        if (notice != null) notices.add(notice);
-      }
-      await HomeWidgetSync.syncDday();
-      for (final notice in notices) {
-        onRemoteWidgetEdit?.call(notice);
-      }
-    });
-    _subs.add(hostSub);
-    _subs.add(guestSub);
   }
 
   static String? _cheerForDevice(String roomId, Map<String, dynamic> data) {
@@ -270,7 +270,7 @@ class DdayCloudSync {
             friendsForMe.isEmpty &&
             togetherTestRoom.enabled)
         ? [TogetherTestRoom.placeholderFriend()]
-        : friendsForMe;
+        : _withLayoutCharacters(friendsForMe, data['layoutCrowd']);
 
     final hasLocal = ddayController.items.any((e) => e.id == ddayId);
 
@@ -425,7 +425,8 @@ class DdayCloudSync {
     );
     int ax(int v) => (v * sx).round();
     int ay(int v) => (v * sy).round();
-    int? aScale(int? v) => v == null ? null : (v * sx).round();
+    // Scale is a percent, not a canvas offset. Do not stretch it per phone.
+    int? aScale(int? v) => v;
     final hostX = ax((data['layoutHostX'] as num?)?.toInt() ?? 0);
     final hostY = ay((data['layoutHostY'] as num?)?.toInt() ?? 0);
     final guestX = ax((data['layoutGuestX'] as num?)?.toInt() ?? 0);
@@ -450,9 +451,11 @@ class DdayCloudSync {
     final widgetSize =
         sizeId == null ? null : TogetherWidgetSize.byId(sizeId);
     final crowdKey = data['layoutCrowdKey'] as String?;
-    final crowd = (crowdKey == null || crowdKey.isEmpty)
+    final crowd = _crowdPoints(data['layoutCrowd'], ax, ay);
+    final sharedCrowd = crowd.isEmpty ? null : crowd;
+    final sharedCrowdKey = (crowdKey == null || crowdKey.isEmpty)
         ? null
-        : _crowdPoints(data['layoutCrowd'], ax, ay);
+        : crowdKey;
     if (iAmHost) {
       await ddayController.setDuoOffsets(
         roomId: roomId,
@@ -469,8 +472,8 @@ class DdayCloudSync {
         textColor: textColor,
         shape: shape,
         widgetSize: widgetSize,
-        crowdKey: crowd == null ? null : crowdKey,
-        crowd: crowd,
+        crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
+        crowd: sharedCrowd,
         fromCloud: true,
       );
     } else {
@@ -489,8 +492,8 @@ class DdayCloudSync {
         textColor: textColor,
         shape: shape,
         widgetSize: widgetSize,
-        crowdKey: crowd == null ? null : crowdKey,
-        crowd: crowd,
+        crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
+        crowd: sharedCrowd,
         fromCloud: true,
       );
     }
@@ -579,6 +582,15 @@ class DdayCloudSync {
       final remoteHost = mem.data()?['hostUid'] as String?;
       if (remoteHost != null && remoteHost.isNotEmpty) hostUid = remoteHost;
     } catch (_) {}
+    final people = TogetherCrowdLayout.roster(
+      myUid: uid,
+      myCharacterId: characterController.character.id,
+      hostUid: hostUid.isEmpty ? item.cloudOwnerUid : hostUid,
+      friends: item.friends,
+    );
+    final charByUid = {
+      for (final person in people) person.uid: person.characterId,
+    };
     final iAmHost = hostUid.isEmpty || hostUid == uid;
     final hostX = iAmHost ? meX : friendX;
     final hostY = iAmHost ? meY : friendY;
@@ -609,12 +621,12 @@ class DdayCloudSync {
           'layoutHostScale': hostScale,
           'layoutGuestScale': guestScale,
           'layoutTextScale': textScale,
-          if (bgTheme != TogetherBgTheme.albumId) 'layoutBgTheme': bgTheme,
+          'layoutBgTheme': bgTheme,
           'layoutTextColor': textColor,
           'layoutShape': shape.id,
           'layoutWidgetSize': widgetSize.id,
           if (crowdKey.isNotEmpty) 'layoutCrowdKey': crowdKey,
-          if (crowdKey.isNotEmpty)
+          if (crowd.isNotEmpty)
             'layoutCrowd': [
               for (final slot in crowd)
                 {
@@ -622,6 +634,8 @@ class DdayCloudSync {
                   'x': slot.x,
                   'y': slot.y,
                   'rotation': slot.rotation,
+                  if ((charByUid[slot.uid] ?? '').isNotEmpty)
+                    'characterId': charByUid[slot.uid],
                 },
             ],
           'layoutUpdatedBy': uid,
@@ -636,6 +650,33 @@ class DdayCloudSync {
     } catch (e) {
       debugPrint('pushSharedLayout: $e');
     }
+  }
+
+  static List<DdayFriendMember> _withLayoutCharacters(
+    List<DdayFriendMember> friends,
+    Object? raw,
+  ) {
+    if (raw is! List) return friends;
+    final chars = <String, String>{};
+    for (final entry in raw) {
+      if (entry is! Map) continue;
+      final uid = entry['uid']?.toString() ?? '';
+      final id = entry['characterId']?.toString() ?? '';
+      if (uid.isEmpty || id.isEmpty) continue;
+      chars[uid] = id;
+    }
+    if (chars.isEmpty) return friends;
+    return [
+      for (final friend in friends)
+        if (chars.containsKey(friend.uid))
+          DdayFriendMember(
+            uid: friend.uid,
+            characterId: chars[friend.uid]!,
+            displayName: friend.displayName,
+          )
+        else
+          friend,
+    ];
   }
 
   static bool get isStarted => _started;

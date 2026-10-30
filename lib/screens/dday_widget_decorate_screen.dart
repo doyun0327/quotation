@@ -288,8 +288,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       notifyFriends: applyToHome,
       canvasW: _previewSize.width,
       canvasH: _previewSize.height,
-      crowdKey: _crowdDirty ? _placedKey : null,
-      crowd: _crowdDirty
+      crowdKey: (_crowdDirty || applyToHome) ? _placedKey : null,
+      crowd: (_crowdDirty || applyToHome)
           ? [
               for (final person in _placed)
                 (

@@ -639,13 +639,11 @@ class DdayController extends ChangeNotifier {
         _sameCrowd(cur, next);
     if (same) {
       if (!fromCloud && notifyFriends) {
-        unawaited(
-          DdayCloudSync.pushSharedLayout(
-            roomId: targetId,
-            notifyFriends: true,
-            canvasW: canvasW,
-            canvasH: canvasH,
-          ),
+        await DdayCloudSync.pushSharedLayout(
+          roomId: targetId,
+          notifyFriends: true,
+          canvasW: canvasW,
+          canvasH: canvasH,
         );
       }
       return;
@@ -660,14 +658,13 @@ class DdayController extends ChangeNotifier {
     }
     await _persistRoomOffsets();
     notifyListeners();
-    if (!fromCloud) {
-      unawaited(
-        DdayCloudSync.pushSharedLayout(
-          roomId: targetId,
-          notifyFriends: notifyFriends,
-          canvasW: canvasW,
-          canvasH: canvasH,
-        ),
+    // Share with the room only when the user applies the widget to home.
+    if (!fromCloud && notifyFriends) {
+      await DdayCloudSync.pushSharedLayout(
+        roomId: targetId,
+        notifyFriends: true,
+        canvasW: canvasW,
+        canvasH: canvasH,
       );
     }
   }
