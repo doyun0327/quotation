@@ -149,58 +149,77 @@ class UserProfileSync {
   }
 
   /// Removes this account's profile, hosted rooms, invites, and guest membership.
+  /// Each step is isolated so a rules miss still lets the auth user be deleted.
   static Future<void> deleteRemoteAccount(String uid) async {
     if (uid.isEmpty) return;
     final db = _db;
 
-    final hostedDays = await db
-        .collection('ddays')
-        .where('ownerUid', isEqualTo: uid)
-        .get();
-    for (final doc in hostedDays.docs) {
-      await doc.reference.delete();
+    Future<void> step(String name, Future<void> Function() action) async {
+      try {
+        await action();
+      } catch (e) {
+        debugPrint('deleteRemoteAccount $name: $e');
+      }
     }
 
-    final hostedRooms = await db
-        .collection('dday_memberships')
-        .where('hostUid', isEqualTo: uid)
-        .get();
-    for (final doc in hostedRooms.docs) {
-      await doc.reference.delete();
-    }
+    await step('ddays', () async {
+      final hostedDays = await db
+          .collection('ddays')
+          .where('ownerUid', isEqualTo: uid)
+          .get();
+      for (final doc in hostedDays.docs) {
+        await doc.reference.delete();
+      }
+    });
 
-    final guestRooms = await db
-        .collection('dday_memberships')
-        .where('guestUids', arrayContains: uid)
-        .get();
-    for (final doc in guestRooms.docs) {
-      final data = doc.data();
-      final guests = (data['guestUids'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .where((id) => id != uid)
-          .toList();
-      final members = (data['members'] as List<dynamic>? ?? [])
-          .map((e) => Map<String, dynamic>.from(e as Map))
-          .where((member) => member['uid'] != uid)
-          .toList();
-      await doc.reference.set(
-        {
-          'guestUids': guests,
-          'members': members,
-          'updatedAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      );
-    }
+    await step('hosted rooms', () async {
+      final hostedRooms = await db
+          .collection('dday_memberships')
+          .where('hostUid', isEqualTo: uid)
+          .get();
+      for (final doc in hostedRooms.docs) {
+        await doc.reference.delete();
+      }
+    });
 
-    final invites = await db
-        .collection('dday_invites')
-        .where('hostUid', isEqualTo: uid)
-        .get();
-    for (final doc in invites.docs) {
-      await doc.reference.delete();
-    }
+    await step('guest rooms', () async {
+      final guestRooms = await db
+          .collection('dday_memberships')
+          .where('guestUids', arrayContains: uid)
+          .get();
+      for (final doc in guestRooms.docs) {
+        final data = doc.data();
+        final guests = (data['guestUids'] as List<dynamic>? ?? [])
+            .map((e) => e.toString())
+            .where((id) => id != uid)
+            .toList();
+        final members = (data['members'] as List<dynamic>? ?? [])
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .where((member) => member['uid'] != uid)
+            .toList();
+        await doc.reference.set(
+          {
+            'guestUids': guests,
+            'members': members,
+            'updatedAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+      }
+    });
 
-    await db.collection('users').doc(uid).delete();
+    await step('invites', () async {
+      final invites = await db
+          .collection('dday_invites')
+          .where('hostUid', isEqualTo: uid)
+          .get();
+      for (final doc in invites.docs) {
+        await doc.reference.delete();
+      }
+    });
+
+    await step('profile', () async {
+      await db.collection('users').doc(uid).delete();
+    });
   }
 }

@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
 import 'package:quotation/data/cloud_consent.dart';
-import 'package:quotation/widgets/cloud_consent_dialog.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
@@ -24,7 +23,6 @@ import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/firebase_options.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
-import 'package:quotation/screens/character_select_screen.dart';
 import 'package:quotation/screens/main_shell.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -102,7 +100,6 @@ class QuotationApp extends StatefulWidget {
 
 class _QuotationAppState extends State<QuotationApp> {
   bool _askingNickname = false;
-  bool _askingConsent = false;
 
   @override
   void initState() {
@@ -118,34 +115,16 @@ class _QuotationAppState extends State<QuotationApp> {
   }
 
   Future<void> _onAuthReady() async {
-    if (!mounted || !authController.isReady || _askingConsent || _askingNickname) {
+    if (!mounted || !authController.isReady || _askingNickname) {
       return;
     }
     if (authController.nickname == null) {
-      final asked = await _maybeAskNickname();
-      if (!asked || !mounted) return;
-    }
-    if (CloudConsent.choice == CloudConsentChoice.unknown) {
-      final navContext = appNavigatorKey.currentContext;
-      if (navContext == null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _onAuthReady();
-        });
-        return;
-      }
-      _askingConsent = true;
-      final accepted = await showCloudConsentDialog(navContext);
-      if (accepted) {
-        await authController.acceptCloudDisclosure();
-      } else {
-        await authController.declineCloudDisclosure();
-      }
-      _askingConsent = false;
+      await _maybeAskNickname();
     }
   }
 
   Future<bool> _maybeAskNickname() async {
-    if (!mounted || _askingNickname || _askingConsent || !authController.isReady) {
+    if (!mounted || _askingNickname || !authController.isReady) {
       return false;
     }
     if (authController.isBusy || authController.nickname != null) return true;
@@ -220,11 +199,7 @@ class _QuotationAppState extends State<QuotationApp> {
               ),
             );
           },
-          home: characterController.hasPicked
-              ? const MainShell()
-              : CharacterSelectScreen(
-                  onFinished: () => setState(() {}),
-                ),
+          home: const MainShell(),
         );
       },
     );

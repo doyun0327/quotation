@@ -130,7 +130,9 @@ class AuthController extends ChangeNotifier {
 
   GoogleSignIn get _client {
     return _googleSignIn ??= GoogleSignIn(
-      scopes: const <String>['email', 'profile'],
+      // email is enough. A bare "profile" scope makes Android Sign-In fail
+      // with ApiException 10. Name and photo still come from the account.
+      scopes: const <String>['email'],
       // Web client from Firebase Auth → Google (for idToken → Firebase).
       // Native account sheet stays in-app; does not open dearly-cf730 web page.
       serverClientId: GoogleAuthConfig.serverClientId,
@@ -150,9 +152,11 @@ class AuthController extends ChangeNotifier {
         : (legacy != null && legacy.isNotEmpty ? legacy : null);
     notifyListeners();
 
-    if (CloudConsent.accepted) {
-      await _startCloudSession();
+    // Friends and widgets sync through Firebase without a login prompt.
+    if (!CloudConsent.accepted) {
+      await CloudConsent.accept();
     }
+    await _startCloudSession();
 
     _ready = true;
     notifyListeners();
@@ -172,7 +176,7 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _startCloudSession() async {
+  Future<void> _startCloudSession({bool restoreGoogle = true}) async {
     if (!CloudConsent.accepted || _sessionStarted) return;
     _sessionStarted = true;
 
@@ -191,7 +195,7 @@ class AuthController extends ChangeNotifier {
         await _setUser(AuthUser.fromFirebase(fresh));
       }
       await ensureAnonymous();
-      if (googleEmail == null) {
+      if (restoreGoogle && googleEmail == null) {
         await _restoreGoogleAccount();
       }
     } catch (e) {
@@ -245,10 +249,6 @@ class AuthController extends ChangeNotifier {
 
   Future<bool> signIn() async {
     if (_busy) return false;
-    if (!CloudConsent.accepted) {
-      _lastError = 'consent';
-      return false;
-    }
     _busy = true;
     _signingIn = true;
     _lastError = null;
@@ -257,11 +257,12 @@ class AuthController extends ChangeNotifier {
 
     try {
       if (!_ready) await initialize();
-
-      // Force account picker in the native Google UI (still in-app sheet).
-      try {
-        await _client.signOut();
-      } catch (_) {}
+      if (!CloudConsent.accepted) {
+        await CloudConsent.accept();
+      }
+      if (!_sessionStarted) {
+        await _startCloudSession(restoreGoogle: false);
+      }
 
       final account = await _client.signIn();
       if (account == null) {
@@ -271,8 +272,8 @@ class AuthController extends ChangeNotifier {
 
       final linked = await _linkFirebase(account);
       if (!linked) {
-        // Profile still saved so settings login isn't a hard failure.
-        await _setUser(AuthUser.fromGoogle(account));
+        _lastError ??= 'failed';
+        return false;
       }
       return true;
     } on PlatformException catch (e) {
@@ -388,8 +389,10 @@ class AuthController extends ChangeNotifier {
   /// Exchange Google tokens for Firebase session (no browser).
   Future<bool> _linkFirebase(GoogleSignInAccount account) async {
     final auth = await account.authentication;
-    if (auth.idToken == null && auth.accessToken == null) {
-      debugPrint('Google auth missing tokens');
+    if (auth.idToken == null) {
+      debugPrint('Google auth missing idToken');
+      _lastError = 'config';
+      _lastErrorDetail = 'missing idToken';
       return false;
     }
     try {
@@ -404,12 +407,23 @@ class AuthController extends ChangeNotifier {
           result = await current.linkWithCredential(credential);
         } on FirebaseAuthException catch (e) {
           // This Google account already has a Firebase user. Switch to it.
-          if (e.code != 'credential-already-in-use' &&
-              e.code != 'email-already-in-use' &&
-              e.code != 'provider-already-linked') {
+          const switchCodes = {
+            'credential-already-in-use',
+            'email-already-in-use',
+            'provider-already-linked',
+            'account-exists-with-different-credential',
+          };
+          debugPrint('linkWithCredential: ${e.code} ${e.message}');
+          if (switchCodes.contains(e.code)) {
+            result = await FirebaseAuth.instance.signInWithCredential(
+              e.credential ?? credential,
+            );
+          } else if (e.code == 'unknown' || e.code == 'internal-error') {
+            await FirebaseAuth.instance.signOut();
+            result = await FirebaseAuth.instance.signInWithCredential(credential);
+          } else {
             rethrow;
           }
-          result = await FirebaseAuth.instance.signInWithCredential(credential);
         }
       } else {
         result = await FirebaseAuth.instance.signInWithCredential(credential);
@@ -422,6 +436,13 @@ class AuthController extends ChangeNotifier {
       await UserProfileSync.upsertCurrentUser();
       await DdayCloudSync.start();
       return true;
+    } on FirebaseAuthException catch (e) {
+      _lastError = e.code == 'invalid-credential' || e.code == 'operation-not-allowed'
+          ? 'config'
+          : 'failed';
+      _lastErrorDetail = '${e.code} ${e.message ?? ''}'.trim();
+      debugPrint('Firebase credential sign-in failed: $_lastErrorDetail');
+      return false;
     } catch (e) {
       debugPrint('Firebase credential sign-in failed: $e');
       _lastErrorDetail = e.toString();
@@ -448,26 +469,54 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Deletes the Firebase user, profile, and cloud room data from the app.
+  /// Deletes the signed-in Firebase user, profile, and cloud room data.
+  /// A Google or Apple session is required. Anonymous-only sessions are not
+  /// deleted here, so a logged-out tap cannot wipe the wrong account.
   Future<bool> deleteAccount() async {
     if (_busy) return false;
     _busy = true;
+    _lastError = null;
+    _lastErrorDetail = null;
     notifyListeners();
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await UserProfileSync.deleteRemoteAccount(user.uid);
-        await _deleteAuthUser(user);
+      if (!_ready) await initialize();
+      if (!CloudConsent.accepted) {
+        await CloudConsent.accept();
       }
+      if (!_sessionStarted) {
+        await _startCloudSession(restoreGoogle: false);
+      }
+
+      var user = await _userForDeletion();
+      if (user == null) {
+        _lastError = 'failed';
+        return false;
+      }
+
+      final lastSignIn = user.metadata.lastSignInTime;
+      final stale = lastSignIn == null ||
+          DateTime.now().difference(lastSignIn) > const Duration(minutes: 5);
+      if (stale) {
+        await _reauthenticate(user);
+        user = FirebaseAuth.instance.currentUser ?? user;
+      }
+
+      await UserProfileSync.deleteRemoteAccount(user.uid);
+      await _deleteAuthUser(user);
+
       await _stopRemoteSession();
       try {
         await _client.disconnect();
       } catch (_) {}
       await _clearUser();
-      await CloudConsent.reset();
+      await CloudConsent.accept();
+      // Do not restore the Google account that was just deleted.
+      await _startCloudSession(restoreGoogle: false);
       return true;
     } catch (e) {
       debugPrint('deleteAccount: $e');
+      _lastError = 'failed';
+      _lastErrorDetail = e.toString();
       return false;
     } finally {
       _busy = false;
@@ -475,21 +524,53 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  /// Google/Apple Firebase user to delete. Links Google when the current
+  /// session is still anonymous.
+  Future<User?> _userForDeletion() async {
+    final current = FirebaseAuth.instance.currentUser;
+    if (current != null && !current.isAnonymous) return current;
+    final account = await _client.signIn();
+    if (account == null) return null;
+    final linked = await _linkFirebase(account);
+    final user = FirebaseAuth.instance.currentUser;
+    if (!linked || user == null || user.isAnonymous) return null;
+    return user;
+  }
+
   Future<void> _deleteAuthUser(User user) async {
     try {
       await user.delete();
     } on FirebaseAuthException catch (e) {
       if (e.code != 'requires-recent-login') rethrow;
-      final account = await _client.signIn();
-      if (account == null) rethrow;
-      final auth = await account.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: auth.accessToken,
-        idToken: auth.idToken,
-      );
-      await user.reauthenticateWithCredential(credential);
-      await FirebaseAuth.instance.currentUser?.delete();
+      await _reauthenticate(user);
+      final fresh = FirebaseAuth.instance.currentUser;
+      if (fresh == null) rethrow;
+      await fresh.delete();
     }
+  }
+
+  Future<void> _reauthenticate(User user) async {
+    final ids = user.providerData.map((info) => info.providerId).toSet();
+    if (ids.contains('apple.com') && !ids.contains('google.com')) {
+      final provider = AppleAuthProvider()
+        ..addScope('email')
+        ..addScope('name');
+      await user.reauthenticateWithProvider(provider);
+      return;
+    }
+    final account = await _client.signIn();
+    if (account == null) {
+      throw FirebaseAuthException(
+        code: 'requires-recent-login',
+        message: 'canceled',
+      );
+    }
+    final auth = await account.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: auth.accessToken,
+      idToken: auth.idToken,
+    );
+    await user.reauthenticateWithCredential(credential);
   }
 
   /// Saves a friend-facing nickname and mirrors it to Firebase after consent.

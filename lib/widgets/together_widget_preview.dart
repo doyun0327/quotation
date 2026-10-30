@@ -232,10 +232,20 @@ class TogetherWidgetPreview extends StatelessWidget {
       required Widget child,
       required TogetherWidgetPanDelta? onPan,
       VoidCallback? onSelect,
+      double rotation = 0,
+      ValueChanged<double>? onRotate,
     }) {
+      final VoidCallback? onTap = onRotate != null
+          ? () {
+              onDragStart?.call();
+              onRotate((rotation + 45) % 360);
+              onDragEnd?.call();
+            }
+          : onSelect;
+      if (onTap == null && onPan == null) return child;
       return GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: onSelect,
+        onTap: onTap,
         onPanStart: onPan == null
             ? null
             : (_) {
@@ -269,47 +279,64 @@ class TogetherWidgetPreview extends StatelessWidget {
       double rotation = 0,
       ValueChanged<double>? onRotate,
     }) {
-      const knob = 28.0;
-      final orbit = spriteH / 2 + 20;
-      final rad = rotation * math.pi / 180;
+      const knob = 36.0;
+      const gap = 6.0;
+      final showKnob = highlight && onRotate != null;
+      // Extra space stays inside this box so the handle can be hit.
+      // The picture stays on the bottom edge, so bottom-anchored layout
+      // does not shift the character.
+      final reach = showKnob ? knob + gap : 0.0;
       return SizedBox(
         width: spriteW,
-        height: spriteH,
+        height: spriteH + reach,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            panTarget(
-              onPan: onPan,
-              onSelect: onSelect,
-              child: Transform.rotate(
-                alignment: Alignment.center,
-                angle: rotation * math.pi / 180,
-                child: Image.asset(
-                  asset,
-                  width: spriteW,
-                  height: spriteH,
-                  fit: BoxFit.contain,
-                  filterQuality:
-                      isPixel ? FilterQuality.none : FilterQuality.medium,
-                  isAntiAlias: !isPixel,
+            Positioned(
+              left: 0,
+              bottom: 0,
+              width: spriteW,
+              height: spriteH,
+              child: panTarget(
+                onPan: onPan,
+                onSelect: onSelect,
+                rotation: rotation,
+                onRotate: onRotate,
+                child: Transform.rotate(
+                  alignment: Alignment.center,
+                  angle: rotation * math.pi / 180,
+                  child: Image.asset(
+                    asset,
+                    width: spriteW,
+                    height: spriteH,
+                    fit: BoxFit.contain,
+                    filterQuality: rotation % 90 == 0 && isPixel
+                        ? FilterQuality.none
+                        : FilterQuality.medium,
+                    isAntiAlias: !isPixel || rotation % 90 != 0,
+                  ),
                 ),
               ),
             ),
             if (highlight)
-              const Positioned.fill(
-                child: IgnorePointer(
+              Positioned(
+                left: 0,
+                bottom: 0,
+                width: spriteW,
+                height: spriteH,
+                child: const IgnorePointer(
                   child: CustomPaint(painter: _PixelSelectPainter()),
                 ),
               ),
-            if (highlight && onRotate != null)
+            if (showKnob)
               Positioned(
-                left: spriteW / 2 + math.sin(rad) * orbit - knob / 2,
-                top: spriteH / 2 - math.cos(rad) * orbit - knob / 2,
+                left: (spriteW - knob) / 2,
+                top: 0,
                 width: knob,
                 height: knob,
                 child: _RotateKnob(
                   spriteHeight: spriteH,
-                  rotation: rotation,
+                  gap: gap,
                   onRotate: onRotate,
                   onDragStart: onDragStart,
                   onDragEnd: onDragEnd,
@@ -386,14 +413,17 @@ class TogetherWidgetPreview extends StatelessWidget {
             : (opacity <= 0.01 ? Colors.transparent : color),
         borderRadius: BorderRadius.circular(radius),
       ),
-      clipBehavior: Clip.hardEdge,
+      clipBehavior: Clip.none,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           if (hasImage)
             Positioned.fill(
-              child: RepaintBoundary(
-                child: _backgroundImage(bgAssetPath!, isPixel),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: RepaintBoundary(
+                  child: _backgroundImage(bgAssetPath!, isPixel),
+                ),
               ),
             ),
           Positioned(
@@ -518,14 +548,14 @@ class _PixelSelectPainter extends CustomPainter {
 class _RotateKnob extends StatefulWidget {
   const _RotateKnob({
     required this.spriteHeight,
-    required this.rotation,
+    required this.gap,
     required this.onRotate,
     this.onDragStart,
     this.onDragEnd,
   });
 
   final double spriteHeight;
-  final double rotation;
+  final double gap;
   final ValueChanged<double> onRotate;
   final VoidCallback? onDragStart;
   final VoidCallback? onDragEnd;
@@ -535,14 +565,14 @@ class _RotateKnob extends StatefulWidget {
 }
 
 class _RotateKnobState extends State<_RotateKnob> {
-  /// Degrees of the finger around the sprite center. 0 keeps the picture upright.
+  /// Degrees from the sprite center to the finger.
+  /// 0 is upright. The same angle turns the picture so the head points at the finger.
   double _degrees(Offset global) {
-    final box = context.findRenderObject() as RenderBox;
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return 0;
     final knob = box.localToGlobal(box.size.center(Offset.zero));
-    final rad = widget.rotation * math.pi / 180;
-    final orbit = widget.spriteHeight / 2 + 20;
-    final center = knob -
-        Offset(math.sin(rad) * orbit, -math.cos(rad) * orbit);
+    final center = knob +
+        Offset(0, box.size.height / 2 + widget.gap + widget.spriteHeight / 2);
     final delta = global - center;
     return math.atan2(delta.dx, -delta.dy) * 180 / math.pi;
   }
@@ -560,16 +590,11 @@ class _RotateKnobState extends State<_RotateKnob> {
       },
       onPanEnd: (_) => widget.onDragEnd?.call(),
       onPanCancel: () => widget.onDragEnd?.call(),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFF4A4158), width: 1.4),
-        ),
-        child: const Icon(
+      child: const Center(
+        child: Icon(
           Icons.rotate_right_rounded,
-          size: 16,
-          color: Color(0xFF4A4158),
+          size: 22,
+          color: Color(0xFF5C5348),
         ),
       ),
     );

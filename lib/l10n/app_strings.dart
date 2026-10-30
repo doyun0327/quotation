@@ -69,7 +69,7 @@ class AppStrings {
       _t('위젯 꾸미기', 'Customize widget', 'ウィジェットを飾る');
   String get ddayDuoDecorateSubtitle => _t('같은 방 친구와 캐릭터 위치를 함께 맞추고, 홈 위젯에 바로 반영해요', 'Place characters with room friends — changes sync to the home widget', '同じルームの友だちとキャラクターの位置を合わせ、ホームウィジェットにすぐ反映します');
   String get ddayDuoDecoratePreview => _t('미리보기', 'Preview', 'プレビュー');
-  String get ddayDuoDecorateDragHint => _t('캐릭터를 눌러 고른 뒤, 배경 안에서 끌어 옮기세요', 'Tap a character, then drag it inside the background', 'キャラクターをタップして選び、背景の中でドラッグして移動してください');
+  String get ddayDuoDecorateDragHint => _t('캐릭터를 선택한 뒤 이동시켜보세요!', 'Select a character, then move it!', 'キャラクターを選んで、動かしてみてください！');
   String get ddayDuoDecorateMenuHint => _t('친구와 함께 꾸미는 응원 위젯', 'Cheer widget you decorate with friends', '友だちと一緒に飾る応援ウィジェット');
   String get ddayDuoDecorateDone => _t('홈에 적용', 'Apply to home', 'ホームに適用');
   String get ddayDuoDecorateSampleTitle => _t('우리 방', 'Our room', '私たちのルーム');
@@ -468,7 +468,36 @@ class AppStrings {
   String get termsSubtitle =>
       _t('서비스 이용 관련 정보를 확인하세요', 'Review terms and privacy policy', 'サービスの利用に関する情報を確認してください');
   String get accountDeleteTitle =>
-      _t('계정 삭제 요청', 'Delete account', 'アカウント削除の依頼');
+      _t('계정 삭제', 'Delete account', 'アカウント削除');
+  String get accountDeleteGuideTitle =>
+      _t('계정 삭제 안내', 'Account deletion notice', 'アカウント削除のご案内');
+  String get accountDeleteAsk => _t(
+        '계정을 삭제하시겠어요?',
+        'Delete your account?',
+        'アカウントを削除しますか？',
+      );
+  String get accountDeleteDataNotice => _t(
+        '계정을 삭제하면 내 프로필, 위젯 설정, 저장한 문구 등 계정과 관련된 데이터가 삭제되며 복구할 수 없어요.',
+        'Deleting your account removes related data such as your profile, widget settings, and saved quotes. This cannot be undone.',
+        'アカウントを削除すると、プロフィール、ウィジェット設定、保存した文章など、アカウントに関するデータが削除され、元に戻せません。',
+      );
+  String get accountDeleteSubscriptionHeading =>
+      _t('구독 이용 안내', 'About your subscription', '定期購入についてのご案内');
+  String get accountDeleteSubscriptionKeep => _t(
+        '현재 구독 중인 경우 계정을 삭제해도 Google Play 정기결제는 자동으로 해지되지 않아요.',
+        'If you are subscribed, deleting your account does not automatically cancel the Google Play subscription.',
+        '定期購入中の場合、アカウントを削除しても Google Play の定期購入は自動では解約されません。',
+      );
+  String get accountDeleteSubscriptionCancel => _t(
+        '추가 결제가 발생하지 않도록 Google Play 스토어에서 직접 구독을 해지해 주세요.',
+        'Cancel the subscription yourself in the Google Play Store so you are not charged again.',
+        '追加の請求が発生しないよう、Google Play ストアでご自身で定期購入を解約してください。',
+      );
+  String get accountDeleteSubscriptionRenew => _t(
+        '계정 삭제 후에도 구독은 별도로 해지하기 전까지 자동 갱신될 수 있어요.',
+        'After the account is deleted, the subscription can keep renewing until you cancel it separately.',
+        'アカウント削除後も、別途解約するまで定期購入は自動更新されることがあります。',
+      );
   String get accountDeleteSubtitle => _t(
         '앱에서 Firebase 계정과 클라우드 데이터를 삭제합니다',
         'Delete your Firebase account and cloud data in the app',
@@ -491,9 +520,9 @@ class AppStrings {
   String get accountDeleteNow =>
       _t('앱에서 계정 삭제', 'Delete account in the app', 'アプリでアカウントを削除');
   String get accountDeleteConfirmBody => _t(
-        'Firebase 계정, 프로필, 같이 방 클라우드 데이터를 지웁니다. 이 작업은 되돌릴 수 없어요.',
-        'This deletes your Firebase account, profile, and Together cloud data. It cannot be undone.',
-        'Firebase アカウント、プロフィール、一緒ルームのクラウドデータを削除します。この操作は元に戻せません。',
+        'Firebase 계정, 프로필, 같이 방 클라우드 데이터를 지웁니다. 이 작업은 되돌릴 수 없어요.\n\n구독은 계정 삭제와 함께 해지되지 않아요. Google Play에서 따로 해지해 주세요.',
+        'This deletes your Firebase account, profile, and Together cloud data. It cannot be undone.\n\nDeleting the account does not cancel a subscription. Cancel it separately in Google Play.',
+        'Firebase アカウント、プロフィール、一緒ルームのクラウドデータを削除します。この操作は元に戻せません。\n\nアカウントを削除しても定期購入は解約されません。Google Playで別途解約してください。',
       );
   String get accountDeleteDone => _t(
         '계정과 클라우드 데이터를 삭제했어요',

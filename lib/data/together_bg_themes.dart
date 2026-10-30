@@ -36,10 +36,34 @@ class TogetherBgTheme {
       id: 'widget_background4',
       assetPath: 'assets/images/widgetbackground/widget_backgournd4.png',
     ),
+    TogetherBgTheme(
+      id: 'widget_background5',
+      assetPath: 'assets/images/widgetbackground/widget_background5.png',
+    ),
+    TogetherBgTheme(
+      id: 'widget_background6',
+      assetPath: 'assets/images/widgetbackground/widget_background6.png',
+    ),
+    TogetherBgTheme(
+      id: 'widget_background7',
+      assetPath: 'assets/images/widgetbackground/widget_background7.png',
+    ),
+    TogetherBgTheme(
+      id: 'widget_background8',
+      assetPath: 'assets/images/widgetbackground/widget_background8.png',
+    ),
+    TogetherBgTheme(
+      id: 'widget_background9',
+      assetPath: 'assets/images/widgetbackground/widget_background9.png',
+    ),
+    TogetherBgTheme(
+      id: 'widget_background10',
+      assetPath: 'assets/images/widgetbackground/widget_background10.png',
+    ),
   ];
 
-  /// Picker shows transparent and the first photo only.
-  static List<TogetherBgTheme> get choices => [all[0], all[1]];
+  /// Picker shows transparent plus every bundled photo.
+  static List<TogetherBgTheme> get choices => all;
 
   static TogetherBgTheme byId(String? id) {
     if (id == null || id.isEmpty) return none;

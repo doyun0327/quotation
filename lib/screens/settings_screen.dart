@@ -5,7 +5,6 @@ import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/screens/account_deletion_screen.dart';
 import 'package:quotation/screens/legal_screen.dart';
-import 'package:quotation/widgets/cloud_consent_dialog.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
@@ -38,11 +37,6 @@ class SettingsScreen extends StatelessWidget {
 
   Future<void> _signIn(BuildContext context) async {
     final t = AppStrings.current;
-    if (!authController.hasCloudConsent) {
-      final accepted = await showCloudConsentDialog(context);
-      if (!context.mounted || !accepted) return;
-      await authController.acceptCloudDisclosure();
-    }
     final ok = await authController.signIn();
     if (!context.mounted) return;
     if (ok) {
@@ -264,27 +258,56 @@ class SettingsScreen extends StatelessWidget {
                             title: authController.nickname ?? t.nicknameEmptyTitle,
                             subtitle: authController.googleEmail ??
                                 t.nicknameEditSubtitle,
-                            trailing: SettingsOutlineButton(
-                              label: signedIn ? t.logout : t.login,
-                              onPressed: authController.isBusy
-                                  ? null
-                                  : () => signedIn
-                                      ? _signOut(context)
-                                      : _chooseSignIn(context),
-                            ),
+                            trailing: signedIn
+                                ? PopupMenuButton<String>(
+                                    enabled: !authController.isBusy,
+                                    offset: const Offset(0, 36),
+                                    onSelected: (value) {
+                                      switch (value) {
+                                        case 'logout':
+                                          _signOut(context);
+                                        case 'delete':
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute<void>(
+                                              builder: (_) =>
+                                                  const AccountDeletionScreen(),
+                                            ),
+                                          );
+                                      }
+                                    },
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(
+                                        value: 'logout',
+                                        child: Text(
+                                          t.logout,
+                                          style: AppTheme.body.copyWith(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: Text(
+                                          t.accountDeleteTitle,
+                                          style: AppTheme.body.copyWith(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    child: _AccountMoreButton(
+                                      color: palette.accent,
+                                    ),
+                                  )
+                                : SettingsOutlineButton(
+                                    label: t.login,
+                                    onPressed: authController.isBusy
+                                        ? null
+                                        : () => _chooseSignIn(context),
+                                  ),
                             onTap: () => showNicknameDialog(context),
-                          ),
-                          SettingsItem(
-                            icon: Icons.person_off_outlined,
-                            title: t.accountDeleteTitle,
-                            subtitle: t.accountDeleteSubtitle,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => const AccountDeletionScreen(),
-                                ),
-                              );
-                            },
                           ),
                         ],
                       ),
@@ -494,6 +517,42 @@ class SettingsScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _AccountMoreButton extends StatelessWidget {
+  const _AccountMoreButton({required this.color});
+
+  final Color color;
+
+  Widget _dot(Color color) {
+    return Container(
+      width: 3,
+      height: 3,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color, width: 1.5),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _dot(color),
+          const SizedBox(height: 3),
+          _dot(color),
+        ],
+      ),
     );
   }
 }

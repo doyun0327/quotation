@@ -139,12 +139,40 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                         },
                       ),
                       const SizedBox(height: 18),
-                      Text(
-                        t.ddayDuoDecorateOpen,
-                        style: AppTheme.body.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF2C3340),
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => DdayWidgetDecorateScreen(
+                                  roomId: room.id,
+                                ),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    t.ddayDuoDecorateOpen,
+                                    style: AppTheme.body.copyWith(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: const Color(0xFF2C3340),
+                                    ),
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.chevron_right_rounded,
+                                  color: Color(0xFF2C3340),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -393,7 +421,8 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
         onTap: onOpenDecorate,
         borderRadius: BorderRadius.circular(20),
         child: Center(
-          child: TogetherWidgetPreview(
+          child: IgnorePointer(
+            child: TogetherWidgetPreview(
             width: previewSize.width,
             height: previewSize.height,
             charW: 72 * charBase,
@@ -435,6 +464,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             textColor: ddayController.textColorForRoom(room.id),
             shape: TogetherWidgetShape.square,
             cornerRadius: _hostCornerDp,
+            ),
           ),
         ),
       ),

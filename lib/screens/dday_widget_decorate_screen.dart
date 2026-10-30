@@ -644,24 +644,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                 padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                 child: Column(
                   children: [
-                    if (liveHasFriend) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            t.ddayInviteFriendCount(live?.friendCount ?? 0),
-                            style: AppTheme.body.copyWith(
-            fontFamily: 'Galmuri',
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: palette.accent,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
                     Center(
                       child: ValueListenableBuilder<int>(
                         valueListenable: _dragTick,

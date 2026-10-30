@@ -45,7 +45,8 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCqIIKpp-Uo3XqvHsWduMjCrqDnH3ek2y4',
-    appId: '1:313256890607:android:ad9644a1e06ed358994b1a',
+    // com.dearly.quoteswidget — must match applicationId, not the Kotlin namespace.
+    appId: '1:313256890607:android:3a89e5e27f1b6b21994b1a',
     messagingSenderId: '313256890607',
     projectId: 'dearly-cf730',
     storageBucket: 'dearly-cf730.firebasestorage.app',
