@@ -227,6 +227,11 @@ enum TogetherWidgetSize {
   }
 }
 
+int _normDegrees(int value) {
+  final n = value % 360;
+  return n < 0 ? n + 360 : n;
+}
+
 class _RoomOffsets {
   const _RoomOffsets({
     this.meX = 0,
@@ -235,6 +240,7 @@ class _RoomOffsets {
     this.friendY = 0,
     this.textX = 0,
     this.textY = 0,
+    this.textRotation = 0,
     this.charScale = 100,
     this.friendScale = 100,
     this.textScale = 100,
@@ -254,6 +260,8 @@ class _RoomOffsets {
   final int friendY;
   final int textX;
   final int textY;
+  /// Clockwise degrees, same step as a character tap.
+  final int textRotation;
   final int charScale;
   final int friendScale;
   final int textScale;
@@ -273,6 +281,7 @@ class _RoomOffsets {
         'friendY': friendY,
         'textX': textX,
         'textY': textY,
+        'textRotation': textRotation,
         'charScale': charScale,
         'friendScale': friendScale,
         'textScale': textScale,
@@ -310,6 +319,7 @@ class _RoomOffsets {
       friendY: friendY,
       textX: json['textX'] as int? ?? 0,
       textY: json['textY'] as int? ?? 0,
+      textRotation: _normDegrees(json['textRotation'] as int? ?? 0),
       charScale: json['charScale'] as int? ?? 100,
       friendScale: (json['friendScale'] as num?)?.toInt() ??
           json['charScale'] as int? ??
@@ -352,6 +362,7 @@ class _RoomOffsets {
     int? friendY,
     int? textX,
     int? textY,
+    int? textRotation,
     int? charScale,
     int? friendScale,
     int? textScale,
@@ -371,6 +382,9 @@ class _RoomOffsets {
       friendY: friendY ?? this.friendY,
       textX: textX ?? this.textX,
       textY: textY ?? this.textY,
+      textRotation: textRotation == null
+          ? this.textRotation
+          : _normDegrees(textRotation),
       charScale: charScale ?? this.charScale,
       friendScale: friendScale ?? this.friendScale,
       textScale: textScale ?? this.textScale,
@@ -528,6 +542,7 @@ class DdayController extends ChangeNotifier {
       friendY: _clampY(o.friendY),
       textX: _clampTextX(o.textX),
       textY: _clampTextY(o.textY),
+      textRotation: _normDegrees(o.textRotation),
       charScale: _clampScale(o.charScale),
       friendScale: _clampScale(o.friendScale),
       textScale: _clampScale(o.textScale),
@@ -548,6 +563,7 @@ class DdayController extends ChangeNotifier {
   int friendOffsetYForRoom(String roomId) => _offsetsForRoom(roomId).friendY;
   int textOffsetXForRoom(String roomId) => _offsetsForRoom(roomId).textX;
   int textOffsetYForRoom(String roomId) => _offsetsForRoom(roomId).textY;
+  int textRotationForRoom(String roomId) => _offsetsForRoom(roomId).textRotation;
   int charScaleForRoom(String roomId) => _offsetsForRoom(roomId).charScale;
   int friendScaleForRoom(String roomId) => _offsetsForRoom(roomId).friendScale;
   int textScaleForRoom(String roomId) => _offsetsForRoom(roomId).textScale;
@@ -582,6 +598,7 @@ class DdayController extends ChangeNotifier {
     int? friendY,
     int? textX,
     int? textY,
+    int? textRotation,
     int? charScale,
     int? friendScale,
     int? textScale,
@@ -609,6 +626,7 @@ class DdayController extends ChangeNotifier {
       friendY: friendY == null ? null : _clampY(friendY),
       textX: textX == null ? null : _clampTextX(textX),
       textY: textY == null ? null : _clampTextY(textY),
+      textRotation: textRotation == null ? null : _normDegrees(textRotation),
       charScale: charScale == null ? null : _clampScale(charScale),
       friendScale: friendScale == null ? null : _clampScale(friendScale),
       textScale: textScale == null ? null : _clampScale(textScale),
@@ -627,6 +645,7 @@ class DdayController extends ChangeNotifier {
         cur.friendY == next.friendY &&
         cur.textX == next.textX &&
         cur.textY == next.textY &&
+        cur.textRotation == next.textRotation &&
         cur.charScale == next.charScale &&
         cur.friendScale == next.friendScale &&
         cur.textScale == next.textScale &&

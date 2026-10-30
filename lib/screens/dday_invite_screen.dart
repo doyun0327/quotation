@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
+import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
@@ -107,6 +109,22 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
         repeatYearly: moved.repeatYearly,
       );
     }
+  }
+
+  Future<void> _shareInvite() async {
+    final code = _code;
+    if (code == null || code.isEmpty) return;
+    final room = _room;
+    final t = AppStrings.current;
+    await SharePlus.instance.share(
+      ShareParams(
+        text: t.ddayInviteShareText(
+          room.title,
+          code,
+          DdayInviteLimits.shareUrl(code),
+        ),
+      ),
+    );
   }
 
   Future<void> _copy(BuildContext context, String value, String message) async {
@@ -237,11 +255,24 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      TextButton.icon(
-                        onPressed: () =>
-                            _copy(context, _code!, t.ddayInviteCodeCopied),
-                        icon: const Icon(Icons.copy_rounded, size: 18),
-                        label: Text(t.ddayInviteCopyCode),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () => _copy(
+                              context,
+                              _code!,
+                              t.ddayInviteCodeCopied,
+                            ),
+                            icon: const Icon(Icons.copy_rounded, size: 18),
+                            label: Text(t.ddayInviteCopyCode),
+                          ),
+                          TextButton.icon(
+                            onPressed: _shareInvite,
+                            icon: const Icon(Icons.ios_share_rounded, size: 18),
+                            label: Text(t.ddayInviteShare),
+                          ),
+                        ],
                       ),
                     ],
                   ),

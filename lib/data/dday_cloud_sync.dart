@@ -442,6 +442,7 @@ class DdayCloudSync {
     final rawTextY = (data['layoutTextY'] as num?)?.toInt();
     final textX = rawTextX == null ? null : ax(rawTextX);
     final textY = rawTextY == null ? null : ay(rawTextY);
+    final textRotation = (data['layoutTextRotation'] as num?)?.toInt();
     final legacyScale = (data['layoutCharScale'] as num?)?.toInt();
     final hostScale =
         aScale((data['layoutHostScale'] as num?)?.toInt() ?? legacyScale);
@@ -472,6 +473,7 @@ class DdayCloudSync {
         friendY: guestY,
         textX: textX,
         textY: textY,
+        textRotation: textRotation,
         charScale: hostScale,
         friendScale: guestScale,
         textScale: textScale,
@@ -492,6 +494,7 @@ class DdayCloudSync {
         friendY: hostY,
         textX: textX,
         textY: textY,
+        textRotation: textRotation,
         charScale: guestScale,
         friendScale: hostScale,
         textScale: textScale,
@@ -574,6 +577,7 @@ class DdayCloudSync {
     final friendY = ddayController.friendOffsetYForRoom(item.id);
     final textX = ddayController.textOffsetXForRoom(item.id);
     final textY = ddayController.textOffsetYForRoom(item.id);
+    final textRotation = ddayController.textRotationForRoom(item.id);
     final meScale = ddayController.charScaleForRoom(item.id);
     final friendScale = ddayController.friendScaleForRoom(item.id);
     final textScale = ddayController.textScaleForRoom(item.id);
@@ -626,6 +630,7 @@ class DdayCloudSync {
           'layoutGuestY': guestY,
           'layoutTextX': textX,
           'layoutTextY': textY,
+          'layoutTextRotation': textRotation,
           'layoutCharScale': hostScale,
           'layoutHostScale': hostScale,
           'layoutGuestScale': guestScale,

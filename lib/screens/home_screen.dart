@@ -271,11 +271,20 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
 
   @override
   Widget build(BuildContext context) {
-    final date = widget.date;
-    final dateLabel = '${date.year}. ${date.month}. ${date.day}';
-
     final frame = CategorySky.border(context.palette);
 
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final row = constraints.maxWidth - 20 - 8;
+        final textWidth = row * 60 / 100 - 14 - 12;
+        return _quoteCard(frame, textWidth);
+      },
+    );
+  }
+
+  Widget _quoteCard(Color frame, double textWidth) {
+    final date = widget.date;
+    final dateLabel = '${date.year}. ${date.month}. ${date.day}';
     return DashedBorder(
       color: frame,
       strokeWidth: 1.6,
@@ -382,17 +391,9 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
                             GestureDetector(
                               onTap: widget.onMessageTap,
                               behavior: HitTestBehavior.opaque,
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(minHeight: 72),
-                                child: Text(
-                                  widget.message,
-                                  style: AppTheme.body.copyWith(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    height: 1.45,
-                                    color: const Color(0xFF3C4C60),
-                                  ),
-                                ),
+                              child: _CappedQuoteText(
+                                message: widget.message,
+                                textWidth: textWidth,
                               ),
                             ),
                             Align(
@@ -423,6 +424,85 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
             ],
           ),
         ),
+    );
+  }
+}
+
+/// Quote body on the home card. Grows with the text up to eight lines,
+/// the height of the card in the reference layout, then scrolls inside.
+class _CappedQuoteText extends StatefulWidget {
+  const _CappedQuoteText({
+    required this.message,
+    required this.textWidth,
+  });
+
+  final String message;
+  final double textWidth;
+
+  @override
+  State<_CappedQuoteText> createState() => _CappedQuoteTextState();
+}
+
+class _CappedQuoteTextState extends State<_CappedQuoteText> {
+  static const _maxLines = 8;
+  static const _minHeight = 72.0;
+
+  static const _style = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+    height: 1.45,
+    color: Color(0xFF3C4C60),
+  );
+
+  final _scroll = ScrollController();
+
+  @override
+  void didUpdateWidget(covariant _CappedQuoteText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.message != widget.message && _scroll.hasClients) {
+      _scroll.jumpTo(0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final style = AppTheme.body.merge(_style);
+    final width = widget.textWidth;
+    final painter = TextPainter(
+      text: TextSpan(text: widget.message, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout(maxWidth: width > 0 ? width : 100);
+    final lineCap = painter.preferredLineHeight * _maxLines;
+    final cap = lineCap < _minHeight ? _minHeight : lineCap;
+    final textHeight = painter.height;
+    painter.dispose();
+    final viewHeight = textHeight < _minHeight
+        ? _minHeight
+        : (textHeight > cap ? cap : textHeight);
+    final scrolls = textHeight > cap + 1;
+
+    return SizedBox(
+      height: viewHeight,
+      child: Scrollbar(
+        controller: _scroll,
+        thumbVisibility: scrolls,
+        thickness: 3,
+        radius: const Radius.circular(2),
+        child: SingleChildScrollView(
+          controller: _scroll,
+          physics: scrolls
+              ? const ClampingScrollPhysics()
+              : const NeverScrollableScrollPhysics(),
+          child: Text(widget.message, style: style),
+        ),
+      ),
     );
   }
 }

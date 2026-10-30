@@ -52,6 +52,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   late double _friendY;
   late double _textX;
   late double _textY;
+  late double _textRotation;
   late int _meScale;
   late int _friendScale;
   late int _textScale;
@@ -90,6 +91,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _friendY = ddayController.friendOffsetYForRoom(id).toDouble();
     _textX = ddayController.textOffsetXForRoom(id).toDouble();
     _textY = ddayController.textOffsetYForRoom(id).toDouble();
+    _textRotation = ddayController.textRotationForRoom(id).toDouble();
     _meScale = ddayController.charScaleForRoom(id);
     _friendScale = ddayController.friendScaleForRoom(id);
     _textScale = ddayController.textScaleForRoom(id);
@@ -120,6 +122,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final friendY = ddayController.friendOffsetYForRoom(id).toDouble();
     final textX = ddayController.textOffsetXForRoom(id).toDouble();
     final textY = ddayController.textOffsetYForRoom(id).toDouble();
+    final textRotation = ddayController.textRotationForRoom(id).toDouble();
     final meScale = ddayController.charScaleForRoom(id);
     final friendScale = ddayController.friendScaleForRoom(id);
     final textScale = ddayController.textScaleForRoom(id);
@@ -131,6 +134,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _friendY != friendY ||
         _textX != textX ||
         _textY != textY ||
+        _textRotation != textRotation ||
         _meScale != meScale ||
         _friendScale != friendScale ||
         _textScale != textScale ||
@@ -145,6 +149,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _friendY = friendY;
         _textX = textX;
         _textY = textY;
+        _textRotation = textRotation;
         _meScale = meScale;
         _friendScale = friendScale;
         _textScale = textScale;
@@ -277,6 +282,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       friendY: _friendY.round(),
       textX: _textX.round(),
       textY: _textY.round(),
+      textRotation: _textRotation.round(),
       charScale: _meScale,
       friendScale: _friendScale,
       textScale: _textScale,
@@ -385,6 +391,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     }
     _placed = next;
     _crowdDirty = true;
+    _dragTick.value++;
+  }
+
+  void _rotateText(double degrees) {
+    var next = degrees.round() % 360;
+    if (next < 0) next += 360;
+    _textRotation = next.toDouble();
     _dragTick.value++;
   }
 
@@ -668,6 +681,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             crowd: _crowdSprites(),
                             textX: _textX,
                             textY: _textY,
+                            textRotation: _textRotation,
                             isPixel: isPixel,
                             meScale: _meScale,
                             friendScale: _friendScale,
@@ -692,6 +706,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                 : null,
                             onTextPan: _focus == _DecorateFocus.text
                                 ? _clampText
+                                : null,
+                            onTextRotate: _focus == _DecorateFocus.text
+                                ? _rotateText
                                 : null,
                             onTextSelect: _selectText,
                             onMeSelect: _selectMe,

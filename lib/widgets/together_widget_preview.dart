@@ -80,6 +80,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     required this.isPixel,
     this.textX = 0,
     this.textY = 0,
+    this.textRotation = 0,
     this.meScale = 100,
     this.friendScale = 100,
     this.textScale = 100,
@@ -92,6 +93,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.onMePan,
     this.onFriendPan,
     this.onTextPan,
+    this.onTextRotate,
     this.onTextSelect,
     this.highlightText = false,
     this.onMeSelect,
@@ -118,6 +120,8 @@ class TogetherWidgetPreview extends StatelessWidget {
   final double friendY;
   final double textX;
   final double textY;
+  /// Clockwise degrees. Tap the selected label to add 45, same as a character.
+  final double textRotation;
   final bool isPixel;
   final int meScale;
   final int friendScale;
@@ -133,6 +137,7 @@ class TogetherWidgetPreview extends StatelessWidget {
   final TogetherWidgetPanDelta? onMePan;
   final TogetherWidgetPanDelta? onFriendPan;
   final TogetherWidgetPanDelta? onTextPan;
+  final ValueChanged<double>? onTextRotate;
   final VoidCallback? onTextSelect;
   final bool highlightText;
   final VoidCallback? onMeSelect;
@@ -281,6 +286,8 @@ class TogetherWidgetPreview extends StatelessWidget {
     }) {
       const knob = 36.0;
       const gap = 6.0;
+      // Sit a little closer to the picture. The angle still uses the real center.
+      const knobDrop = 8.0;
       final showKnob = highlight && onRotate != null;
       // Extra space stays inside this box so the handle can be hit.
       // The picture stays on the bottom edge, so bottom-anchored layout
@@ -331,12 +338,12 @@ class TogetherWidgetPreview extends StatelessWidget {
             if (showKnob)
               Positioned(
                 left: (spriteW - knob) / 2,
-                top: 0,
+                top: knobDrop,
                 width: knob,
                 height: knob,
                 child: _RotateKnob(
                   spriteHeight: spriteH,
-                  gap: gap,
+                  gap: gap - knobDrop,
                   onRotate: onRotate,
                   onDragStart: onDragStart,
                   onDragEnd: onDragEnd,
@@ -403,6 +410,59 @@ class TogetherWidgetPreview extends StatelessWidget {
     ];
 
     final hasImage = bgAssetPath != null && bgAssetPath!.isNotEmpty;
+    final rotatingText = highlightText && onTextRotate != null;
+    const textKnob = 36.0;
+    const textKnobGap = 6.0;
+    const textKnobDrop = 8.0;
+    final shownLabel = (labelListenable?.value ?? label).trim();
+    final measure = TextPainter(
+      text: TextSpan(
+        text: shownLabel.isEmpty ? ' ' : shownLabel,
+        style: labelStyle,
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+      textScaler: TextScaler.noScaling,
+    )..layout(maxWidth: innerW);
+    final rawW = measure.width;
+    final rawH = measure.height;
+    measure.dispose();
+    final fit = rawW <= 0 || rawH <= 0
+        ? 1.0
+        : math.min(1.0, math.min(innerW / rawW, innerH / rawH));
+    final textH = rawH * fit;
+    final textTop = (innerH - textH) / 2;
+    // Moving stays on the letters. Turning uses the same handle as a character.
+    final cheer = panTarget(
+      onPan: onTextPan,
+      onSelect: onTextSelect,
+      child: Transform.rotate(
+        alignment: Alignment.center,
+        angle: textRotation * math.pi / 180,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: innerW),
+            child: Stack(
+              children: [
+                _LiveCheerText(
+                  label: label,
+                  labelListenable: labelListenable,
+                  style: labelStyle,
+                ),
+                if (highlightText)
+                  const Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(painter: _PixelSelectPainter()),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
 
     return Container(
       width: width,
@@ -431,31 +491,25 @@ class TogetherWidgetPreview extends StatelessWidget {
             top: (height - innerH) / 2 - textY,
             width: innerW,
             height: innerH,
-            child: panTarget(
-              onPan: onTextPan,
-              onSelect: onTextSelect,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.center,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: innerW),
-                  child: Stack(
-                    children: [
-                      _LiveCheerText(
-                        label: label,
-                        labelListenable: labelListenable,
-                        style: labelStyle,
-                      ),
-                      if (highlightText)
-                        const Positioned.fill(
-                          child: IgnorePointer(
-                            child: CustomPaint(painter: _PixelSelectPainter()),
-                          ),
-                        ),
-                    ],
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned.fill(child: cheer),
+                if (rotatingText)
+                  Positioned(
+                    top: textTop - textKnobGap - textKnob + textKnobDrop,
+                    left: (innerW - textKnob) / 2,
+                    width: textKnob,
+                    height: textKnob,
+                    child: _RotateKnob(
+                      spriteHeight: textH,
+                      gap: textKnobGap - textKnobDrop,
+                      onRotate: onTextRotate!,
+                      onDragStart: onDragStart,
+                      onDragEnd: onDragEnd,
+                    ),
                   ),
-                ),
-              ),
+              ],
             ),
           ),
           if (crowd != null)

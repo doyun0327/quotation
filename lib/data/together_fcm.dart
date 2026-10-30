@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -61,9 +62,102 @@ Future<bool> _claimTogetherNotice(String roomId, String stamp) async {
   return true;
 }
 
+const _togetherChannelId = 'together_widget';
+const _noticeIdsKey = 'together_room_notice_ids';
+
+int _togetherNoticeId(String roomId, String stamp) {
+  var hash = 17;
+  for (final unit in '$roomId|$stamp'.codeUnits) {
+    hash = (hash * 31 + unit) & 0x7fffffff;
+  }
+  return 100000 + (hash % 800000);
+}
+
+NotificationDetails _togetherDetails(String roomId) {
+  return NotificationDetails(
+    android: AndroidNotificationDetails(
+      _togetherChannelId,
+      'Together widget',
+      importance: Importance.high,
+      priority: Priority.high,
+      tag: roomId,
+    ),
+  );
+}
+
+Map<String, List<int>> _readNoticeIds(String? raw) {
+  if (raw == null || raw.isEmpty) return {};
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is! Map) return {};
+    final out = <String, List<int>>{};
+    for (final entry in decoded.entries) {
+      final roomId = entry.key.toString();
+      final value = entry.value;
+      if (roomId.isEmpty || value is! List) continue;
+      out[roomId] = [
+        for (final id in value)
+          if (id is num) id.toInt(),
+      ];
+    }
+    return out;
+  } catch (_) {
+    return {};
+  }
+}
+
+Future<void> _rememberRoomNotice(String roomId, int id) async {
+  if (roomId.isEmpty) return;
+  final prefs = await SharedPreferences.getInstance();
+  final map = _readNoticeIds(prefs.getString(_noticeIdsKey));
+  final ids = map[roomId] ?? <int>[];
+  if (!ids.contains(id)) ids.add(id);
+  if (ids.length > 30) {
+    ids.removeRange(0, ids.length - 30);
+  }
+  map[roomId] = ids;
+  await prefs.setString(_noticeIdsKey, jsonEncode(map));
+}
+
+Future<void> _clearRoomNotices(String roomId, {String? roomTitle}) async {
+  if (roomId.isEmpty) return;
+  final title = roomTitle?.trim() ?? '';
+  final ids = <int>{};
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final map = _readNoticeIds(prefs.getString(_noticeIdsKey));
+    ids.addAll(map.remove(roomId) ?? const <int>[]);
+    await prefs.setString(_noticeIdsKey, jsonEncode(map));
+  } catch (e) {
+    debugPrint('together notice ids: $e');
+  }
+  final plugin = TogetherFcm._plugin;
+  try {
+    final active = await plugin.getActiveNotifications();
+    for (final notice in active) {
+      final id = notice.id;
+      if (id == null) continue;
+      final tagged = notice.tag == roomId;
+      final sameTitle = title.isNotEmpty &&
+          notice.channelId == _togetherChannelId &&
+          notice.title == title;
+      if (tagged || sameTitle || ids.contains(id)) ids.add(id);
+    }
+  } catch (e) {
+    debugPrint('together active notices: $e');
+  }
+  for (final id in ids) {
+    try {
+      await plugin.cancel(id: id, tag: roomId);
+      await plugin.cancel(id: id);
+    } catch (e) {
+      debugPrint('together cancel notice: $e');
+    }
+  }
+}
+
 Future<void> _showTogetherNotice(RemoteMessage message) async {
   if (message.data['type'] != 'together_widget') return;
-  const channelId = 'together_widget';
   final plugin = FlutterLocalNotificationsPlugin();
   const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
   await plugin.initialize(
@@ -73,7 +167,7 @@ Future<void> _showTogetherNotice(RemoteMessage message) async {
       AndroidFlutterLocalNotificationsPlugin>();
   await android?.createNotificationChannel(
     const AndroidNotificationChannel(
-      channelId,
+      _togetherChannelId,
       'Together widget',
       description: 'A friend updated the shared widget',
       importance: Importance.high,
@@ -91,19 +185,14 @@ Future<void> _showTogetherNotice(RemoteMessage message) async {
       actorName.isEmpty ? t.togetherFriendFallbackName : actorName;
   final title = roomTitle.isEmpty ? name : roomTitle;
   final body = t.togetherWidgetChangedBodyFor(name);
+  final noticeId = _togetherNoticeId(roomId, stamp);
+  await _rememberRoomNotice(roomId, noticeId);
   await plugin.show(
-    id: message.hashCode,
+    id: noticeId,
     title: title,
     body: body,
-    payload: message.data['roomId'],
-    notificationDetails: const NotificationDetails(
-      android: AndroidNotificationDetails(
-        channelId,
-        'Together widget',
-        importance: Importance.high,
-        priority: Priority.high,
-      ),
-    ),
+    payload: roomId,
+    notificationDetails: _togetherDetails(roomId),
   );
 }
 
@@ -279,6 +368,9 @@ abstract final class TogetherFcm {
     } catch (e) {
       debugPrint('openRoomFromNotice: $e');
     }
+    final rooms = ddayController.items.where((e) => e.id == id);
+    final roomTitle = rooms.isEmpty ? '' : rooms.first.title;
+    await _clearRoomNotices(id, roomTitle: roomTitle);
     mainShellTab.value = 1;
     for (var attempt = 0; attempt < 8; attempt++) {
       final nav = navigatorKey?.currentState;
@@ -303,19 +395,14 @@ abstract final class TogetherFcm {
     final title = notice.roomTitle.trim().isEmpty
         ? t.togetherFriendFallbackName
         : notice.roomTitle.trim();
+    final noticeId = _togetherNoticeId(notice.roomId, notice.stamp);
+    await _rememberRoomNotice(notice.roomId, noticeId);
     await _plugin.show(
-      id: 4201,
+      id: noticeId,
       title: title,
       body: t.togetherWidgetChangedBodyFor(name),
       payload: notice.roomId,
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-          _channelId,
-          'Together widget',
-          importance: Importance.high,
-          priority: Priority.high,
-        ),
-      ),
+      notificationDetails: _togetherDetails(notice.roomId),
     );
   }
 

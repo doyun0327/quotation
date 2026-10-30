@@ -86,27 +86,15 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              room.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTheme.body.copyWith(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                                color: palette.accent,
-                              ),
-                            ),
-                            Text(
-                              t.togetherFriendCountLabel(room.friendCount),
-                              style: AppTheme.body.copyWith(
-                                fontSize: 12,
-                                color: AppColors.muted,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          room.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            color: palette.accent,
+                          ),
                         ),
                       ),
                       if (room.hasFriend)
@@ -458,6 +446,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             ],
             textX: textX,
             textY: textY,
+            textRotation: ddayController.textRotationForRoom(room.id).toDouble(),
             isPixel: true,
             meScale: ddayController.charScaleForRoom(room.id),
             friendScale: ddayController.friendScaleForRoom(room.id),

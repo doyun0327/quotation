@@ -173,6 +173,7 @@ object DdayWidgetVisuals {
       textScale: Int,
       textOffsetX: Int,
       textOffsetY: Int,
+      textRotation: Int = 0,
       meId: String,
       friendId: String,
       meOffsetX: Int,
@@ -265,7 +266,19 @@ object DdayWidgetVisuals {
           )
       val lx = originX + (contentW - labelBmp.width) / 2f + textOffsetX * density
       val ly = originY + (contentH - labelBmp.height) / 2f - textOffsetY * density
-      canvas.drawBitmap(labelBmp, lx, ly, null)
+      val degrees = ((textRotation % 360) + 360) % 360
+      if (degrees != 0) {
+        canvas.save()
+        canvas.rotate(
+            degrees.toFloat(),
+            lx + labelBmp.width / 2f,
+            ly + labelBmp.height / 2f,
+        )
+        canvas.drawBitmap(labelBmp, lx, ly, null)
+        canvas.restore()
+      } else {
+        canvas.drawBitmap(labelBmp, lx, ly, null)
+      }
       labelBmp.recycle()
     }
 

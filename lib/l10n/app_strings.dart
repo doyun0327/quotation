@@ -138,7 +138,7 @@ class AppStrings {
   String get ddayInviteCopyLink => _t('링크 복사', 'Copy link', 'リンクをコピー');
   String get ddayInviteLinkCopied =>
       _t('초대 링크를 복사했어요', 'Invite link copied', '招待リンクをコピーしました');
-  String get ddayInviteShare => _t('SNS로 공유', 'Share', 'SNSで共有');
+  String get ddayInviteShare => _t('초대하기', 'Invite', '招待する');
   String ddayInviteShareText(String title, String code, String url) => _t(
         '우리 같이 위젯 꾸밀래? 💙\n「$title」\n코드: $code\n$url',
         'Want to decorate a widget together? 💙\n"$title"\nCode: $code\n$url',

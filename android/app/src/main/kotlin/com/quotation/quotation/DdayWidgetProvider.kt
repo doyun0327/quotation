@@ -103,6 +103,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val friendOffsetY = roomInt(room, "friendY", readInt(widgetData, "ddayFriendOffsetY", 0))
     val textOffsetX = roomInt(room, "textX", readInt(widgetData, "ddayTextOffsetX", 0))
     val textOffsetY = roomInt(room, "textY", readInt(widgetData, "ddayTextOffsetY", 0))
+    val textRotation = roomInt(room, "textRotation", 0)
     val charScale = roomInt(room, "charScale", readInt(widgetData, "ddayCharScale", 100)).coerceIn(60, 240)
     val friendScale =
         roomInt(room, "friendScale", readInt(widgetData, "ddayFriendCharScale", charScale))
@@ -130,6 +131,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             textScale = textScale,
             textOffsetX = textOffsetX,
             textOffsetY = textOffsetY,
+            textRotation = textRotation,
             meId = meId,
             friendId = friendId,
             meOffsetX = meOffsetX,
@@ -215,6 +217,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val friendOffsetY = roomInt(room, "friendY", readInt(prefs, "ddayFriendOffsetY", 0))
     val textOffsetX = roomInt(room, "textX", readInt(prefs, "ddayTextOffsetX", 0))
     val textOffsetY = roomInt(room, "textY", readInt(prefs, "ddayTextOffsetY", 0))
+    val textRotation = roomInt(room, "textRotation", 0)
     val charScale = roomInt(room, "charScale", readInt(prefs, "ddayCharScale", 100)).coerceIn(60, 240)
     val friendScale =
         roomInt(room, "friendScale", readInt(prefs, "ddayFriendCharScale", charScale))
@@ -251,6 +254,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             textScale = textScale,
             textOffsetX = textOffsetX,
             textOffsetY = textOffsetY,
+            textRotation = textRotation,
             meId = meId,
             friendId = friendId,
             meOffsetX = meOffsetX,

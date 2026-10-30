@@ -102,7 +102,7 @@ class _DdayScreenState extends State<DdayScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 4, 4),
+                  padding: const EdgeInsets.fromLTRB(20, 18, 12, 4),
                   child: Row(
                     children: [
                       Icon(
@@ -133,10 +133,6 @@ class _DdayScreenState extends State<DdayScreen> {
                           backgroundColor: Colors.transparent,
                           foregroundColor: palette.accent,
                           overlayColor: palette.accent.withValues(alpha: 0.08),
-                          padding: const EdgeInsets.only(left: 8, right: 0),
-                          minimumSize: const Size(40, 40),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          alignment: Alignment.centerRight,
                         ),
                         icon: AppPixelIcon(
                           AppGlyph.qr,

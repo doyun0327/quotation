@@ -610,6 +610,7 @@ abstract final class HomeWidgetSync {
         'friendY': ddayController.friendOffsetYForRoom(item.id),
         'textX': ddayController.textOffsetXForRoom(item.id),
         'textY': ddayController.textOffsetYForRoom(item.id),
+        'textRotation': ddayController.textRotationForRoom(item.id),
         'charScale': ddayController.charScaleForRoom(item.id),
         'friendScale': ddayController.friendScaleForRoom(item.id),
         'textScale': textScale,
