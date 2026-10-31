@@ -84,16 +84,15 @@ class TogetherIosSnapshot extends StatelessWidget {
               height: inner.height,
               child: Transform.rotate(
                 angle: textRotation * math.pi / 180,
+                // [label] is pre-wrapped at the shared width; keep its lines
+                // and only scale down, same as the Galaxy widget.
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: inner.width),
-                    child: Text(
-                      label.trim().isEmpty ? ' ' : label,
-                      textAlign: TextAlign.center,
-                      textScaler: TextScaler.noScaling,
-                      style: labelStyle,
-                    ),
+                  child: Text(
+                    label.trim().isEmpty ? ' ' : label,
+                    textAlign: TextAlign.center,
+                    textScaler: TextScaler.noScaling,
+                    style: labelStyle,
                   ),
                 ),
               ),

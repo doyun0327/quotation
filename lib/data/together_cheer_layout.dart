@@ -45,25 +45,36 @@ abstract final class TogetherCheerLayout {
     );
   }
 
-  /// Wrap [text] the same way the preview does, joined with newlines.
+  /// Fixed wrap width (dp) on every device: the text box of the 4×2 card on a
+  /// 360dp phone (301 − 2×28). Wrapping against each phone's own box gave a
+  /// wider iPhone fewer lines than a Galaxy for the same cheer.
+  static const double wrapWidth = 245;
+
+  /// Wrap [text] at [wrapWidth], joined with newlines. Renderers draw these
+  /// lines as-is and only scale the block down to fit, so the line count is
+  /// the same on iPhone and Galaxy.
   static String wrap({
     required String text,
-    required double maxWidth,
     required bool isPixel,
     required double textScale,
     WidgetFont font = WidgetFont.basic,
   }) {
+    return wrapStyled(
+      text,
+      style(isPixel: isPixel, textScale: textScale, font: font),
+    );
+  }
+
+  /// [wrap] with an already-built [textStyle] (color etc. ignored).
+  static String wrapStyled(String text, TextStyle textStyle) {
     final trimmed = text.trim();
-    if (trimmed.isEmpty || maxWidth < 8) return trimmed;
+    if (trimmed.isEmpty) return trimmed;
     final painter = TextPainter(
-      text: TextSpan(
-        text: trimmed,
-        style: style(isPixel: isPixel, textScale: textScale, font: font),
-      ),
+      text: TextSpan(text: trimmed, style: textStyle),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
       textScaler: TextScaler.noScaling,
-    )..layout(maxWidth: maxWidth);
+    )..layout(maxWidth: wrapWidth);
     final lines = <String>[];
     var cursor = 0;
     final count = painter.computeLineMetrics().length;

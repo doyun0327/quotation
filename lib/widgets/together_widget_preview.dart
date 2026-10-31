@@ -420,7 +420,11 @@ class TogetherWidgetPreview extends StatelessWidget {
     const textKnob = 36.0;
     const textKnobGap = 6.0;
     const textKnobDrop = 8.0;
-    final shownLabel = (labelListenable?.value ?? label).trim();
+    final shownLabel = TogetherCheerLayout.wrapStyled(
+      labelListenable?.value ?? label,
+      labelStyle,
+    );
+    // Lines are fixed by the shared wrap width; only scale them to fit.
     final measure = TextPainter(
       text: TextSpan(
         text: shownLabel.isEmpty ? ' ' : shownLabel,
@@ -429,7 +433,7 @@ class TogetherWidgetPreview extends StatelessWidget {
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
       textScaler: TextScaler.noScaling,
-    )..layout(maxWidth: innerW);
+    )..layout();
     final rawW = measure.width;
     final rawH = measure.height;
     measure.dispose();
@@ -448,23 +452,20 @@ class TogetherWidgetPreview extends StatelessWidget {
         child: FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.center,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: innerW),
-            child: Stack(
-              children: [
-                _LiveCheerText(
-                  label: label,
-                  labelListenable: labelListenable,
-                  style: labelStyle,
-                ),
-                if (highlightText)
-                  const Positioned.fill(
-                    child: IgnorePointer(
-                      child: CustomPaint(painter: _PixelSelectPainter()),
-                    ),
+          child: Stack(
+            children: [
+              _LiveCheerText(
+                label: label,
+                labelListenable: labelListenable,
+                style: labelStyle,
+              ),
+              if (highlightText)
+                const Positioned.fill(
+                  child: IgnorePointer(
+                    child: CustomPaint(painter: _PixelSelectPainter()),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),
@@ -556,7 +557,8 @@ class _LiveCheerText extends StatelessWidget {
   }
 
   Widget _text(String value) {
-    final shown = value.trim();
+    // Same line breaks as the home widget on every device.
+    final shown = TogetherCheerLayout.wrapStyled(value, style);
     return Text(
       shown.isEmpty ? ' ' : shown,
       textAlign: TextAlign.center,

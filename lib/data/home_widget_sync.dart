@@ -637,16 +637,10 @@ abstract final class HomeWidgetSync {
       );
       final box = hosts[item.id] ??
           TogetherWidgetSize.s42.homeSize(_screenWidthDp().toDouble());
-      final inner = TogetherCheerLayout.innerSize(
-        box.width,
-        box.height,
-        TogetherWidgetSize.defaultCornerDp,
-      );
       var label = cheer;
       try {
         label = TogetherCheerLayout.wrap(
           text: cheer,
-          maxWidth: inner.width,
           isPixel: visualStyleController.isPixel,
           textScale: textScale.toDouble(),
           font: ddayController.textFontForRoom(item.id),
@@ -826,12 +820,10 @@ abstract final class HomeWidgetSync {
     final host = await loadHostPreviewSize();
     final box = host?.size ?? widgetSize.homeSize(_screenWidthDp().toDouble());
     final corner = host?.cornerDp ?? TogetherWidgetSize.defaultCornerDp;
-    final inner = TogetherCheerLayout.innerSize(box.width, box.height, corner);
     var label = rawLabel;
     try {
       label = TogetherCheerLayout.wrap(
         text: rawLabel,
-        maxWidth: inner.width,
         isPixel: visualStyleController.isPixel,
         textScale: textScale.toDouble(),
         font: ddayController.textFontForRoom(item.id),
