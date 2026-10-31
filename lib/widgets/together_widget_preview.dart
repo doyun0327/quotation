@@ -165,11 +165,13 @@ class TogetherWidgetPreview extends StatelessWidget {
       final forSize = hostForSize ?? widgetSize;
       if (forSize.cellsW == widgetSize.cellsW &&
           forSize.cellsH == widgetSize.cellsH) {
-        return host;
+        return TogetherWidgetSize.fitCardAspect(host);
       }
       final cellW = host.width / forSize.cellsW;
       final cellH = host.height / forSize.cellsH;
-      return Size(cellW * widgetSize.cellsW, cellH * widgetSize.cellsH);
+      return TogetherWidgetSize.fitCardAspect(
+        Size(cellW * widgetSize.cellsW, cellH * widgetSize.cellsH),
+      );
     }
     return widgetSize.homeSize(_screenWidthDp());
   }

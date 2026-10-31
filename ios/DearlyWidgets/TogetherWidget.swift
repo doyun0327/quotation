@@ -31,7 +31,8 @@ struct TogetherProvider: TimelineProvider {
   }
 }
 
-/// Galaxy decorate PNG as-is (no squash, no crop). Centered in systemMedium.
+/// Card is rendered at the systemMedium ratio (2.14:1, shared with Galaxy),
+/// so it fills the widget; fill trims the ~1% per-device ratio difference.
 struct TogetherWidgetView: View {
   var entry: TogetherEntry
 
@@ -42,8 +43,9 @@ struct TogetherWidgetView: View {
           Image(uiImage: card)
             .resizable()
             .interpolation(.high)
-            .scaledToFit()
+            .scaledToFill()
             .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
+            .clipped()
         }
       }
       .frame(width: geo.size.width, height: geo.size.height)

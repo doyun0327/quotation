@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Full-bleed bitmap; corners match system_app_widget_background_radius. -->
+<!-- Card bitmap (shared iPhone ratio) centered; leftover cell is transparent. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dday_widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     android:clipChildren="true"
     android:clipToPadding="true"
     android:padding="0dp">
@@ -13,5 +14,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/dday_widget_label"
-        android:scaleType="fitXY" />
+        android:scaleType="fitCenter" />
 </FrameLayout>

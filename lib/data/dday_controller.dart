@@ -184,14 +184,27 @@ enum TogetherWidgetSize {
   /// Android App Widget min size: 70 × cells − 30.
   static double spanDp(int cells) => 70.0 * cells - 30.0;
 
-  /// One UI cell span on a 360dp-wide phone (measured 4×2 = 301×202).
-  /// Same formula on Galaxy and iPhone — do not squash to iOS systemMedium.
+  /// Shared Together card aspect (width / height) = iOS systemMedium.
+  /// iPhone fills its widget exactly; Galaxy centers the card in the taller
+  /// launcher cell and leaves the rest transparent.
+  static const double cardAspect = 2.14;
+
+  /// Largest [cardAspect] rect that fits inside [cell].
+  static Size fitCardAspect(Size cell) {
+    if (cell.width / cell.height > cardAspect) {
+      return Size(cell.height * cardAspect, cell.height);
+    }
+    return Size(cell.width, cell.width / cardAspect);
+  }
+
+  /// Card size inside a One UI cell span on a 360dp-wide phone
+  /// (measured 4×2 cell = 301×202 → card 301×141).
   Size homeSize(double screenWidthDp) {
     final screen = screenWidthDp.clamp(320.0, 480.0);
-    return Size(
+    return fitCardAspect(Size(
       screen * (80 * cellsW - 19) / 360.0,
       screen * (111 * cellsH - 20) / 360.0,
-    );
+    ));
   }
 
   double get boxW => homeSize(360).width;

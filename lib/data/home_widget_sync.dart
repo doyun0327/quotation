@@ -182,7 +182,7 @@ abstract final class HomeWidgetSync {
       // Trust the launcher cell. A Pixel grid is not the Samsung 4×2 ratio.
       if (w > screen * 1.25 || h > screen * 1.5) return null;
       return (
-        size: Size(w, h),
+        size: TogetherWidgetSize.fitCardAspect(Size(w, h)),
         forSize: forSize,
         cornerDp: (corner ?? TogetherWidgetSize.defaultCornerDp.toInt())
             .toDouble()
@@ -560,7 +560,7 @@ abstract final class HomeWidgetSync {
       final corner = (map['corner'] as num?)?.toDouble() ??
           TogetherWidgetSize.defaultCornerDp;
       return (
-        size: Size(w, h),
+        size: TogetherWidgetSize.fitCardAspect(Size(w, h)),
         forSize: TogetherWidgetSize.byId(map['sizeId'] as String?),
         cornerDp: corner.clamp(12.0, 40.0),
       );

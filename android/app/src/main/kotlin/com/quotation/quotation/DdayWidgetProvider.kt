@@ -78,8 +78,9 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
         (metrics.widthPixels / metrics.density).toInt().coerceAtLeast(320)
       }
     }
-    // Fill the launcher-allocated cell (not the 70×n−30 minimum).
-    val (canvasW, canvasH) =
+    // Card at the shared iPhone ratio, centered in the launcher cell
+    // (fitCenter); leftover cell space stays transparent.
+    val (cellW, cellH) =
         DdayWidgetVisuals.hostSizeDp(
             context,
             appWidgetManager,
@@ -87,6 +88,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             sizeId,
             screenWidthDp,
         )
+    val (canvasW, canvasH) = DdayWidgetVisuals.cardSizeDp(cellW, cellH)
     val cornerDp = DdayWidgetVisuals.systemWidgetCornerDp(context)
 
     val roomId = bindRoom(widgetData, widgetId)
@@ -242,8 +244,9 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
         (metrics.widthPixels / metrics.density).toInt().coerceAtLeast(320)
       }
     }
-    val (canvasW, canvasH) =
+    val (cellW, cellH) =
         DdayWidgetVisuals.previewSizeDp("square", normalized, screenWidthDp)
+    val (canvasW, canvasH) = DdayWidgetVisuals.cardSizeDp(cellW, cellH)
     val bitmap =
         DdayWidgetVisuals.buildTogetherWidgetBitmap(
             context = context,

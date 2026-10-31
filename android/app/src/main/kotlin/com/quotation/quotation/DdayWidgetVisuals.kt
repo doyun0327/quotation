@@ -96,6 +96,17 @@ object DdayWidgetVisuals {
     return (cellsW / 4f).coerceIn(0.7f, 1.2f)
   }
 
+  /** Shared Together card aspect (w / h) — matches Flutter TogetherWidgetSize.cardAspect. */
+  const val CARD_ASPECT = 2.14f
+
+  /** Largest [CARD_ASPECT] card inside the launcher cell; the rest stays transparent. */
+  fun cardSizeDp(cellW: Float, cellH: Float): Pair<Float, Float> =
+      if (cellW / cellH > CARD_ASPECT) {
+        cellH * CARD_ASPECT to cellH
+      } else {
+        cellW to cellW / CARD_ASPECT
+      }
+
   /** Fallback when the launcher has not reported a size yet. Default 4×2. */
   fun previewSizeDp(
       shape: String,

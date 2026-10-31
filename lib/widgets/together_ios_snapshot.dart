@@ -62,8 +62,9 @@ class TogetherIosSnapshot extends StatelessWidget {
     return SizedBox(
       width: width,
       height: height,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
+      // Square edges: iOS rounds the widget itself, so a rounded clip here
+      // would leave white system plate showing in the corners.
+      child: ClipRect(
         child: Stack(
           fit: StackFit.expand,
           children: [
