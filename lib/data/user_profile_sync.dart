@@ -109,6 +109,8 @@ class UserProfileSync {
           'hostCharacterId': charId,
           'updatedBy': uid,
           'updatedAt': FieldValue.serverTimestamp(),
+          // Cloud Function sends friends a silent push to redraw widgets.
+          'widgetRefreshAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
       );
@@ -136,6 +138,7 @@ class UserProfileSync {
             'members': members,
             'updatedBy': uid,
             'updatedAt': FieldValue.serverTimestamp(),
+            'widgetRefreshAt': FieldValue.serverTimestamp(),
           },
           SetOptions(merge: true),
         );

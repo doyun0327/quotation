@@ -5,9 +5,9 @@ const { getMessaging } = require('firebase-admin/messaging');
 
 initializeApp();
 
-function changed(before, after) {
-  const beforeStamp = before.layoutNotifyAt ? JSON.stringify(before.layoutNotifyAt) : '';
-  const afterStamp = after.layoutNotifyAt ? JSON.stringify(after.layoutNotifyAt) : '';
+function changed(before, after, field = 'layoutNotifyAt') {
+  const beforeStamp = before[field] ? JSON.stringify(before[field]) : '';
+  const afterStamp = after[field] ? JSON.stringify(after[field]) : '';
   return afterStamp.length > 0 && beforeStamp !== afterStamp;
 }
 
@@ -16,7 +16,10 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
   async (event) => {
     const before = event.data.before.data() || {};
     const after = event.data.after.data() || {};
-    if (!changed(before, after)) return;
+    const notify = changed(before, after);
+    // A member changed their own character: redraw friends' widgets quietly.
+    const refreshOnly = !notify && changed(before, after, 'widgetRefreshAt');
+    if (!notify && !refreshOnly) return;
 
     const actor = after.updatedBy || after.layoutUpdatedBy || '';
     const recipients = [after.hostUid, ...(after.guestUids || [])].filter(
@@ -47,7 +50,19 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
     }
     if (tokens.length === 0) return;
 
-    const response = await getMessaging().sendEachForMulticast({
+    const message = refreshOnly
+      ? {
+          tokens,
+          data: { type: 'together_refresh', roomId },
+          android: { priority: 'high' },
+          // Silent background push: wakes the app to redraw, no alert.
+          apns: {
+            headers: { 'apns-push-type': 'background', 'apns-priority': '5' },
+            payload: { aps: { 'content-available': 1 } },
+          },
+        }
+      : null;
+    const response = await getMessaging().sendEachForMulticast(message || {
       tokens,
       data: {
         type: 'together_widget',

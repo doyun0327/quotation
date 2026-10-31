@@ -27,7 +27,7 @@ Future<void> togetherFcmBackground(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final applied = await _applyTogetherMessage(message);
-  if (!applied) return;
+  if (!applied || _isSilentRefresh(message)) return;
   // iOS shows the APNs alert itself; a local notice here would duplicate it.
   if (defaultTargetPlatform == TargetPlatform.iOS) return;
   await _showTogetherNotice(message);
@@ -45,8 +45,13 @@ const _notificationInit = InitializationSettings(
   ),
 );
 
+/// A friend changed their character: redraw the widget, no notice.
+bool _isSilentRefresh(RemoteMessage message) =>
+    message.data['type'] == 'together_refresh';
+
 Future<bool> _applyTogetherMessage(RemoteMessage message) async {
-  if (message.data['type'] != 'together_widget') return false;
+  final type = message.data['type'];
+  if (type != 'together_widget' && type != 'together_refresh') return false;
   try {
     await ddayController.load();
     await DdayCloudSync.pullMemberships();
@@ -437,7 +442,7 @@ abstract final class TogetherFcm {
 
   static Future<void> _showForeground(RemoteMessage message) async {
     final applied = await _applyTogetherMessage(message);
-    if (!applied) return;
+    if (!applied || _isSilentRefresh(message)) return;
     await _showTogetherNotice(message);
   }
 }
