@@ -752,10 +752,20 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: ListView(
+                child: Listener(
+                  // Simulator pans can skip onPanEnd; never leave the list locked.
+                  onPointerUp: (_) {
+                    if (_dragging) _setDragging(false);
+                  },
+                  onPointerCancel: (_) {
+                    if (_dragging) _setDragging(false);
+                  },
+                  child: ListView(
                   physics: _dragging
                       ? const NeverScrollableScrollPhysics()
-                      : const BouncingScrollPhysics(),
+                      : const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
+                        ),
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
                   children: [
                     _MemberPickGrid(
@@ -865,6 +875,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       height: 72,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
                         itemCount: TogetherBgTheme.choices.length,
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
@@ -916,6 +927,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       height: 36,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
                         itemCount: WidgetFont.values.length,
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
@@ -951,6 +963,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       height: 36,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
                         itemCount: _textQuick.length + 1,
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
@@ -1075,6 +1088,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                   ],
+                ),
                 ),
               ),
             ],

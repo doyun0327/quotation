@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/widgets/language_row.dart';
+import 'package:quotation/data/home_widget_sync.dart';
 
 /// Asks for a friend-facing nickname.
 /// When [requiredName] is true the dialog stays until a name is saved.
@@ -56,6 +59,8 @@ class _NicknameDialogState extends State<_NicknameDialog> {
       setState(() => _error = t.nicknameRequired);
       return;
     }
+    // Name tag on the home character widget.
+    unawaited(HomeWidgetSync.syncCharacter());
     Navigator.of(context).pop();
   }
 

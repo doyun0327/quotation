@@ -185,7 +185,7 @@ enum TogetherWidgetSize {
   static double spanDp(int cells) => 70.0 * cells - 30.0;
 
   /// One UI cell span on a 360dp-wide phone (measured 4×2 = 301×202).
-  /// Scales with [screenWidthDp] so the preview matches the home widget.
+  /// Same formula on Galaxy and iPhone — do not squash to iOS systemMedium.
   Size homeSize(double screenWidthDp) {
     final screen = screenWidthDp.clamp(320.0, 480.0);
     return Size(

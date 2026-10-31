@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +17,29 @@ import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
+import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
+import 'package:quotation/widgets/together_ios_snapshot.dart';
 
-/// Mirrors the home-screen character, date, and quote onto the Android widget.
+/// Mirrors the home-screen character, date, and quote onto home-screen widgets.
 abstract final class HomeWidgetSync {
+  static const appGroupId = 'group.com.dearly.quoteswidget';
+  static const iosDailyWordName = 'DailyWordWidget';
+  static const iosQuoteOnlyName = 'QuoteOnlyWidget';
+  static const iosTogetherName = 'TogetherWidget';
   static const androidProviderName = 'DailyWordWidgetProvider';
   static const androidProviderQualified =
       'com.quotation.quotation.DailyWordWidgetProvider';
   static const androidDdayProviderQualified =
       'com.quotation.quotation.DdayWidgetProvider';
+  static const keyCharacterImage = 'characterImage';
+  static const keyPawImage = 'pawImage';
+  static const keyTogetherBgImage = 'togetherBgImage';
+  /// Full Together card PNG (decorate-sized) for the iOS home widget.
+  static const keyTogetherCardImage = 'togetherCardImage';
 
   /// Chip id → Android provider (3×3 / 4×2 / 4×3 / 3×2).
   static const _ddayProviders = <({String key, String name, String qualified})>[
@@ -70,6 +83,8 @@ abstract final class HomeWidgetSync {
   static const keySubCategoryId = 'subCategoryId';
   static const keyCategoryTitle = 'categoryTitle';
   static const keyQuotePool = 'quotePool';
+  /// Name tag under the character on the home character widget.
+  static const keyNickname = 'nickname';
   static const keyThemeAccent = 'themeAccent';
   static const keyThemeBorder = 'themeBorder';
   static const keyThemeWindowBar = 'themeWindowBar';
@@ -103,6 +118,8 @@ abstract final class HomeWidgetSync {
   static const keyDdayTextColor = 'ddayTextColor';
   static const keyDdayShape = 'ddayShape';
   static const keyDdayWidgetSize = 'ddayWidgetSize';
+  static const keyDdayDesignWidth = 'ddayDesignWidth';
+  static const keyDdayDesignHeight = 'ddayDesignHeight';
   static const keyDdayScreenWidthDp = 'ddayScreenWidthDp';
   static const keyDdayHostWidthDp = 'ddayHostWidthDp';
   static const keyDdayHostHeightDp = 'ddayHostHeightDp';
@@ -140,6 +157,7 @@ abstract final class HomeWidgetSync {
   /// Measured home-widget host size + corner (written by Android provider).
   static Future<({Size size, TogetherWidgetSize forSize, double cornerDp})?>
       loadHostPreviewSize({String? roomId}) async {
+    // Host cell size is reported by the Android launcher only.
     if (!_isAndroid) return null;
     try {
       if (roomId != null && roomId.isNotEmpty) {
@@ -178,9 +196,12 @@ abstract final class HomeWidgetSync {
   }
 
   static Future<void> initialize() async {
-    if (!_isAndroid) return;
+    if (!_supportsWidgets) return;
 
     try {
+      if (_isIOS) {
+        await HomeWidget.setAppGroupId(appGroupId);
+      }
       final preferred = await HomeWidget.getWidgetData<String>(keyCategoryId);
       if (preferred != null &&
           preferred.isNotEmpty &&
@@ -196,7 +217,7 @@ abstract final class HomeWidgetSync {
   }
 
   static Future<void> syncFromHome() async {
-    if (!_isAndroid) return;
+    if (!_supportsWidgets) return;
 
     final quote = selectionController.bubbleQuote ??
         Quote(
@@ -213,6 +234,9 @@ abstract final class HomeWidgetSync {
         .toList(growable: false);
 
     try {
+      if (_isIOS) {
+        await HomeWidget.setAppGroupId(appGroupId);
+      }
       await HomeWidget.saveWidgetData<String>(keyQuoteId, quote.id);
       await HomeWidget.saveWidgetData<String>(keyQuoteText, quote.text);
       await HomeWidget.saveWidgetData<String>(keyAuthor, quote.author);
@@ -235,8 +259,11 @@ abstract final class HomeWidgetSync {
   }
 
   static Future<void> syncCharacter() async {
-    if (!_isAndroid) return;
+    if (!_supportsWidgets) return;
     try {
+      if (_isIOS) {
+        await HomeWidget.setAppGroupId(appGroupId);
+      }
       await _saveCharacter();
       await _pushCharacterWidget();
       // Together widget also shows my character.
@@ -246,31 +273,49 @@ abstract final class HomeWidgetSync {
 
   /// The widget class lives in `com.quotation.quotation`, not the application id.
   static Future<void> _pushCharacterWidget() async {
-    try {
-      await _pinChannel.invokeMethod<bool>('refreshCharacterWidget');
-      return;
-    } catch (e) {
-      debugPrint('refreshCharacterWidget: $e');
+    if (_isAndroid) {
+      try {
+        await _pinChannel.invokeMethod<bool>('refreshCharacterWidget');
+        return;
+      } catch (e) {
+        debugPrint('refreshCharacterWidget: $e');
+      }
     }
     try {
       await HomeWidget.updateWidget(
         qualifiedAndroidName: androidProviderQualified,
+        iOSName: iosDailyWordName,
+        name: iosDailyWordName,
       );
     } catch (e) {
       debugPrint('update character widget: $e');
     }
+    if (_isIOS) {
+      try {
+        await HomeWidget.updateWidget(
+          iOSName: iosQuoteOnlyName,
+          name: iosQuoteOnlyName,
+        );
+      } catch (e) {
+        debugPrint('update quote-only widget: $e');
+      }
+    }
   }
 
   static Future<void> _pushTogetherWidget() async {
-    try {
-      await _pinChannel.invokeMethod<bool>('refreshTogetherWidget');
-      return;
-    } catch (e) {
-      debugPrint('refreshTogetherWidget: $e');
+    if (_isAndroid) {
+      try {
+        await _pinChannel.invokeMethod<bool>('refreshTogetherWidget');
+        return;
+      } catch (e) {
+        debugPrint('refreshTogetherWidget: $e');
+      }
     }
     try {
       await HomeWidget.updateWidget(
         qualifiedAndroidName: androidDdayProviderQualified,
+        iOSName: iosTogetherName,
+        name: iosTogetherName,
       );
     } catch (e) {
       debugPrint('update together widget: $e');
@@ -282,11 +327,32 @@ abstract final class HomeWidgetSync {
       keyCharacterId,
       characterController.character.id,
     );
+    await HomeWidget.saveWidgetData<String>(
+      keyNickname,
+      authController.nickname?.trim() ?? '',
+    );
+    if (_isIOS) {
+      await _saveAssetImage(
+        key: keyCharacterImage,
+        assetPath: characterController.character.assetPath,
+      );
+      await _saveAssetImage(
+        key: 'char_${characterController.character.id}',
+        assetPath: characterController.character.assetPath,
+      );
+      await _saveAssetImage(
+        key: keyPawImage,
+        assetPath: 'assets/images/like/hamfoot.png',
+      );
+    }
   }
 
   static Future<void> syncDday({bool reloadFromPrefs = true}) async {
-    if (!_isAndroid) return;
+    if (!_supportsWidgets) return;
     try {
+      if (_isIOS) {
+        await HomeWidget.setAppGroupId(appGroupId);
+      }
       // Pick up offsets changed from the home-widget ⚙ screen.
       if (reloadFromPrefs) {
         await ddayController.reloadOffsetsFromPrefs();
@@ -305,7 +371,11 @@ abstract final class HomeWidgetSync {
     String? roomId,
     String? previousRoomId,
   }) async {
-    if (!_isAndroid) return false;
+    if (!_supportsWidgets) return false;
+    if (!_isAndroid) {
+      await syncDday();
+      return false;
+    }
     try {
       final id = roomId ?? ddayController.widgetDday?.id ?? '';
       final savedRoom =
@@ -500,10 +570,13 @@ abstract final class HomeWidgetSync {
   }
 
   /// Opens the system sheet to place the home character and speech bubble.
+  /// On iPhone there is no pin API — syncs data and returns false so the UI
+  /// can tell the user to add the widget from the home screen.
   static Future<bool> pinCharacterWidget() async {
+    if (!_supportsWidgets) return false;
+    await syncFromHome();
     if (!_isAndroid) return false;
     try {
-      await syncFromHome();
       final ok = await _pinChannel.invokeMethod<bool>('pinCharacterWidget');
       if (ok == true) return true;
     } catch (e) {
@@ -711,6 +784,39 @@ abstract final class HomeWidgetSync {
       await HomeWidget.saveWidgetData<String>(keyDdayCharMe, meId);
       await HomeWidget.saveWidgetData<String>(keyDdayCharFriend, '');
       await HomeWidget.saveWidgetData<String>(keyDdayDuoPose, 'handhold');
+      if (_isIOS) {
+        final emptyBox = widgetSize.homeSize(_screenWidthDp().toDouble());
+        await HomeWidget.saveWidgetData<String>(
+          keyDdayDesignWidth,
+          emptyBox.width.toString(),
+        );
+        await HomeWidget.saveWidgetData<String>(
+          keyDdayDesignHeight,
+          emptyBox.height.toString(),
+        );
+        await _renderIosTogetherCard(
+          box: emptyBox,
+          corner: TogetherWidgetSize.defaultCornerDp,
+          label: '',
+          meId: meId,
+          textColor: textColor,
+          textScale: textScale,
+          textX: 0,
+          textY: 0,
+          textRotation: 0,
+          textFont: WidgetFont.basic,
+          bgAsset: bgAsset,
+          placed: [
+            TogetherPlaced(
+              uid: authController.viewerUid,
+              characterId: meId,
+              x: 0,
+              y: 0,
+              scale: 1,
+            ),
+          ],
+        );
+      }
       return;
     }
     final rawLabel = blockedUsersController.visibleCheer(
@@ -744,14 +850,189 @@ abstract final class HomeWidgetSync {
       item.hasFriend ? (item.friendCharacterId ?? '').trim() : '',
     );
     await HomeWidget.saveWidgetData<String>(keyDdayDuoPose, 'handhold');
+    if (_isIOS) {
+      await HomeWidget.saveWidgetData<String>(
+        keyDdayDesignWidth,
+        box.width.toString(),
+      );
+      await HomeWidget.saveWidgetData<String>(
+        keyDdayDesignHeight,
+        box.height.toString(),
+      );
+      final placed = TogetherCrowdLayout.withUserScale(
+        placed: TogetherCrowdLayout.resolve(
+          people: TogetherCrowdLayout.roster(
+            myUid: authController.viewerUid,
+            myCharacterId: meId,
+            myName: authController.nickname?.trim() ?? '',
+            myIds: authController.myIds,
+            hostUid: item.cloudOwnerUid,
+            friends: item.friends,
+          ),
+          canvasW: box.width,
+          canvasH: box.height,
+          charFactor: TogetherWidgetSize.s42.charFactor,
+          saved: ddayController.crowdForRoom(item.id),
+        ),
+        myUid: authController.viewerUid,
+        meScale: ddayController.charScaleForRoom(item.id),
+        friendScale: ddayController.friendScaleForRoom(item.id),
+      );
+      await _renderIosTogetherCard(
+        box: box,
+        corner: corner,
+        label: label,
+        meId: meId,
+        textColor: textColor,
+        textScale: textScale,
+        textX: textOffsetX.toDouble(),
+        textY: textOffsetY.toDouble(),
+        textRotation: ddayController.textRotationForRoom(item.id).toDouble(),
+        textFont: ddayController.textFontForRoom(item.id),
+        bgAsset: bgAsset,
+        placed: placed,
+      );
+    }
+  }
+
+  /// Renders the decorate preview at its real size into a transparent PNG.
+  static Future<void> _renderIosTogetherCard({
+    required Size box,
+    required double corner,
+    required String label,
+    required String meId,
+    required int textColor,
+    required int textScale,
+    required double textX,
+    required double textY,
+    required double textRotation,
+    required WidgetFont textFont,
+    required String bgAsset,
+    required List<TogetherPlaced> placed,
+  }) async {
+    if (!_isIOS) return;
+    final decoded = <String, ui.Image>{};
+    ui.Image? bgImage;
+    try {
+      final bgPath = bgAsset.trim();
+      final bgIsFile = bgPath.isNotEmpty && !bgPath.startsWith('assets/');
+      if (bgPath.isNotEmpty) {
+        bgImage = await _decodeUiImage(bgPath);
+      }
+      for (final slot in placed) {
+        final id = slot.characterId;
+        if (decoded.containsKey(id)) continue;
+        final path = id == meId
+            ? characterController.character.assetPath
+            : AppCharacter.byId(id).assetPath;
+        final image = await _decodeUiImage(path);
+        if (image != null) decoded[id] = image;
+      }
+      final charBase = TogetherWidgetSize.s42.charFactor;
+      final isPixel = visualStyleController.isPixel;
+      // Exact decorate bounds; alpha stays clear so the home widget can letterbox.
+      await HomeWidget.renderFlutterWidget(
+        SizedBox(
+          width: box.width,
+          height: box.height,
+          child: ColoredBox(
+            color: const Color(0x00000000),
+            child: TogetherIosSnapshot(
+              width: box.width,
+              height: box.height,
+              charW: 72 * charBase,
+              charH: 96 * charBase,
+              label: label,
+              placed: placed,
+              images: decoded,
+              bgImage: bgImage,
+              bgIsFile: bgIsFile,
+              isPixel: isPixel,
+              textColor: textColor,
+              textScale: textScale,
+              textX: textX,
+              textY: textY,
+              textRotation: textRotation,
+              textFont: textFont,
+              cornerRadius: corner,
+            ),
+          ),
+        ),
+        key: keyTogetherCardImage,
+        logicalSize: Size(box.width, box.height),
+        pixelRatio: 3,
+      );
+    } catch (e) {
+      debugPrint('render iOS together card: $e');
+    } finally {
+      bgImage?.dispose();
+      for (final image in decoded.values) {
+        image.dispose();
+      }
+    }
+  }
+
+  static Future<ui.Image?> _decodeUiImage(String path) async {
+    try {
+      final Uint8List bytes;
+      if (path.startsWith('assets/')) {
+        bytes = (await rootBundle.load(path)).buffer.asUint8List();
+      } else {
+        final file = File(path);
+        if (!file.existsSync()) return null;
+        bytes = await file.readAsBytes();
+      }
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      return frame.image;
+    } catch (e) {
+      debugPrint('decode widget image: $e');
+      return null;
+    }
   }
 
   static Future<void> syncThemeOnly() async {
-    if (!_isAndroid) return;
+    if (!_supportsWidgets) return;
     try {
+      if (_isIOS) {
+        await HomeWidget.setAppGroupId(appGroupId);
+      }
       await _saveTheme(themeController.palette);
       await _pushCharacterWidget();
     } catch (_) {}
+  }
+
+  /// Copies a Flutter asset (or on-disk album photo) into the App Group so the
+  /// iOS WidgetKit extension can draw it without Flutter.
+  static Future<void> _saveAssetImage({
+    required String key,
+    required String assetPath,
+  }) async {
+    final path = assetPath.trim();
+    if (path.isEmpty) return;
+    try {
+      final Uint8List bytes;
+      var extension = 'png';
+      if (path.startsWith('assets/')) {
+        final data = await rootBundle.load(path);
+        bytes = data.buffer.asUint8List();
+        final lower = path.toLowerCase();
+        if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
+          extension = 'jpg';
+        }
+      } else {
+        final file = File(path);
+        if (!file.existsSync()) return;
+        bytes = await file.readAsBytes();
+        final lower = path.toLowerCase();
+        if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
+          extension = 'jpg';
+        }
+      }
+      await HomeWidget.saveFile(key, bytes, extension: extension);
+    } catch (e) {
+      debugPrint('save widget image $key: $e');
+    }
   }
 
   static Future<void> _saveTheme(AppPalette palette) async {
@@ -785,4 +1066,9 @@ abstract final class HomeWidgetSync {
 
   static bool get _isAndroid =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
+  static bool get _isIOS =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
+  static bool get _supportsWidgets => _isAndroid || _isIOS;
 }

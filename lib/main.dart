@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
@@ -165,6 +166,9 @@ class _QuotationAppState extends State<QuotationApp> {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(themeController.palette),
           locale: Locale(localeController.language.id),
+          // iOS Simulator (and trackpad) sends mouse/trackpad pointers, which
+          // MaterialScrollBehavior ignores on mobile by default.
+          scrollBehavior: const _AppScrollBehavior(),
           builder: (context, child) {
             final media = MediaQuery.of(context);
             final showAd = !membershipController.isPremium;
@@ -206,6 +210,18 @@ class _QuotationAppState extends State<QuotationApp> {
       },
     );
   }
+}
+
+class _AppScrollBehavior extends MaterialScrollBehavior {
+  const _AppScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.stylus,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+      };
 }
 
 class _LoginOverlay extends StatelessWidget {

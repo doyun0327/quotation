@@ -14,7 +14,12 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PathMeasure
 import android.graphics.RectF
+import android.graphics.Rect
 import android.graphics.Typeface
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
+import android.text.TextUtils
 import android.os.Bundle
 import android.widget.RemoteViews
 import java.util.Calendar
@@ -135,6 +140,12 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
       )
     }
 
+    /**
+     * Same layout as the app home card: one dashed quote box, the character
+     * standing in front of its left edge, name tag on the box's bottom line.
+     * No favorite paw on the widget. Long quotes shrink to fit instead of
+     * scrolling, since home widgets cannot scroll.
+     */
     fun buildHomeCard(
         context: Context,
         widgetData: SharedPreferences,
@@ -165,64 +176,94 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
             context.getString(R.string.widget_placeholder_quote)
           }
       val characterId = prefString(widgetData, "characterId").ifEmpty { "basic" }
+      val nickname = prefString(widgetData, "nickname")
 
-      val outer =
-          RectF(dp(1.5f), dp(1.5f), width - dp(1.5f), height - dp(1.5f))
+      // Quote box. Character sits in front of its left part.
+      val stroke = dp(1.4f)
+      val boxLeft = width * 0.21f
+      val box = RectF(boxLeft, stroke, width - stroke, height - stroke)
       val fill =
           Paint().apply {
             color = 0xFFFFFFFF.toInt()
             style = Paint.Style.FILL
-            isAntiAlias = false
+            isAntiAlias = true
           }
-      canvas.drawRoundRect(outer, dp(18f), dp(18f), fill)
-      drawDashedRoundRect(canvas, outer, dp(18f), frame, dp(1.6f), dp(5f), dp(3.5f))
+      canvas.drawRoundRect(box, dp(14f), dp(14f), fill)
+      drawDashedRoundRect(canvas, box, dp(14f), frame, stroke, dp(5f), dp(3.5f))
 
-      val content =
-          RectF(
-              outer.left + dp(10f),
-              outer.top + dp(10f),
-              outer.right - dp(10f),
-              outer.bottom - dp(10f),
-          )
-      val gap = dp(8f)
-      val leftWidth = ((content.width() - gap) * 0.40f).coerceAtLeast(dp(48f))
-      val left = RectF(content.left, content.top, content.left + leftWidth, content.bottom)
-      val right = RectF(left.right + gap, content.top, content.right, content.bottom)
-      var dateHeight = min(dp(38f), right.height() * 0.26f)
-      if (right.height() - dateHeight - gap < dp(48f)) {
-        dateHeight = (right.height() * 0.22f).coerceAtLeast(dp(28f))
-      }
-      val dateRect = RectF(right.left, right.top, right.right, right.top + dateHeight)
-      val quoteRect =
-          RectF(right.left, dateRect.bottom + gap, right.right, right.bottom)
-
-      drawDashedRoundRect(canvas, left, dp(14f), frame, dp(1.4f), dp(5f), dp(3.5f))
-      drawDashedRoundRect(canvas, dateRect, dp(14f), frame, dp(1.4f), dp(5f), dp(3.5f))
-      drawDashedRoundRect(canvas, quoteRect, dp(14f), frame, dp(1.4f), dp(5f), dp(3.5f))
-
-      val slotW = (left.width() - dp(16f)).roundToInt().coerceAtLeast(8)
-      val slotH = (left.height() - dp(16f)).roundToInt().coerceAtLeast(8)
-      val character =
+      // Character + name tag take three quarters of the box height.
+      val tagHeight = dp(22f)
+      val tagGap = dp(2f)
+      val groupHeight = box.height() * 0.75f
+      val bodyHeight = (groupHeight - tagGap - tagHeight).coerceAtLeast(dp(24f))
+      val art =
           DdayWidgetVisuals.characterBitmap(
               context = context,
               characterId = characterId,
-              widthDp = (slotW / metricsDensity).roundToInt().coerceAtLeast(8),
-              heightDp = (slotH / metricsDensity).roundToInt().coerceAtLeast(8),
+              widthDp = 160,
+              heightDp = 160,
               isPixel = true,
           )
-      val charLeft = left.centerX() - character.width / 2f
-      val charTop = left.centerY() - character.height / 2f
+      val ink = inkBounds(art)
+      val bodyScale = bodyHeight / ink.height().coerceAtLeast(1)
+      val bodyWidth = ink.width() * bodyScale
+      // Right side always reaches into the box; wide bodies start at the edge.
+      val bodyLeft = (boxLeft + dp(22f) - bodyWidth).coerceAtLeast(0f)
+      val bodyRight = bodyLeft + bodyWidth
+      val bodyTop = box.bottom - groupHeight
       canvas.drawBitmap(
-          character,
-          null,
-          RectF(charLeft, charTop, charLeft + character.width, charTop + character.height),
+          art,
+          ink,
+          RectF(bodyLeft, bodyTop, bodyRight, bodyTop + bodyHeight),
           Paint().apply {
             isFilterBitmap = false
             isAntiAlias = false
           },
       )
-      if (character != bitmap) character.recycle()
+      art.recycle()
 
+      if (nickname.isNotEmpty()) {
+        val tagPaint =
+            TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+              color = QUOTE_COLOR
+              textSize = dp(12f)
+              setTypeface(face)
+              isFakeBoldText = !pixel
+            }
+        val padX = dp(8f)
+        val center = bodyLeft + bodyWidth / 2f
+        // Never past the body's right side, so it cannot reach the quote.
+        val maxTag = ((bodyRight + dp(4f) - center) * 2f).coerceAtLeast(dp(48f))
+        val label =
+            TextUtils.ellipsize(nickname, tagPaint, maxTag - padX * 2f, TextUtils.TruncateAt.END)
+                .toString()
+        val tagWidth = tagPaint.measureText(label) + padX * 2f
+        val tagRect =
+            RectF(
+                center - tagWidth / 2f,
+                box.bottom - tagHeight,
+                center + tagWidth / 2f,
+                box.bottom,
+            )
+        canvas.drawRoundRect(tagRect, dp(10f), dp(10f), fill)
+        canvas.drawRoundRect(
+            tagRect,
+            dp(10f),
+            dp(10f),
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+              color = (accent and 0x00FFFFFF) or (0x8C shl 24)
+              style = Paint.Style.STROKE
+              strokeWidth = stroke
+            },
+        )
+        val baseline =
+            tagRect.centerY() - (tagPaint.ascent() + tagPaint.descent()) / 2f
+        canvas.drawText(label, tagRect.left + padX, baseline, tagPaint)
+      }
+
+      // Date on the top line of the box, clear of the character.
+      val textLeft = box.left + (bodyRight - boxLeft + dp(8f)).coerceAtLeast(dp(12f))
+      val textRight = box.right - dp(10f)
       val datePaint =
           Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = DATE_COLOR
@@ -230,35 +271,91 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
             setTypeface(face)
             isFakeBoldText = !pixel
           }
-      val dateLabel = homeDateLabel()
-      val dateWidth = datePaint.measureText(dateLabel)
-      val dateX =
-          (dateRect.right - dp(12f) - dateWidth).coerceAtLeast(dateRect.left + dp(8f))
-      val dateY = dateRect.centerY() - (datePaint.ascent() + datePaint.descent()) / 2f
-      canvas.drawText(dateLabel, dateX, dateY, datePaint)
+      val dateRow = RectF(textLeft, box.top + dp(8f), textRight, box.top + dp(30f))
+      val dateY = dateRow.centerY() - (datePaint.ascent() + datePaint.descent()) / 2f
+      canvas.drawText(homeDateLabel(), textLeft, dateY, datePaint)
 
-      val quotePaint =
-          Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = QUOTE_COLOR
-            textSize = dp(if (heightDp < 140) 13f else 15f)
-            setTypeface(face)
-            isFakeBoldText = !pixel
-          }
-      val textLeft = quoteRect.left + dp(14f)
-      val textRight = quoteRect.right - dp(12f)
-      val textTop = quoteRect.top + dp(10f)
-      val textBottom = quoteRect.bottom - dp(12f)
-      drawWrapped(
+      // Quote: start at the app size and shrink until every line fits.
+      val quoteTop = dateRow.bottom + dp(6f)
+      val quoteBottom = box.bottom - dp(10f)
+      drawFitted(
           canvas = canvas,
           text = quote,
-          paint = quotePaint,
-          x = textLeft,
-          y = textTop - quotePaint.ascent(),
+          face = face,
+          fakeBold = !pixel,
+          left = textLeft,
+          top = quoteTop,
           maxWidth = (textRight - textLeft).coerceAtLeast(dp(24f)),
-          maxBottom = textBottom,
-          lineHeight = quotePaint.textSize * 1.35f,
+          maxHeight = (quoteBottom - quoteTop).coerceAtLeast(dp(12f)),
+          startSize = dp(if (heightDp < 140) 13f else 15f),
+          minSize = dp(7f),
       )
       return bitmap
+    }
+
+    /** Opaque bounds of [bitmap] (alpha > 10), or the whole bitmap. */
+    private fun inkBounds(bitmap: Bitmap): Rect {
+      val w = bitmap.width
+      val h = bitmap.height
+      val row = IntArray(w)
+      var minX = w
+      var minY = h
+      var maxX = -1
+      var maxY = -1
+      for (y in 0 until h) {
+        bitmap.getPixels(row, 0, w, 0, y, w, 1)
+        for (x in 0 until w) {
+          if ((row[x] ushr 24) > 10) {
+            if (x < minX) minX = x
+            if (x > maxX) maxX = x
+            if (y < minY) minY = y
+            if (y > maxY) maxY = y
+          }
+        }
+      }
+      if (maxX < 0) return Rect(0, 0, w, h)
+      return Rect(minX, minY, maxX + 1, maxY + 1)
+    }
+
+    /** Draws [text] wrapped in the box, shrinking the size until it all fits. */
+    private fun drawFitted(
+        canvas: Canvas,
+        text: String,
+        face: Typeface,
+        fakeBold: Boolean,
+        left: Float,
+        top: Float,
+        maxWidth: Float,
+        maxHeight: Float,
+        startSize: Float,
+        minSize: Float,
+    ) {
+      val paint =
+          TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = QUOTE_COLOR
+            setTypeface(face)
+            isFakeBoldText = fakeBold
+          }
+      val width = maxWidth.roundToInt().coerceAtLeast(1)
+      fun build(): StaticLayout =
+          StaticLayout.Builder.obtain(text, 0, text.length, paint, width)
+              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setLineSpacing(0f, 1.35f)
+              .setIncludePad(false)
+              .build()
+      var size = startSize
+      paint.textSize = size
+      var layout = build()
+      while (layout.height > maxHeight && size > minSize) {
+        size = max(minSize, size - max(0.5f, size * 0.06f))
+        paint.textSize = size
+        layout = build()
+      }
+      canvas.save()
+      canvas.translate(left, top)
+      canvas.clipRect(0f, 0f, maxWidth, maxHeight)
+      layout.draw(canvas)
+      canvas.restore()
     }
 
     private fun widgetSizeDp(context: Context, options: Bundle): Pair<Int, Int> {
@@ -353,54 +450,6 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
         measure.getSegment(distance, end, segment, true)
         canvas.drawPath(segment, paint)
         distance += dash + gap
-      }
-    }
-
-    private fun drawWrapped(
-        canvas: Canvas,
-        text: String,
-        paint: Paint,
-        x: Float,
-        y: Float,
-        maxWidth: Float,
-        maxBottom: Float,
-        lineHeight: Float,
-    ) {
-      if (maxWidth <= 0f || text.isEmpty() || y > maxBottom) return
-      val maxLines = ((maxBottom - (y + paint.ascent())) / lineHeight).toInt().coerceIn(1, 8)
-      val lines = mutableListOf<String>()
-      var line = ""
-      var index = 0
-      while (index < text.length && lines.size < maxLines) {
-        val ch = text[index]
-        if (ch == '\n') {
-          lines.add(line)
-          line = ""
-          index++
-          continue
-        }
-        val trial = line + ch
-        if (line.isNotEmpty() && paint.measureText(trial) > maxWidth) {
-          lines.add(line)
-          line = ""
-          continue
-        }
-        line = trial
-        index++
-      }
-      if (line.isNotEmpty() && lines.size < maxLines) lines.add(line)
-      if (index < text.length && lines.isNotEmpty()) {
-        var trimmed = lines.last()
-        while (trimmed.isNotEmpty() && paint.measureText("$trimmed…") > maxWidth) {
-          trimmed = trimmed.dropLast(1)
-        }
-        lines[lines.lastIndex] = "$trimmed…"
-      }
-      var top = y
-      for (row in lines) {
-        if (top > maxBottom) break
-        canvas.drawText(row, x, top, paint)
-        top += lineHeight
       }
     }
 

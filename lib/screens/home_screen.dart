@@ -1,4 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:quotation/data/archive_controller.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -243,15 +246,88 @@ class _HomeQuoteCard extends StatefulWidget {
   State<_HomeQuoteCard> createState() => _HomeQuoteCardState();
 }
 
+/// Opaque bounds of a character image, as fractions of its size.
+typedef _ArtInk = ({
+  double aspect,
+  double left,
+  double top,
+  double right,
+  double bottom,
+});
+
 class _HomeQuoteCardState extends State<_HomeQuoteCard> {
   static const _tapHintKey = 'character_tap_hint_dismissed';
 
+  /// Character plus name tag height as a share of the quote box height.
+  static const _groupShare = 0.75;
+
+  /// How far the body always reaches into the box, in logical pixels.
+  static const _overlap = 22.0;
+
+  /// Bounds of the default character, used until an image is measured.
+  static const _fallbackInk = (
+    aspect: 1.0,
+    left: 0.24,
+    top: 0.2,
+    right: 0.745,
+    bottom: 0.875,
+  );
+
+  static final _inkCache = <String, _ArtInk>{};
+
   bool _showTapHint = false;
+  String? _measuring;
 
   @override
   void initState() {
     super.initState();
     _loadTapHint();
+  }
+
+  /// Measures the opaque bounds once per image, so every character is drawn
+  /// at the same body height and lines up with the box and the name tag,
+  /// whatever transparent margin the image has.
+  Future<void> _measureInk(String path) async {
+    if (_inkCache.containsKey(path) || _measuring == path) return;
+    _measuring = path;
+    try {
+      final data = await rootBundle.load(path);
+      final codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(),
+        targetWidth: 128,
+      );
+      final image = (await codec.getNextFrame()).image;
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final w = image.width;
+      final h = image.height;
+      image.dispose();
+      codec.dispose();
+      if (bytes == null || w == 0 || h == 0) return;
+      var minX = w, minY = h, maxX = -1, maxY = -1;
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          if (bytes.getUint8((y * w + x) * 4 + 3) > 10) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      if (maxX < 0) return;
+      _inkCache[path] = (
+        aspect: h / w,
+        left: minX / w,
+        top: minY / h,
+        right: (maxX + 1) / w,
+        bottom: (maxY + 1) / h,
+      );
+      if (mounted) setState(() {});
+    } catch (_) {
+      // Keep the fallback bounds.
+    } finally {
+      if (_measuring == path) _measuring = null;
+    }
   }
 
   Future<void> _loadTapHint() async {
@@ -274,162 +350,215 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
     final frame = CategorySky.border(context.palette);
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final row = constraints.maxWidth - 20 - 8;
-        final textWidth = row * 60 / 100 - 14 - 12;
-        return _quoteCard(frame, textWidth);
-      },
+      builder: (context, constraints) =>
+          _quoteCard(context, frame, constraints.maxWidth),
     );
   }
 
-  Widget _quoteCard(Color frame, double textWidth) {
+  /// Character stands on the left, in front of the quote box, overlapping
+  /// its left edge. The box is five quote lines tall and the body is three
+  /// quarters of that for every character.
+  Widget _quoteCard(BuildContext context, Color frame, double width) {
     final date = widget.date;
     final dateLabel = '${date.year}. ${date.month}. ${date.day}';
-    return DashedBorder(
+    final path = characterController.assetPath;
+    final ink = _inkCache[path] ?? _fallbackInk;
+    if (!_inkCache.containsKey(path)) _measureInk(path);
+
+    const padTop = 8.0;
+    const padBottom = 12.0;
+    const dateRow = 30.0; // paw button: 22 icon + 4 padding on each side
+    const dateGap = 6.0;
+    final textHeight = _CappedQuoteText.heightFor(context);
+    final boxHeight = padTop + dateRow + dateGap + textHeight + padBottom;
+    final boxLeft = width * 0.21;
+
+    const tagHeight = 26.0;
+    const tagGap = 2.0;
+    // Scale so body + name tag take exactly [_groupShare] of the box height.
+    final bodyHeight = boxHeight * _groupShare - tagGap - tagHeight;
+    final drawnH = bodyHeight / (ink.bottom - ink.top);
+    final drawnW = drawnH / ink.aspect;
+    final bodyWidth = drawnW * (ink.right - ink.left);
+    // Right side always reaches [_overlap] into the box; wide bodies start
+    // at the left edge instead.
+    final bodyLeft =
+        (boxLeft + _overlap - bodyWidth).clamp(0.0, width).toDouble();
+    final bodyRight = bodyLeft + bodyWidth;
+
+    final groupHeight = bodyHeight + tagGap + tagHeight;
+    // Name tag bottom sits on the box's bottom line.
+    final bodyTop = (boxHeight - groupHeight).clamp(0.0, boxHeight);
+
+    final textInset = (bodyRight - boxLeft + 8).clamp(12.0, width).toDouble();
+    final textWidth = width - boxLeft - textInset - 8;
+
+    final box = _HomeFrame(
       color: frame,
-      strokeWidth: 1.6,
-      dashLength: 5,
-      gapLength: 3.5,
-      radius: 18,
-      padding: const EdgeInsets.all(10),
-      backgroundColor: AppColors.card,
-      alwaysDashed: true,
-      child: IntrinsicHeight(
-          child: Row(
+      child: SizedBox(
+        height: boxHeight,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(textInset, padTop, 8, padBottom),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                flex: 40,
-                child: _HomeFrame(
-                  color: frame,
-                  child: GestureDetector(
-                    onTap: _openCharacter,
-                    behavior: HitTestBehavior.opaque,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          alignment: Alignment.bottomCenter,
-                          clipBehavior: Clip.none,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Image.asset(
-                                characterController.assetPath,
-                                height: 124,
-                                fit: BoxFit.contain,
-                                filterQuality: FilterQuality.none,
-                                isAntiAlias: false,
-                              ),
-                            ),
-                            if (_showTapHint) const _CharacterTapHint(),
-                          ],
-                        ),
-                        ListenableBuilder(
-                          listenable: authController,
-                          builder: (context, _) {
-                            final name = authController.nickname?.trim() ?? '';
-                            if (name.isEmpty) return const SizedBox.shrink();
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                              child: Text(
-                                name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: AppTheme.body.copyWith(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF3C4C60),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 60,
-                child: Column(
+              // Date and favorite share the top line of the quote box.
+              SizedBox(
+                height: dateRow,
+                child: Row(
                   children: [
-                    _HomeFrame(
-                      color: frame,
+                    Expanded(
                       child: GestureDetector(
                         onTap: widget.onDateTap,
                         behavior: HitTestBehavior.opaque,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
-                          ),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              dateLabel,
-                              style: AppTheme.body.copyWith(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF8EA0B5),
-                              ),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            dateLabel,
+                            style: AppTheme.body.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF8EA0B5),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    _HomeFrame(
-                      color: frame,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 16, 12, 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            GestureDetector(
-                              onTap: widget.onMessageTap,
-                              behavior: HitTestBehavior.opaque,
-                              child: _CappedQuoteText(
-                                message: widget.message,
-                                textWidth: textWidth,
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: widget.onHeartTap,
-                                  customBorder: const CircleBorder(),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4),
-                                    child: HamfootIcon(
-                                      size: 22,
-                                      active: widget.isSaved,
-                                      color: context.palette.accent,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: widget.onHeartTap,
+                        customBorder: const CircleBorder(),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: HamfootIcon(
+                            size: 22,
+                            active: widget.isSaved,
+                            color: context.palette.accent,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: dateGap),
+              Expanded(
+                child: GestureDetector(
+                  onTap: widget.onMessageTap,
+                  behavior: HitTestBehavior.opaque,
+                  child: _CappedQuoteText(
+                    message: widget.message,
+                    textWidth: textWidth,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
+      ),
+    );
+
+    final accent = context.palette.accent;
+    final tagCenter = bodyLeft + bodyWidth / 2;
+    // Centered under the body; never past its right side, so a long name
+    // cannot reach the quote text.
+    final tagMax = ((bodyRight + 4 - tagCenter) * 2).clamp(56.0, width);
+
+    return SizedBox(
+      height: boxHeight,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: boxLeft,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: box,
+          ),
+          // Image placed so its opaque body lands on the computed bounds.
+          Positioned(
+            left: bodyLeft - drawnW * ink.left,
+            top: bodyTop - drawnH * ink.top,
+            width: drawnW,
+            height: drawnH,
+            child: GestureDetector(
+              onTap: _openCharacter,
+              behavior: HitTestBehavior.translucent,
+              child: Image.asset(
+                path,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.none,
+                isAntiAlias: false,
+              ),
+            ),
+          ),
+          if (_showTapHint)
+            Positioned(
+              left: tagCenter - 80,
+              width: 160,
+              top: bodyTop + bodyHeight - 28,
+              child: const Center(child: _CharacterTapHint()),
+            ),
+          Positioned(
+            left: tagCenter - tagMax / 2,
+            width: tagMax,
+            top: bodyTop + bodyHeight + tagGap,
+            child: Center(
+              child: ListenableBuilder(
+                listenable: authController,
+                builder: (context, _) {
+                  final name = authController.nickname?.trim() ?? '';
+                  if (name.isEmpty) return const SizedBox.shrink();
+                  // Sticker-style tag in front of the box, like the character.
+                  return GestureDetector(
+                    onTap: _openCharacter,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.card,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: accent.withValues(alpha: 0.55),
+                          width: 1.4,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: accent.withValues(alpha: 0.12),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: AppTheme.body.copyWith(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF3C4C60),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-/// Quote body on the home card. Grows with the text up to eight lines,
-/// the height of the card in the reference layout, then scrolls inside.
+/// Quote body on the home card. Always five lines tall; longer quotes
+/// scroll inside the box.
 class _CappedQuoteText extends StatefulWidget {
   const _CappedQuoteText({
     required this.message,
@@ -439,13 +568,7 @@ class _CappedQuoteText extends StatefulWidget {
   final String message;
   final double textWidth;
 
-  @override
-  State<_CappedQuoteText> createState() => _CappedQuoteTextState();
-}
-
-class _CappedQuoteTextState extends State<_CappedQuoteText> {
-  static const _maxLines = 8;
-  static const _minHeight = 72.0;
+  static const maxLines = 5;
 
   static const _style = TextStyle(
     fontSize: 15,
@@ -454,6 +577,25 @@ class _CappedQuoteTextState extends State<_CappedQuoteText> {
     color: Color(0xFF3C4C60),
   );
 
+  static TextStyle style() => AppTheme.body.merge(_style);
+
+  /// Height of [maxLines] lines with the user's text size.
+  static double heightFor(BuildContext context) {
+    final painter = TextPainter(
+      text: TextSpan(text: ' ', style: style()),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final line = painter.preferredLineHeight;
+    painter.dispose();
+    return line * maxLines;
+  }
+
+  @override
+  State<_CappedQuoteText> createState() => _CappedQuoteTextState();
+}
+
+class _CappedQuoteTextState extends State<_CappedQuoteText> {
   final _scroll = ScrollController();
 
   @override
@@ -472,36 +614,28 @@ class _CappedQuoteTextState extends State<_CappedQuoteText> {
 
   @override
   Widget build(BuildContext context) {
-    final style = AppTheme.body.merge(_style);
+    final style = _CappedQuoteText.style();
     final width = widget.textWidth;
     final painter = TextPainter(
       text: TextSpan(text: widget.message, style: style),
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
     )..layout(maxWidth: width > 0 ? width : 100);
-    final lineCap = painter.preferredLineHeight * _maxLines;
-    final cap = lineCap < _minHeight ? _minHeight : lineCap;
     final textHeight = painter.height;
     painter.dispose();
-    final viewHeight = textHeight < _minHeight
-        ? _minHeight
-        : (textHeight > cap ? cap : textHeight);
-    final scrolls = textHeight > cap + 1;
+    final scrolls = textHeight > _CappedQuoteText.heightFor(context) + 1;
 
-    return SizedBox(
-      height: viewHeight,
-      child: Scrollbar(
+    return Scrollbar(
+      controller: _scroll,
+      thumbVisibility: scrolls,
+      thickness: 3,
+      radius: const Radius.circular(2),
+      child: SingleChildScrollView(
         controller: _scroll,
-        thumbVisibility: scrolls,
-        thickness: 3,
-        radius: const Radius.circular(2),
-        child: SingleChildScrollView(
-          controller: _scroll,
-          physics: scrolls
-              ? const ClampingScrollPhysics()
-              : const NeverScrollableScrollPhysics(),
-          child: Text(widget.message, style: style),
-        ),
+        physics: scrolls
+            ? const ClampingScrollPhysics()
+            : const NeverScrollableScrollPhysics(),
+        child: Text(widget.message, style: style),
       ),
     );
   }
