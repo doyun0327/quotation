@@ -442,6 +442,9 @@ class DdayController extends ChangeNotifier {
   static const bgOpacityMax = 100;
   static const scaleMax = 240;
 
+  /// Character size slider max (148%), separate from the text slider.
+  static const charScaleMax = 148;
+
   final List<DdayItem> _items = [];
   final Map<String, _RoomOffsets> _roomOffsets = {};
   bool _loaded = false;
@@ -564,8 +567,8 @@ class DdayController extends ChangeNotifier {
       textX: _clampTextX(o.textX),
       textY: _clampTextY(o.textY),
       textRotation: _normDegrees(o.textRotation),
-      charScale: _clampScale(o.charScale),
-      friendScale: _clampScale(o.friendScale),
+      charScale: _clampCharScale(o.charScale),
+      friendScale: _clampCharScale(o.friendScale),
       textScale: _clampScale(o.textScale),
       bgColor: o.bgColor,
       bgOpacity: _clampBgOpacity(o.bgOpacity),
@@ -652,8 +655,8 @@ class DdayController extends ChangeNotifier {
       textX: textX == null ? null : _clampTextX(textX),
       textY: textY == null ? null : _clampTextY(textY),
       textRotation: textRotation == null ? null : _normDegrees(textRotation),
-      charScale: charScale == null ? null : _clampScale(charScale),
-      friendScale: friendScale == null ? null : _clampScale(friendScale),
+      charScale: charScale == null ? null : _clampCharScale(charScale),
+      friendScale: friendScale == null ? null : _clampCharScale(friendScale),
       textScale: textScale == null ? null : _clampScale(textScale),
       bgColor: bgColor,
       bgOpacity: bgOpacity == null ? null : _clampBgOpacity(bgOpacity),
@@ -739,6 +742,8 @@ class DdayController extends ChangeNotifier {
   int _clampTextY(int value) =>
       value.clamp(textOffsetMinY, textOffsetMaxY).toInt();
   int _clampScale(int value) => value.clamp(scaleMin, scaleMax).toInt();
+  int _clampCharScale(int value) =>
+      value.clamp(scaleMin, charScaleMax).toInt();
   int _clampBgOpacity(int value) =>
       value.clamp(bgOpacityMin, bgOpacityMax).toInt();
 

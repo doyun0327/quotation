@@ -241,8 +241,8 @@ object DdayWidgetVisuals {
     canvas.save()
     canvas.clipPath(clipPath)
 
-    val meScale = (charScale / 100f).coerceIn(0.6f, 2.4f)
-    val frScale = (friendScale / 100f).coerceIn(0.6f, 2.4f)
+    val meScale = (charScale / 100f).coerceIn(0.6f, 3.0f)
+    val frScale = (friendScale / 100f).coerceIn(0.6f, 3.0f)
     val meWDp = (72f * sizeCharFactor * meScale).toInt().coerceAtLeast(20)
     val meHDp = (96f * sizeCharFactor * meScale).toInt().coerceAtLeast(28)
     val meW = (meWDp * density).toInt().coerceAtLeast(8)
@@ -303,7 +303,8 @@ object DdayWidgetVisuals {
         val id = obj.optString("id").ifBlank { "basic" }
         val offsetX = obj.optInt("x", 0)
         val offsetY = obj.optInt("y", 0)
-        val spriteScale = (obj.optInt("s", 100) / 100f).coerceIn(0.28f, 1.2f)
+        // Upper bound matches Flutter widgetChars (400) so large sizes survive.
+        val spriteScale = (obj.optInt("s", 100) / 100f).coerceIn(0.28f, 4.0f)
         val spriteWDp = (72f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(16)
         val spriteHDp = (96f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(20)
         val spriteW = (spriteWDp * density).toInt().coerceAtLeast(8)

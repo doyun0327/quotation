@@ -265,9 +265,11 @@ abstract final class TogetherCrowdLayout {
     return false;
   }
 
-  /// Shrinks with the size slider, and does not grow past the row that fits.
+  /// Follows the full character size slider (DdayController.scaleMin..
+  /// charScaleMax = 60..148%). It used to stop at 100%, so the upper part of
+  /// the slider did nothing.
   static double userFactor(int scalePercent) =>
-      (scalePercent / 100).clamp(0.6, 1.0);
+      (scalePercent / 100).clamp(0.6, 1.48);
 
   static List<TogetherPlaced> withUserScale({
     required List<TogetherPlaced> placed,
@@ -297,7 +299,7 @@ abstract final class TogetherCrowdLayout {
           'id': slot.characterId,
           'x': slot.x.round(),
           'y': slot.y.round(),
-          's': (slot.scale * 100).round().clamp(28, 120),
+          's': (slot.scale * 100).round().clamp(28, 400),
           'r': slot.rotationDegrees,
         },
     ];

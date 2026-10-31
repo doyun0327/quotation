@@ -263,7 +263,7 @@ abstract final class TogetherFcm {
           openRoomFromNotice(launch?.notificationResponse?.payload),
         );
       }
-      await _saveToken();
+      // Listeners first: a token failure below must not skip them.
       // Admin sends to registration tokens. register()/onRegistered exposes a
       // Firebase Installation ID, which is not a send target.
       // ignore: deprecated_member_use
@@ -272,15 +272,33 @@ abstract final class TogetherFcm {
         if (user != null) unawaited(_saveToken());
       });
       FirebaseMessaging.onMessage.listen(_showForeground);
+      unawaited(_saveToken());
     } catch (e) {
       debugPrint('TogetherFcm.start: $e');
     }
   }
 
+  /// Saves the FCM token. On iPhone getToken() throws until APNs hands the
+  /// device token over (a moment after launch), so wait for it first.
   static Future<void> _saveToken() async {
-    // ignore: deprecated_member_use
-    final token = await FirebaseMessaging.instance.getToken();
-    await _writeToken(token);
+    try {
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        String? apns;
+        for (var attempt = 0; attempt < 10 && apns == null; attempt++) {
+          apns = await FirebaseMessaging.instance.getAPNSToken();
+          if (apns == null) {
+            await Future<void>.delayed(const Duration(seconds: 3));
+          }
+        }
+        // No APNs token (e.g. simulator): onTokenRefresh saves it later.
+        if (apns == null) return;
+      }
+      // ignore: deprecated_member_use
+      final token = await FirebaseMessaging.instance.getToken();
+      await _writeToken(token);
+    } catch (e) {
+      debugPrint('TogetherFcm.saveToken: $e');
+    }
   }
 
   static Future<void> _writeToken(String? token) async {

@@ -379,26 +379,37 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
   void _movePerson(String uid, double dx, double dy) {
-    final size = _previewSize;
     final next = <TogetherPlaced>[];
     for (final person in _placed) {
       if (person.uid != uid) {
         next.add(person);
         continue;
       }
-      final fitted = TogetherCharacterBounds.me(
-        x: person.x + dx,
-        y: person.y + dy,
-        width: size.width,
-        height: size.height,
-        charW: charW * _widgetSize.charFactor * person.scale,
-        charH: charH * _widgetSize.charFactor * person.scale,
-      );
-      next.add(person.copyWith(x: fitted.x, y: fitted.y));
+      next.add(_fitPerson(person, person.x + dx, person.y + dy));
     }
     _placed = next;
     _crowdDirty = true;
     _dragTick.value++;
+  }
+
+  /// Clamps [person] inside the background at the size it is actually drawn
+  /// (layout scale × size slider), so a scaled-up character cannot be
+  /// dragged or grown past the edge.
+  TogetherPlaced _fitPerson(TogetherPlaced person, double x, double y) {
+    final size = _previewSize;
+    final scale = person.scale *
+        TogetherCrowdLayout.userFactor(
+          person.uid == authController.viewerUid ? _meScale : _friendScale,
+        );
+    final fitted = TogetherCharacterBounds.me(
+      x: x,
+      y: y,
+      width: size.width,
+      height: size.height,
+      charW: charW * _widgetSize.charFactor * scale,
+      charH: charH * _widgetSize.charFactor * scale,
+    );
+    return person.copyWith(x: fitted.x, y: fitted.y);
   }
 
   void _rotateText(double degrees) {
@@ -470,7 +481,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       _widgetSize.charFactor *
       (scale / 100).clamp(
         DdayController.scaleMin / 100,
-        DdayController.scaleMax / 100,
+        DdayController.charScaleMax / 100,
       );
 
   double _spriteH(int scale) =>
@@ -478,7 +489,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       _widgetSize.charFactor *
       (scale / 100).clamp(
         DdayController.scaleMin / 100,
-        DdayController.scaleMax / 100,
+        DdayController.charScaleMax / 100,
       );
 
   Size get _previewSize => TogetherWidgetPreview.sizeForShape(
@@ -510,6 +521,18 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _meY = me.y;
     _friendX = friend.x;
     _friendY = friend.y;
+    // Crowd sprites too: growing one with the slider pulls it back inside.
+    var moved = false;
+    final placed = <TogetherPlaced>[];
+    for (final person in _placed) {
+      final fitted = _fitPerson(person, person.x, person.y);
+      if (fitted.x != person.x || fitted.y != person.y) moved = true;
+      placed.add(fitted);
+    }
+    if (moved) {
+      _placed = placed;
+      _crowdDirty = true;
+    }
   }
 
   void _clampMe(double dx, double dy) {
@@ -1016,9 +1039,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       value: (_scaleMe || !liveHasFriend ? _meScale : _friendScale)
                           .toDouble(),
                       min: DdayController.scaleMin.toDouble(),
-                      max: DdayController.scaleMax.toDouble(),
+                      max: DdayController.charScaleMax.toDouble(),
                       divisions:
-                          DdayController.scaleMax - DdayController.scaleMin,
+                          DdayController.charScaleMax - DdayController.scaleMin,
                       label:
                           '${_scaleMe || !liveHasFriend ? _meScale : _friendScale}%',
                       onChanged: (v) {

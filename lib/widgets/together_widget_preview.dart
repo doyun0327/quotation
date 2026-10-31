@@ -201,11 +201,11 @@ class TogetherWidgetPreview extends StatelessWidget {
     final color = raw.withValues(alpha: opacity);
     final meFactor = (meScale / 100).clamp(
       DdayController.scaleMin / 100,
-      DdayController.scaleMax / 100,
+      DdayController.charScaleMax / 100,
     );
     final friendFactor = (friendScale / 100).clamp(
       DdayController.scaleMin / 100,
-      DdayController.scaleMax / 100,
+      DdayController.charScaleMax / 100,
     );
     final meW = charW * meFactor;
     final meH = charH * meFactor;
@@ -331,12 +331,15 @@ class TogetherWidgetPreview extends StatelessWidget {
                 ),
               ),
             ),
+            // Hug the drawn art: sprites are ~square images contained
+            // (centered) in a 3:4 box, so the full box left empty bands
+            // above and below the character.
             if (highlight)
               Positioned(
                 left: 0,
-                bottom: 0,
+                bottom: (spriteH - math.min(spriteW, spriteH)) / 2,
                 width: spriteW,
-                height: spriteH,
+                height: math.min(spriteW, spriteH),
                 child: const IgnorePointer(
                   child: CustomPaint(painter: _PixelSelectPainter()),
                 ),
