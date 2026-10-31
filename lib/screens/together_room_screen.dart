@@ -458,6 +458,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
               roomId: room.id,
             ),
             textColor: ddayController.textColorForRoom(room.id),
+            textFont: ddayController.textFontForRoom(room.id),
             shape: TogetherWidgetShape.square,
             cornerRadius: _hostCornerDp,
             ),

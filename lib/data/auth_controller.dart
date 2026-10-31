@@ -106,6 +106,18 @@ class AuthController extends ChangeNotifier {
     return email.isEmpty ? null : email;
   }
 
+  /// Signed in with Apple and the email is a "Hide My Email" relay (or none),
+  /// so the address means nothing to the user.
+  bool get hidesAppleEmail {
+    final fb = FirebaseAuth.instance.currentUser;
+    if (fb == null || fb.isAnonymous) return false;
+    final viaApple =
+        fb.providerData.any((info) => info.providerId == 'apple.com');
+    if (!viaApple) return false;
+    final email = (googleEmail ?? '').toLowerCase();
+    return email.isEmpty || email.endsWith('@privaterelay.appleid.com');
+  }
+
   /// Firebase uid for shared-room ordering. Stable before sign-in too.
   String get viewerUid {
     final uid = FirebaseAuth.instance.currentUser?.uid;

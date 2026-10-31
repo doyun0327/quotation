@@ -576,6 +576,7 @@ abstract final class HomeWidgetSync {
           maxWidth: inner.width,
           isPixel: visualStyleController.isPixel,
           textScale: textScale.toDouble(),
+          font: ddayController.textFontForRoom(item.id),
         );
       } catch (e) {
         debugPrint('cheer wrap: $e');
@@ -620,6 +621,8 @@ abstract final class HomeWidgetSync {
             ) ??
             '',
         'textColor': _hex(Color(ddayController.textColorForRoom(item.id))),
+        // Android loads this from flutter_assets. Empty keeps the style font.
+        'textFont': ddayController.textFontForRoom(item.id).asset ?? '',
         'chars': TogetherCrowdLayout.widgetChars(placed),
       };
     }
@@ -725,6 +728,7 @@ abstract final class HomeWidgetSync {
         maxWidth: inner.width,
         isPixel: visualStyleController.isPixel,
         textScale: textScale.toDouble(),
+        font: ddayController.textFontForRoom(item.id),
       );
     } catch (e) {
       debugPrint('cheer wrap: $e');

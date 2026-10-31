@@ -174,6 +174,7 @@ object DdayWidgetVisuals {
       textOffsetX: Int,
       textOffsetY: Int,
       textRotation: Int = 0,
+      textFontAsset: String = "",
       meId: String,
       friendId: String,
       meOffsetX: Int,
@@ -263,6 +264,7 @@ object DdayWidgetVisuals {
               maxWidthPx = maxLabelPx,
               maxHeightPx = maxLabelHeightPx,
               textColorArgb = textColorArgb,
+              fontAsset = textFontAsset,
           )
       val lx = originX + (contentW - labelBmp.width) / 2f + textOffsetX * density
       val ly = originY + (contentH - labelBmp.height) / 2f - textOffsetY * density
@@ -385,24 +387,30 @@ object DdayWidgetVisuals {
       maxWidthPx: Int,
       maxHeightPx: Int,
       textColorArgb: Int = 0xFFF26B8A.toInt(),
+      fontAsset: String = "",
   ): Bitmap {
     val density = context.resources.displayMetrics.density
     val maxWidth = maxWidthPx.coerceAtLeast(32)
     val maxHeight = maxHeightPx.coerceAtLeast(1)
-    val baseSp = if (isPixel) 16f else 22f
+    // Decorate font picked in the app. Same size/weight as TogetherCheerLayout.style.
+    val custom = if (fontAsset.isBlank()) null else assetTypeface(context, fontAsset)
+    val pixel = isPixel && custom == null
+    val baseSp = if (pixel) 16f else 22f
     val textSizePx = baseSp * (textScale / 100f) * density
     val face =
-        if (isPixel) pixelTypeface(context) else Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        custom
+            ?: if (isPixel) pixelTypeface(context)
+            else Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     val paint =
         TextPaint().apply {
           color = textColorArgb
           this.textSize = textSizePx
           typeface = face
-          isAntiAlias = !isPixel
-          isFilterBitmap = !isPixel
+          isAntiAlias = !pixel
+          isFilterBitmap = !pixel
           // Galmuri has no bold face. Faux bold widens glyphs and wraps earlier than Flutter.
           isFakeBoldText = false
-          if (!isPixel) letterSpacing = -0.1f / textSizePx
+          if (!pixel && custom == null) letterSpacing = -0.1f / textSizePx
         }
     val fontHeight = (paint.fontMetrics.descent - paint.fontMetrics.ascent).coerceAtLeast(1f)
     val spacingAdd = textSizePx * 1.2f - fontHeight
@@ -492,6 +500,20 @@ object DdayWidgetVisuals {
   }
 
   @Volatile private var cachedPixelTypeface: Typeface? = null
+  private val assetTypefaces = java.util.concurrent.ConcurrentHashMap<String, Typeface>()
+
+  /** Font bundled by Flutter (pubspec `fonts:`), e.g. `assets/fonts/Jua-Regular.ttf`. */
+  private fun assetTypeface(context: Context, asset: String): Typeface? {
+    assetTypefaces[asset]?.let { return it }
+    return try {
+      Typeface.createFromAsset(context.assets, "flutter_assets/$asset").also {
+        assetTypefaces[asset] = it
+      }
+    } catch (e: Exception) {
+      android.util.Log.e("DdayWidget", "Widget font missing: $asset", e)
+      null
+    }
+  }
 
   private fun pixelTypeface(context: Context): Typeface {
     cachedPixelTypeface?.let { return it }

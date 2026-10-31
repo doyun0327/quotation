@@ -7,6 +7,7 @@ import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/widget_album_background.dart';
+import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/l10n/app_strings.dart';
@@ -61,6 +62,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   bool _scaleMe = true;
   late String _bgThemeId;
   late int _textColor;
+  late WidgetFont _textFont;
   late TogetherWidgetSize _widgetSize;
   Size? _hostSize;
   TogetherWidgetSize? _hostForSize;
@@ -103,6 +105,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       unawaited(_persist());
     }
     _textColor = ddayController.textColorForRoom(id);
+    _textFont = ddayController.textFontForRoom(id);
     _widgetSize = TogetherWidgetSize.s42;
     final rooms = ddayController.items.where((e) => e.id == id);
     _cheerCtrl.text =
@@ -128,6 +131,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final textScale = ddayController.textScaleForRoom(id);
     final theme = ddayController.bgThemeForRoom(id);
     final color = ddayController.textColorForRoom(id);
+    final font = ddayController.textFontForRoom(id);
     final layoutChanged = _meX != meX ||
         _meY != meY ||
         _friendX != friendX ||
@@ -139,7 +143,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _friendScale != friendScale ||
         _textScale != textScale ||
         _bgThemeId != theme ||
-        _textColor != color;
+        _textColor != color ||
+        _textFont != font;
     final crowdChanged = _adoptCrowd();
     if (layoutChanged || crowdChanged) {
       setState(() {
@@ -155,6 +160,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _textScale = textScale;
         _bgThemeId = theme;
         _textColor = color;
+        _textFont = font;
         if (_focus == _DecorateFocus.friend) _scaleMe = false;
       });
     }
@@ -289,6 +295,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       bgTheme: _bgThemeId,
       bgOpacity: 100,
       textColor: _textColor,
+      textFont: _textFont,
       shape: _shape,
       widgetSize: _widgetSize,
       notifyFriends: applyToHome,
@@ -693,6 +700,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               roomId: widget.roomId,
                             ),
                             textColor: _textColor,
+                            textFont: _textFont,
                             shape: _shape,
                             cornerRadius: _hostCornerDp,
                             onMePan: (_focus == _DecorateFocus.me ||
@@ -889,6 +897,41 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                     filterQuality: FilterQuality.none,
                                     isAntiAlias: false,
                                   ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      t.ddayDecorateFontLabel,
+                      style: AppTheme.body.copyWith(
+            fontFamily: 'Galmuri',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: palette.accent,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 36,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: WidgetFont.values.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 10),
+                        itemBuilder: (context, index) {
+                          final font = WidgetFont.values[index];
+                          return _FontChip(
+                            label: t.ddayDecorateFontName(font),
+                            // Basic matches the pixel preview label.
+                            fontFamily: font.family ?? 'Galmuri',
+                            selected: _textFont == font,
+                            accent: palette.accent,
+                            onTap: () {
+                              if (_textFont == font) return;
+                              setState(() => _textFont = font);
+                              _dragTick.value++;
+                              _persist();
+                            },
                           );
                         },
                       ),
@@ -1225,6 +1268,53 @@ class _ColorDot extends StatelessWidget {
         child: transparent
             ? CustomPaint(painter: _MiniCheckerPainter())
             : null,
+      ),
+    );
+  }
+}
+
+/// One font option, drawn in its own typeface.
+class _FontChip extends StatelessWidget {
+  const _FontChip({
+    required this.label,
+    required this.fontFamily,
+    required this.selected,
+    required this.accent,
+    required this.onTap,
+  });
+
+  final String label;
+  final String? fontFamily;
+  final bool selected;
+  final Color accent;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 36,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selected ? accent : accent.withValues(alpha: 0.35),
+            width: selected ? 2 : 1,
+          ),
+          color: selected
+              ? accent.withValues(alpha: 0.14)
+              : Colors.white.withValues(alpha: 0.6),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: 15,
+            color: selected ? accent : AppColors.ink,
+          ),
+        ),
       ),
     );
   }

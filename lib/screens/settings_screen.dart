@@ -15,6 +15,7 @@ import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/language_row.dart';
 import 'package:quotation/widgets/nickname_dialog.dart';
 import 'package:quotation/widgets/settings_widgets.dart';
+import 'package:quotation/widgets/sign_in_flow.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({
@@ -35,140 +36,18 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _signIn(BuildContext context) async {
-    final t = AppStrings.current;
-    final ok = await authController.signIn();
-    if (!context.mounted) return;
-    if (ok) {
-      _toast(context, t.googleLoginSuccess);
-      return;
-    }
-    switch (authController.lastError) {
-      case 'canceled':
-        _toast(context, t.googleLoginCanceled);
-      case 'canceled_or_config':
-      case 'config':
-      case 'clientConfigurationError':
-        _toast(context, t.googleLoginConfigError);
-      case 'missing_client_id':
-        _toast(context, t.googleLoginConfigMissing);
-      default:
-        final detail = authController.lastErrorDetail;
-        _toast(
-          context,
-          detail == null || detail.isEmpty
-              ? t.googleLoginFailed
-              : t.googleLoginFailedDetail(detail),
-        );
-    }
-  }
-
-  /// iPhone gets a provider chooser; other platforms go straight to Google.
-  Future<void> _chooseSignIn(BuildContext context) async {
-    if (!AuthController.isAppleSignInAvailable) {
-      await _signIn(context);
-      return;
-    }
-    final t = AppStrings.current;
-    final choice = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: AppColors.background,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-      ),
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                t.loginMethodTitle,
-                textAlign: TextAlign.center,
-                style: AppTheme.body.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.ink,
-                ),
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: () => Navigator.of(sheetContext).pop('apple'),
-                icon: const Icon(Icons.apple, size: 22),
-                label: Text(t.appleLoginTitle),
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  textStyle: AppTheme.body.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton(
-                onPressed: () => Navigator.of(sheetContext).pop('google'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.ink,
-                  minimumSize: const Size.fromHeight(48),
-                  side: const BorderSide(color: AppColors.ink, width: 1.2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  textStyle: AppTheme.body.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                child: Text(t.googleLoginTitle),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-    if (!context.mounted) return;
-    switch (choice) {
-      case 'apple':
-        await _signInWithApple(context);
-      case 'google':
-        await _signIn(context);
-    }
-  }
-
-  Future<void> _signInWithApple(BuildContext context) async {
-    final t = AppStrings.current;
-    final ok = await authController.signInWithApple();
-    if (!context.mounted) return;
-    if (ok) {
-      _toast(context, t.appleLoginSuccess);
-      return;
-    }
-    switch (authController.lastError) {
-      case 'canceled':
-        _toast(context, t.googleLoginCanceled);
-      case 'config':
-        _toast(context, t.appleLoginConfigError);
-      default:
-        final detail = authController.lastErrorDetail;
-        _toast(
-          context,
-          detail == null || detail.isEmpty
-              ? t.appleLoginFailed
-              : t.appleLoginFailedDetail(detail),
-        );
-    }
-  }
-
   Future<void> _subscribe(BuildContext context) async {
+    if (!await suggestSignInBeforePurchase(context)) return;
     final code = await billingController.buyMonthly();
     if (!context.mounted || code == null) return;
     _toast(context, AppStrings.current.billingError(code));
+  }
+
+  Future<void> _restore(BuildContext context) async {
+    final code = await billingController.restorePurchases();
+    if (!context.mounted) return;
+    final t = AppStrings.current;
+    _toast(context, code == null ? t.restorePurchasesDone : t.billingError(code));
   }
 
   Future<void> _signOut(BuildContext context) async {
@@ -256,8 +135,11 @@ class SettingsScreen extends StatelessWidget {
                                   )
                                 : const GoogleMark(),
                             title: authController.nickname ?? t.nicknameEmptyTitle,
-                            subtitle: authController.googleEmail ??
-                                t.nicknameEditSubtitle,
+                            // Apple "Hide My Email" gives a random relay address.
+                            subtitle: authController.hidesAppleEmail
+                                ? t.appleSignedInLabel
+                                : authController.googleEmail ??
+                                    t.nicknameEditSubtitle,
                             trailing: signedIn
                                 ? PopupMenuButton<String>(
                                     enabled: !authController.isBusy,
@@ -305,7 +187,7 @@ class SettingsScreen extends StatelessWidget {
                                     label: t.login,
                                     onPressed: authController.isBusy
                                         ? null
-                                        : () => _chooseSignIn(context),
+                                        : () => showSignInFlow(context),
                                   ),
                             onTap: () => showNicknameDialog(context),
                           ),
@@ -329,6 +211,15 @@ class SettingsScreen extends StatelessWidget {
                             onTap: billingController.isBusy
                                 ? null
                                 : () => _subscribe(context),
+                          ),
+                          SettingsItem(
+                            icon: Icons.restore_rounded,
+                            title: t.restorePurchasesTitle,
+                            subtitle: t.restorePurchasesSubtitle,
+                            iconColor: palette.accent,
+                            onTap: billingController.isBusy
+                                ? null
+                                : () => _restore(context),
                           ),
                           SettingsItem(
                             icon: Icons.workspace_premium_rounded,

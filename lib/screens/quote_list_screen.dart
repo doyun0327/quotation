@@ -24,6 +24,7 @@ import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:quotation/widgets/sign_in_flow.dart';
 
 class QuoteListScreen extends StatefulWidget {
   const QuoteListScreen({
@@ -356,6 +357,9 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
             TextButton(
               onPressed: () async {
                 Navigator.of(dialogContext).pop();
+                if (!await suggestSignInBeforePurchase(context) || !mounted) {
+                  return;
+                }
                 final code = await billingController.buyMonthly();
                 if (!mounted || code == null) return;
                 ScaffoldMessenger.of(context).showSnackBar(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
+import 'package:quotation/data/widget_fonts.dart';
 
 typedef TogetherWidgetPanDelta = void Function(double dx, double dy);
 
@@ -88,6 +89,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.bgOpacity = 100,
     this.bgAssetPath,
     this.textColor = 0xFFF26B8A,
+    this.textFont = WidgetFont.basic,
     this.shape = TogetherWidgetShape.square,
     this.cornerRadius,
     this.onMePan,
@@ -131,6 +133,7 @@ class TogetherWidgetPreview extends StatelessWidget {
   /// Image theme path; when set, used instead of solid/mosaic fill.
   final String? bgAssetPath;
   final int textColor;
+  final WidgetFont textFont;
   final TogetherWidgetShape shape;
   /// Matches Android system widget corner when provided.
   final double? cornerRadius;
@@ -231,6 +234,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     final labelStyle = TogetherCheerLayout.style(
       isPixel: isPixel,
       textScale: textScale.toDouble(),
+      font: textFont,
     ).copyWith(color: Color(textColor));
 
     Widget panTarget({

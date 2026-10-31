@@ -12,6 +12,7 @@ import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/widgets/category_pixel_icon.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dashed_border.dart';
+import 'package:quotation/widgets/sign_in_flow.dart';
 
 class CategoryBrowseSection extends StatelessWidget {
   const CategoryBrowseSection({
@@ -65,6 +66,7 @@ class CategoryBrowseSection extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 Navigator.of(dialogContext).pop();
+                if (!await suggestSignInBeforePurchase(context)) return;
                 final code = await billingController.buyMonthly();
                 if (!context.mounted || code == null) return;
                 ScaffoldMessenger.of(context).showSnackBar(

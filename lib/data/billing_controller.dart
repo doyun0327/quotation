@@ -7,7 +7,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:quotation/config/revenuecat_config.dart';
 import 'package:quotation/data/membership_controller.dart';
 
-/// Play product id. Import this into RevenueCat and attach it to [kPremiumEntitlementId].
+/// Play and App Store product id. Import this into RevenueCat and attach it to [kPremiumEntitlementId].
 const kPremiumMonthlyProductId = 'premium_monthly';
 
 /// RevenueCat entitlement identifier. Must match the dashboard exactly.
@@ -96,8 +96,41 @@ class BillingController extends ChangeNotifier {
     }
   }
 
+  /// Restores a plan bought on this store account (App Review requires this).
+  /// Returns an error code, `not_found` when nothing is active, or null.
+  Future<String?> restorePurchases() async {
+    if (_busy) return null;
+    _busy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      final setup = await _ensureConfigured();
+      if (setup != null) {
+        lastError = setup;
+        return lastError;
+      }
+      _apply(await Purchases.restorePurchases());
+      if (!membershipController.isPremium) {
+        lastError = 'restore_none';
+        return lastError;
+      }
+      return null;
+    } on PlatformException catch (error) {
+      lastError = _purchaseErrorCode(error);
+      debugPrint('restorePurchases: ${error.code} ${error.message}');
+      return lastError;
+    } catch (error) {
+      lastError = 'failed';
+      debugPrint('restorePurchases: $error');
+      return lastError;
+    } finally {
+      _busy = false;
+      notifyListeners();
+    }
+  }
+
   Future<String?> _ensureConfigured() {
-    if (defaultTargetPlatform != TargetPlatform.android) return Future.value('unavailable');
+    if (!RevenueCatConfig.isSupportedPlatform) return Future.value('unavailable');
     if (!RevenueCatConfig.isConfigured) return Future.value('missing_key');
     if (_configured) return Future.value(null);
     return _configuring ??= _configure();
@@ -109,7 +142,7 @@ class BillingController extends ChangeNotifier {
         await Purchases.setLogLevel(LogLevel.debug);
       }
       await Purchases.configure(
-        PurchasesConfiguration(RevenueCatConfig.androidApiKey.trim()),
+        PurchasesConfiguration(RevenueCatConfig.apiKey),
       );
       Purchases.addCustomerInfoUpdateListener(_apply);
       _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {

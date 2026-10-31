@@ -14,6 +14,7 @@ import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/data/user_profile_sync.dart';
+import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
 /// A friend's home-widget apply that has already been written on this phone.
@@ -417,6 +418,7 @@ class DdayCloudSync {
         !data.containsKey('layoutBgColor') &&
         !data.containsKey('layoutBgOpacity') &&
         !data.containsKey('layoutTextColor') &&
+        !data.containsKey('layoutTextFont') &&
         !data.containsKey('layoutTextX') &&
         !data.containsKey('layoutCrowdKey')) {
       return;
@@ -452,6 +454,8 @@ class DdayCloudSync {
     final rawBg = data['layoutBgTheme'] as String?;
     final bgTheme = rawBg == TogetherBgTheme.albumId ? null : rawBg;
     final textColor = (data['layoutTextColor'] as num?)?.toInt();
+    final textFontId = data['layoutTextFont'] as String?;
+    final textFont = textFontId == null ? null : WidgetFont.byId(textFontId);
     final shapeId = data['layoutShape'] as String?;
     final shape =
         shapeId == null ? null : TogetherWidgetShape.byId(shapeId);
@@ -479,6 +483,7 @@ class DdayCloudSync {
         textScale: textScale,
         bgTheme: bgTheme,
         textColor: textColor,
+        textFont: textFont,
         shape: shape,
         widgetSize: widgetSize,
         crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
@@ -500,6 +505,7 @@ class DdayCloudSync {
         textScale: textScale,
         bgTheme: bgTheme,
         textColor: textColor,
+        textFont: textFont,
         shape: shape,
         widgetSize: widgetSize,
         crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
@@ -583,6 +589,7 @@ class DdayCloudSync {
     final textScale = ddayController.textScaleForRoom(item.id);
     final bgTheme = ddayController.bgThemeForRoom(item.id);
     final textColor = ddayController.textColorForRoom(item.id);
+    final textFont = ddayController.textFontForRoom(item.id);
     const shape = TogetherWidgetShape.square;
     final widgetSize = ddayController.widgetSizeForRoom(item.id);
     final crowdKey = ddayController.crowdKeyForRoom(item.id);
@@ -637,6 +644,7 @@ class DdayCloudSync {
           'layoutTextScale': textScale,
           'layoutBgTheme': bgTheme,
           'layoutTextColor': textColor,
+          'layoutTextFont': textFont.id,
           'layoutShape': shape.id,
           'layoutWidgetSize': widgetSize.id,
           if (crowdKey.isNotEmpty) 'layoutCrowdKey': crowdKey,

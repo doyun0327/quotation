@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/widget_album_background.dart';
+import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -248,6 +249,7 @@ class _RoomOffsets {
     this.bgOpacity = 100,
     this.bgTheme = 'widget_background',
     this.textColor = 0xFFF26B8A,
+    this.textFont = '',
     this.shape = 'square',
     this.widgetSize = 's42',
     this.crowdKey = '',
@@ -269,6 +271,8 @@ class _RoomOffsets {
   final int bgOpacity;
   final String bgTheme;
   final int textColor;
+  /// [WidgetFont.id]. Empty keeps the style default font.
+  final String textFont;
   final String shape;
   final String widgetSize;
   final String crowdKey;
@@ -289,6 +293,7 @@ class _RoomOffsets {
         'bgOpacity': bgOpacity,
         'bgTheme': bgTheme,
         'textColor': textColor,
+        if (textFont.isNotEmpty) 'textFont': textFont,
         'shape': shape,
         'widgetSize': widgetSize,
         if (crowdKey.isNotEmpty) 'crowdKey': crowdKey,
@@ -329,6 +334,7 @@ class _RoomOffsets {
       bgOpacity: json['bgOpacity'] as int? ?? 100,
       bgTheme: json['bgTheme'] as String? ?? 'widget_background',
       textColor: json['textColor'] as int? ?? 0xFFF26B8A,
+      textFont: json['textFont'] as String? ?? '',
       shape: 'square',
       widgetSize: json['widgetSize'] as String? ?? 's42',
       crowdKey: json['crowdKey'] as String? ?? '',
@@ -370,6 +376,7 @@ class _RoomOffsets {
     int? bgOpacity,
     String? bgTheme,
     int? textColor,
+    String? textFont,
     String? shape,
     String? widgetSize,
     String? crowdKey,
@@ -392,6 +399,7 @@ class _RoomOffsets {
       bgOpacity: bgOpacity ?? this.bgOpacity,
       bgTheme: bgTheme ?? this.bgTheme,
       textColor: textColor ?? this.textColor,
+      textFont: textFont ?? this.textFont,
       shape: shape ?? this.shape,
       widgetSize: widgetSize ?? this.widgetSize,
       crowdKey: crowdKey ?? this.crowdKey,
@@ -550,6 +558,7 @@ class DdayController extends ChangeNotifier {
       bgOpacity: _clampBgOpacity(o.bgOpacity),
       bgTheme: o.bgTheme,
       textColor: o.textColor,
+      textFont: WidgetFont.byId(o.textFont).id,
       shape: TogetherWidgetShape.byId(o.shape).id,
       widgetSize: TogetherWidgetSize.byId(o.widgetSize).id,
       crowdKey: o.crowdKey,
@@ -571,6 +580,8 @@ class DdayController extends ChangeNotifier {
   int bgOpacityForRoom(String roomId) => _offsetsForRoom(roomId).bgOpacity;
   String bgThemeForRoom(String roomId) => _offsetsForRoom(roomId).bgTheme;
   int textColorForRoom(String roomId) => _offsetsForRoom(roomId).textColor;
+  WidgetFont textFontForRoom(String roomId) =>
+      WidgetFont.byId(_offsetsForRoom(roomId).textFont);
   TogetherWidgetShape shapeForRoom(String roomId) =>
       TogetherWidgetShape.byId(_offsetsForRoom(roomId).shape);
   TogetherWidgetSize widgetSizeForRoom(String roomId) => TogetherWidgetSize.s42;
@@ -606,6 +617,7 @@ class DdayController extends ChangeNotifier {
     int? bgOpacity,
     String? bgTheme,
     int? textColor,
+    WidgetFont? textFont,
     TogetherWidgetShape? shape,
     TogetherWidgetSize? widgetSize,
     bool fromCloud = false,
@@ -634,6 +646,7 @@ class DdayController extends ChangeNotifier {
       bgOpacity: bgOpacity == null ? null : _clampBgOpacity(bgOpacity),
       bgTheme: bgTheme,
       textColor: textColor,
+      textFont: textFont?.id,
       shape: shape?.id,
       widgetSize: widgetSize?.id,
       crowdKey: crowdKey,
@@ -653,6 +666,7 @@ class DdayController extends ChangeNotifier {
         cur.bgOpacity == next.bgOpacity &&
         cur.bgTheme == next.bgTheme &&
         cur.textColor == next.textColor &&
+        cur.textFont == next.textFont &&
         cur.shape == next.shape &&
         cur.widgetSize == next.widgetSize &&
         _sameCrowd(cur, next);

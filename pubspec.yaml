@@ -60,6 +60,7 @@ flutter:
     - assets/quotes/en/
     - assets/quotes/ja/
     - assets/quotes/jp/
+    - assets/fonts/licenses/
 
   fonts:
     - family: PressStart2P
@@ -68,3 +69,19 @@ flutter:
     - family: Galmuri
       fonts:
         - asset: assets/fonts/Galmuri11.ttf
+    # Widget decorate fonts. All SIL Open Font License 1.1 (assets/fonts/licenses/).
+    - family: Jua
+      fonts:
+        - asset: assets/fonts/Jua-Regular.ttf
+    - family: SingleDay
+      fonts:
+        - asset: assets/fonts/SingleDay-Regular.ttf
+    - family: Gaegu
+      fonts:
+        - asset: assets/fonts/Gaegu-Bold.ttf
+    - family: NanumPenScript
+      fonts:
+        - asset: assets/fonts/NanumPenScript-Regular.ttf
+    - family: YeonSung
+      fonts:
+        - asset: assets/fonts/YeonSung-Regular.ttf

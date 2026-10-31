@@ -37,7 +37,7 @@ class LegalCopy {
 }
 
 const _korean = LegalCopy(
-  updated: '최종 업데이트: 2026년 10월 27일 · 앱 이름: Dearly',
+  updated: '최종 업데이트: 2026년 10월 31일 · 앱 이름: Dearly',
   termsHeading: '이용약관',
   privacyHeading: '개인정보처리방침',
   terms: [
@@ -55,14 +55,14 @@ const _korean = LegalCopy(
     ),
     LegalBlock(
       '4. 구독',
-      '유료 상품은 Google Play에서 판매하는 월간 자동 갱신 구독입니다.\n'
-          '• 가격, 결제 주기, 포함 내용은 결제 확인 전에 Google Play 구매 화면에 표시됩니다.\n'
-          '• 요금은 Google Play 계정으로 청구됩니다. 앱은 카드 번호를 직접 받지 않습니다.\n'
+      '유료 상품은 월간 자동 갱신 구독입니다. Android에서는 Google Play, iPhone에서는 App Store가 판매합니다.\n'
+          '• 가격, 결제 주기, 포함 내용은 결제 확인 전에 스토어 구매 화면에 표시됩니다.\n'
+          '• 요금은 구매를 확인할 때 Google Play 계정 또는 Apple ID로 청구됩니다. 앱은 카드 번호를 직접 받지 않습니다.\n'
           '• 현재 기간이 끝나기 최소 24시간 전에 취소하지 않으면 매달 자동으로 갱신됩니다.\n'
-          '• 해지와 관리는 Google Play의 결제 및 정기 결제에서 할 수 있습니다. 앱을 지우는 것만으로는 구독이 해지되지 않습니다.\n'
+          '• 해지와 관리는 Android에서는 Google Play의 결제 및 정기 결제, iPhone에서는 설정 > Apple ID > 구독에서 할 수 있습니다. 앱을 지우는 것만으로는 구독이 해지되지 않습니다.\n'
           '• 해지 후에도 이미 결제한 기간이 끝날 때까지 이용할 수 있습니다.\n'
-          '• 환불은 Google Play의 환불 정책과 관련 법령을 따릅니다.\n'
-          '• 앱을 다시 설치하면 구매한 Google 계정으로 구독을 복원할 수 있습니다.',
+          '• 환불은 Google Play 또는 Apple의 환불 정책과 관련 법령을 따릅니다. iPhone에서 결제한 구독의 환불은 Apple에 요청해야 합니다.\n'
+          '• 앱을 다시 설치하면 설정의 구매 복원으로, 구매한 Google 계정 또는 Apple ID의 구독을 다시 불러올 수 있습니다.',
     ),
     LegalBlock(
       '5. 광고',
@@ -114,7 +114,7 @@ const _korean = LegalCopy(
           '• 선택한 캐릭터\n\n'
           '같이 방을 쓰면 방 이름, 초대 코드, 참여 정보, 참여자가 적은 응원 문구, 방에 표시되는 캐릭터를 저장합니다.\n\n'
           '같이 방 알림을 허용하면 알림을 보내기 위한 Firebase Cloud Messaging 토큰을 저장합니다.\n\n'
-          '구독하면 Google Play와 구독 처리 파트너인 RevenueCat이 결제를 처리합니다. 운영자는 구독이 유효한지와 구매를 복원하는 데 쓰는 스토어 이용자 식별자를 받습니다. 카드 번호 전체는 받지 않습니다.\n\n'
+          '구독하면 Google Play 또는 App Store와 구독 처리 파트너인 RevenueCat이 결제를 처리합니다. 운영자는 구독이 유효한지와 구매를 복원하는 데 쓰는 스토어 이용자 식별자를 받습니다. 카드 번호 전체는 받지 않습니다.\n\n'
           '광고가 표시되면 Google AdMob이 광고 식별자, IP 주소, 기기 정보를 광고 제공과 측정에 사용할 수 있습니다. 보상형 광고 시청은 선택입니다.\n\n'
           '전화번호, 정확한 위치, 연락처, 건강 정보는 요구하지 않습니다.',
     ),
@@ -131,7 +131,7 @@ const _korean = LegalCopy(
       '개인정보를 판매하지 않습니다. 서비스 운영에 필요한 범위에서 다음 사업자가 처리합니다.\n'
           '• Google Firebase: 로그인, 데이터베이스, 클라우드 메시징\n'
           '• Google 로그인\n'
-          '• Google Play 결제\n'
+          '• Google Play 결제, Apple App Store 결제\n'
           '• RevenueCat: 구독 상태 확인\n'
           '• Google AdMob: 광고\n'
           '법령에 따르거나 이용자를 부정 이용으로부터 보호해야 할 때 정보를 공개할 수 있습니다.',
@@ -144,7 +144,7 @@ const _korean = LegalCopy(
       '7. 이용자의 권리와 삭제',
       '로그인 없이 앱을 이용할 수 있습니다. 설정의 로그아웃은 이 기기에서 Google 연결을 해제합니다. 알림은 기기 설정에서 끌 수 있습니다. 광고 맞춤설정은 기기의 광고 설정에서 제한할 수 있습니다.\n\n'
           '클라우드에 저장된 계정 정보의 열람 또는 삭제는 ${LegalCopy.contact} 으로 요청할 수 있습니다. 계정에 등록된 이메일로 보내 주거나, 다른 주소로 보낼 때는 어떤 계정을 지울지 알려 주세요. 합리적 기간 안에 해당 계정의 클라우드 프로필을 삭제하고, 법령상 남겨야 하는 항목이 있으면 알려 드립니다.\n\n'
-          '앱을 삭제하면 그 기기의 로컬 데이터는 지워집니다. 앱 삭제만으로 구독이 해지되거나 클라우드 계정이 삭제되지는 않습니다. 구독은 Google Play에서 해지하고, 계정 삭제는 이메일로 요청해 주세요.',
+          '앱을 삭제하면 그 기기의 로컬 데이터는 지워집니다. 앱 삭제만으로 구독이 해지되거나 클라우드 계정이 삭제되지는 않습니다. 구독은 Google Play 또는 iPhone 설정의 구독에서 해지하고, 계정 삭제는 이메일로 요청해 주세요.',
     ),
     LegalBlock(
       '8. 아동',
@@ -166,7 +166,7 @@ const _korean = LegalCopy(
 );
 
 const _english = LegalCopy(
-  updated: 'Last updated: October 27, 2026 · App: Dearly',
+  updated: 'Last updated: October 31, 2026 · App: Dearly',
   termsHeading: 'Terms of Use',
   privacyHeading: 'Privacy Policy',
   terms: [
@@ -184,14 +184,14 @@ const _english = LegalCopy(
     ),
     LegalBlock(
       '4. Subscriptions',
-      'The paid plan is a monthly auto-renewing subscription sold by Google Play.\n'
-          '• The price, billing period, and what is included are shown on the Google Play purchase screen before you confirm.\n'
-          '• Payment is charged to your Google Play account. The app does not receive your full card number.\n'
+      'The paid plan is a monthly auto-renewing subscription, sold by Google Play on Android and by the App Store on iPhone.\n'
+          '• The price, billing period, and what is included are shown on the store purchase screen before you confirm.\n'
+          '• Payment is charged to your Google Play account or Apple ID when you confirm the purchase. The app does not receive your full card number.\n'
           '• The plan renews each month unless you cancel at least 24 hours before the current period ends.\n'
-          '• Cancel or manage it in Google Play under Payments & subscriptions. Uninstalling the app does not cancel the subscription.\n'
+          '• Cancel or manage it in Google Play under Payments & subscriptions on Android, or in Settings > Apple ID > Subscriptions on iPhone. Uninstalling the app does not cancel the subscription.\n'
           '• After cancellation you can keep using the paid features until the period you already paid for ends.\n'
-          '• Refunds follow Google Play’s refund rules and applicable law.\n'
-          '• If you reinstall the app, you can restore the purchase with the Google account that bought it.',
+          '• Refunds follow Google Play’s or Apple’s refund rules and applicable law. Refunds for purchases made on iPhone are requested from Apple.\n'
+          '• If you reinstall the app, use Restore purchases in Settings to bring back the plan bought with your Google account or Apple ID.',
     ),
     LegalBlock(
       '5. Ads',
@@ -243,7 +243,7 @@ const _english = LegalCopy(
           '• the character you select\n\n'
           'If you use Together, we store the room name, invite code, membership, cheers members write, and the character shown in the room.\n\n'
           'If you allow Together notifications, we store a Firebase Cloud Messaging token so the notice can be delivered.\n\n'
-          'If you subscribe, Google Play and our subscription partner RevenueCat process the payment. We receive whether the plan is active and a store user id used to restore the purchase. We do not receive your full card number.\n\n'
+          'If you subscribe, Google Play or the App Store and our subscription partner RevenueCat process the payment. We receive whether the plan is active and a store user id used to restore the purchase. We do not receive your full card number.\n\n'
           'When an ad is shown, Google AdMob may use an advertising identifier, IP address, and device information to provide and measure ads. Watching a rewarded ad is optional.\n\n'
           'We do not ask for your phone number, precise location, contacts, or health information.',
     ),
@@ -260,7 +260,7 @@ const _english = LegalCopy(
       'We do not sell personal information. These providers process it only to run Dearly:\n'
           '• Google Firebase, for sign-in, the database, and cloud messaging\n'
           '• Google Sign-In\n'
-          '• Google Play Billing\n'
+          '• Google Play Billing and Apple App Store payments\n'
           '• RevenueCat, for subscription status\n'
           '• Google AdMob, for ads\n'
           'We may disclose information if the law requires it or to protect users from abuse.',
@@ -273,7 +273,7 @@ const _english = LegalCopy(
       '7. Your choices and deletion',
       'You can use the app without signing in. Sign-out in Settings disconnects Google on this device. You can turn notifications off in device settings and limit ad personalization in your device’s ad settings.\n\n'
           'To access or delete the account information stored in the cloud, email ${LegalCopy.contact}. Use the email on the account, or tell us which account to delete if you write from another address. Within a reasonable time we will delete the cloud profile tied to that account and tell you if a record must be kept by law.\n\n'
-          'Uninstalling the app removes local data on that device. Uninstalling does not cancel a subscription or delete the cloud account. Cancel the subscription in Google Play, and email us to delete the account.',
+          'Uninstalling the app removes local data on that device. Uninstalling does not cancel a subscription or delete the cloud account. Cancel the subscription in Google Play or in iPhone Settings > Subscriptions, and email us to delete the account.',
     ),
     LegalBlock(
       '8. Children',
@@ -295,7 +295,7 @@ const _english = LegalCopy(
 );
 
 const _japanese = LegalCopy(
-  updated: '最終更新: 2026年10月27日 · アプリ名: Dearly',
+  updated: '最終更新: 2026年10月31日 · アプリ名: Dearly',
   termsHeading: '利用規約',
   privacyHeading: 'プライバシーポリシー',
   terms: [
@@ -313,14 +313,14 @@ const _japanese = LegalCopy(
     ),
     LegalBlock(
       '4. 定期購入',
-      '有料プランはGoogle Playが販売する、毎月自動更新の定期購入です。\n'
-          '• 料金、請求期間、含まれる内容は、確認する前にGoogle Playの購入画面に表示されます。\n'
-          '• 料金はGoogle Playアカウントに請求されます。アプリはカード番号の全体を受け取りません。\n'
+      '有料プランは毎月自動更新の定期購入です。AndroidではGoogle Play、iPhoneではApp Storeが販売します。\n'
+          '• 料金、請求期間、含まれる内容は、確認する前にストアの購入画面に表示されます。\n'
+          '• 料金は購入の確認時にGoogle PlayアカウントまたはApple IDに請求されます。アプリはカード番号の全体を受け取りません。\n'
           '• 現在の期間が終わる24時間前までに解約しない限り、毎月自動で更新されます。\n'
-          '• 解約と管理はGoogle Playの「お支払いと定期購入」で行います。アプリを削除しただけでは解約されません。\n'
+          '• 解約と管理は、AndroidではGoogle Playの「お支払いと定期購入」、iPhoneでは「設定 > Apple ID > サブスクリプション」で行います。アプリを削除しただけでは解約されません。\n'
           '• 解約後も、支払い済みの期間が終わるまでは有料機能を利用できます。\n'
-          '• 返金はGoogle Playの返金ルールと適用される法令に従います。\n'
-          '• アプリを再インストールした場合、購入したGoogleアカウントで定期購入を復元できます。',
+          '• 返金はGoogle PlayまたはAppleの返金ルールと適用される法令に従います。iPhoneで購入した定期購入の返金はAppleに申請してください。\n'
+          '• アプリを再インストールした場合、設定の「購入を復元」で、購入したGoogleアカウントまたはApple IDの定期購入を復元できます。',
     ),
     LegalBlock(
       '5. 広告',
@@ -372,7 +372,7 @@ const _japanese = LegalCopy(
           '• 選択したキャラクター\n\n'
           '一緒ルームを使うと、部屋名、招待コード、参加情報、参加者が書いた応援、部屋に表示するキャラクターを保存します。\n\n'
           '一緒ルームの通知を許可すると、通知を届けるためのFirebase Cloud Messagingトークンを保存します。\n\n'
-          '定期購入ではGoogle Playと、購入処理の提携先であるRevenueCatが決済を処理します。運営者はプランが有効かどうかと、購入の復元に使うストア利用者識別子を受け取ります。カード番号の全体は受け取りません。\n\n'
+          '定期購入ではGoogle PlayまたはApp Storeと、購入処理の提携先であるRevenueCatが決済を処理します。運営者はプランが有効かどうかと、購入の復元に使うストア利用者識別子を受け取ります。カード番号の全体は受け取りません。\n\n'
           '広告が表示されるとき、Google AdMobは広告識別子、IPアドレス、端末情報を、広告の配信と測定に使うことがあります。リワード広告の視聴は任意です。\n\n'
           '電話番号、正確な位置情報、連絡先、健康情報は求めません。',
     ),
@@ -389,7 +389,7 @@ const _japanese = LegalCopy(
       '個人情報を販売しません。本サービスの運営に必要な範囲で、次の事業者が取り扱います。\n'
           '• Google Firebase: ログイン、データベース、クラウドメッセージング\n'
           '• Googleログイン\n'
-          '• Google Playの決済\n'
+          '• Google Playの決済、Apple App Storeの決済\n'
           '• RevenueCat: 定期購入の状態確認\n'
           '• Google AdMob: 広告\n'
           '法令に基づく場合、または利用者を不正利用から守る必要がある場合に情報を開示することがあります。',
@@ -402,7 +402,7 @@ const _japanese = LegalCopy(
       '7. 利用者の選択と削除',
       'ログインなしでアプリを利用できます。設定のログアウトは、この端末でのGoogleとの接続を解除します。通知は端末の設定で止められます。広告のパーソナライズは端末の広告設定で制限できます。\n\n'
           'クラウドに保存されたアカウント情報の開示または削除は ${LegalCopy.contact} に依頼できます。アカウントのメールアドレスから送るか、別のアドレスから送る場合は削除するアカウントを知らせてください。合理的な期間内にそのアカウントのクラウド上のプロフィールを削除し、法令上残す必要があるものがあればお知らせします。\n\n'
-          'アプリを削除すると、その端末のローカルデータは消えます。アプリの削除だけでは定期購入は解約されず、クラウドのアカウントも削除されません。定期購入はGoogle Playで解約し、アカウントの削除はメールで依頼してください。',
+          'アプリを削除すると、その端末のローカルデータは消えます。アプリの削除だけでは定期購入は解約されず、クラウドのアカウントも削除されません。定期購入はGoogle PlayまたはiPhoneの設定の「サブスクリプション」で解約し、アカウントの削除はメールで依頼してください。',
     ),
     LegalBlock(
       '8. 子ども',

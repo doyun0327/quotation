@@ -20,6 +20,7 @@ import 'package:quotation/data/quote_repository.dart';
 import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/data/together_fcm.dart';
 import 'package:quotation/data/user_profile_sync.dart';
+import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/firebase_options.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -36,6 +37,7 @@ final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetFont.registerLicenses();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -218,7 +220,9 @@ class _LoginOverlay extends StatelessWidget {
           return const IgnorePointer(child: SizedBox.expand());
         }
         return AbsorbPointer(
-          child: ColoredBox(
+          // Sits above the Navigator, so it needs its own Material for text
+          // (otherwise Flutter draws the yellow debug underline).
+          child: Material(
             color: const Color(0x99000000),
             child: Center(
               child: Column(

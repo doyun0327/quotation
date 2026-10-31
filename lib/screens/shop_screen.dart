@@ -12,6 +12,7 @@ import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
+import 'package:quotation/widgets/sign_in_flow.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key, this.asSettings = false});
@@ -101,6 +102,7 @@ class _ShopScreenState extends State<ShopScreen> {
       ),
     );
     if (subscribe != true || !mounted) return;
+    if (!await suggestSignInBeforePurchase(context) || !mounted) return;
     final code = await billingController.buyMonthly();
     if (!mounted) return;
     if (code != null) {

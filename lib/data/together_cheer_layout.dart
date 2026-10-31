@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:quotation/data/widget_fonts.dart';
 
 /// Cheer text box shared by the decorate preview and the home widget.
 ///
@@ -18,8 +19,23 @@ abstract final class TogetherCheerLayout {
     );
   }
 
-  static TextStyle style({required bool isPixel, required double textScale}) {
+  static TextStyle style({
+    required bool isPixel,
+    required double textScale,
+    WidgetFont font = WidgetFont.basic,
+  }) {
     final factor = (textScale / 100).clamp(0.6, 2.4);
+    final family = font.family;
+    if (family != null) {
+      // Bundled fonts ship one weight. A heavier weight would fake bold here
+      // while Android draws the plain face, so the lines would differ.
+      return TextStyle(
+        fontFamily: family,
+        fontSize: 22.0 * factor,
+        fontWeight: FontWeight.w400,
+        height: 1.2,
+      );
+    }
     return TextStyle(
       fontFamily: isPixel ? 'Galmuri' : null,
       fontSize: (isPixel ? 16.0 : 22.0) * factor,
@@ -35,13 +51,14 @@ abstract final class TogetherCheerLayout {
     required double maxWidth,
     required bool isPixel,
     required double textScale,
+    WidgetFont font = WidgetFont.basic,
   }) {
     final trimmed = text.trim();
     if (trimmed.isEmpty || maxWidth < 8) return trimmed;
     final painter = TextPainter(
       text: TextSpan(
         text: trimmed,
-        style: style(isPixel: isPixel, textScale: textScale),
+        style: style(isPixel: isPixel, textScale: textScale, font: font),
       ),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:quotation/data/dday_friend_models.dart';
+import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 
 class AppStrings {
@@ -83,6 +85,15 @@ class AppStrings {
   String get ddayDecorateBgAlbum => _t('앨범', 'Album', 'アルバム');
   String get ddayDecorateBgAlbumFailed => _t('사진을 불러오지 못했어요', 'Could not open that photo', '写真を読み込めませんでした');
   String get ddayDecorateTextColorLabel => _t('글자색', 'Text color', '文字色');
+  String get ddayDecorateFontLabel => _t('글꼴', 'Font', 'フォント');
+  String ddayDecorateFontName(WidgetFont font) => switch (font) {
+        WidgetFont.basic => _t('기본', 'Basic', '基本'),
+        WidgetFont.jua => _t('주아체', 'Jua', 'Jua'),
+        WidgetFont.singleDay => _t('싱글데이', 'Single Day', 'Single Day'),
+        WidgetFont.gaegu => _t('개구체', 'Gaegu', 'Gaegu'),
+        WidgetFont.nanumPen => _t('나눔손글씨 펜', 'Nanum Pen', 'Nanum Pen'),
+        WidgetFont.yeonSung => _t('연성체', 'Yeon Sung', 'Yeon Sung'),
+      };
   String get ddayDecorateTransparent => _t('투명', 'Transparent', '透明');
   String get ddayDecoratePickColor => _t('색 고르기', 'Pick a color', '色を選ぶ');
   String get ddayDecoratePickColorDone => _t('이 색으로 적용', 'Use this color', 'この色で適用');
@@ -412,6 +423,17 @@ class AppStrings {
       _t('로그인 방법 선택', 'Choose how to sign in', 'ログイン方法を選択');
   String get appleLoginTitle =>
       _t('Apple로 로그인', 'Sign in with Apple', 'Appleでサインイン');
+  String get appleSignedInLabel =>
+      _t('Apple로 로그인함', 'Signed in with Apple', 'Appleでログイン中');
+  String get purchaseLoginTitle =>
+      _t('로그인하고 구독할까요?', 'Sign in before subscribing?', 'ログインしてから購読しますか？');
+  String get purchaseLoginBody => _t(
+        '로그인하면 앱을 다시 설치하거나 기기를 바꿔도 구독을 이어서 쓸 수 있어요.',
+        'Signing in keeps your plan when you reinstall the app or change phones.',
+        'ログインすると、再インストールや機種変更後も購読を引き継げます。',
+      );
+  String get purchaseLoginSkip =>
+      _t('로그인 없이 계속', 'Continue without signing in', 'ログインせずに続ける');
   String get appleLoginSuccess =>
       _t('Apple 로그인 완료', 'Signed in with Apple', 'Appleログインが完了しました');
   String get appleLoginConfigError => _t('Apple 로그인 설정 오류예요. Firebase에서 Apple 제공업체를 켜고 Xcode에 Sign in with Apple 기능을 추가해 주세요', 'Apple sign-in config error. Enable the Apple provider in Firebase and add the Sign in with Apple capability in Xcode', 'Appleサインインの設定エラーです。FirebaseでAppleプロバイダを有効にし、XcodeでSign in with Apple機能を追加してください');
@@ -436,13 +458,26 @@ class AppStrings {
       case 'missing_key':
         return _t('RevenueCat 공개 키가 아직 없어요. 키를 넣은 뒤 다시 눌러 주세요', 'The RevenueCat public key is missing. Add it, then try again', 'RevenueCatの公開キーがまだありません。キーを入れてからもう一度押してください');
       case 'unavailable':
-        return _t('Play 스토어 결제를 사용할 수 없어요', 'Play Store billing is unavailable', 'Playストアの決済を利用できません');
+        return defaultTargetPlatform == TargetPlatform.iOS
+            ? _t('App Store 결제를 사용할 수 없어요', 'App Store payments are unavailable', 'App Storeの決済を利用できません')
+            : _t('Play 스토어 결제를 사용할 수 없어요', 'Play Store billing is unavailable', 'Playストアの決済を利用できません');
+      case 'restore_none':
+        return _t('복원할 구독이 없어요', 'No subscription to restore', '復元できる購読がありません');
       case 'not_found':
         return _t('월 구독 상품을 아직 찾을 수 없어요. RevenueCat 오퍼링을 만든 뒤 다시 눌러 주세요', 'Monthly plan is not available yet. Create the RevenueCat offering, then try again', '月額プランがまだ見つかりません。RevenueCatのオファリングを作ってからもう一度押してください');
       default:
         return _t('구독을 시작하지 못했어요', 'Could not start the subscription', '登録を開始できませんでした');
     }
   }
+  String get restorePurchasesTitle =>
+      _t('구매 복원', 'Restore purchases', '購入を復元');
+  String get restorePurchasesSubtitle => _t(
+        '이전에 구독했다면 다시 불러와요',
+        'Bring back a plan you already bought',
+        '以前の購読を呼び戻します',
+      );
+  String get restorePurchasesDone =>
+      _t('구독을 복원했어요', 'Subscription restored', '購読を復元しました');
   String get premiumToast => _t('프리미엄 보기', 'View Premium', 'プレミアムを見る');
   String get premiumToggleTitle =>
       _t('프리미엄 (임시)', 'Premium (temp)', 'プレミアム（仮）');
