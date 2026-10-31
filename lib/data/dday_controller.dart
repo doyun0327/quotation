@@ -197,13 +197,14 @@ enum TogetherWidgetSize {
     return Size(cell.width, cell.width / cardAspect);
   }
 
-  /// Card size inside a One UI cell span on a 360dp-wide phone
-  /// (measured 4×2 cell = 301×202 → card 301×141).
+  /// Fixed design card every device lays out on: the 4×2 One UI cell of a
+  /// 360dp phone (301×202 → card 301×141). Widgets scale this whole image to
+  /// their real size, so characters, text and edge clipping look identical
+  /// on iPhone and Galaxy. [screenWidthDp] is ignored on purpose.
   Size homeSize(double screenWidthDp) {
-    final screen = screenWidthDp.clamp(320.0, 480.0);
     return fitCardAspect(Size(
-      screen * (80 * cellsW - 19) / 360.0,
-      screen * (111 * cellsH - 20) / 360.0,
+      80.0 * cellsW - 19,
+      111.0 * cellsH - 20,
     ));
   }
 

@@ -107,107 +107,17 @@ object DdayWidgetVisuals {
         cellW to cellW / CARD_ASPECT
       }
 
-  // GENERATED alongside lib/data/character_art_insets.dart.
-  // file -> aspect (w/h), left, right, top, bottom transparent fractions.
-  private val ART_INSETS: Map<String, FloatArray> =
-      mapOf(
-          "character (1).png" to floatArrayOf(1.0210f, 0.233f, 0.252f, 0.160f, 0.072f),
-          "character (10).png" to floatArrayOf(1.0218f, 0.024f, 0.017f, 0.006f, 0.024f),
-          "character (11).png" to floatArrayOf(1.0218f, 0.086f, 0.039f, 0.082f, 0.027f),
-          "character (12).png" to floatArrayOf(1.0218f, 0.148f, 0.147f, 0.081f, 0.017f),
-          "character (13).png" to floatArrayOf(1.0218f, 0.229f, 0.132f, 0.081f, 0.028f),
-          "character (14).png" to floatArrayOf(1.0218f, 0.223f, 0.230f, 0.065f, 0.029f),
-          "character (15).png" to floatArrayOf(1.0218f, 0.214f, 0.145f, 0.000f, 0.011f),
-          "character (16).png" to floatArrayOf(1.0210f, 0.268f, 0.268f, 0.039f, 0.040f),
-          "character (17).png" to floatArrayOf(1.0210f, 0.254f, 0.256f, 0.121f, 0.052f),
-          "character (18).png" to floatArrayOf(1.0218f, 0.285f, 0.288f, 0.143f, 0.032f),
-          "character (19).png" to floatArrayOf(1.0210f, 0.245f, 0.251f, 0.121f, 0.046f),
-          "character (2).png" to floatArrayOf(1.0000f, 0.218f, 0.222f, 0.128f, 0.067f),
-          "character (20).png" to floatArrayOf(1.0234f, 0.143f, 0.143f, 0.081f, 0.027f),
-          "character (21).png" to floatArrayOf(1.0210f, 0.278f, 0.264f, 0.051f, 0.042f),
-          "character (22).png" to floatArrayOf(1.0210f, 0.251f, 0.254f, 0.110f, 0.046f),
-          "character (23).png" to floatArrayOf(1.0210f, 0.000f, 0.000f, 0.000f, 0.000f),
-          "character (24).png" to floatArrayOf(1.0218f, 0.185f, 0.182f, 0.052f, 0.033f),
-          "character (25).png" to floatArrayOf(1.0210f, 0.178f, 0.178f, 0.093f, 0.028f),
-          "character (26).png" to floatArrayOf(1.0218f, 0.195f, 0.203f, 0.081f, 0.040f),
-          "character (27).png" to floatArrayOf(1.0210f, 0.240f, 0.240f, 0.085f, 0.027f),
-          "character (28).png" to floatArrayOf(1.0210f, 0.134f, 0.133f, 0.106f, 0.032f),
-          "character (29).png" to floatArrayOf(1.0210f, 0.236f, 0.236f, 0.079f, 0.037f),
-          "character (3).png" to floatArrayOf(1.0000f, 0.253f, 0.250f, 0.104f, 0.046f),
-          "character (30).png" to floatArrayOf(1.0210f, 0.245f, 0.245f, 0.101f, 0.035f),
-          "character (31).png" to floatArrayOf(1.0250f, 0.238f, 0.247f, 0.118f, 0.027f),
-          "character (32).png" to floatArrayOf(1.0210f, 0.264f, 0.260f, 0.055f, 0.027f),
-          "character (33).png" to floatArrayOf(1.0242f, 0.243f, 0.202f, 0.040f, 0.032f),
-          "character (34).png" to floatArrayOf(1.0210f, 0.232f, 0.270f, 0.076f, 0.022f),
-          "character (35).png" to floatArrayOf(1.0210f, 0.255f, 0.190f, 0.044f, 0.022f),
-          "character (36).png" to floatArrayOf(1.0210f, 0.249f, 0.220f, 0.067f, 0.013f),
-          "character (37).png" to floatArrayOf(1.0193f, 0.246f, 0.263f, 0.076f, 0.024f),
-          "character (38).png" to floatArrayOf(1.0210f, 0.249f, 0.247f, 0.083f, 0.029f),
-          "character (39).png" to floatArrayOf(1.0210f, 0.259f, 0.218f, 0.072f, 0.024f),
-          "character (4).png" to floatArrayOf(1.0218f, 0.230f, 0.173f, 0.061f, 0.024f),
-          "character (40).png" to floatArrayOf(1.0210f, 0.254f, 0.176f, 0.066f, 0.018f),
-          "character (41).png" to floatArrayOf(1.0210f, 0.255f, 0.231f, 0.079f, 0.019f),
-          "character (42).png" to floatArrayOf(1.0210f, 0.264f, 0.264f, 0.037f, 0.026f),
-          "character (43).png" to floatArrayOf(1.0210f, 0.260f, 0.249f, 0.098f, 0.024f),
-          "character (44).png" to floatArrayOf(1.0210f, 0.258f, 0.263f, 0.073f, 0.019f),
-          "character (45).png" to floatArrayOf(1.0210f, 0.277f, 0.268f, 0.051f, 0.013f),
-          "character (46).png" to floatArrayOf(1.0210f, 0.267f, 0.265f, 0.034f, 0.020f),
-          "character (47).png" to floatArrayOf(1.0210f, 0.264f, 0.236f, 0.085f, 0.015f),
-          "character (48).png" to floatArrayOf(1.0210f, 0.270f, 0.241f, 0.056f, 0.019f),
-          "character (49).png" to floatArrayOf(1.0210f, 0.292f, 0.233f, 0.080f, 0.022f),
-          "character (5).png" to floatArrayOf(1.0210f, 0.239f, 0.244f, 0.156f, 0.040f),
-          "character (50).png" to floatArrayOf(1.0218f, 0.278f, 0.271f, 0.074f, 0.014f),
-          "character (51).png" to floatArrayOf(1.0218f, 0.300f, 0.274f, 0.055f, 0.007f),
-          "character (52).png" to floatArrayOf(1.0218f, 0.259f, 0.253f, 0.079f, 0.019f),
-          "character (53).png" to floatArrayOf(1.0218f, 0.291f, 0.276f, 0.088f, 0.023f),
-          "character (54).png" to floatArrayOf(1.0218f, 0.289f, 0.261f, 0.073f, 0.023f),
-          "character (55).png" to floatArrayOf(1.0218f, 0.276f, 0.250f, 0.108f, 0.009f),
-          "character (56).png" to floatArrayOf(1.0218f, 0.271f, 0.186f, 0.063f, 0.028f),
-          "character (57).png" to floatArrayOf(1.0218f, 0.278f, 0.187f, 0.072f, 0.030f),
-          "character (58).png" to floatArrayOf(1.0218f, 0.258f, 0.278f, 0.078f, 0.015f),
-          "character (59).png" to floatArrayOf(1.0218f, 0.265f, 0.240f, 0.090f, 0.023f),
-          "character (6).png" to floatArrayOf(1.0210f, 0.252f, 0.264f, 0.080f, 0.056f),
-          "character (60).png" to floatArrayOf(1.0218f, 0.293f, 0.295f, 0.070f, 0.017f),
-          "character (61).png" to floatArrayOf(1.0218f, 0.285f, 0.262f, 0.059f, 0.019f),
-          "character (62).png" to floatArrayOf(1.0218f, 0.276f, 0.221f, 0.047f, 0.021f),
-          "character (63).png" to floatArrayOf(1.0218f, 0.289f, 0.273f, 0.075f, 0.021f),
-          "character (64).png" to floatArrayOf(0.9795f, 0.258f, 0.262f, 0.109f, 0.047f),
-          "character (7).png" to floatArrayOf(1.0210f, 0.232f, 0.229f, 0.106f, 0.038f),
-          "character (8).png" to floatArrayOf(1.0210f, 0.251f, 0.255f, 0.129f, 0.030f),
-          "character (9).png" to floatArrayOf(1.0218f, 0.224f, 0.224f, 0.082f, 0.035f),
-          "character(65).png" to floatArrayOf(1.0000f, 0.245f, 0.255f, 0.208f, 0.132f),
-          "character.png" to floatArrayOf(1.0000f, 0.242f, 0.255f, 0.203f, 0.125f),
-      )
+  /** Corner (dp) the shared design card is laid out with — Flutter defaultCornerDp. */
+  const val DESIGN_CORNER_DP = 28
 
   /**
-   * Transparent gaps (px) left, right, top, bottom between a sprite box and
-   * the character art contained in it (per-character margins). Matches
-   * Flutter CharacterArtInsets.gaps so positions agree with the editor.
+   * Shared design card (dp) every device lays out on: the 4×2 cell of a 360dp
+   * phone fitted to [CARD_ASPECT] (≈301×141). Matches Flutter homeSize, so the
+   * widget image is identical on iPhone and Galaxy and just scaled to fit.
    */
-  fun artGaps(characterId: String, boxW: Float, boxH: Float): FloatArray {
-    val ins =
-        ART_INSETS[assetFor(characterId).substringAfterLast('/')]
-            ?: floatArrayOf(1f, 0f, 0f, 0f, 0f)
-    val aspect = ins[0]
-    val dw = min(boxW, boxH * aspect)
-    val dh = dw / aspect
-    val ox = (boxW - dw) / 2f
-    val oy = (boxH - dh) / 2f
-    return floatArrayOf(ox + dw * ins[1], ox + dw * ins[2], oy + dh * ins[3], oy + dh * ins[4])
-  }
-
-  /** Clamps a sprite box's left so its art (not the box) stays inside the card. */
-  fun artLeft(left: Float, originX: Float, contentW: Float, boxW: Float, gaps: FloatArray): Float {
-    val lo = originX - gaps[0]
-    val hi = (originX + contentW - boxW + gaps[1]).coerceAtLeast(lo)
-    return left.coerceIn(lo, hi)
-  }
-
-  /** Clamps a sprite box's top so its art (not the box) stays inside the card. */
-  fun artTop(top: Float, originY: Float, contentH: Float, boxH: Float, gaps: FloatArray): Float {
-    val lo = originY - gaps[2]
-    val hi = (originY + contentH - boxH + gaps[3]).coerceAtLeast(lo)
-    return top.coerceIn(lo, hi)
+  fun designCardDp(sizeId: String): Pair<Float, Float> {
+    val (cellW, cellH) = previewSizeDp("square", sizeId, 360)
+    return cardSizeDp(cellW, cellH)
   }
 
   /** Fallback when the launcher has not reported a size yet. Default 4×2. */
@@ -219,54 +129,6 @@ object DdayWidgetVisuals {
     val (cellsW, cellsH) = cellsForSize(sizeId)
     return launcherSpanDp(cellsW, true, screenWidthDp) to
         launcherSpanDp(cellsH, false, screenWidthDp)
-  }
-
-  /**
-   * Actual host size from launcher options (portrait: minW × maxH).
-   * Falls back to [previewSizeDp] when options are not ready.
-   */
-  fun hostSizeDp(
-      context: Context,
-      appWidgetManager: android.appwidget.AppWidgetManager,
-      widgetId: Int,
-      sizeId: String,
-      screenWidthDp: Int,
-  ): Pair<Float, Float> {
-    val fallback = previewSizeDp("square", sizeId, screenWidthDp)
-    val options = appWidgetManager.getAppWidgetOptions(widgetId) ?: return fallback
-    val portrait =
-        context.resources.configuration.orientation ==
-            android.content.res.Configuration.ORIENTATION_PORTRAIT
-    val minW = options.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
-    val maxW = options.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 0)
-    val minH = options.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
-    val maxH = options.getInt(android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0)
-    val targetW = if (portrait) (if (minW > 0) minW else maxW) else (if (maxW > 0) maxW else minW)
-    val targetH = if (portrait) (if (maxH > 0) maxH else minH) else (if (minH > 0) minH else maxH)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      val sizes =
-          options.getParcelableArrayList<android.util.SizeF>(
-              android.appwidget.AppWidgetManager.OPTION_APPWIDGET_SIZES,
-          )
-      if (!sizes.isNullOrEmpty()) {
-        val size =
-            if (targetW > 0 && targetH > 0) {
-              sizes.minBy {
-                kotlin.math.abs(it.width - targetW) + kotlin.math.abs(it.height - targetH)
-              }
-            } else {
-              sizes.first()
-            }
-        if (size.width >= 8f && size.height >= 8f) return size.width to size.height
-      }
-    }
-    if (targetW <= 0 || targetH <= 0) return fallback
-    return targetW.toFloat() to targetH.toFloat()
-  }
-
-  fun systemWidgetCornerDp(context: Context): Int {
-    val density = context.resources.displayMetrics.density.coerceAtLeast(0.5f)
-    return (systemWidgetCornerPx(context) / density).toInt().coerceIn(12, 40)
   }
 
   /**
@@ -362,7 +224,7 @@ object DdayWidgetVisuals {
 
     val trimmed = label.trim()
     if (trimmed.isNotEmpty()) {
-      val cornerDp = systemWidgetCornerDp(context).toFloat()
+      val cornerDp = DESIGN_CORNER_DP.toFloat()
       val insetX = max(cornerDp, 16f)
       val insetY = max(cornerDp, 12f)
       val maxLabelPx =
@@ -420,17 +282,9 @@ object DdayWidgetVisuals {
                 heightDp = spriteHDp,
                 isPixel = isPixel,
             )
-        val gaps = artGaps(id, spriteW.toFloat(), spriteH.toFloat())
-        val left =
-            artLeft(originX + (4f + offsetX) * density, originX, contentW, spriteW.toFloat(), gaps)
-        val top =
-            artTop(
-                originY + contentH - offsetY * density - spriteH,
-                originY,
-                contentH,
-                spriteH.toFloat(),
-                gaps,
-            )
+        // Saved position as-is; the card clip cuts any overflow, like iPhone.
+        val left = originX + (4f + offsetX) * density
+        val top = originY + contentH - offsetY * density - spriteH
         val degrees = obj.optInt("r", 0)
         if (degrees % 360 != 0) {
           canvas.save()
@@ -454,17 +308,8 @@ object DdayWidgetVisuals {
             heightDp = meHDp,
             isPixel = isPixel,
         )
-    val meGaps = artGaps(meId, meW.toFloat(), meH.toFloat())
-    val meLeft =
-        artLeft(originX + (4f + meOffsetX) * density, originX, contentW, meW.toFloat(), meGaps)
-    val meTop =
-        artTop(
-            originY + contentH - meOffsetY * density - meH,
-            originY,
-            contentH,
-            meH.toFloat(),
-            meGaps,
-        )
+    val meLeft = originX + (4f + meOffsetX) * density
+    val meTop = originY + contentH - meOffsetY * density - meH
     canvas.drawBitmap(meBmp, meLeft, meTop, charPaint)
     meBmp.recycle()
 
@@ -477,23 +322,8 @@ object DdayWidgetVisuals {
               heightDp = friendHDp,
               isPixel = isPixel,
           )
-      val friendGaps = artGaps(friendId, friendW.toFloat(), friendH.toFloat())
-      val friendLeft =
-          artLeft(
-              originX + (4f + friendOffsetX) * density,
-              originX,
-              contentW,
-              friendW.toFloat(),
-              friendGaps,
-          )
-      val friendTop =
-          artTop(
-              originY + contentH - friendOffsetY * density - friendH,
-              originY,
-              contentH,
-              friendH.toFloat(),
-              friendGaps,
-          )
+      val friendLeft = originX + (4f + friendOffsetX) * density
+      val friendTop = originY + contentH - friendOffsetY * density - friendH
       canvas.drawBitmap(friendBmp, friendLeft, friendTop, charPaint)
       friendBmp.recycle()
     }

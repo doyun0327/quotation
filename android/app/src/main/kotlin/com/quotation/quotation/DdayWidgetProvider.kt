@@ -70,26 +70,12 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
   ) {
     val shape = readShape(widgetData)
     val sizeId = readSize(widgetData)
-    val screenWidthDp = readInt(widgetData, "ddayScreenWidthDp", 0).let { saved ->
-      if (saved > 0) {
-        saved
-      } else {
-        val metrics = context.resources.displayMetrics
-        (metrics.widthPixels / metrics.density).toInt().coerceAtLeast(320)
-      }
-    }
-    // Card at the shared iPhone ratio, centered in the launcher cell
-    // (fitCenter); leftover cell space stays transparent.
-    val (cellW, cellH) =
-        DdayWidgetVisuals.hostSizeDp(
-            context,
-            appWidgetManager,
-            widgetId,
-            sizeId,
-            screenWidthDp,
-        )
-    val (canvasW, canvasH) = DdayWidgetVisuals.cardSizeDp(cellW, cellH)
-    val cornerDp = DdayWidgetVisuals.systemWidgetCornerDp(context)
+    // Lay out on the shared design card (same dp as Flutter homeSize and the
+    // iPhone card). ImageView fitCenter scales it to the launcher cell, so
+    // characters/text keep the same proportions and clipping as on iPhone;
+    // leftover cell space stays transparent.
+    val (canvasW, canvasH) = DdayWidgetVisuals.designCardDp(sizeId)
+    val cornerDp = DdayWidgetVisuals.DESIGN_CORNER_DP
 
     val roomId = bindRoom(widgetData, widgetId)
     if (roomId.isBlank()) return
@@ -236,17 +222,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             default = 0xFFF26B8A.toInt(),
         )
     val isPixel = style != "clean"
-    val screenWidthDp = readInt(prefs, "ddayScreenWidthDp", 0).let { saved ->
-      if (saved > 0) {
-        saved
-      } else {
-        val metrics = context.resources.displayMetrics
-        (metrics.widthPixels / metrics.density).toInt().coerceAtLeast(320)
-      }
-    }
-    val (cellW, cellH) =
-        DdayWidgetVisuals.previewSizeDp("square", normalized, screenWidthDp)
-    val (canvasW, canvasH) = DdayWidgetVisuals.cardSizeDp(cellW, cellH)
+    val (canvasW, canvasH) = DdayWidgetVisuals.designCardDp(normalized)
     val bitmap =
         DdayWidgetVisuals.buildTogetherWidgetBitmap(
             context = context,

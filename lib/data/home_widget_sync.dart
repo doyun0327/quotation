@@ -175,19 +175,16 @@ abstract final class HomeWidgetSync {
       final h = exactH ??
           (await HomeWidget.getWidgetData<int>(keyDdayHostHeightDp))?.toDouble();
       final id = await HomeWidget.getWidgetData<String>(keyDdayHostSizeId);
-      final corner = await HomeWidget.getWidgetData<int>(keyDdayHostCornerDp);
       if (w == null || h == null || w < 40 || h < 40) return null;
       final forSize = TogetherWidgetSize.byId(id);
       final screen = _screenWidthDp().toDouble();
       // Trust the launcher cell. A Pixel grid is not the Samsung 4×2 ratio.
       if (w > screen * 1.25 || h > screen * 1.5) return null;
+      // Every device lays out on the shared design card (see homeSize).
       return (
-        size: TogetherWidgetSize.fitCardAspect(Size(w, h)),
+        size: forSize.homeSize(screen),
         forSize: forSize,
-        cornerDp: (corner ?? TogetherWidgetSize.defaultCornerDp.toInt())
-            .toDouble()
-            .clamp(12.0, 40.0)
-            .toDouble(),
+        cornerDp: TogetherWidgetSize.defaultCornerDp,
       );
     } catch (e) {
       debugPrint('loadHostPreviewSize: $e');
@@ -557,12 +554,12 @@ abstract final class HomeWidgetSync {
       if (w < 40 || h < 40) return null;
       final screen = _screenWidthDp().toDouble();
       if (w > screen * 1.25 || h > screen * 1.5) return null;
-      final corner = (map['corner'] as num?)?.toDouble() ??
-          TogetherWidgetSize.defaultCornerDp;
+      final forSize = TogetherWidgetSize.byId(map['sizeId'] as String?);
+      // Every device lays out on the shared design card (see homeSize).
       return (
-        size: TogetherWidgetSize.fitCardAspect(Size(w, h)),
-        forSize: TogetherWidgetSize.byId(map['sizeId'] as String?),
-        cornerDp: corner.clamp(12.0, 40.0),
+        size: forSize.homeSize(screen),
+        forSize: forSize,
+        cornerDp: TogetherWidgetSize.defaultCornerDp,
       );
     } catch (_) {
       return null;
