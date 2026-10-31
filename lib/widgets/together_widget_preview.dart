@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
@@ -218,6 +219,7 @@ class TogetherWidgetPreview extends StatelessWidget {
       height: height,
       charW: meW,
       charH: meH,
+      art: CharacterArtInsets.forAsset(me.assetPath),
     );
     final friendPos = TogetherCharacterBounds.me(
       x: friendX,
@@ -226,6 +228,9 @@ class TogetherWidgetPreview extends StatelessWidget {
       height: height,
       charW: friendW,
       charH: friendH,
+      art: friend == null
+          ? CharacterArtInsets.none
+          : CharacterArtInsets.forAsset(friend!.assetPath),
     );
     // Same outer corner the launcher clips, so the frame matches the home widget.
     final radius = (cornerRadius ?? 6.0).clamp(0.0, 40.0).toDouble();
@@ -289,12 +294,14 @@ class TogetherWidgetPreview extends StatelessWidget {
       required VoidCallback? onSelect,
       double rotation = 0,
       ValueChanged<double>? onRotate,
+      bool art = true,
     }) {
       const knob = 36.0;
       const gap = 6.0;
       // Sit a little closer to the picture. The angle still uses the real center.
       const knobDrop = 8.0;
       final showKnob = highlight && onRotate != null;
+      final artGap = CharacterArtInsets.forAsset(asset).gaps(spriteW, spriteH);
       // Extra space stays inside this box so the handle can be hit.
       // The picture stays on the bottom edge, so bottom-anchored layout
       // does not shift the character.
@@ -318,28 +325,30 @@ class TogetherWidgetPreview extends StatelessWidget {
                 child: Transform.rotate(
                   alignment: Alignment.center,
                   angle: rotation * math.pi / 180,
-                  child: Image.asset(
-                    asset,
-                    width: spriteW,
-                    height: spriteH,
-                    fit: BoxFit.contain,
-                    filterQuality: rotation % 90 == 0 && isPixel
-                        ? FilterQuality.none
-                        : FilterQuality.medium,
-                    isAntiAlias: !isPixel || rotation % 90 != 0,
+                  child: Opacity(
+                    opacity: art ? 1 : 0,
+                    child: Image.asset(
+                      asset,
+                      width: spriteW,
+                      height: spriteH,
+                      fit: BoxFit.contain,
+                      filterQuality: rotation % 90 == 0 && isPixel
+                          ? FilterQuality.none
+                          : FilterQuality.medium,
+                      isAntiAlias: !isPixel || rotation % 90 != 0,
+                    ),
                   ),
                 ),
               ),
             ),
-            // Hug the drawn art: sprites are ~square images contained
-            // (centered) in a 3:4 box, so the full box left empty bands
-            // above and below the character.
+            // Hug the drawn art (per-character transparent margins), not the
+            // 3:4 sprite box.
             if (highlight)
               Positioned(
-                left: 0,
-                bottom: (spriteH - math.min(spriteW, spriteH)) / 2,
-                width: spriteW,
-                height: math.min(spriteW, spriteH),
+                left: artGap.left,
+                bottom: artGap.bottom,
+                width: math.max(1.0, spriteW - artGap.left - artGap.right),
+                height: math.max(1.0, spriteH - artGap.top - artGap.bottom),
                 child: const IgnorePointer(
                   child: CustomPaint(painter: _PixelSelectPainter()),
                 ),
@@ -363,35 +372,6 @@ class TogetherWidgetPreview extends StatelessWidget {
       );
     }
 
-    final meSprite = Positioned(
-      key: const ValueKey('together-me'),
-      left: 4 + mePos.x,
-      bottom: mePos.y,
-      child: sprite(
-        asset: me.assetPath,
-        spriteW: meW,
-        spriteH: meH,
-        highlight: highlightMe,
-        onPan: onMePan,
-        onSelect: onMeSelect,
-      ),
-    );
-    final friendSprite = friend == null
-        ? null
-        : Positioned(
-            key: const ValueKey('together-friend'),
-            left: 4 + friendPos.x,
-            bottom: friendPos.y,
-            child: sprite(
-              asset: friend!.assetPath,
-              spriteW: friendW,
-              spriteH: friendH,
-              highlight: highlightFriend,
-              onPan: onFriendPan,
-              onSelect: onFriendSelect,
-            ),
-          );
-
     final orderedCrowd = crowd == null
         ? const <TogetherPreviewSprite>[]
         : (List<TogetherPreviewSprite>.of(crowd!)
@@ -399,24 +379,65 @@ class TogetherWidgetPreview extends StatelessWidget {
             if (a.highlight == b.highlight) return 0;
             return a.highlight ? 1 : -1;
           }));
-    final crowdWidgets = [
-      for (final person in orderedCrowd)
-        Positioned(
-          key: ValueKey('together-${person.keyId}'),
-          left: 4 + person.x,
-          bottom: person.y,
-          child: sprite(
-            asset: person.assetPath,
-            spriteW: charW * person.scale,
-            spriteH: charH * person.scale,
-            highlight: person.highlight,
-            onPan: person.onPan,
-            onSelect: person.onSelect,
-            rotation: person.rotation,
-            onRotate: person.onRotate,
-          ),
+
+    /// [art]: the drawn characters (clipped to the background, no input).
+    /// Otherwise: invisible hit area + selection outline + rotate knob, left
+    /// unclipped so handles near the edge stay usable.
+    List<Widget> spriteLayer({required bool art}) {
+      final meSprite = Positioned(
+        key: const ValueKey('together-me'),
+        left: 4 + mePos.x,
+        bottom: mePos.y,
+        child: sprite(
+          asset: me.assetPath,
+          spriteW: meW,
+          spriteH: meH,
+          highlight: !art && highlightMe,
+          onPan: art ? null : onMePan,
+          onSelect: art ? null : onMeSelect,
+          art: art,
         ),
-    ];
+      );
+      final friendSprite = friend == null
+          ? null
+          : Positioned(
+              key: const ValueKey('together-friend'),
+              left: 4 + friendPos.x,
+              bottom: friendPos.y,
+              child: sprite(
+                asset: friend!.assetPath,
+                spriteW: friendW,
+                spriteH: friendH,
+                highlight: !art && highlightFriend,
+                onPan: art ? null : onFriendPan,
+                onSelect: art ? null : onFriendSelect,
+                art: art,
+              ),
+            );
+      if (crowd != null) {
+        return [
+          for (final person in orderedCrowd)
+            Positioned(
+              key: ValueKey('together-${person.keyId}'),
+              left: 4 + person.x,
+              bottom: person.y,
+              child: sprite(
+                asset: person.assetPath,
+                spriteW: charW * person.scale,
+                spriteH: charH * person.scale,
+                highlight: !art && person.highlight,
+                onPan: art ? null : person.onPan,
+                onSelect: art ? null : person.onSelect,
+                rotation: person.rotation,
+                onRotate: art ? null : person.onRotate,
+                art: art,
+              ),
+            ),
+        ];
+      }
+      if (highlightMe && friendSprite != null) return [friendSprite, meSprite];
+      return [meSprite, ?friendSprite];
+    }
 
     final hasImage = bgAssetPath != null && bgAssetPath!.isNotEmpty;
     final rotatingText = highlightText && onTextRotate != null;
@@ -522,15 +543,20 @@ class TogetherWidgetPreview extends StatelessWidget {
               ],
             ),
           ),
-          if (crowd != null)
-            ...crowdWidgets
-          else if (highlightMe && friendSprite != null) ...[
-            friendSprite,
-            meSprite,
-          ] else ...[
-            meSprite,
-            ?friendSprite,
-          ],
+          // Characters are clipped to the background exactly like the home
+          // widget, so anything past the edge looks cut off here too.
+          Positioned.fill(
+            child: IgnorePointer(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: spriteLayer(art: true),
+                ),
+              ),
+            ),
+          ),
+          ...spriteLayer(art: false),
         ],
       ),
     );
@@ -675,12 +701,20 @@ abstract final class TogetherCharacterBounds {
     required double height,
     required double charW,
     required double charH,
+    CharacterArtInsets art = CharacterArtInsets.none,
   }) {
-    final maxX = width - 4 - charW;
-    final hiX = maxX < -4 ? -4.0 : maxX;
-    final maxY = height - charH;
-    final hiY = maxY < 0 ? 0.0 : maxY;
-    return (x: x.clamp(-4.0, hiX).toDouble(), y: y.clamp(0.0, hiY).toDouble());
+    // Bound the drawn art, not the sprite box: the image is contained in a
+    // 3:4 box and each character has its own transparent margins, so the
+    // box edge kept a standing character away from the walls and floor.
+    // Sprite left = 4 + x, bottom = y.
+    final gap = art.gaps(charW, charH);
+    final loX = -4 - gap.left;
+    final maxX = width - 4 - charW + gap.right;
+    final hiX = maxX < loX ? loX : maxX;
+    final loY = -gap.bottom;
+    final maxY = height - charH + gap.top;
+    final hiY = maxY < loY ? loY : maxY;
+    return (x: x.clamp(loX, hiX).toDouble(), y: y.clamp(loY, hiY).toDouble());
   }
 
   static ({double x, double y}) friend({
@@ -690,6 +724,7 @@ abstract final class TogetherCharacterBounds {
     required double height,
     required double charW,
     required double charH,
+    CharacterArtInsets art = CharacterArtInsets.none,
   }) {
     return me(
       x: x,
@@ -698,6 +733,7 @@ abstract final class TogetherCharacterBounds {
       height: height,
       charW: charW,
       charH: charH,
+      art: art,
     );
   }
 }

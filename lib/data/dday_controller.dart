@@ -430,8 +430,9 @@ class DdayController extends ChangeNotifier {
 
   static const duoOffsetMinX = -480;
   static const duoOffsetMaxX = 480;
-  /// Feet stay inside the widget. The editor tightens this to the live background.
-  static const duoOffsetMinY = 0;
+  /// Slightly negative so the art (not its transparent box padding) can sit on
+  /// the bottom edge. The editor tightens this to the live background.
+  static const duoOffsetMinY = -80;
   static const duoOffsetMaxY = 480;
   static const textOffsetMinX = -480;
   static const textOffsetMaxX = 480;

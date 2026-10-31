@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
+import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
@@ -397,10 +398,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   /// dragged or grown past the edge.
   TogetherPlaced _fitPerson(TogetherPlaced person, double x, double y) {
     final size = _previewSize;
+    final isMe = person.uid == authController.viewerUid;
     final scale = person.scale *
-        TogetherCrowdLayout.userFactor(
-          person.uid == authController.viewerUid ? _meScale : _friendScale,
-        );
+        TogetherCrowdLayout.userFactor(isMe ? _meScale : _friendScale);
     final fitted = TogetherCharacterBounds.me(
       x: x,
       y: y,
@@ -408,6 +408,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       height: size.height,
       charW: charW * _widgetSize.charFactor * scale,
       charH: charH * _widgetSize.charFactor * scale,
+      art: CharacterArtInsets.forAsset(
+        isMe
+            ? characterController.assetPath
+            : AppCharacter.byId(person.characterId).assetPath,
+      ),
     );
     return person.copyWith(x: fitted.x, y: fitted.y);
   }
