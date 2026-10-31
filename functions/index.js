@@ -61,6 +61,25 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
       android: {
         priority: 'high',
       },
+      // iPhone: show the alert and wake the app in the background
+      // (content-available) so it redraws the Together widget card.
+      apns: {
+        headers: {
+          'apns-push-type': 'alert',
+          'apns-priority': '10',
+        },
+        payload: {
+          aps: {
+            alert: {
+              title: roomTitle || '같이',
+              body: `${actorName || '친구'} - 위젯을 수정했어요!`,
+            },
+            sound: 'default',
+            'content-available': 1,
+            'thread-id': roomId,
+          },
+        },
+      },
     });
 
     const invalid = [];

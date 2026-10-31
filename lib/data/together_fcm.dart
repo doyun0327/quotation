@@ -28,8 +28,22 @@ Future<void> togetherFcmBackground(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final applied = await _applyTogetherMessage(message);
   if (!applied) return;
+  // iOS shows the APNs alert itself; a local notice here would duplicate it.
+  if (defaultTargetPlatform == TargetPlatform.iOS) return;
   await _showTogetherNotice(message);
 }
+
+/// Android + iOS init. Without iOS settings, initialize() throws on iPhone and
+/// the FCM token is never saved, so friends' edits never reach the widget.
+/// Permission is asked by FirebaseMessaging.requestPermission instead.
+const _notificationInit = InitializationSettings(
+  android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+  iOS: DarwinInitializationSettings(
+    requestAlertPermission: false,
+    requestBadgePermission: false,
+    requestSoundPermission: false,
+  ),
+);
 
 Future<bool> _applyTogetherMessage(RemoteMessage message) async {
   if (message.data['type'] != 'together_widget') return false;
@@ -82,6 +96,7 @@ NotificationDetails _togetherDetails(String roomId) {
       priority: Priority.high,
       tag: roomId,
     ),
+    iOS: DarwinNotificationDetails(threadIdentifier: roomId),
   );
 }
 
@@ -159,10 +174,7 @@ Future<void> _clearRoomNotices(String roomId, {String? roomTitle}) async {
 Future<void> _showTogetherNotice(RemoteMessage message) async {
   if (message.data['type'] != 'together_widget') return;
   final plugin = FlutterLocalNotificationsPlugin();
-  const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-  await plugin.initialize(
-    settings: const InitializationSettings(android: androidInit),
-  );
+  await plugin.initialize(settings: _notificationInit);
   final android = plugin.resolvePlatformSpecificImplementation<
       AndroidFlutterLocalNotificationsPlugin>();
   await android?.createNotificationChannel(
@@ -221,9 +233,8 @@ abstract final class TogetherFcm {
     }
     try {
       await FirebaseMessaging.instance.requestPermission();
-      const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
       await _plugin.initialize(
-        settings: const InitializationSettings(android: androidInit),
+        settings: _notificationInit,
         onDidReceiveNotificationResponse: _onNotificationTap,
       );
       final android = _plugin.resolvePlatformSpecificImplementation<
