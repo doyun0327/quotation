@@ -30,19 +30,19 @@ class TogetherBgTheme {
     ),
     TogetherBgTheme(
       id: 'widget_background5',
-      assetPath: 'assets/images/widgetbackground/widget_background5.png',
+      assetPath: 'assets/images/widgetbackground/background5.png',
     ),
     TogetherBgTheme(
       id: 'widget_background6',
-      assetPath: 'assets/images/widgetbackground/widget_background6.png',
+      assetPath: 'assets/images/widgetbackground/background6.png',
     ),
     TogetherBgTheme(
       id: 'widget_background7',
-      assetPath: 'assets/images/widgetbackground/widget_background7.png',
+      assetPath: 'assets/images/widgetbackground/background7.png',
     ),
     TogetherBgTheme(
       id: 'widget_background8',
-      assetPath: 'assets/images/widgetbackground/widget_background8.png',
+      assetPath: 'assets/images/widgetbackground/background8.png',
     ),
     TogetherBgTheme(
       id: 'widget_background9',
@@ -51,6 +51,30 @@ class TogetherBgTheme {
     TogetherBgTheme(
       id: 'widget_background10',
       assetPath: 'assets/images/widgetbackground/widget_background10.png',
+    ),
+    TogetherBgTheme(
+      id: 'background9',
+      assetPath: 'assets/images/widgetbackground/background9.png',
+    ),
+    TogetherBgTheme(
+      id: 'background10',
+      assetPath: 'assets/images/widgetbackground/background10.png',
+    ),
+    TogetherBgTheme(
+      id: 'background11',
+      assetPath: 'assets/images/widgetbackground/background11.png',
+    ),
+    TogetherBgTheme(
+      id: 'background12',
+      assetPath: 'assets/images/widgetbackground/grackgroudn12.png',
+    ),
+    TogetherBgTheme(
+      id: 'background13',
+      assetPath: 'assets/images/widgetbackground/backgroudn13.png',
+    ),
+    TogetherBgTheme(
+      id: 'back_gr',
+      assetPath: 'assets/images/widgetbackground/back_gr.png',
     ),
   ];
 
