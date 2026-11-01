@@ -3,6 +3,7 @@ import 'package:quotation/ads/interstitial_ads.dart';
 import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -38,6 +39,7 @@ class _ShopScreenState extends State<ShopScreen> {
     final ok = await characterController.select(character);
     if (!ok || !mounted) return;
     await HomeWidgetSync.syncCharacter();
+    await UserProfileSync.syncCharacter();
   }
 
   Future<void> _onTile(AppCharacter character) async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
@@ -63,6 +64,7 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
     if (_hintBusy) return;
     setState(() => _hintBusy = true);
     await characterController.select(_selected);
+    await UserProfileSync.syncCharacter();
     await _hideHint();
     if (!mounted) return;
     await CharacterWidgetHint.export(context);
@@ -78,6 +80,7 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
   Future<void> _confirm() async {
     await characterController.select(_selected);
     await HomeWidgetSync.syncCharacter();
+    await UserProfileSync.syncCharacter();
     if (!mounted) return;
     if (widget.onFinished != null) {
       widget.onFinished!();

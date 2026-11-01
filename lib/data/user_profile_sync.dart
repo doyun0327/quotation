@@ -104,9 +104,14 @@ class UserProfileSync {
         .where('hostUid', isEqualTo: uid)
         .get();
     for (final doc in asHost.docs) {
+      final data = doc.data();
+      final crowd = _layoutCrowdWithCharacter(data['layoutCrowd'], uid, charId);
+      final hostChanged = data['hostCharacterId'] != charId;
+      if (!hostChanged && crowd == null) continue;
       await doc.reference.set(
         {
-          'hostCharacterId': charId,
+          if (hostChanged) 'hostCharacterId': charId,
+          if (crowd != null) 'layoutCrowd': crowd,
           'updatedBy': uid,
           'updatedAt': FieldValue.serverTimestamp(),
           // Cloud Function sends friends a silent push to redraw widgets.
@@ -132,10 +137,12 @@ class UserProfileSync {
           changed = true;
         }
       }
-      if (changed) {
+      final crowd = _layoutCrowdWithCharacter(data['layoutCrowd'], uid, charId);
+      if (changed || crowd != null) {
         await doc.reference.set(
           {
-            'members': members,
+            if (changed) 'members': members,
+            if (crowd != null) 'layoutCrowd': crowd,
             'updatedBy': uid,
             'updatedAt': FieldValue.serverTimestamp(),
             'widgetRefreshAt': FieldValue.serverTimestamp(),
@@ -144,6 +151,29 @@ class UserProfileSync {
         );
       }
     }
+  }
+
+  /// The home widget draws whoever was saved in the shared layout. Keep that
+  /// sprite in step with the profile so friends do not wait for "Apply to home".
+  static List<Map<String, dynamic>>? _layoutCrowdWithCharacter(
+    Object? raw,
+    String uid,
+    String charId,
+  ) {
+    if (raw is! List) return null;
+    var changed = false;
+    final next = <Map<String, dynamic>>[];
+    for (final entry in raw) {
+      if (entry is! Map) continue;
+      final slot = Map<String, dynamic>.from(entry);
+      if (slot['uid']?.toString() == uid &&
+          slot['characterId']?.toString() != charId) {
+        slot['characterId'] = charId;
+        changed = true;
+      }
+      next.add(slot);
+    }
+    return changed ? next : null;
   }
 
   static Future<Map<String, dynamic>?> fetchUser(String uid) async {

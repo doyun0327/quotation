@@ -468,30 +468,33 @@ class TogetherWidgetPreview extends StatelessWidget {
     final textH = rawH * fit;
     final textTop = (innerH - textH) / 2;
     // Moving stays on the letters. Turning uses the same handle as a character.
+    // The letters themselves are drawn in a separate clipped layer so a long
+    // rotated line is cut at the card edge, the same way the home widget clips.
     final cheer = panTarget(
       onPan: onTextPan,
       onSelect: onTextSelect,
-      child: Transform.rotate(
+      child: const SizedBox.expand(),
+    );
+    final cheerVisual = Transform.rotate(
+      alignment: Alignment.center,
+      angle: textRotation * math.pi / 180,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
         alignment: Alignment.center,
-        angle: textRotation * math.pi / 180,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.center,
-          child: Stack(
-            children: [
-              _LiveCheerText(
-                label: label,
-                labelListenable: labelListenable,
-                style: labelStyle,
-              ),
-              if (highlightText)
-                const Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(painter: _PixelSelectPainter()),
-                  ),
+        child: Stack(
+          children: [
+            _LiveCheerText(
+              label: label,
+              labelListenable: labelListenable,
+              style: labelStyle,
+            ),
+            if (highlightText)
+              const Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(painter: _PixelSelectPainter()),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
@@ -523,25 +526,24 @@ class TogetherWidgetPreview extends StatelessWidget {
             top: (height - innerH) / 2 - textY,
             width: innerW,
             height: innerH,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned.fill(child: cheer),
-                if (rotatingText)
-                  Positioned(
-                    top: textTop - textKnobGap - textKnob + textKnobDrop,
-                    left: (innerW - textKnob) / 2,
-                    width: textKnob,
-                    height: textKnob,
-                    child: _RotateKnob(
-                      spriteHeight: textH,
-                      gap: textKnobGap - textKnobDrop,
-                      onRotate: onTextRotate!,
-                      onDragStart: onDragStart,
-                      onDragEnd: onDragEnd,
+            child: cheer,
+          ),
+          Positioned.fill(
+            child: IgnorePointer(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: (width - innerW) / 2 + textX,
+                      top: (height - innerH) / 2 - textY,
+                      width: innerW,
+                      height: innerH,
+                      child: cheerVisual,
                     ),
-                  ),
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
           // Characters are clipped to the background exactly like the home
@@ -558,6 +560,27 @@ class TogetherWidgetPreview extends StatelessWidget {
             ),
           ),
           ...spriteLayer(art: false),
+          // Above the characters. Their hit boxes used to cover this handle,
+          // and a knob drawn outside the text box cannot receive drags.
+          if (rotatingText)
+            Positioned(
+              left: (width - innerW) / 2 + textX + (innerW - textKnob) / 2,
+              top: (height - innerH) / 2 -
+                  textY +
+                  textTop -
+                  textKnobGap -
+                  textKnob +
+                  textKnobDrop,
+              width: textKnob,
+              height: textKnob,
+              child: _RotateKnob(
+                spriteHeight: textH,
+                gap: textKnobGap - textKnobDrop,
+                onRotate: onTextRotate!,
+                onDragStart: onDragStart,
+                onDragEnd: onDragEnd,
+              ),
+            ),
         ],
       ),
     );

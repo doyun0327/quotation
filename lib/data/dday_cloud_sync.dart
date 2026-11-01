@@ -272,7 +272,7 @@ class DdayCloudSync {
             togetherTestRoom.enabled)
         ? [TogetherTestRoom.placeholderFriend()]
         : TogetherCrowdLayout.withoutMe(
-            _withLayoutCharacters(friendsForMe, data['layoutCrowd']),
+            friendsForMe,
             myIds: {myUid, 'local'},
             myName: FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
             myCharacterId: characterController.character.id,
@@ -672,33 +672,6 @@ class DdayCloudSync {
     } catch (e) {
       debugPrint('pushSharedLayout: $e');
     }
-  }
-
-  static List<DdayFriendMember> _withLayoutCharacters(
-    List<DdayFriendMember> friends,
-    Object? raw,
-  ) {
-    if (raw is! List) return friends;
-    final chars = <String, String>{};
-    for (final entry in raw) {
-      if (entry is! Map) continue;
-      final uid = entry['uid']?.toString() ?? '';
-      final id = entry['characterId']?.toString() ?? '';
-      if (uid.isEmpty || id.isEmpty) continue;
-      chars[uid] = id;
-    }
-    if (chars.isEmpty) return friends;
-    return [
-      for (final friend in friends)
-        if (chars.containsKey(friend.uid))
-          DdayFriendMember(
-            uid: friend.uid,
-            characterId: chars[friend.uid]!,
-            displayName: friend.displayName,
-          )
-        else
-          friend,
-    ];
   }
 
   static bool get isStarted => _started;
