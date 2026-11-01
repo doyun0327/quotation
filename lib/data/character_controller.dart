@@ -131,7 +131,8 @@ class CharacterController extends ChangeNotifier {
   static const _favoritesKey = 'character_favorites';
   static const _ownedPacksKey = 'character_owned_packs';
   static const _seenPacksKey = 'character_seen_packs';
-  static const adUnlockLimit = 3;
+  /// Characters one person can open with ads (lock tiles).
+  static const adUnlockLimit = 2;
 
   AppCharacter _character = AppCharacter.basic;
   bool _hasPicked = false;
@@ -197,13 +198,8 @@ class CharacterController extends ChangeNotifier {
     _adUnlocked
       ..clear()
       ..addAll(_readIdList(prefs.getString(_adUnlocksKey)));
-    if (_adUnlocked.length > adUnlockLimit) {
-      final kept = _adUnlocked.take(adUnlockLimit).toList();
-      _adUnlocked
-        ..clear()
-        ..addAll(kept);
-      await prefs.setString(_adUnlocksKey, jsonEncode(kept));
-    }
+    // Keep characters already opened under the old limit of 3; the new
+    // limit only stops further ad unlocks (adUnlocksLeft clamps to 0).
     _favorites
       ..clear()
       ..addAll(_readIdList(prefs.getString(_favoritesKey)));

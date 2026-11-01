@@ -338,7 +338,7 @@ class AppStrings {
   String get shopAdUnlockBody => _t('영상을 시청하고 새로운 캐릭터를 받아보세요!', 'Watch a video and get a new character!', '動画を見て、新しいキャラクターを受け取ってみてください！');
   String get shopAdConfirm => _t('확인', 'OK', '確認');
   String shopAdLeft(int n) => _t('광고로 열 수 있는 캐릭터가 $n개 남았어요.', '$n characters left to unlock with ads.', '広告で開放できるキャラクターはあと$n体です。');
-  String get shopNeedPremium => _t('구독하면 캐릭터가 모두 열려요.', 'Subscribe to unlock every character.', '登録するとキャラクターがすべて開放されます。');
+  String get shopNeedPremium => _t('구독하면 기본 캐릭터가 모두 열려요. (스페셜 제외)', 'Subscribe to unlock every standard character (Special packs not included).', '登録すると基本キャラクターがすべて開放されます。（スペシャルは除く）');
   String get shopAdFailed => _t('광고를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.', 'Could not load the ad. Try again shortly.', '広告を読み込めませんでした。しばらくしてからもう一度お試しください。');
   String get shopUnlocked => _t('캐릭터를 열었어요', 'Character unlocked', 'キャラクターを開放しました');
   String get shopSubscribe => _t('구독하기', 'Subscribe', '登録する');

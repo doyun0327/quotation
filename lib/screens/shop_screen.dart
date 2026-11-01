@@ -522,7 +522,7 @@ class _ShopTile extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(6),
                     child: AppPixelIcon(
-                      ad ? AppGlyph.play : AppGlyph.lock,
+                      AppGlyph.lock,
                       color: accent,
                       size: 18,
                     ),
