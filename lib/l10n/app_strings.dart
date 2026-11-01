@@ -590,6 +590,8 @@ class AppStrings {
   String get filterPopular => _t('인기순', 'Popular', '人気順');
   String get noQuotes => _t('표시할 문장이 없어요', 'No quotes to show', '表示する文章がありません');
   String get savedToArchive =>
+      _t('보관함에 담았어요', 'Saved to archive', '保存しました');
+  String get characterFavoriteAdded =>
       _t('즐겨찾기에 추가되었어요!', 'Added to favorites!', 'お気に入りに追加しました！');
   String get archiveRemove => _t('보관 해제', 'Remove from archive', '保存を解除');
   String get removedFromArchive =>

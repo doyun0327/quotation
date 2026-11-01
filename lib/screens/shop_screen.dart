@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
 import 'package:quotation/data/billing_controller.dart';
@@ -120,6 +122,15 @@ class _ShopScreenState extends State<ShopScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  /// Paw on a character tile: toggle favorite, confirm when it was added.
+  void _toggleFavorite(AppCharacter character) {
+    final adding = !characterController.isFavorite(character);
+    unawaited(characterController.toggleFavorite(character));
+    if (!adding) return;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    _toast(AppStrings.current.characterFavoriteAdded);
+  }
+
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
@@ -216,7 +227,7 @@ class _ShopScreenState extends State<ShopScreen> {
                       accent: palette.accent,
                       onTap: _busy ? null : () => _onTile(character),
                       onFavorite: usable && !_busy
-                          ? () => characterController.toggleFavorite(character)
+                          ? () => _toggleFavorite(character)
                           : null,
                     );
                   },
