@@ -623,10 +623,12 @@ abstract final class HomeWidgetSync {
     }
   }
 
-  static Future<void> _saveAllRooms(String meId) async {
+  static Future<void> _saveAllRooms() async {
     final hosts = await _readHostByRoom();
     final rooms = <String, Map<String, Object>>{};
     for (final item in ddayController.items) {
+      // My character is chosen per room (main-screen pick is the default).
+      final meId = ddayController.meCharacterIdForRoom(item.id);
       final textScale = ddayController.textScaleForRoom(item.id);
       final cheer = blockedUsersController.visibleCheer(
         item.id,
@@ -698,9 +700,9 @@ abstract final class HomeWidgetSync {
 
   static Future<void> _saveDday() async {
     final item = ddayController.widgetDday;
-    final meId = characterController.character.id;
-    await _saveAllRooms(meId);
+    await _saveAllRooms();
     final roomId = item?.id;
+    final meId = ddayController.meCharacterIdForRoom(roomId);
     final charScale =
         roomId == null ? 100 : ddayController.charScaleForRoom(roomId);
     final friendScale =
@@ -911,9 +913,7 @@ abstract final class HomeWidgetSync {
       for (final slot in placed) {
         final id = slot.characterId;
         if (decoded.containsKey(id)) continue;
-        final path = id == meId
-            ? characterController.character.assetPath
-            : AppCharacter.byId(id).assetPath;
+        final path = AppCharacter.byId(id).assetPath;
         final image = await _decodeUiImage(path);
         if (image != null) decoded[id] = image;
       }

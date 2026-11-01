@@ -4,6 +4,7 @@ import 'dart:ui' show Size;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/widget_album_background.dart';
@@ -426,6 +427,49 @@ class DdayController extends ChangeNotifier {
   static const _prefsKey = 'dday_items_v1';
   static const _offsetsPrefsKey = 'dday_duo_offsets_v3';
   static const _legacyOffsetsPrefsKey = 'dday_duo_offsets_v2';
+  static const _meCharPrefsKey = 'dday_me_character_v1';
+
+  /// My character per room, picked in the widget decorator. Rooms without an
+  /// entry use the main-screen character, which is only the default.
+  final Map<String, String> _meCharByRoom = {};
+
+  String meCharacterIdForRoom(String? roomId) {
+    final id = roomId == null ? null : _meCharByRoom[roomId];
+    return (id == null || id.isEmpty) ? characterController.character.id : id;
+  }
+
+  AppCharacter meCharacterForRoom(String? roomId) =>
+      AppCharacter.byId(meCharacterIdForRoom(roomId));
+
+  /// Saves my character for [roomId] only (does not touch other rooms or the
+  /// main-screen character).
+  Future<void> setMeCharacterForRoom(String roomId, String characterId) async {
+    if (roomId.isEmpty || characterId.isEmpty) return;
+    if (_meCharByRoom[roomId] == characterId) return;
+    _meCharByRoom[roomId] = characterId;
+    await _persistMeCharacters();
+    notifyListeners();
+  }
+
+  Future<void> _persistMeCharacters() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_meCharPrefsKey, jsonEncode(_meCharByRoom));
+  }
+
+  void _loadMeCharacters(SharedPreferences prefs) {
+    _meCharByRoom.clear();
+    final raw = prefs.getString(_meCharPrefsKey);
+    if (raw == null || raw.isEmpty) return;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return;
+      for (final e in decoded.entries) {
+        final v = e.value?.toString() ?? '';
+        if (v.isNotEmpty) _meCharByRoom[e.key.toString()] = v;
+      }
+    } catch (_) {}
+  }
+
   /// First placement puts the friend beside me so the two sprites do not stack.
   static const defaultFriendOffsetX = 96;
 
@@ -496,6 +540,7 @@ class DdayController extends ChangeNotifier {
       }
     }
     await _loadRoomOffsets(prefs);
+    _loadMeCharacters(prefs);
     _applyActiveOffsetsFromPinned();
     _loaded = true;
     notifyListeners();
@@ -783,9 +828,12 @@ class DdayController extends ChangeNotifier {
     );
     final offsets = _roomOffsets.remove(oldId);
     if (offsets != null) _roomOffsets[newId] = offsets;
+    final meChar = _meCharByRoom.remove(oldId);
+    if (meChar != null) _meCharByRoom[newId] = meChar;
     if (_localCheerIds.remove(oldId)) _localCheerIds.add(newId);
     await _persist();
     await _persistRoomOffsets();
+    await _persistMeCharacters();
     notifyListeners();
   }
 
@@ -799,6 +847,7 @@ class DdayController extends ChangeNotifier {
 
   Future<void> remove(String id) async {
     _items.removeWhere((e) => e.id == id);
+    if (_meCharByRoom.remove(id) != null) await _persistMeCharacters();
     if (_items.isNotEmpty && !_items.any((e) => e.pinnedForWidget)) {
       _items[0] = _items[0].copyWith(pinnedForWidget: true);
     }

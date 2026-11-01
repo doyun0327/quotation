@@ -100,6 +100,7 @@ class AppStrings {
   String get ddayDecoratePaletteHue => _t('색조', 'Hue', '色相');
   String get ddayDecoratePalettePresets => _t('팔레트', 'Palette', 'パレット');
   String get ddayDecorateMoreColors => _t('더 고르기', 'More colors', 'もっと選ぶ');
+  String get ddayDecorateChangeMyCharacter => _t('변경', 'Change', '変更');
   String get ddayDecorateCharScaleLabel => _t('캐릭터 크기', 'Character size', 'キャラクターサイズ');
   String ddayDecorateCharScaleFor(String name) =>
       _t('$name 크기', '$name size', '$nameのサイズ');

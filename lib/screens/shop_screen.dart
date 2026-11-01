@@ -18,10 +18,21 @@ import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
 
 class ShopScreen extends StatefulWidget {
-  const ShopScreen({super.key, this.asSettings = false});
+  const ShopScreen({
+    super.key,
+    this.asSettings = false,
+    this.pickForRoomSelectedId,
+  });
 
   /// Opened from the home character. The title reads as character settings.
   final bool asSettings;
+
+  /// Opened from the widget decorator: picking returns the character via
+  /// Navigator.pop instead of changing the main-screen character. The value
+  /// is the room's current character, shown as selected.
+  final String? pickForRoomSelectedId;
+
+  bool get _pickForRoom => pickForRoomSelectedId != null;
 
   @override
   State<ShopScreen> createState() => _ShopScreenState();
@@ -38,6 +49,12 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 
   Future<void> _select(AppCharacter character) async {
+    if (widget._pickForRoom) {
+      if (characterController.isUsable(character) && mounted) {
+        Navigator.of(context).pop(character);
+      }
+      return;
+    }
     final ok = await characterController.select(character);
     if (!ok || !mounted) return;
     await HomeWidgetSync.syncCharacter();
@@ -143,7 +160,8 @@ class _ShopScreenState extends State<ShopScreen> {
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
-        final selected = characterController.character.id;
+        final selected =
+            widget.pickForRoomSelectedId ?? characterController.character.id;
         final pool = AppCharacter.inGroup(_group);
         final characters = [...pool]..sort((a, b) {
             int rank(AppCharacter character) {

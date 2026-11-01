@@ -11,11 +11,13 @@ import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
+import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
@@ -338,12 +340,34 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     }
   }
 
+  /// My character in this room (main-screen pick until one is chosen here).
+  AppCharacter get _meChar => ddayController.meCharacterForRoom(widget.roomId);
+
+  /// Picks my character for this room only, then redraws the widgets.
+  Future<void> _pickMyCharacter() async {
+    final picked = await Navigator.of(context).push<AppCharacter>(
+      MaterialPageRoute(
+        builder: (_) => ShopScreen(pickForRoomSelectedId: _meChar.id),
+      ),
+    );
+    if (picked == null || !mounted || picked.id == _meChar.id) return;
+    await ddayController.setMeCharacterForRoom(widget.roomId, picked.id);
+    if (!mounted) return;
+    setState(() {
+      _adoptCrowd();
+      _fitCharacters();
+    });
+    _dragTick.value++;
+    unawaited(UserProfileSync.syncRoomCharacter(widget.roomId, picked.id));
+    unawaited(HomeWidgetSync.syncDday());
+  }
+
   bool _adoptCrowd() {
     final room = _room;
     if (room == null) return false;
     final people = TogetherCrowdLayout.roster(
       myUid: authController.viewerUid,
-      myCharacterId: characterController.character.id,
+      myCharacterId: _meChar.id,
       myName: authController.nickname?.trim() ?? '',
       myIds: authController.myIds,
       hostUid: room.cloudOwnerUid,
@@ -431,9 +455,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       charW: charW * _widgetSize.charFactor * scale,
       charH: charH * _widgetSize.charFactor * scale,
       art: CharacterArtInsets.forAsset(
-        isMe
-            ? characterController.assetPath
-            : AppCharacter.byId(person.characterId).assetPath,
+        isMe ? _meChar.assetPath : AppCharacter.byId(person.characterId).assetPath,
       ),
     );
     return person.copyWith(x: fitted.x, y: fitted.y);
@@ -467,7 +489,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         TogetherPreviewSprite(
           keyId: person.uid,
           assetPath: person.uid == myUid
-              ? characterController.assetPath
+              ? _meChar.assetPath
               : AppCharacter.byId(person.characterId).assetPath,
           x: person.x,
           y: person.y,
@@ -727,7 +749,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             charH: charH * charBase,
                             label: liveLabel,
                             labelListenable: _cheerDraft,
-                            me: characterController.character,
+                            me: _meChar,
                             friend: liveHasFriend && liveFriendId != null
                                 ? AppCharacter.byId(liveFriendId)
                                 : null,
@@ -822,7 +844,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       members: [
                         _RoomMember(
                           isMe: true,
-                          assetPath: characterController.assetPath,
+                          assetPath: _meChar.assetPath,
                           nickname: _nicknameOr(
                             authController.nickname,
                             t.meLabel,
@@ -832,7 +854,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                           live?.friends ?? const [],
                           myIds: authController.myIds,
                           myName: authController.nickname?.trim() ?? '',
-                          myCharacterId: characterController.character.id,
+                          myCharacterId: _meChar.id,
                         ))
                           _RoomMember(
                             friendUid: friend.uid,
@@ -858,6 +880,34 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         }
                       },
                     ),
+                    // My character for this room only (main pick is default).
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: OutlinedButton.icon(
+                        onPressed: _pickMyCharacter,
+                        icon: Icon(
+                          Icons.swap_horiz_rounded,
+                          size: 18,
+                          color: palette.accent,
+                        ),
+                        label: Text(
+                          t.ddayDecorateChangeMyCharacter,
+                          style: AppTheme.body.copyWith(
+                            fontFamily: 'Galmuri',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: palette.accent,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: palette.accent.withValues(alpha: 0.5)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     Text(
                       t.togetherCheerTitle,
                       style: AppTheme.body.copyWith(

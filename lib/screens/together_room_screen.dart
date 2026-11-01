@@ -216,7 +216,8 @@ class _FriendsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppStrings.current;
     final palette = context.palette;
-    final me = characterController.character;
+    // My character in this room (main-screen pick is only the default).
+    final me = ddayController.meCharacterForRoom(room.id);
     final friends = TogetherCrowdLayout.withoutMe(
       room.friends,
       myIds: authController.myIds,
@@ -391,7 +392,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
     final charBase = widgetSize.charFactor;
     final people = TogetherCrowdLayout.roster(
       myUid: authController.viewerUid,
-      myCharacterId: characterController.character.id,
+      myCharacterId: ddayController.meCharacterIdForRoom(room.id),
       myName: authController.nickname?.trim() ?? '',
       myIds: authController.myIds,
       hostUid: room.cloudOwnerUid,
@@ -423,7 +424,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             charW: 72 * charBase,
             charH: 96 * charBase,
             label: label,
-            me: characterController.character,
+            me: ddayController.meCharacterForRoom(room.id),
             friend: room.hasFriend && friendId != null && !friendBlocked
                 ? AppCharacter.byId(friendId)
                 : null,
@@ -436,7 +437,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
                 TogetherPreviewSprite(
                   keyId: slot.uid,
                   assetPath: slot.uid == authController.viewerUid
-                      ? characterController.assetPath
+                      ? ddayController.meCharacterForRoom(room.id).assetPath
                       : AppCharacter.byId(slot.characterId).assetPath,
                   x: slot.x,
                   y: slot.y,

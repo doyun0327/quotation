@@ -172,43 +172,40 @@ class UserProfileSync {
         },
         SetOptions(merge: true),
       );
-      // Update membership docs where this user appears.
-      await _refreshMembershipCharacters(user.uid);
+      // Rooms keep their own character (picked in the widget decorator);
+      // the main-screen character is only the default for new rooms.
     } catch (e) {
       debugPrint('UserProfileSync.syncCharacter: $e');
     }
   }
 
-  static Future<void> _refreshMembershipCharacters(String uid) async {
-    final charId = characterController.character.id;
-    final asHost = await _db
-        .collection('dday_memberships')
-        .where('hostUid', isEqualTo: uid)
-        .get();
-    for (final doc in asHost.docs) {
-      final data = doc.data();
+  /// Writes my character for one room only (host: hostCharacterId, guest:
+  /// my members[] entry). Friends get a silent push to redraw widgets.
+  static Future<void> syncRoomCharacter(String roomId, String charId) async {
+    if (!CloudConsent.accepted || roomId.isEmpty || charId.isEmpty) return;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      final ref = _db.collection('dday_memberships').doc(roomId);
+      final snap = await ref.get();
+      final data = snap.data();
+      if (data == null) return;
       final crowd = _layoutCrowdWithCharacter(data['layoutCrowd'], uid, charId);
-      final hostChanged = data['hostCharacterId'] != charId;
-      if (!hostChanged && crowd == null) continue;
-      await doc.reference.set(
-        {
-          if (hostChanged) 'hostCharacterId': charId,
-          if (crowd != null) 'layoutCrowd': crowd,
-          'updatedBy': uid,
-          'updatedAt': FieldValue.serverTimestamp(),
-          // Cloud Function sends friends a silent push to redraw widgets.
-          'widgetRefreshAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      );
-    }
-
-    final asGuest = await _db
-        .collection('dday_memberships')
-        .where('guestUids', arrayContains: uid)
-        .get();
-    for (final doc in asGuest.docs) {
-      final data = doc.data();
+      if (data['hostUid'] == uid) {
+        final hostChanged = data['hostCharacterId'] != charId;
+        if (!hostChanged && crowd == null) return;
+        await ref.set(
+          {
+            if (hostChanged) 'hostCharacterId': charId,
+            if (crowd != null) 'layoutCrowd': crowd,
+            'updatedBy': uid,
+            'updatedAt': FieldValue.serverTimestamp(),
+            'widgetRefreshAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+        return;
+      }
       final members = (data['members'] as List<dynamic>? ?? [])
           .map((e) => Map<String, dynamic>.from(e as Map))
           .toList();
@@ -219,24 +216,22 @@ class UserProfileSync {
           changed = true;
         }
       }
-      final crowd = _layoutCrowdWithCharacter(data['layoutCrowd'], uid, charId);
-      if (changed || crowd != null) {
-        await doc.reference.set(
-          {
-            if (changed) 'members': members,
-            if (crowd != null) 'layoutCrowd': crowd,
-            'updatedBy': uid,
-            'updatedAt': FieldValue.serverTimestamp(),
-            'widgetRefreshAt': FieldValue.serverTimestamp(),
-          },
-          SetOptions(merge: true),
-        );
-      }
+      if (!changed && crowd == null) return;
+      await ref.set(
+        {
+          if (changed) 'members': members,
+          if (crowd != null) 'layoutCrowd': crowd,
+          'updatedBy': uid,
+          'updatedAt': FieldValue.serverTimestamp(),
+          'widgetRefreshAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('UserProfileSync.syncRoomCharacter: $e');
     }
   }
 
-  /// The home widget draws whoever was saved in the shared layout. Keep that
-  /// sprite in step with the profile so friends do not wait for "Apply to home".
   static List<Map<String, dynamic>>? _layoutCrowdWithCharacter(
     Object? raw,
     String uid,

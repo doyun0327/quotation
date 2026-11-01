@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
-import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
@@ -284,8 +283,22 @@ class DdayCloudSync {
             friendsForMe,
             myIds: {myUid, 'local'},
             myName: (await UserProfileSync.savedNickname()) ?? '',
-            myCharacterId: characterController.character.id,
+            myCharacterId: ddayController.meCharacterIdForRoom(ddayId),
           );
+
+    // My own character in this room (set per room in the decorator; the
+    // main-screen character is only the default when none was stored).
+    String? myRoomChar;
+    if (myUid == hostUid) {
+      myRoomChar = data['hostCharacterId'] as String?;
+    } else {
+      for (final m in members) {
+        if (m.uid == myUid) myRoomChar = m.characterId;
+      }
+    }
+    if (myRoomChar != null && myRoomChar.isNotEmpty) {
+      await ddayController.setMeCharacterForRoom(ddayId, myRoomChar);
+    }
 
     final hasLocal = ddayController.items.any((e) => e.id == ddayId);
 
@@ -381,7 +394,7 @@ class DdayCloudSync {
     final room = matches.first;
     final people = TogetherCrowdLayout.roster(
       myUid: myUid,
-      myCharacterId: characterController.character.id,
+      myCharacterId: ddayController.meCharacterIdForRoom(ddayId),
       myName: (await UserProfileSync.savedNickname()) ?? '',
       myIds: {myUid, 'local'},
       hostUid: room.cloudOwnerUid,
@@ -618,7 +631,7 @@ class DdayCloudSync {
     } catch (_) {}
     final people = TogetherCrowdLayout.roster(
       myUid: uid,
-      myCharacterId: characterController.character.id,
+      myCharacterId: ddayController.meCharacterIdForRoom(item.id),
       myName: (await UserProfileSync.savedNickname()) ?? '',
       myIds: {uid, 'local'},
       hostUid: hostUid.isEmpty ? item.cloudOwnerUid : hostUid,
