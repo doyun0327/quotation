@@ -222,6 +222,10 @@ class AuthController extends ChangeNotifier {
       await ensureAnonymous();
     }
     unawaited(togetherTestRoom.restoreIfEnabled());
+    final nick = _nickname?.trim();
+    if (nick != null && nick.isNotEmpty) {
+      unawaited(UserProfileSync.syncDisplayName(nick));
+    }
   }
 
   Future<void> _stopRemoteSession() async {
@@ -326,6 +330,19 @@ class AuthController extends ChangeNotifier {
   static bool get isAppleSignInAvailable =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
+  /// Apple returns `{name: {firstName, lastName}}`, not a single string.
+  static String? _applePersonName(Map<String, dynamic>? profile) {
+    final name = profile?['name'];
+    if (name is String && name.trim().isNotEmpty) return name.trim();
+    if (name is Map) {
+      final first = (name['firstName'] ?? name['givenName'] ?? '').toString().trim();
+      final last = (name['lastName'] ?? name['familyName'] ?? '').toString().trim();
+      final joined = [first, last].where((part) => part.isNotEmpty).join(' ');
+      if (joined.isNotEmpty) return joined;
+    }
+    return null;
+  }
+
   /// Native Apple sheet → Firebase. Upgrades the anonymous user when possible.
   Future<bool> signInWithApple() async {
     if (_busy) return false;
@@ -363,17 +380,28 @@ class AuthController extends ChangeNotifier {
         _lastError = 'failed';
         return false;
       }
-      // Apple shares the name only on the very first authorization.
-      final appleName = result.additionalUserInfo?.profile?['name'];
-      if ((fbUser.displayName ?? '').trim().isEmpty && appleName is String) {
+      // Apple shares the name only on the very first authorization, as a map.
+      final appleName =
+          AuthController._applePersonName(result.additionalUserInfo?.profile);
+      if ((fbUser.displayName ?? '').trim().isEmpty && appleName != null) {
         try {
           await fbUser.updateDisplayName(appleName);
         } catch (_) {}
       }
+      if (appleName != null && (_nickname == null || _nickname!.trim().isEmpty)) {
+        _nickname = appleName;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_prefsNickname, appleName);
+      }
       await _setUser(
         AuthUser.fromFirebase(FirebaseAuth.instance.currentUser ?? fbUser),
       );
-      await UserProfileSync.upsertCurrentUser();
+      final published = _nickname?.trim();
+      if (published != null && published.isNotEmpty) {
+        await UserProfileSync.syncDisplayName(published);
+      } else {
+        await UserProfileSync.upsertCurrentUser();
+      }
       await DdayCloudSync.start();
       return true;
     } on FirebaseAuthException catch (e) {

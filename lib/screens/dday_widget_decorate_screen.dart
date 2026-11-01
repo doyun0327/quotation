@@ -350,7 +350,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       friends: room.friends,
     );
     final key = TogetherCrowdLayout.keyFor(people);
-    if (_crowdDirty && key == _placedKey) return false;
+    if (_crowdDirty && key == _placedKey) {
+      return _applyLiveCharacters(people);
+    }
     final next = TogetherCrowdLayout.resolve(
       people: people,
       canvasW: _previewSize.width,
@@ -358,11 +360,31 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       charFactor: _widgetSize.charFactor,
       saved: ddayController.crowdForRoom(room.id),
     );
-    if (key == _placedKey && _samePlaced(_placed, next)) return false;
+    if (key == _placedKey && _samePlaced(_placed, next)) {
+      return _applyLiveCharacters(people);
+    }
     _placed = next;
     _placedKey = key;
     _crowdDirty = false;
     return true;
+  }
+
+  /// Positions stay put. The picture follows the friend's current character.
+  bool _applyLiveCharacters(List<TogetherCrowdPerson> people) {
+    final byUid = {for (final person in people) person.uid: person.characterId};
+    var changed = false;
+    final next = <TogetherPlaced>[];
+    for (final person in _placed) {
+      final id = byUid[person.uid];
+      if (id == null || id == person.characterId) {
+        next.add(person);
+        continue;
+      }
+      changed = true;
+      next.add(person.copyWith(characterId: id));
+    }
+    if (changed) _placed = next;
+    return changed;
   }
 
   bool _samePlaced(List<TogetherPlaced> a, List<TogetherPlaced> b) {

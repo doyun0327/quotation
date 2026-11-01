@@ -41,10 +41,15 @@ class TogetherPlaced {
     return n < 0 ? n + 360 : n;
   }
 
-  TogetherPlaced copyWith({double? x, double? y, double? rotation}) {
+  TogetherPlaced copyWith({
+    String? characterId,
+    double? x,
+    double? y,
+    double? rotation,
+  }) {
     return TogetherPlaced(
       uid: uid,
-      characterId: characterId,
+      characterId: characterId ?? this.characterId,
       x: x ?? this.x,
       y: y ?? this.y,
       scale: scale,

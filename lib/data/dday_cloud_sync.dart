@@ -209,11 +209,24 @@ class DdayCloudSync {
   }) async {
     final hostUid = data['hostUid'] as String? ?? '';
     final hostCharacterId = data['hostCharacterId'] as String? ?? 'basic';
-    var hostName = (data['hostDisplayName'] as String?)?.trim() ?? '';
-    if (hostName.isEmpty && hostUid.isNotEmpty && hostUid != myUid) {
-      final profile = await UserProfileSync.fetchUser(hostUid);
-      hostName = (profile?['displayName'] as String?)?.trim() ?? '';
+    final layoutBy = (data['layoutUpdatedBy'] as String?)?.trim() ?? '';
+    final layoutName = (data['layoutUpdatedByName'] as String?)?.trim() ?? '';
+    final cheerBy = (data['latestCheerAuthorUid'] as String?)?.trim() ?? '';
+    final cheerName = (data['latestCheerAuthorName'] as String?)?.trim() ?? '';
+    Future<String> nameFor(String uid, String current) async {
+      final trimmed = current.trim();
+      if (trimmed.isNotEmpty) return trimmed;
+      if (uid.isNotEmpty && uid == layoutBy && layoutName.isNotEmpty) {
+        return layoutName;
+      }
+      if (uid.isNotEmpty && uid == cheerBy && cheerName.isNotEmpty) {
+        return cheerName;
+      }
+      if (uid.isEmpty || uid == myUid) return '';
+      return _profileName(uid);
     }
+
+    var hostName = await nameFor(hostUid, data['hostDisplayName'] as String? ?? '');
     final membersRaw = data['members'] as List<dynamic>? ?? [];
     final members = membersRaw
         .map((e) => DdayFriendMember.fromJson(Map<String, dynamic>.from(e as Map)))
@@ -221,11 +234,7 @@ class DdayCloudSync {
         .toList();
     final namedMembers = <DdayFriendMember>[];
     for (final member in members) {
-      var name = member.displayName?.trim() ?? '';
-      if (name.isEmpty) {
-        final profile = await UserProfileSync.fetchUser(member.uid);
-        name = (profile?['displayName'] as String?)?.trim() ?? '';
-      }
+      final name = await nameFor(member.uid, member.displayName ?? '');
       namedMembers.add(
         DdayFriendMember(
           uid: member.uid,
@@ -274,7 +283,7 @@ class DdayCloudSync {
         : TogetherCrowdLayout.withoutMe(
             friendsForMe,
             myIds: {myUid, 'local'},
-            myName: FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
+            myName: (await UserProfileSync.savedNickname()) ?? '',
             myCharacterId: characterController.character.id,
           );
 
@@ -340,16 +349,23 @@ class DdayCloudSync {
         }
       }
     }
-    if (actorName.isEmpty) {
-      final profile = await UserProfileSync.fetchUser(actor);
-      actorName = (profile?['displayName'] as String?)?.trim() ?? '';
-    }
+    if (actorName.isEmpty) actorName = await _profileName(actor);
     return TogetherLayoutNotice(
       roomId: ddayId,
       roomTitle: roomTitle,
       actorName: actorName,
       stamp: stamp,
     );
+  }
+
+  static Future<String> _profileName(String uid) async {
+    try {
+      final profile = await UserProfileSync.fetchUser(uid);
+      return (profile?['displayName'] as String?)?.trim() ?? '';
+    } catch (e) {
+      debugPrint('profile name $uid: $e');
+      return '';
+    }
   }
 
   static String _layoutStamp(dynamic value) {
@@ -366,7 +382,7 @@ class DdayCloudSync {
     final people = TogetherCrowdLayout.roster(
       myUid: myUid,
       myCharacterId: characterController.character.id,
-      myName: FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
+      myName: (await UserProfileSync.savedNickname()) ?? '',
       myIds: {myUid, 'local'},
       hostUid: room.cloudOwnerUid,
       friends: room.friends,
@@ -603,7 +619,7 @@ class DdayCloudSync {
     final people = TogetherCrowdLayout.roster(
       myUid: uid,
       myCharacterId: characterController.character.id,
-      myName: FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
+      myName: (await UserProfileSync.savedNickname()) ?? '',
       myIds: {uid, 'local'},
       hostUid: hostUid.isEmpty ? item.cloudOwnerUid : hostUid,
       friends: item.friends,
@@ -662,7 +678,7 @@ class DdayCloudSync {
             ],
           'layoutUpdatedBy': uid,
           'layoutUpdatedByName':
-              FirebaseAuth.instance.currentUser?.displayName?.trim() ?? '',
+              (await UserProfileSync.savedNickname()) ?? '',
           'updatedBy': uid,
           'updatedAt': FieldValue.serverTimestamp(),
           if (notifyFriends) 'layoutNotifyAt': FieldValue.serverTimestamp(),

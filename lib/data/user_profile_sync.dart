@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/character_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Mirrors local profile into `users/{uid}` for invite/membership.
 class UserProfileSync {
@@ -10,17 +13,32 @@ class UserProfileSync {
 
   static final _db = FirebaseFirestore.instance;
 
+  /// Nickname saved in the app. Android Google sign-in often has no account
+  /// name, so Firebase displayName stays empty while this value is set.
+  static Future<String?> savedNickname() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('profile_nickname')?.trim();
+    if (saved != null && saved.isNotEmpty) return saved;
+    final firebaseName = FirebaseAuth.instance.currentUser?.displayName?.trim();
+    if (firebaseName != null && firebaseName.isNotEmpty) return firebaseName;
+    return null;
+  }
+
   static Future<void> upsertCurrentUser({String? displayName}) async {
     if (!CloudConsent.accepted) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-    final name = (displayName ?? user.displayName)?.trim();
+    final explicit = displayName?.trim();
+    final name = (explicit != null && explicit.isNotEmpty)
+        ? explicit
+        : await savedNickname();
     try {
       await _db.collection('users').doc(user.uid).set(
         {
           'characterId': characterController.character.id,
-          'displayName': (name == null || name.isEmpty) ? user.displayName : name,
           'email': user.email,
+          // Never write null: that wiped a saved nickname on Android.
+          if (name != null && name.isNotEmpty) 'displayName': name,
           'updatedAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
@@ -39,6 +57,7 @@ class UserProfileSync {
     if (trimmed.isEmpty) return;
     await upsertCurrentUser(displayName: trimmed);
     try {
+      await _stampNicknameOnKnownRooms(user.uid, trimmed);
       final asHost = await _db
           .collection('dday_memberships')
           .where('hostUid', isEqualTo: user.uid)
@@ -46,7 +65,10 @@ class UserProfileSync {
       for (final doc in asHost.docs) {
         if (doc.data()['hostDisplayName'] != trimmed) {
           await doc.reference.set(
-            {'hostDisplayName': trimmed},
+            {
+              'hostDisplayName': trimmed,
+              'widgetRefreshAt': FieldValue.serverTimestamp(),
+            },
             SetOptions(merge: true),
           );
         }
@@ -68,13 +90,73 @@ class UserProfileSync {
         }
         if (changed) {
           await doc.reference.set(
-            {'members': members},
+            {
+              'members': members,
+              'widgetRefreshAt': FieldValue.serverTimestamp(),
+            },
             SetOptions(merge: true),
           );
         }
       }
     } catch (e) {
       debugPrint('UserProfileSync.syncDisplayName: $e');
+    }
+  }
+
+  /// Writes [name] onto rooms this phone already has, without a collection query.
+  static Future<void> _stampNicknameOnKnownRooms(String uid, String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('dday_items_v1');
+    final roomIds = <String>[];
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is List) {
+          for (final item in decoded) {
+            if (item is Map && item['id'] is String && (item['id'] as String).isNotEmpty) {
+              roomIds.add(item['id'] as String);
+            }
+          }
+        }
+      } catch (_) {}
+    }
+    for (final roomId in roomIds) {
+      final ref = _db.collection('dday_memberships').doc(roomId);
+      final snap = await ref.get();
+      if (!snap.exists) continue;
+      final data = snap.data() ?? {};
+      final hostUid = data['hostUid'] as String? ?? '';
+      if (hostUid == uid) {
+        if (data['hostDisplayName'] != name) {
+          await ref.set(
+            {
+              'hostDisplayName': name,
+              'widgetRefreshAt': FieldValue.serverTimestamp(),
+            },
+            SetOptions(merge: true),
+          );
+        }
+        continue;
+      }
+      final members = (data['members'] as List<dynamic>? ?? [])
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+      var changed = false;
+      for (final member in members) {
+        if (member['uid'] == uid && member['displayName'] != name) {
+          member['displayName'] = name;
+          changed = true;
+        }
+      }
+      if (changed) {
+        await ref.set(
+          {
+            'members': members,
+            'widgetRefreshAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+      }
     }
   }
 

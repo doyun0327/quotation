@@ -57,7 +57,7 @@ class DdayInviteRepository {
     }
 
     await UserProfileSync.upsertCurrentUser();
-    final hostName = FirebaseAuth.instance.currentUser?.displayName?.trim();
+    final hostName = await UserProfileSync.savedNickname();
     await ref.set(
       {
         'hostUid': uid,
@@ -213,8 +213,10 @@ class DdayInviteRepository {
     final guestProfile = await UserProfileSync.fetchUser(uid);
     final guestChar =
         guestProfile?['characterId'] as String? ?? characterController.character.id;
-    final guestName = guestProfile?['displayName'] as String? ??
-        FirebaseAuth.instance.currentUser?.displayName;
+    final guestName = (guestProfile?['displayName'] as String?)?.trim().isNotEmpty ==
+            true
+        ? guestProfile!['displayName'] as String
+        : await UserProfileSync.savedNickname();
     final hostProfile = await UserProfileSync.fetchUser(hostUid);
     final hostName = (hostProfile?['displayName'] as String?)?.trim();
     final hostCharacterId =
