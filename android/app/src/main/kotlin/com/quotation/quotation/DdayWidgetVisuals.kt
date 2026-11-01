@@ -110,6 +110,9 @@ object DdayWidgetVisuals {
   /** Corner (dp) the shared design card is laid out with — Flutter defaultCornerDp. */
   const val DESIGN_CORNER_DP = 28
 
+  /** Matches Flutter's iPhone together card (`pixelRatio: 3`). */
+  const val WIDGET_PIXELS_PER_DP = 3f
+
   /**
    * Shared design card (dp) every device lays out on: the 4×2 cell of a 360dp
    * phone fitted to [CARD_ASPECT] (≈301×141). Matches Flutter homeSize, so the
@@ -161,16 +164,21 @@ object DdayWidgetVisuals {
       friendScale: Int,
       sizeCharFactor: Float,
       chars: JSONArray? = null,
+      pixelsPerDp: Float = 0f,
   ): Bitmap {
-    val density = context.resources.displayMetrics.density
-    val w = px(context, widthDp).coerceAtLeast(8)
-    val h = px(context, heightDp).coerceAtLeast(8)
+    val deviceDensity = context.resources.displayMetrics.density.coerceAtLeast(0.5f)
+    val density = if (pixelsPerDp > 0f) pixelsPerDp else deviceDensity
+    val w = (widthDp * density).roundToInt().coerceAtLeast(8)
+    val h = (heightDp * density).roundToInt().coerceAtLeast(8)
     val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
 
     // No border. Image theme when set; otherwise transparent.
+    // Corner stays the same fraction of the card when the bitmap is drawn at 3x.
     val pixelCorner =
-        systemWidgetCornerPx(context).coerceAtMost(min(w, h) / 2f).coerceAtLeast(0f)
+        (systemWidgetCornerPx(context) * (density / deviceDensity))
+            .coerceAtMost(min(w, h) / 2f)
+            .coerceAtLeast(0f)
     val cardRect = RectF(0f, 0f, w.toFloat(), h.toFloat())
     val themeBmp = decodeFlutterAsset(context, bgAssetPath)
     if (themeBmp != null) {
@@ -241,6 +249,7 @@ object DdayWidgetVisuals {
               maxHeightPx = maxLabelHeightPx,
               textColorArgb = textColorArgb,
               fontAsset = textFontAsset,
+              pixelsPerDp = density,
           )
       val lx = originX + (contentW - labelBmp.width) / 2f + textOffsetX * density
       val ly = originY + (contentH - labelBmp.height) / 2f - textOffsetY * density
@@ -281,6 +290,7 @@ object DdayWidgetVisuals {
                 widthDp = spriteWDp,
                 heightDp = spriteHDp,
                 isPixel = isPixel,
+                pixelsPerDp = density,
             )
         // Saved position as-is; the card clip cuts any overflow, like iPhone.
         val left = originX + (4f + offsetX) * density
@@ -307,6 +317,7 @@ object DdayWidgetVisuals {
             widthDp = meWDp,
             heightDp = meHDp,
             isPixel = isPixel,
+            pixelsPerDp = density,
         )
     val meLeft = originX + (4f + meOffsetX) * density
     val meTop = originY + contentH - meOffsetY * density - meH
@@ -321,6 +332,7 @@ object DdayWidgetVisuals {
               widthDp = friendWDp,
               heightDp = friendHDp,
               isPixel = isPixel,
+              pixelsPerDp = density,
           )
       val friendLeft = originX + (4f + friendOffsetX) * density
       val friendTop = originY + contentH - friendOffsetY * density - friendH
@@ -342,8 +354,10 @@ object DdayWidgetVisuals {
       maxHeightPx: Int,
       textColorArgb: Int = 0xFFF26B8A.toInt(),
       fontAsset: String = "",
+      pixelsPerDp: Float = 0f,
   ): Bitmap {
-    val density = context.resources.displayMetrics.density
+    val density =
+        if (pixelsPerDp > 0f) pixelsPerDp else context.resources.displayMetrics.density
     val maxWidth = maxWidthPx.coerceAtLeast(32)
     val maxHeight = maxHeightPx.coerceAtLeast(1)
     // Decorate font picked in the app. Same size/weight as TogetherCheerLayout.style.
@@ -417,9 +431,11 @@ object DdayWidgetVisuals {
       widthDp: Int,
       heightDp: Int,
       isPixel: Boolean,
+      pixelsPerDp: Float = 0f,
   ): Bitmap {
-    val w = dp(context, widthDp).coerceAtLeast(8)
-    val h = dp(context, heightDp).coerceAtLeast(8)
+    val scale = if (pixelsPerDp > 0f) pixelsPerDp else context.resources.displayMetrics.density
+    val w = (widthDp * scale).roundToInt().coerceAtLeast(8)
+    val h = (heightDp * scale).roundToInt().coerceAtLeast(8)
     val resId = drawableFor(characterId)
     val src =
         decodeFlutterAsset(context, assetFor(characterId))
@@ -443,9 +459,14 @@ object DdayWidgetVisuals {
           isAntiAlias = !isPixel
         }
     // BoxFit.contain — same as Flutter Image.asset fit.
-    val scale = min(w.toFloat() / src.width, h.toFloat() / src.height)
-    val dw = (src.width * scale).toInt().coerceAtLeast(1)
-    val dh = (src.height * scale).toInt().coerceAtLeast(1)
+    val fit = min(w.toFloat() / src.width, h.toFloat() / src.height)
+    // Enlarging past the PNG with nearest-neighbor is what looks broken on Galaxy.
+    if (fit > 1f) {
+      paint.isFilterBitmap = true
+      paint.isAntiAlias = true
+    }
+    val dw = (src.width * fit).toInt().coerceAtLeast(1)
+    val dh = (src.height * fit).toInt().coerceAtLeast(1)
     val left = (w - dw) / 2
     val top = (h - dh) / 2
     canvas.drawBitmap(src, null, Rect(left, top, left + dw, top + dh), paint)
@@ -831,10 +852,6 @@ object DdayWidgetVisuals {
       }
     }
     canvas.restore()
-  }
-
-  private fun px(context: Context, dp: Float): Int {
-    return (dp * context.resources.displayMetrics.density).roundToInt().coerceAtLeast(1)
   }
 
   private fun dp(context: Context, value: Int): Int {

@@ -356,12 +356,13 @@ class TogetherWidgetPreview extends StatelessWidget {
             if (showKnob)
               Positioned(
                 left: (spriteW - knob) / 2,
-                top: knobDrop,
+                // Follow the drawn character, not the empty top of the sprite box.
+                top: knobDrop + artGap.top,
                 width: knob,
                 height: knob,
                 child: _RotateKnob(
                   spriteHeight: spriteH,
-                  gap: gap - knobDrop,
+                  gap: gap - knobDrop - artGap.top,
                   onRotate: onRotate,
                   onDragStart: onDragStart,
                   onDragEnd: onDragEnd,

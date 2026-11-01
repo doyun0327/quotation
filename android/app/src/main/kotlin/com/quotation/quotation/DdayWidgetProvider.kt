@@ -1,8 +1,11 @@
 package com.quotation.quotation
 
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -10,6 +13,9 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.widget.RemoteViews
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.math.max
 import kotlin.math.roundToInt
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
@@ -41,11 +47,24 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     onUpdate(context, appWidgetManager, intArrayOf(appWidgetId))
   }
 
+  override fun onReceive(context: Context, intent: Intent) {
+    val action = intent.action
+    if (action == Intent.ACTION_BOOT_COMPLETED || action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+      val manager = AppWidgetManager.getInstance(context)
+      val ids = manager.getAppWidgetIds(ComponentName(context, javaClass))
+      if (ids.isNotEmpty()) onUpdate(context, manager, ids)
+    }
+    super.onReceive(context, intent)
+  }
+
   override fun onDeleted(context: Context, appWidgetIds: IntArray) {
     super.onDeleted(context, appWidgetIds)
     val prefs = HomeWidgetPlugin.getData(context)
     val bindings = readJson(prefs, "ddayWidgetBindings")
-    for (id in appWidgetIds) bindings.remove(id.toString())
+    for (id in appWidgetIds) {
+      bindings.remove(id.toString())
+      deleteTogetherImages(context, id)
+    }
     prefs.edit().putString("ddayWidgetBindings", bindings.toString()).apply()
   }
 
@@ -132,7 +151,16 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             friendScale = friendScale,
             sizeCharFactor = DdayWidgetVisuals.charFactor(sizeId),
             chars = chars,
+            pixelsPerDp = DdayWidgetVisuals.WIDGET_PIXELS_PER_DP,
         )
+
+    val imageUri =
+        try {
+          publishTogetherImage(context, widgetId, composite)
+        } catch (e: Exception) {
+          Log.e(TAG, "together widget image file failed id=$widgetId", e)
+          null
+        }
 
     val views =
         RemoteViews(context.packageName, R.layout.dday_widget).apply {
@@ -148,11 +176,16 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
               )
           setOnClickPendingIntent(R.id.dday_widget_root, launchIntent)
           setOnClickPendingIntent(R.id.dday_composite, launchIntent)
-          setImageViewBitmap(
-              R.id.dday_composite,
-              DdayWidgetVisuals.fitBitmap(composite, 480),
-          )
+          if (imageUri != null) {
+            setImageViewUri(R.id.dday_composite, imageUri)
+          } else {
+            setImageViewBitmap(
+                R.id.dday_composite,
+                DdayWidgetVisuals.fitBitmap(composite, 480),
+            )
+          }
         }
+    if (imageUri != null) composite.recycle()
 
     // Let Flutter decorate preview use the same dp + corner as this host.
     val hosts = readJson(widgetData, "ddayHostByRoom")
@@ -391,6 +424,66 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val scaled = Bitmap.createScaledBitmap(source, w, h, !isPixel)
     if (scaled != source) source.recycle()
     return scaled
+  }
+
+  /**
+   * Home-screen bitmap is ~900px wide. Putting that in RemoteViews blows the
+   * Binder limit, and the old 480px cap is what Galaxy then stretches.
+   * The launcher reads this PNG instead, at the same card size as iPhone.
+   */
+  private fun publishTogetherImage(context: Context, widgetId: Int, bitmap: Bitmap): Uri {
+    val dir = File(context.cacheDir, "widget_images")
+    if (!dir.exists()) dir.mkdirs()
+    val file = File(dir, "together_${widgetId}_${System.currentTimeMillis()}.png")
+    FileOutputStream(file).use { out ->
+      if (!bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)) {
+        file.delete()
+        throw IllegalStateException("png compress failed")
+      }
+    }
+    dir.listFiles()?.forEach { old ->
+      if (old.name.startsWith("together_${widgetId}_") && old.name != file.name) old.delete()
+    }
+    val uri =
+        FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.widgetfileprovider",
+            file,
+        )
+    grantWidgetImage(context, uri)
+    return uri
+  }
+
+  private fun grantWidgetImage(context: Context, uri: Uri) {
+    val home = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+    val resolved =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          context.packageManager.queryIntentActivities(
+              home,
+              PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()),
+          )
+        } else {
+          @Suppress("DEPRECATION")
+          context.packageManager.queryIntentActivities(home, PackageManager.MATCH_DEFAULT_ONLY)
+        }
+    val packages = resolved.map { it.activityInfo.packageName }.toMutableSet()
+    packages.add("com.sec.android.app.launcher")
+    packages.add("com.google.android.apps.nexuslauncher")
+    val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+    for (pkg in packages) {
+      try {
+        context.grantUriPermission(pkg, uri, flags)
+      } catch (_: Exception) {
+        // Launcher package is not on this device.
+      }
+    }
+  }
+
+  private fun deleteTogetherImages(context: Context, widgetId: Int) {
+    val dir = File(context.cacheDir, "widget_images")
+    dir.listFiles()?.forEach { file ->
+      if (file.name.startsWith("together_${widgetId}_")) file.delete()
+    }
   }
 
   companion object {
