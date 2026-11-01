@@ -1,4 +1,4 @@
-// GENERATED from assets/images/character alpha bounds — rerun the
+// GENERATED from assets/images/character/{woman,man} alpha bounds — rerun the
 // measurement script if character art changes.
 //
 // Transparent margin of each image as a fraction of its width/height.
@@ -21,8 +21,7 @@ class CharacterArtInsets {
 
   static CharacterArtInsets forAsset(String assetPath) {
     final file = assetPath.split('/').last;
-    // Male files reuse some female filenames. Those measured margins are the
-    // woman art, so a man sprite falls back to the image box.
+    // Male files reuse some female filenames, so they are keyed 'man/<file>'.
     if (assetPath.contains('/man/')) return _byFile['man/$file'] ?? none;
     return _byFile[file] ?? none;
   }
@@ -46,6 +45,7 @@ class CharacterArtInsets {
   }
 
   static const Map<String, CharacterArtInsets> _byFile = {
+    // woman/ (looked up by file name)
     'character (1).png': CharacterArtInsets(1.0210, 0.233, 0.252, 0.160, 0.072),
     'character (10).png': CharacterArtInsets(1.0218, 0.024, 0.017, 0.006, 0.024),
     'character (11).png': CharacterArtInsets(1.0218, 0.086, 0.039, 0.082, 0.027),
@@ -112,5 +112,23 @@ class CharacterArtInsets {
     'character (9).png': CharacterArtInsets(1.0218, 0.224, 0.224, 0.082, 0.035),
     'character(65).png': CharacterArtInsets(1.0000, 0.245, 0.255, 0.208, 0.132),
     'character.png': CharacterArtInsets(1.0000, 0.242, 0.255, 0.203, 0.125),
+    // man/ (looked up as 'man/<file>'; some names repeat woman files)
+    'man/character (1).png': CharacterArtInsets(1.0218, 0.263, 0.256, 0.089, 0.037),
+    'man/character (10).png': CharacterArtInsets(1.0185, 0.261, 0.263, 0.130, 0.043),
+    'man/character (11).png': CharacterArtInsets(1.0242, 0.258, 0.268, 0.130, 0.046),
+    'man/character (12).png': CharacterArtInsets(1.0218, 0.271, 0.260, 0.116, 0.036),
+    'man/character (13).png': CharacterArtInsets(1.0185, 0.264, 0.278, 0.125, 0.029),
+    'man/character (14).png': CharacterArtInsets(1.0185, 0.263, 0.267, 0.125, 0.026),
+    'man/character (15).png': CharacterArtInsets(1.0218, 0.263, 0.259, 0.073, 0.046),
+    'man/character (2).png': CharacterArtInsets(1.0185, 0.258, 0.265, 0.128, 0.048),
+    'man/character (3).png': CharacterArtInsets(1.0210, 0.233, 0.238, 0.098, 0.049),
+    'man/character (4).png': CharacterArtInsets(1.0218, 0.231, 0.239, 0.124, 0.045),
+    'man/character (5).png': CharacterArtInsets(1.0185, 0.262, 0.269, 0.126, 0.033),
+    'man/character (6).png': CharacterArtInsets(1.0185, 0.258, 0.265, 0.118, 0.029),
+    'man/character (7).png': CharacterArtInsets(1.0185, 0.262, 0.271, 0.129, 0.031),
+    'man/character (8).png': CharacterArtInsets(1.0234, 0.259, 0.268, 0.118, 0.031),
+    'man/character (9).png': CharacterArtInsets(1.0185, 0.246, 0.280, 0.115, 0.053),
+    'man/character(2).png': CharacterArtInsets(1.0218, 0.263, 0.256, 0.089, 0.037),
+    'man/charcter(1).png': CharacterArtInsets(1.0185, 0.264, 0.278, 0.125, 0.029),
   };
 }
