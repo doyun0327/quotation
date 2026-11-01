@@ -4,7 +4,43 @@ import 'package:flutter/foundation.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum CharacterGroup { female, male }
+enum CharacterGroup { female, male, special }
+
+/// Seasonal character pack sold once per pack (non-consumable, 900원).
+/// Owned forever: premium and ad unlocks do not open pack characters, and
+/// cancelling the subscription never takes a bought pack away.
+class CharacterPack {
+  const CharacterPack({
+    required this.id,
+    required this.productId,
+    required this.characterIds,
+  });
+
+  final String id;
+
+  /// App Store / Play non-consumable product id (also imported to RevenueCat).
+  final String productId;
+  final List<String> characterIds;
+
+  static const nyang = CharacterPack(
+    id: 'nyang',
+    productId: 'pack_nyang',
+    characterIds: ['c20', 'c22', 'c23', 'c25', 'c26', 'c27', 'c28'],
+  );
+
+  /// Newest first. A new season goes at the top (name in AppStrings).
+  static const List<CharacterPack> all = [nyang];
+
+  static CharacterPack? forCharacter(String id) {
+    for (final pack in all) {
+      if (pack.characterIds.contains(id)) return pack;
+    }
+    return null;
+  }
+
+  List<AppCharacter> get characters =>
+      [for (final id in characterIds) AppCharacter.byId(id)];
+}
 
 class AppCharacter {
   const AppCharacter({
@@ -38,7 +74,10 @@ class AppCharacter {
       AppCharacter(
         id: 'c$i',
         assetPath: 'assets/images/character/woman/character ($i).png',
-        group: CharacterGroup.female,
+        // Pack characters keep their ids so existing picks still resolve.
+        group: CharacterPack.forCharacter('c$i') == null
+            ? CharacterGroup.female
+            : CharacterGroup.special,
       ),
     const AppCharacter(
       id: 'c65',
@@ -70,6 +109,8 @@ class AppCharacter {
     ];
   }
 
+  CharacterPack? get pack => CharacterPack.forCharacter(id);
+
   static AppCharacter byId(String? id) {
     if (id == 'bul') return bul;
     for (final character in shop) {
@@ -88,6 +129,8 @@ class CharacterController extends ChangeNotifier {
   static const _pickedKey = 'character_picked';
   static const _adUnlocksKey = 'character_ad_unlocks';
   static const _favoritesKey = 'character_favorites';
+  static const _ownedPacksKey = 'character_owned_packs';
+  static const _seenPacksKey = 'character_seen_packs';
   static const adUnlockLimit = 3;
 
   AppCharacter _character = AppCharacter.basic;
@@ -95,6 +138,8 @@ class CharacterController extends ChangeNotifier {
   bool _loaded = false;
   final Set<String> _adUnlocked = {};
   final Set<String> _favorites = {};
+  final Set<String> _ownedPacks = {};
+  final Set<String> _seenPacks = {};
 
   AppCharacter get character => _character;
   bool get hasPicked => _hasPicked;
@@ -106,12 +151,42 @@ class CharacterController extends ChangeNotifier {
 
   bool isUsable(AppCharacter character) {
     if (character.isDefault || character.id == AppCharacter.bul.id) return true;
+    // Pack characters open only by buying the pack (not premium / ads).
+    final pack = character.pack;
+    if (pack != null) return ownsPack(pack);
     if (membershipController.isPremium) return true;
     return _adUnlocked.contains(character.id);
   }
 
   bool canUnlockWithAd(AppCharacter character) =>
-      !isUsable(character) && adUnlocksLeft > 0;
+      character.pack == null && !isUsable(character) && adUnlocksLeft > 0;
+
+  bool ownsPack(CharacterPack pack) => _ownedPacks.contains(pack.id);
+
+  /// Adds packs the store reports as bought. Never removes one, so a pack
+  /// stays owned whatever happens to the subscription.
+  Future<void> addOwnedPacks(Iterable<String> packIds) async {
+    final before = _ownedPacks.length;
+    _ownedPacks.addAll(packIds);
+    if (_ownedPacks.length == before) return;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_ownedPacksKey, jsonEncode(_ownedPacks.toList()));
+  }
+
+  /// Newest pack not opened in the special tab yet (shows a dot on the tab).
+  bool get hasUnseenPack =>
+      CharacterPack.all.isNotEmpty &&
+      !_seenPacks.contains(CharacterPack.all.first.id);
+
+  Future<void> markPacksSeen() async {
+    final before = _seenPacks.length;
+    _seenPacks.addAll(CharacterPack.all.map((p) => p.id));
+    if (_seenPacks.length == before) return;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_seenPacksKey, jsonEncode(_seenPacks.toList()));
+  }
 
   bool isFavorite(AppCharacter character) =>
       isUsable(character) && _favorites.contains(character.id);
@@ -132,6 +207,12 @@ class CharacterController extends ChangeNotifier {
     _favorites
       ..clear()
       ..addAll(_readIdList(prefs.getString(_favoritesKey)));
+    _ownedPacks
+      ..clear()
+      ..addAll(_readIdList(prefs.getString(_ownedPacksKey)));
+    _seenPacks
+      ..clear()
+      ..addAll(_readIdList(prefs.getString(_seenPacksKey)));
     final saved = prefs.getString(_prefsKey);
     if (saved != null) {
       _character = AppCharacter.byId(saved);

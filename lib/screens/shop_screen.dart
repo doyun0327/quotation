@@ -46,6 +46,46 @@ class _ShopScreenState extends State<ShopScreen> {
   void initState() {
     super.initState();
     InterstitialAds.preload();
+    unawaited(billingController.loadPackPrices());
+  }
+
+  String _packPrice(CharacterPack pack) =>
+      billingController.packPrice(pack) ?? '₩900';
+
+  /// Confirms and buys [pack] once (owned forever, separate from premium).
+  Future<void> _buyPack(CharacterPack pack) async {
+    final t = AppStrings.current;
+    final name = t.characterPackName(pack.id);
+    final price = _packPrice(pack);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(t.shopPackBuyTitle(name), style: AppTheme.body),
+        content: Text(
+          t.shopPackBuyBody(pack.characterIds.length, price),
+          style: AppTheme.body,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(t.togetherCheerCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(t.shopPackBuy(price)),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    if (!await suggestSignInBeforePurchase(context) || !mounted) return;
+    final code = await billingController.buyPack(pack);
+    if (!mounted) return;
+    if (code != null) {
+      _toast(t.billingError(code));
+      return;
+    }
+    if (characterController.ownsPack(pack)) _toast(t.shopPackBought(name));
   }
 
   Future<void> _select(AppCharacter character) async {
@@ -64,6 +104,14 @@ class _ShopScreenState extends State<ShopScreen> {
   Future<void> _onTile(AppCharacter character) async {
     if (characterController.isUsable(character)) {
       await _select(character);
+      return;
+    }
+    final pack = character.pack;
+    if (pack != null) {
+      await _buyPack(pack);
+      if (mounted && characterController.isUsable(character)) {
+        await _select(character);
+      }
       return;
     }
     final t = AppStrings.current;
@@ -148,6 +196,107 @@ class _ShopScreenState extends State<ShopScreen> {
     _toast(AppStrings.current.characterFavoriteAdded);
   }
 
+  Widget _tile(AppCharacter character, String selected, Color accent) {
+    final usable = characterController.isUsable(character);
+    return _ShopTile(
+      character: character,
+      selected: selected == character.id,
+      locked: !usable,
+      ad: characterController.canUnlockWithAd(character),
+      favorite: characterController.isFavorite(character),
+      accent: accent,
+      onTap: _busy ? null : () => _onTile(character),
+      onFavorite: usable && !_busy ? () => _toggleFavorite(character) : null,
+    );
+  }
+
+  /// Special tab: one section per pack, newest first.
+  Widget _buildPacks(BuildContext context, String selected) {
+    final t = AppStrings.current;
+    final accent = context.palette.accent;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      children: [
+        for (final (index, pack) in CharacterPack.all.indexed) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 0, 10),
+            child: Row(
+              children: [
+                Text(
+                  t.characterPackName(pack.id),
+                  style: AppTheme.body.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: accent,
+                  ),
+                ),
+                if (index == 0) ...[
+                  const SizedBox(width: 6),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF5A7A),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      t.shopPackNew,
+                      style: AppTheme.body.copyWith(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+                const Spacer(),
+                if (characterController.ownsPack(pack))
+                  Text(
+                    t.shopPackOwned,
+                    style: AppTheme.body.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.muted,
+                    ),
+                  )
+                else
+                  FilledButton(
+                    onPressed: _busy || billingController.isBusy
+                        ? null
+                        : () => _buyPack(pack),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: accent,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    child: Text(
+                      t.shopPackBuy(_packPrice(pack)),
+                      style: AppTheme.body.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          GridView.count(
+            crossAxisCount: 3,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              for (final character in pack.characters)
+                _tile(character, selected, accent),
+            ],
+          ),
+          const SizedBox(height: 24),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
@@ -157,6 +306,7 @@ class _ShopScreenState extends State<ShopScreen> {
         characterController,
         membershipController,
         visualStyleController,
+        billingController,
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
@@ -208,11 +358,24 @@ class _ShopScreenState extends State<ShopScreen> {
                       accent: palette.accent,
                       onTap: () => setState(() => _group = CharacterGroup.male),
                     ),
+                    const SizedBox(width: 8),
+                    _GroupChip(
+                      label: t.shopGroupSpecial,
+                      selected: _group == CharacterGroup.special,
+                      accent: palette.accent,
+                      dot: characterController.hasUnseenPack,
+                      onTap: () {
+                        setState(() => _group = CharacterGroup.special);
+                        unawaited(characterController.markPacksSeen());
+                      },
+                    ),
                   ],
                 ),
               ),
               Expanded(
-                child: characters.isEmpty
+                child: _group == CharacterGroup.special
+                    ? _buildPacks(context, selected)
+                    : characters.isEmpty
                     ? Center(
                         child: Text(
                           t.shopMaleEmpty,
@@ -232,23 +395,8 @@ class _ShopScreenState extends State<ShopScreen> {
                     childAspectRatio: 1,
                   ),
                   itemCount: characters.length,
-                  itemBuilder: (context, index) {
-                    final character = characters[index];
-                    final usable = characterController.isUsable(character);
-                    final ad = characterController.canUnlockWithAd(character);
-                    return _ShopTile(
-                      character: character,
-                      selected: selected == character.id,
-                      locked: !usable,
-                      ad: ad,
-                      favorite: characterController.isFavorite(character),
-                      accent: palette.accent,
-                      onTap: _busy ? null : () => _onTile(character),
-                      onFavorite: usable && !_busy
-                          ? () => _toggleFavorite(character)
-                          : null,
-                    );
-                  },
+                  itemBuilder: (context, index) =>
+                      _tile(characters[index], selected, palette.accent),
                 ),
               ),
             ],
@@ -265,12 +413,16 @@ class _GroupChip extends StatelessWidget {
     required this.selected,
     required this.accent,
     required this.onTap,
+    this.dot = false,
   });
 
   final String label;
   final bool selected;
   final Color accent;
   final VoidCallback onTap;
+
+  /// New season not opened yet.
+  final bool dot;
 
   @override
   Widget build(BuildContext context) {
@@ -282,13 +434,29 @@ class _GroupChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(99),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            label,
-            style: AppTheme.body.copyWith(
-              color: selected ? Colors.white : accent,
-              fontWeight: FontWeight.w800,
-              fontSize: 13,
-            ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: AppTheme.body.copyWith(
+                  color: selected ? Colors.white : accent,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                ),
+              ),
+              if (dot) ...[
+                const SizedBox(width: 4),
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFF5A7A),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ),

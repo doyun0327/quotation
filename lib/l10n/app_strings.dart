@@ -313,6 +313,25 @@ class AppStrings {
   String get shopCategoryCharacter => _t('캐릭터', 'Characters', 'キャラクター');
   String get shopGroupFemale => _t('여', 'Women', '女');
   String get shopGroupMale => _t('남', 'Men', '男');
+  String get shopGroupSpecial => _t('스페셜', 'Special', 'スペシャル');
+  String characterPackName(String packId) {
+    switch (packId) {
+      case 'nyang':
+        return _t('냥이ver', 'Kitty ver', 'ニャンver');
+      default:
+        return packId;
+    }
+  }
+  String get shopPackNew => 'NEW';
+  String get shopPackOwned => _t('보유 중', 'Owned', '所持中');
+  String shopPackBuy(String price) => _t('$price 구매', 'Buy $price', '$price で購入');
+  String shopPackBuyTitle(String name) => _t('$name 팩', '$name pack', '$name パック');
+  String shopPackBuyBody(int count, String price) => _t(
+        '캐릭터 $count개가 들어 있는 팩이에요. $price에 한 번 구매하면 구독과 상관없이 계속 쓸 수 있어요.',
+        'A pack of $count characters. Buy once for $price and keep them, with or without a subscription.',
+        'キャラクター$count体のパックです。$priceで一度購入すれば、登録に関係なくずっと使えます。',
+      );
+  String shopPackBought(String name) => _t('$name 팩을 열었어요!', '$name pack unlocked!', '$name パックを開放しました！');
   String get shopMaleEmpty =>
       _t('남자 캐릭터를 준비 중이에요', 'Male characters are on the way', '男性キャラクターは準備中です');
   String get shopAdUnlock => _t('캐릭터 소유하기', 'Get this character', 'キャラクターを手に入れる');

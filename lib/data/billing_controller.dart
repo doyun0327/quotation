@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:quotation/config/revenuecat_config.dart';
+import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 
 /// Play and App Store product id. Import this into RevenueCat and attach it to [kPremiumEntitlementId].
@@ -96,6 +97,82 @@ class BillingController extends ChangeNotifier {
     }
   }
 
+  final Map<String, String> _packPrices = {};
+
+  /// Store price for [pack] (e.g. "₩900"), or null until it has loaded.
+  String? packPrice(CharacterPack pack) => _packPrices[pack.productId];
+
+  /// Loads pack prices from the store so the special tab can show them.
+  Future<void> loadPackPrices() async {
+    if (await _ensureConfigured() != null) return;
+    try {
+      final products = await Purchases.getProducts(
+        [for (final pack in CharacterPack.all) pack.productId],
+        productCategory: ProductCategory.nonSubscription,
+      );
+      for (final product in products) {
+        _packPrices[product.identifier] = product.priceString;
+      }
+      notifyListeners();
+    } catch (error) {
+      debugPrint('loadPackPrices: $error');
+    }
+  }
+
+  /// One-time purchase of a character pack (non-consumable). Returns an error
+  /// code, or null when it was bought, already owned, or the user cancelled.
+  Future<String?> buyPack(CharacterPack pack) async {
+    if (_busy) return null;
+    _busy = true;
+    lastError = null;
+    notifyListeners();
+    try {
+      final setup = await _ensureConfigured();
+      if (setup != null) {
+        lastError = setup;
+        return lastError;
+      }
+      final products = await Purchases.getProducts(
+        [pack.productId],
+        productCategory: ProductCategory.nonSubscription,
+      );
+      StoreProduct? product;
+      for (final p in products) {
+        if (p.identifier == pack.productId) product = p;
+      }
+      if (product == null) {
+        lastError = 'not_found';
+        debugPrint('buyPack: missing product ${pack.productId}');
+        return lastError;
+      }
+      final result =
+          await Purchases.purchase(PurchaseParams.storeProduct(product));
+      _apply(result.customerInfo);
+      if (!characterController.ownsPack(pack)) {
+        // Store confirmed the purchase but the info lagged; trust the result.
+        await characterController.addOwnedPacks([pack.id]);
+      }
+      return null;
+    } on PlatformException catch (error) {
+      final code = _purchaseErrorCode(error);
+      if (code == 'canceled' || code == 'pending') return null;
+      if (code == 'already') {
+        await characterController.addOwnedPacks([pack.id]);
+        return null;
+      }
+      lastError = code;
+      debugPrint('buyPack: ${error.code} ${error.message}');
+      return lastError;
+    } catch (error) {
+      lastError = 'failed';
+      debugPrint('buyPack: $error');
+      return lastError;
+    } finally {
+      _busy = false;
+      notifyListeners();
+    }
+  }
+
   /// Restores a plan bought on this store account (App Review requires this).
   /// Returns an error code, `not_found` when nothing is active, or null.
   Future<String?> restorePurchases() async {
@@ -110,7 +187,8 @@ class BillingController extends ChangeNotifier {
         return lastError;
       }
       _apply(await Purchases.restorePurchases());
-      if (!membershipController.isPremium) {
+      final anyPack = CharacterPack.all.any(characterController.ownsPack);
+      if (!membershipController.isPremium && !anyPack) {
         lastError = 'restore_none';
         return lastError;
       }
@@ -223,6 +301,17 @@ class BillingController extends ChangeNotifier {
       }
     }
     membershipController.setPremium(entitled || subscribed || productMatch);
+    // Bought packs (non-consumables) stay in the purchase history forever.
+    final bought = {
+      ...info.allPurchasedProductIdentifiers,
+      for (final tx in info.nonSubscriptionTransactions) tx.productIdentifier,
+    };
+    unawaited(characterController.addOwnedPacks([
+      for (final pack in CharacterPack.all)
+        if (bought.contains(pack.productId) ||
+            info.entitlements.active.containsKey('pack_${pack.id}'))
+          pack.id,
+    ]));
   }
 
   String _purchaseErrorCode(PlatformException error) {
