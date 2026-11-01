@@ -30,7 +30,7 @@ class TogetherBgTheme {
     ),
     TogetherBgTheme(
       id: 'widget_background5',
-      assetPath: 'assets/images/widgetbackground/background5.png',
+      assetPath: 'assets/images/widgetbackground/ground5.png',
     ),
     TogetherBgTheme(
       id: 'widget_background6',

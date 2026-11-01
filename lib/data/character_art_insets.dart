@@ -19,8 +19,13 @@ class CharacterArtInsets {
 
   static const none = CharacterArtInsets(1, 0, 0, 0, 0);
 
-  static CharacterArtInsets forAsset(String assetPath) =>
-      _byFile[assetPath.split('/').last] ?? none;
+  static CharacterArtInsets forAsset(String assetPath) {
+    final file = assetPath.split('/').last;
+    // Male files reuse some female filenames. Those measured margins are the
+    // woman art, so a man sprite falls back to the image box.
+    if (assetPath.contains('/man/')) return _byFile['man/$file'] ?? none;
+    return _byFile[file] ?? none;
+  }
 
   /// Transparent gaps (dp) between a [boxW]×[boxH] sprite box and the drawn
   /// art, with the image contained and centered in the box (BoxFit.contain).

@@ -31,15 +31,23 @@ object DdayWidgetVisuals {
 
   /** Flutter asset for a shop character. Falls back to the default sprite. */
   fun assetFor(characterId: String): String {
-    if (characterId == "c65") return "assets/images/character/character(65).png"
+    if (characterId == "c65") return "assets/images/character/woman/character(65).png"
+    if (characterId == "m16") return "assets/images/character/man/charcter(1).png"
+    if (characterId == "m17") return "assets/images/character/man/character(2).png"
+    if (characterId.startsWith("m")) {
+      val n = characterId.removePrefix("m").toIntOrNull()
+      if (n != null && n in 1..15) {
+        return "assets/images/character/man/character ($n).png"
+      }
+    }
     if (characterId.startsWith("c")) {
       val n = characterId.removePrefix("c").toIntOrNull()
       if (n != null && n in 1..64) {
-        return "assets/images/character/character ($n).png"
+        return "assets/images/character/woman/character ($n).png"
       }
     }
-    if (characterId == "bul") return "assets/images/character/character (1).png"
-    return "assets/images/character/character.png"
+    if (characterId == "bul") return "assets/images/character/woman/character (1).png"
+    return "assets/images/character/woman/character.png"
   }
 
   /** Same cell grid as Flutter [TogetherWidgetSize]. */

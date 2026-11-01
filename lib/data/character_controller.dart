@@ -19,32 +19,47 @@ class AppCharacter {
   final bool isDefault;
   final CharacterGroup group;
 
-  /// Always free. File is `assets/images/character/character.png`.
+  /// Always free. File is `assets/images/character/woman/character.png`.
   static const basic = AppCharacter(
     id: 'basic',
-    assetPath: 'assets/images/character/character.png',
+    assetPath: 'assets/images/character/woman/character.png',
     isDefault: true,
   );
 
   /// Test-room friend sprite. Same art as the first shop character.
   static const bul = AppCharacter(
     id: 'bul',
-    assetPath: 'assets/images/character/character (1).png',
+    assetPath: 'assets/images/character/woman/character (1).png',
   );
 
-  /// Current art is the female set. Male stays empty until images are added.
   static final List<AppCharacter> shop = [
     basic,
     for (var i = 1; i <= 64; i++)
       AppCharacter(
         id: 'c$i',
-        assetPath: 'assets/images/character/character ($i).png',
+        assetPath: 'assets/images/character/woman/character ($i).png',
         group: CharacterGroup.female,
       ),
     const AppCharacter(
       id: 'c65',
-      assetPath: 'assets/images/character/character(65).png',
+      assetPath: 'assets/images/character/woman/character(65).png',
       group: CharacterGroup.female,
+    ),
+    for (var i = 1; i <= 15; i++)
+      AppCharacter(
+        id: 'm$i',
+        assetPath: 'assets/images/character/man/character ($i).png',
+        group: CharacterGroup.male,
+      ),
+    const AppCharacter(
+      id: 'm16',
+      assetPath: 'assets/images/character/man/charcter(1).png',
+      group: CharacterGroup.male,
+    ),
+    const AppCharacter(
+      id: 'm17',
+      assetPath: 'assets/images/character/man/character(2).png',
+      group: CharacterGroup.male,
     ),
   ];
 
