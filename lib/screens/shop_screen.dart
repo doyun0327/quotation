@@ -206,7 +206,7 @@ class _ShopScreenState extends State<ShopScreen> {
       favorite: characterController.isFavorite(character),
       accent: accent,
       onTap: _busy ? null : () => _onTile(character),
-      onFavorite: usable && !_busy ? () => _toggleFavorite(character) : null,
+      onFavorite: _busy ? null : () => _toggleFavorite(character),
     );
   }
 

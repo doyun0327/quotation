@@ -76,6 +76,18 @@
         </receiver>
 
         <receiver
+            android:name=".QuoteOnlyWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_quote_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quote_only_widget_info" />
+        </receiver>
+
+        <receiver
             android:name=".DdayWidgetProvider"
             android:exported="true"
             android:label="@string/dday_widget_label_l">

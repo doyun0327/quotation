@@ -20,8 +20,11 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
+import android.os.Build
 import android.os.Bundle
+import android.util.TypedValue
 import android.widget.RemoteViews
+import es.antonborri.home_widget.HomeWidgetPlugin
 import java.util.Calendar
 import kotlin.math.max
 import kotlin.math.min
@@ -29,14 +32,14 @@ import kotlin.math.roundToInt
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
-class DailyWordWidgetProvider : HomeWidgetProvider() {
+open class DailyWordWidgetProvider : HomeWidgetProvider() {
   override fun onEnabled(context: Context) {
     super.onEnabled(context)
     scheduleHourlyRefresh(context)
   }
 
   override fun onDisabled(context: Context) {
-    cancelHourlyRefresh(context)
+    if (!hasQuoteFamilyWidgets(context)) cancelHourlyRefresh(context)
     super.onDisabled(context)
   }
 
@@ -46,14 +49,7 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
         intent?.action == Intent.ACTION_MY_PACKAGE_REPLACED
     ) {
       scheduleHourlyRefresh(context)
-      val manager = AppWidgetManager.getInstance(context)
-      val ids =
-          manager.getAppWidgetIds(
-              ComponentName(context, DailyWordWidgetProvider::class.java),
-          )
-      if (ids.isNotEmpty()) {
-        onUpdate(context, manager, ids)
-      }
+      refreshQuoteFamily(context)
       if (intent.action == ACTION_HOURLY_REFRESH) return
     }
     super.onReceive(context, intent)
@@ -374,7 +370,7 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
           (if (portrait) maxH else minH).takeIf { it > 40 }
               ?: max(minH, maxH).takeIf { it > 40 }
               ?: 168
-      return width.coerceIn(180, 460) to height.coerceIn(120, 360)
+      return width.coerceIn(80, 640) to height.coerceIn(80, 640)
     }
 
     private fun homeDateLabel(): String {
@@ -476,6 +472,148 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
       }
     }
 
+    /** Dashed quote box only. Same card as the iOS "오늘의 문구" widget. */
+    fun buildQuoteOnlyCard(
+        context: Context,
+        widgetData: SharedPreferences,
+        widthDp: Int,
+        heightDp: Int,
+    ): Bitmap {
+      val metricsDensity =
+          context.resources.displayMetrics.density.coerceAtLeast(1f)
+      var scale = 1f
+      var width = (widthDp * metricsDensity).roundToInt().coerceAtLeast(1)
+      var height = (heightDp * metricsDensity).roundToInt().coerceAtLeast(1)
+      while (width.toLong() * height > 420_000L && scale > 0.5f) {
+        scale -= 0.08f
+        width = (widthDp * metricsDensity * scale).roundToInt().coerceAtLeast(1)
+        height = (heightDp * metricsDensity * scale).roundToInt().coerceAtLeast(1)
+      }
+      val d = metricsDensity * scale
+      fun dp(value: Float) = value * d
+      val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+      val canvas = Canvas(bitmap)
+      val accent = readColor(widgetData, "themeAccent", DEFAULT_ACCENT)
+      val frame = (accent and 0x00FFFFFF) or (0xBF shl 24)
+      val pixel = prefString(widgetData, "visualStyle") != "clean"
+      val face = bodyTypeface(context, pixel)
+      val quote =
+          prefString(widgetData, "quoteText").ifEmpty {
+            context.getString(R.string.widget_placeholder_quote)
+          }
+      val stroke = dp(1.5f)
+      val inset = max(dp(8f), stroke + dp(4f))
+      val box = RectF(inset, inset, width - inset, height - inset)
+      canvas.drawRoundRect(
+          box,
+          dp(14f),
+          dp(14f),
+          Paint().apply {
+            color = 0xEBFFFFFF.toInt()
+            style = Paint.Style.FILL
+            isAntiAlias = true
+          },
+      )
+      drawDashedRoundRect(canvas, box, dp(14f), frame, stroke, dp(5f), dp(3.5f))
+      val pad = dp(12f)
+      drawFitted(
+          canvas = canvas,
+          text = quote,
+          face = face,
+          fakeBold = !pixel,
+          left = box.left + pad,
+          top = box.top + pad,
+          maxWidth = (box.width() - pad * 2f).coerceAtLeast(dp(24f)),
+          maxHeight = (box.height() - pad * 2f).coerceAtLeast(dp(12f)),
+          startSize = dp(if (widthDp < 160) 13f else 15f),
+          minSize = dp(8f),
+      )
+      return bitmap
+    }
+
+    fun quoteFamilyClasses(): List<Class<out android.appwidget.AppWidgetProvider>> =
+        listOf(
+            DailyWordWidgetProvider::class.java,
+            DailyWordWidgetProviderLarge::class.java,
+            QuoteOnlyWidgetProvider::class.java,
+            QuoteOnlyWidgetProviderMedium::class.java,
+        )
+
+    fun hasQuoteFamilyWidgets(context: Context): Boolean {
+      val manager = AppWidgetManager.getInstance(context)
+      return quoteFamilyClasses().any { clazz ->
+        manager.getAppWidgetIds(ComponentName(context, clazz)).isNotEmpty()
+      }
+    }
+
+    fun refreshQuoteFamily(context: Context) {
+      val manager = AppWidgetManager.getInstance(context)
+      for (clazz in quoteFamilyClasses()) {
+        val ids = manager.getAppWidgetIds(ComponentName(context, clazz))
+        if (ids.isEmpty()) continue
+        val provider = clazz.getDeclaredConstructor().newInstance()
+        provider.onUpdate(context, manager, ids)
+      }
+      publishPickerPreviews(context)
+    }
+
+    /** Fills the long-press widget gallery with the same cards the widgets draw. */
+    fun publishPickerPreviews(context: Context) {
+      if (Build.VERSION.SDK_INT < 35) return
+      val manager = AppWidgetManager.getInstance(context)
+      val prefs = HomeWidgetPlugin.getData(context)
+      fun show(clazz: Class<*>, views: RemoteViews) {
+        try {
+          manager.setWidgetPreview(
+              ComponentName(context, clazz),
+              android.appwidget.AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
+              views,
+          )
+        } catch (e: Exception) {
+          android.util.Log.w("WidgetPreview", clazz.simpleName, e)
+        }
+      }
+      show(
+          DailyWordWidgetProvider::class.java,
+          previewCard(context, buildPinBitmap(context, prefs), 300, 150),
+      )
+      show(
+          QuoteOnlyWidgetProvider::class.java,
+          previewCard(
+              context,
+              buildQuoteOnlyCard(context, prefs, widthDp = 220, heightDp = 220),
+              150,
+              150,
+          ),
+      )
+      try {
+        show(
+            DdayWidgetProvider::class.java,
+            DdayWidgetProvider().buildPinPreview(context, "s42"),
+        )
+      } catch (e: Exception) {
+        android.util.Log.w("WidgetPreview", "together", e)
+      }
+    }
+
+    private fun previewCard(
+        context: Context,
+        bitmap: Bitmap,
+        widthDp: Int,
+        heightDp: Int,
+    ): RemoteViews {
+      val density = context.resources.displayMetrics.density.coerceAtLeast(1f)
+      val width = (widthDp * density).roundToInt().coerceAtLeast(1)
+      val height = (heightDp * density).roundToInt().coerceAtLeast(1)
+      return RemoteViews(context.packageName, R.layout.daily_word_widget).apply {
+        setImageViewBitmap(R.id.widget_card, bitmap)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          setViewLayoutWidth(R.id.widget_card, width.toFloat(), TypedValue.COMPLEX_UNIT_PX)
+          setViewLayoutHeight(R.id.widget_card, height.toFloat(), TypedValue.COMPLEX_UNIT_PX)
+        }
+      }
+    }
+
     fun scheduleHourlyRefresh(context: Context) {
       val alarmManager = context.getSystemService(AlarmManager::class.java) ?: return
       val pending = hourlyPendingIntent(context)
@@ -508,3 +646,6 @@ class DailyWordWidgetProvider : HomeWidgetProvider() {
     }
   }
 }
+
+/** iOS systemLarge for 오늘의 말. */
+class DailyWordWidgetProviderLarge : DailyWordWidgetProvider()

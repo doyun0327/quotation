@@ -190,7 +190,7 @@ class CharacterController extends ChangeNotifier {
   }
 
   bool isFavorite(AppCharacter character) =>
-      isUsable(character) && _favorites.contains(character.id);
+      _favorites.contains(character.id);
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();

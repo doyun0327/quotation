@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 오늘의 말 · large (iOS systemLarge, 4×4) -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_description_large"
+    android:initialLayout="@layout/daily_word_widget"
+    android:minWidth="300dp"
+    android:minHeight="300dp"
+    android:minResizeWidth="300dp"
+    android:minResizeHeight="300dp"
+    android:maxResizeWidth="300dp"
+    android:maxResizeHeight="300dp"
+    android:previewLayout="@layout/daily_word_widget_preview_large"
+    android:resizeMode="none"
+    android:targetCellHeight="4"
+    android:targetCellWidth="4"
+    android:updatePeriodMillis="3600000"
+    android:widgetCategory="home_screen" />

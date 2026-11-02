@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Dearly</string>
-    <string name="widget_description">Shows the home screen character, date, and quote</string>
-    <string name="widget_character_label">Character and quote</string>
-    <string name="dday_widget_description">Shows the cheer widget you decorate with friends</string>
+    <string name="widget_description">Character, date, and a line of encouragement.</string>
+    <string name="widget_description_large">Large. Character, date, and a line of encouragement.</string>
+    <string name="widget_character_label">Today\'s word</string>
+    <string name="widget_quote_label">Today\'s line</string>
+    <string name="widget_quote_description_small">The encouragement line only, inside a dashed box.</string>
+    <string name="widget_quote_description">Medium. The encouragement line only, inside a dashed box.</string>
+    <string name="dday_widget_description">Characters and a cheer you share with friends.</string>
     <string name="dday_widget_label">Together</string>
     <string name="dday_widget_label_s">Together 2×2</string>
     <string name="dday_widget_label_m">Together 3×2</string>
-    <string name="dday_widget_label_l">Together 4×2</string>
+    <string name="dday_widget_label_l">Together</string>
     <string name="dday_widget_label_xl">Together 4×3</string>
     <string name="dday_widget_label_sq">Together 3×3</string>
     <string name="dday_widget_label_tall">Together 2×3</string>

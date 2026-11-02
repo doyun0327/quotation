@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 오늘의 문구 · small (iOS systemSmall, 2×2) -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_quote_description_small"
+    android:initialLayout="@layout/daily_word_widget"
+    android:minWidth="150dp"
+    android:minHeight="150dp"
+    android:minResizeWidth="150dp"
+    android:minResizeHeight="150dp"
+    android:maxResizeWidth="300dp"
+    android:maxResizeHeight="150dp"
+    android:previewLayout="@layout/quote_only_widget_preview"
+    android:resizeMode="horizontal"
+    android:targetCellHeight="2"
+    android:targetCellWidth="2"
+    android:updatePeriodMillis="3600000"
+    android:widgetCategory="home_screen" />

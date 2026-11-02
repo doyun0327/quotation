@@ -14,6 +14,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
+    DailyWordWidgetProvider.publishPickerPreviews(applicationContext)
     MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
         call,
         result ->
@@ -27,7 +28,7 @@ class MainActivity : FlutterActivity() {
         }
         "pinCharacterWidget" -> result.success(pinCharacterWidget())
         "refreshCharacterWidget" -> {
-          refreshWidget(DailyWordWidgetProvider(), DailyWordWidgetProvider::class.java)
+          DailyWordWidgetProvider.refreshQuoteFamily(applicationContext)
           result.success(true)
         }
         "refreshTogetherWidget" -> {
@@ -160,6 +161,7 @@ class MainActivity : FlutterActivity() {
           clazz.getDeclaredConstructor().newInstance() as AppWidgetProvider
       provider.onUpdate(applicationContext, manager, ids)
     }
+    DailyWordWidgetProvider.publishPickerPreviews(applicationContext)
   }
 
   /** Draws placed widgets immediately. A broadcast to the provider can be dropped. */

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 4×2 -->
+<!-- 함께 · medium (iOS systemMedium, 4×2) -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/dday_widget_description"
     android:initialLayout="@layout/dday_widget"
-    android:minHeight="110dp"
-    android:minResizeHeight="110dp"
-    android:minResizeWidth="110dp"
-    android:minWidth="250dp"
+    android:minWidth="300dp"
+    android:minHeight="150dp"
+    android:minResizeWidth="300dp"
+    android:minResizeHeight="150dp"
+    android:maxResizeWidth="300dp"
+    android:maxResizeHeight="150dp"
     android:previewLayout="@layout/dday_widget_preview"
-    android:resizeMode="horizontal|vertical"
+    android:resizeMode="none"
     android:targetCellHeight="2"
     android:targetCellWidth="4"
     android:updatePeriodMillis="3600000"

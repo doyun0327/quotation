@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/theme/app_palette.dart';
 
 class HamfootIcon extends StatelessWidget {
   const HamfootIcon({
@@ -24,13 +25,13 @@ class HamfootIcon extends StatelessWidget {
       filterQuality: FilterQuality.none,
       gaplessPlayback: true,
     );
-    final tint = color;
-    if (tint != null) {
-      image = ColorFiltered(
-        colorFilter: ColorFilter.mode(tint, BlendMode.srcIn),
-        child: image,
-      );
-    }
+    image = ColorFiltered(
+      colorFilter: ColorFilter.mode(
+        color ?? context.palette.accent,
+        BlendMode.srcIn,
+      ),
+      child: image,
+    );
     if (!active) {
       return Opacity(opacity: 0.35, child: image);
     }
