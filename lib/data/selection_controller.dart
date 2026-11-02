@@ -48,9 +48,9 @@ class SelectionController extends ChangeNotifier {
   /// Public pool used by the home widget hourly rotation.
   List<Quote> get bubblePoolQuotes => _bubblePool;
 
-  /// Quotes available for the speech bubble (respects free/premium).
+  /// Quotes available for the speech bubble (respects free/premium/trial).
   List<Quote> get _bubblePool {
-    if (!membershipController.isPremium) {
+    if (!membershipController.hasPremiumContent) {
       final daily = QuoteRepository.dailyQuotesForLocale();
       return daily.isEmpty ? _fallbackBubble : daily;
     }
@@ -78,7 +78,7 @@ class SelectionController extends ChangeNotifier {
   }
 
   void _onMembershipChanged() {
-    if (!membershipController.isPremium &&
+    if (!membershipController.hasPremiumContent &&
         !membershipController.canAccess(_mainCategoryId)) {
       _mainCategoryId = MembershipController.freeCategoryId;
       _subCategoryId = null;

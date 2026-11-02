@@ -524,8 +524,22 @@ class AppStrings {
   String get premiumLockedTitle =>
       _t('프리미엄 전용', 'Premium only', 'プレミアム限定');
   String get premiumLockedBody => _t('이 카테고리는 프리미엄 회원만 볼 수 있어요.', 'This category is for premium members.', 'このカテゴリーはプレミアム会員だけが見られます。');
+  String get premiumLockedDecorateBody => _t(
+        '구독하면 더 많은 배경과 글꼴을 쓸 수 있어요.',
+        'Subscribe to unlock more backgrounds and fonts.',
+        '登録すると、さらに多くの背景とフォントが使えます。',
+      );
   String get premiumLockedDismiss => _t('닫기', 'Close', '閉じる');
   String get premiumLockedCta => _t('월 구독하기', 'Subscribe monthly', '月額で登録');
+
+  String get trialWelcomeTitle =>
+      _t('7일 무료 체험', '7-day free trial', '7日間無料体験');
+  String get trialWelcomeBody => _t(
+        '다양한 명언부터 나만의 위젯 꾸미기까지, 프리미엄 기능을 7일간 무료로 체험해 보세요!',
+        'From a wide range of quotes to your own widget design — try premium free for 7 days!',
+        'さまざまな名言から自分だけのウィジェット装飾まで、プレミアム機能を7日間無料で体験してみてください！',
+      );
+  String get trialWelcomeConfirm => _t('확인', 'Got it', 'OK');
 
   String get otherSection => _t('기타 설정', 'Other', 'その他');
   String get eveningDebugTitle =>

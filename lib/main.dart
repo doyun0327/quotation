@@ -103,6 +103,7 @@ class QuotationApp extends StatefulWidget {
 
 class _QuotationAppState extends State<QuotationApp> {
   bool _askingNickname = false;
+  bool _showingTrialNotice = false;
 
   @override
   void initState() {
@@ -117,13 +118,75 @@ class _QuotationAppState extends State<QuotationApp> {
     super.dispose();
   }
 
+  Future<void> _maybeShowTrialNotice() async {
+    if (!mounted || _showingTrialNotice) return;
+    // Wait until nickname is set so this doesn't stack under that dialog.
+    if (authController.nickname == null) return;
+    final shouldShow = await membershipController.shouldShowTrialNotice();
+    if (!shouldShow || !mounted) return;
+    final navContext = appNavigatorKey.currentContext;
+    if (navContext == null || !navContext.mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _maybeShowTrialNotice();
+      });
+      return;
+    }
+    _showingTrialNotice = true;
+    final t = AppStrings.current;
+    await showDialog<void>(
+      context: navContext,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          title: Text(
+            t.trialWelcomeTitle,
+            style: AppTheme.body.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: AppColors.ink,
+            ),
+          ),
+          content: Text(
+            t.trialWelcomeBody,
+            style: AppTheme.body.copyWith(
+              fontSize: 13.5,
+              height: 1.45,
+              fontWeight: FontWeight.w600,
+              color: AppColors.muted,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                t.trialWelcomeConfirm,
+                style: AppTheme.body.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: themeController.palette.accent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    await membershipController.markTrialNoticeShown();
+    _showingTrialNotice = false;
+  }
+
   Future<void> _onAuthReady() async {
     if (!mounted || !authController.isReady || _askingNickname) {
       return;
     }
     if (authController.nickname == null) {
-      await _maybeAskNickname();
+      final ok = await _maybeAskNickname();
+      if (!ok || !mounted) return;
     }
+    await _maybeShowTrialNotice();
   }
 
   Future<bool> _maybeAskNickname() async {

@@ -54,6 +54,9 @@ enum WidgetFont {
   final String? asset;
   final String? license;
 
+  /// Free users may use [basic] only; every other face needs premium.
+  bool get requiresPremium => this != basic;
+
   static WidgetFont byId(String? id) {
     for (final font in values) {
       if (font.id == id) return font;

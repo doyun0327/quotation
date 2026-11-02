@@ -32,7 +32,7 @@ abstract final class QuoteAssetLoader {
   static const buddhismEnPath =
       'assets/quotes/en/buddhist_quotes_300_en.json';
   static const gratitudeKoPath =
-      'assets/quotes/ko/dearly_gratitude_joy_quotes_500.json';
+      'assets/quotes/ko/dearly_gratitude_joy_quotes_200.json';
   static const gratitudeEnPath =
       'assets/quotes/en/dearly_gratitude_joy_quotes_500_en.json';
   static const loveKoPath =

@@ -81,6 +81,15 @@ class TogetherBgTheme {
   /// Picker shows transparent plus every bundled photo.
   static List<TogetherBgTheme> get choices => all;
 
+  /// Free users may pick the first [freeChoiceCount] entries in [choices].
+  static const freeChoiceCount = 4;
+
+  static bool requiresPremium(TogetherBgTheme theme) {
+    final index = choices.indexWhere((t) => t.id == theme.id);
+    if (index < 0) return true;
+    return index >= freeChoiceCount;
+  }
+
   static TogetherBgTheme byId(String? id) {
     if (id == null || id.isEmpty) return none;
     if (id == albumId) return const TogetherBgTheme(id: albumId, assetPath: '');

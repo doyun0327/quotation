@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
+import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/widget_fonts.dart';
@@ -21,6 +23,7 @@ import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
 import 'package:quotation/widgets/ios_widget_guide.dart';
+import 'package:quotation/widgets/sign_in_flow.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
 /// In-app editor for a Together room home widget.
@@ -682,11 +685,85 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     setState(() => _dragging = value);
   }
 
+  Future<void> _showPremiumLock() async {
+    if (!mounted) return;
+    final t = AppStrings.current;
+    final palette = context.palette;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: BorderSide(color: palette.border, width: 1.5),
+          ),
+          title: Text(
+            t.premiumLockedTitle,
+            style: AppTheme.body.copyWith(
+              fontFamily: 'Galmuri',
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: AppColors.ink,
+            ),
+          ),
+          content: Text(
+            t.premiumLockedDecorateBody,
+            style: AppTheme.body.copyWith(
+              fontFamily: 'Galmuri',
+              fontSize: 13.5,
+              height: 1.45,
+              fontWeight: FontWeight.w600,
+              color: AppColors.muted,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                t.premiumLockedDismiss,
+                style: AppTheme.body.copyWith(
+                  fontFamily: 'Galmuri',
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.muted,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                if (!await suggestSignInBeforePurchase(context) || !mounted) {
+                  return;
+                }
+                final code = await billingController.buyMonthly();
+                if (!mounted || code == null) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppStrings.current.billingError(code)),
+                  ),
+                );
+              },
+              child: Text(
+                t.premiumLockedCta,
+                style: AppTheme.body.copyWith(
+                  fontFamily: 'Galmuri',
+                  fontWeight: FontWeight.w900,
+                  color: palette.accent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _bgChoice({
     required bool selected,
     required Color accent,
     required VoidCallback onTap,
     required Widget child,
+    bool locked = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -701,7 +778,23 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           ),
         ),
         clipBehavior: Clip.hardEdge,
-        child: child,
+        child: Opacity(
+          opacity: locked ? 0.42 : 1,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              child,
+              if (locked)
+                Center(
+                  child: Icon(
+                    Icons.lock_rounded,
+                    size: 22,
+                    color: selected ? accent : const Color(0xFF5B6B8C),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -745,8 +838,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           characterController,
           localeController,
           authController,
+          membershipController,
         ]),
         builder: (context, _) {
+          final isPremium = membershipController.hasPremiumContent;
           final live = _room;
           final liveHasFriend = live?.hasFriend ?? false;
           final liveFriendId = live?.friendCharacterId;
@@ -1013,10 +1108,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
                           final theme = TogetherBgTheme.choices[index];
+                          final locked =
+                              !isPremium && TogetherBgTheme.requiresPremium(theme);
                           return _bgChoice(
                             selected: _bgThemeId == theme.id,
                             accent: palette.accent,
+                            locked: locked,
                             onTap: () {
+                              if (locked) {
+                                _showPremiumLock();
+                                return;
+                              }
                               setState(() => _bgThemeId = theme.id);
                               _persist();
                             },
@@ -1067,13 +1169,20 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
                           final font = WidgetFont.values[index];
+                          final locked =
+                              !isPremium && font.requiresPremium;
                           return _FontChip(
                             label: t.ddayDecorateFontName(font),
                             // Basic matches the pixel preview label.
                             fontFamily: font.family ?? 'Galmuri',
                             selected: _textFont == font,
                             accent: palette.accent,
+                            locked: locked,
                             onTap: () {
+                              if (locked) {
+                                _showPremiumLock();
+                                return;
+                              }
                               if (_textFont == font) return;
                               setState(() => _textFont = font);
                               _dragTick.value++;
@@ -1448,6 +1557,7 @@ class _FontChip extends StatelessWidget {
     required this.selected,
     required this.accent,
     required this.onTap,
+    this.locked = false,
   });
 
   final String label;
@@ -1455,31 +1565,48 @@ class _FontChip extends StatelessWidget {
   final bool selected;
   final Color accent;
   final VoidCallback onTap;
+  final bool locked;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        height: 36,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: selected ? accent : accent.withValues(alpha: 0.35),
-            width: selected ? 2 : 1,
+      child: Opacity(
+        opacity: locked ? 0.42 : 1,
+        child: Container(
+          height: 36,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected ? accent : accent.withValues(alpha: 0.35),
+              width: selected ? 2 : 1,
+            ),
+            color: selected
+                ? accent.withValues(alpha: 0.14)
+                : Colors.white.withValues(alpha: 0.6),
           ),
-          color: selected
-              ? accent.withValues(alpha: 0.14)
-              : Colors.white.withValues(alpha: 0.6),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 15,
-            color: selected ? accent : AppColors.ink,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: fontFamily,
+                  fontSize: 15,
+                  color: selected ? accent : AppColors.ink,
+                ),
+              ),
+              if (locked) ...[
+                const SizedBox(width: 6),
+                Icon(
+                  Icons.lock_rounded,
+                  size: 14,
+                  color: selected ? accent : const Color(0xFF5B6B8C),
+                ),
+              ],
+            ],
           ),
         ),
       ),
