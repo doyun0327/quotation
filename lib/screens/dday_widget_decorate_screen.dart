@@ -20,6 +20,7 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
+import 'package:quotation/widgets/ios_widget_guide.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
 /// In-app editor for a Together room home widget.
@@ -85,6 +86,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   bool _applyingRemote = false;
   bool _samsung = false;
   bool _widgetExported = false;
+
+  /// First home export: Galaxy opens the add sheet, iPhone shows the guide.
+  bool get _firstExport =>
+      (_samsung || IosWidgetGuide.isIOS) && !_widgetExported;
 
   static const _shape = TogetherWidgetShape.square;
 
@@ -377,8 +382,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       _fitCharacters();
     });
     _dragTick.value++;
-    unawaited(UserProfileSync.syncRoomCharacter(widget.roomId, picked.id));
-    unawaited(HomeWidgetSync.syncDday());
+    // Heavy work (cloud write, widget image render) waits until the pop
+    // transition has finished so returning to the decorator stays smooth.
+    unawaited(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 450));
+      await UserProfileSync.syncRoomCharacter(widget.roomId, picked.id);
+      await HomeWidgetSync.syncDday();
+    }());
   }
 
   bool _adoptCrowd() {
@@ -1186,11 +1196,25 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         onPressed: (_savingCheer || _loggingIn)
                             ? null
                             : () async {
+                                final iosFirst =
+                                    IosWidgetGuide.isIOS && !_widgetExported;
                                 await _persist(
                                   applyToHome: true,
-                                  toast: true,
+                                  toast: !iosFirst,
                                 );
                                 if (!context.mounted) return;
+                                // iPhone cannot add the widget from the app:
+                                // explain the steps on the first export.
+                                if (iosFirst) {
+                                  await IosWidgetGuide.show(
+                                    context,
+                                    widgetName:
+                                        IosWidgetGuide.togetherWidgetName,
+                                  );
+                                  await TogetherGuide.markExportedWidget();
+                                  _widgetExported = true;
+                                  if (!context.mounted) return;
+                                }
                                 Navigator.of(context).maybePop();
                               },
                         style: FilledButton.styleFrom(
@@ -1202,7 +1226,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               ? t.togetherCheerLoggingIn
                               : _savingCheer
                                   ? t.togetherCheerSend
-                                  : (_samsung && !_widgetExported)
+                                  : _firstExport
                                       ? t.ddayDuoDecorateExport
                                       : t.ddayDuoDecorateDone,
                           style: AppTheme.body.copyWith(

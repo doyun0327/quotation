@@ -313,6 +313,12 @@ class AppStrings {
   String get characterWidgetHint => _t('캐릭터와 말풍선을 위젯으로 내보낼 수 있어요!', 'You can send your character and speech bubble to a widget!', 'キャラクターと吹き出しをウィジェットに書き出せます！');
   String get characterWidgetHintExport => _t('내보내기', 'Export', '書き出す');
   String get characterWidgetHintClose => _t('닫기', 'Close', '閉じる');
+  String get iosWidgetGuideTitle => _t('홈 화면에 위젯 추가하기', 'Add the widget to your Home Screen', 'ホーム画面にウィジェットを追加');
+  String get iosWidgetGuideSubtitle => _t('홈 화면에서 직접 추가해야 해요. 한 번만 하면 이후엔 자동으로 바뀌어요.', 'On iPhone you add it from the Home Screen once. After that it updates by itself.', 'iPhoneはホーム画面から一度追加すれば、その後は自動で更新されます。');
+  String get iosWidgetGuideStep1 => _t('홈 화면 빈 곳을 앱이 흔들릴 때까지 꾹 눌러요', 'Touch and hold an empty spot on the Home Screen until the apps jiggle', 'ホーム画面の空いている所を、アプリが揺れるまで長押しします');
+  String get iosWidgetGuideStep2 => _t('왼쪽 위 [편집] → [위젯 추가]를 눌러요', 'Tap Edit at the top left, then Add Widget', '左上の［編集］→［ウィジェットを追加］をタップします');
+  String iosWidgetGuideStep3(String name) => _t("'Dearly'를 검색해 '$name' 위젯을 고르고 [위젯 추가]를 눌러요", "Search for Dearly, choose the '$name' widget, then tap Add Widget", "「Dearly」を検索して「$name」ウィジェットを選び、［ウィジェットを追加］をタップします");
+  String get iosWidgetGuideOk => _t('알겠어요', 'Got it', 'わかりました');
   String get characterWidgetHintClosed => _t('홈 화면을 길게 눌러 위젯을 추가할 수 있어요!', 'Long-press the home screen to add the widget!', 'ホーム画面を長押ししてウィジェットを追加できます！');
   String get characterSelectConfirm => _t('이 캐릭터로 시작', 'Start with this', 'このキャラクターで始める');
   String get characterChange => _t('캐릭터 변경', 'Change character', 'キャラクターを変更');

@@ -344,8 +344,30 @@ abstract final class HomeWidgetSync {
     }
   }
 
-  static Future<void> syncDday({bool reloadFromPrefs = true}) async {
-    if (!_supportsWidgets) return;
+  static Future<void>? _ddaySync;
+  static bool _ddayDirty = false;
+  static bool _ddayReload = false;
+
+  /// Redraws the Together widgets. Calls that arrive while one is running
+  /// are merged into a single follow-up run (the iOS card render is heavy),
+  /// and every caller's future completes after a run that includes it.
+  static Future<void> syncDday({bool reloadFromPrefs = true}) {
+    if (!_supportsWidgets) return Future.value();
+    _ddayDirty = true;
+    _ddayReload = _ddayReload || reloadFromPrefs;
+    return _ddaySync ??= _drainDdaySync().whenComplete(() => _ddaySync = null);
+  }
+
+  static Future<void> _drainDdaySync() async {
+    while (_ddayDirty) {
+      _ddayDirty = false;
+      final reload = _ddayReload;
+      _ddayReload = false;
+      await _syncDdayOnce(reloadFromPrefs: reload);
+    }
+  }
+
+  static Future<void> _syncDdayOnce({required bool reloadFromPrefs}) async {
     try {
       if (_isIOS) {
         await HomeWidget.setAppGroupId(appGroupId);

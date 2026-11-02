@@ -93,7 +93,11 @@ class DdayCloudSync {
               uid,
               notifyRemote: notify,
             );
-            await HomeWidgetSync.syncDday();
+            // My own unconfirmed write echoes back first; local state already
+            // has it, and the server-confirmed snapshot redraws once.
+            if (!snap.metadata.hasPendingWrites) {
+              await HomeWidgetSync.syncDday();
+            }
             if (notice != null) onRemoteWidgetEdit?.call(notice);
           } catch (e) {
             debugPrint('room watch $id: $e');

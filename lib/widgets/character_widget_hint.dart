@@ -6,6 +6,7 @@ import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:quotation/widgets/ios_widget_guide.dart';
 
 /// Shown once so people know the home character can be a widget.
 class CharacterWidgetHint {
@@ -41,6 +42,14 @@ class CharacterWidgetHint {
   static Future<void> export(BuildContext context) async {
     final pinned = await HomeWidgetSync.pinCharacterWidget();
     if (!context.mounted || pinned) return;
+    if (IosWidgetGuide.isIOS) {
+      // iPhone has no add sheet for apps: show the step-by-step guide.
+      await IosWidgetGuide.show(
+        context,
+        widgetName: IosWidgetGuide.characterWidgetName,
+      );
+      return;
+    }
     showClosedMessage(context);
   }
 }
