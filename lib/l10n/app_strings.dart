@@ -74,6 +74,15 @@ class AppStrings {
   String get ddayDuoDecorateDragHint => _t('캐릭터를 선택한 뒤 이동시켜보세요!', 'Select a character, then move it!', 'キャラクターを選んで、動かしてみてください！');
   String get ddayDuoDecorateMenuHint => _t('친구와 함께 꾸미는 응원 위젯', 'Cheer widget you decorate with friends', '友だちと一緒に飾る応援ウィジェット');
   String get ddayDuoDecorateDone => _t('홈에 적용', 'Apply to home', 'ホームに適用');
+  String get ddayDuoDecorateExport =>
+      _t('위젯으로 내보내기', 'Add as widget', 'ウィジェットに書き出す');
+  String get togetherInviteNudge =>
+      _t('친구를 초대해볼까요?', 'Invite a friend?', '友だちを招待してみる？');
+  String get togetherDecorateNudge => _t(
+        '위젯 꾸미기를 눌러볼까요?',
+        'Try customizing the widget?',
+        'ウィジェットを飾ってみる？',
+      );
   String get ddayDuoDecorateSampleTitle => _t('우리 방', 'Our room', '私たちのルーム');
   String get ddayDecorateSoloHint => _t('친구가 초대를 수락하면 같이 위젯으로 바뀌어요', 'Together widget appears after a friend accepts your invite', '友だちが招待を受けると、一緒ウィジェットに変わります');
   String get ddayDecorateInviteHint => _t('방에서 친구를 초대해 보세요', 'Invite friends from the room', 'ルームから友だちを招待してみてください');

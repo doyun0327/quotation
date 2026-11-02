@@ -69,7 +69,9 @@ abstract final class TogetherCrowdLayout {
   static String keyFor(List<TogetherCrowdPerson> people) =>
       people.map((p) => p.uid).join('|');
 
-  /// The signed-in person, plus a default-character copy saved under another id.
+  /// The signed-in person, including the same account saved under another uid.
+  /// A second login keeps the old id in the room, so the name is the match
+  /// once the character is no longer the default.
   static bool isCurrentUser(
     DdayFriendMember friend, {
     required Set<String> myIds,
@@ -80,10 +82,9 @@ abstract final class TogetherCrowdLayout {
       return true;
     }
     final name = friend.displayName?.trim() ?? '';
-    return myName.isNotEmpty &&
-        name == myName &&
-        friend.characterId == 'basic' &&
-        myCharacterId != 'basic';
+    // Same nickname under another login id. The two copies can use different
+    // characters, so [myCharacterId] is not compared.
+    return myName.isNotEmpty && name == myName;
   }
 
   static List<DdayFriendMember> withoutMe(

@@ -11,6 +11,7 @@ import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
+import 'package:quotation/data/together_guide.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
@@ -82,6 +83,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   final _cheerFocus = FocusNode();
   final _dragTick = ValueNotifier<int>(0);
   bool _applyingRemote = false;
+  bool _samsung = false;
+  bool _widgetExported = false;
 
   static const _shape = TogetherWidgetShape.square;
 
@@ -89,6 +92,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   void initState() {
     super.initState();
     unawaited(_loadHostSize());
+    unawaited(TogetherGuide.markDecorated(widget.roomId));
+    unawaited(_loadExportLabel());
     final id = widget.roomId;
     _meX = ddayController.meOffsetXForRoom(id).toDouble();
     _meY = ddayController.meOffsetYForRoom(id).toDouble();
@@ -278,6 +283,16 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     return false;
   }
 
+  Future<void> _loadExportLabel() async {
+    final samsung = await TogetherGuide.isSamsung();
+    final exported = await TogetherGuide.hasExportedWidget();
+    if (!mounted) return;
+    setState(() {
+      _samsung = samsung;
+      _widgetExported = exported;
+    });
+  }
+
   Future<void> _persist({bool applyToHome = false, bool toast = false}) async {
     if (applyToHome) {
       await _saveCheerIfNeeded(quiet: !toast);
@@ -325,6 +340,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         roomId: widget.roomId,
         previousRoomId: previousRoom,
       );
+      if (_samsung && !_widgetExported) {
+        await TogetherGuide.markExportedWidget();
+        _widgetExported = true;
+      }
       if (toast && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppStrings.current.togetherWidgetSyncToast)),
@@ -400,7 +419,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final next = <TogetherPlaced>[];
     for (final person in _placed) {
       final id = byUid[person.uid];
-      if (id == null || id == person.characterId) {
+      if (id == null) {
+        changed = true;
+        continue;
+      }
+      if (id == person.characterId) {
         next.add(person);
         continue;
       }
@@ -1005,6 +1028,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                     width: 72,
                                     height: 72,
                                     fit: BoxFit.cover,
+                                    cacheWidth: (72 * MediaQuery.devicePixelRatioOf(context)).round(),
+                                    gaplessPlayback: true,
                                     filterQuality: FilterQuality.none,
                                     isAntiAlias: false,
                                   ),
@@ -1177,7 +1202,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               ? t.togetherCheerLoggingIn
                               : _savingCheer
                                   ? t.togetherCheerSend
-                                  : t.ddayDuoDecorateDone,
+                                  : (_samsung && !_widgetExported)
+                                      ? t.ddayDuoDecorateExport
+                                      : t.ddayDuoDecorateDone,
                           style: AppTheme.body.copyWith(
             fontFamily: 'Galmuri',
                             fontSize: 16,
@@ -1325,6 +1352,8 @@ class _MemberChip extends StatelessWidget {
               member.assetPath,
               height: 44,
               fit: BoxFit.contain,
+              cacheHeight: (44 * MediaQuery.devicePixelRatioOf(context)).round(),
+              gaplessPlayback: true,
               filterQuality: FilterQuality.none,
               isAntiAlias: false,
             ),

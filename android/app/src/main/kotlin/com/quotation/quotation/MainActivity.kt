@@ -36,6 +36,8 @@ class MainActivity : FlutterActivity() {
           result.success(true)
         }
         "togetherWidgetState" -> result.success(togetherWidgetState())
+        "isSamsungDevice" ->
+          result.success(Build.MANUFACTURER.equals("samsung", ignoreCase = true))
         "scheduleMorningFortunes" -> {
           val items = call.argument<List<*>>("items") ?: emptyList<Any>()
           val parsed =

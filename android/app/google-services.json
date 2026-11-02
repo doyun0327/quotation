@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "313256890607-mon9tg6pijo8oj32p1mll6mlrsftk0qp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dearly.quoteswidget",
+            "certificate_hash": "11099bf034ce72a028fc216dcc1ea5dec9eec1e2"
+          }
+        },
+        {
           "client_id": "313256890607-q02od35jq32g1lp2atr7ou0oi2feqs0g.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -37,6 +45,13 @@
             {
               "client_id": "313256890607-q02od35jq32g1lp2atr7ou0oi2feqs0g.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "313256890607-djpkm620kkm4gnum35q1tf2bfpea6h2m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quotation.quotation"
+              }
             }
           ]
         }

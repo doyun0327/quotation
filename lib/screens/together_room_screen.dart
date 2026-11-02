@@ -5,6 +5,7 @@ import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
+import 'package:quotation/data/together_guide.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
@@ -30,10 +31,50 @@ class TogetherRoomScreen extends StatefulWidget {
 }
 
 class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
+  Set<String> _invited = {};
+  Set<String> _decorated = {};
+
   DdayItem? get _room {
     final matches =
         ddayController.items.where((e) => e.id == widget.roomId);
     return matches.isEmpty ? null : matches.first;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGuide();
+  }
+
+  Future<void> _loadGuide() async {
+    final invited = await TogetherGuide.invitedRooms();
+    final decorated = await TogetherGuide.decoratedRooms();
+    if (!mounted) return;
+    setState(() {
+      _invited = invited;
+      _decorated = decorated;
+    });
+  }
+
+  Future<void> _openInvite(DdayItem room) async {
+    final invitedRoom = await Navigator.of(context).push<String?>(
+      MaterialPageRoute(
+        builder: (_) => DdayInviteScreen(item: room),
+      ),
+    );
+    if (invitedRoom != null) {
+      await TogetherGuide.markInvited(invitedRoom);
+    }
+    await _loadGuide();
+  }
+
+  Future<void> _openDecorate(String roomId) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => DdayWidgetDecorateScreen(roomId: roomId),
+      ),
+    );
+    await _loadGuide();
   }
 
   @override
@@ -118,27 +159,31 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                     children: [
                       _FriendsCard(
                         room: room,
-                        onInvite: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => DdayInviteScreen(item: room),
-                            ),
-                          );
-                        },
+                        showInviteNudge: TogetherCrowdLayout.withoutMe(
+                              room.friends,
+                              myIds: authController.myIds,
+                              myName: authController.nickname?.trim() ?? '',
+                              myCharacterId: ddayController
+                                  .meCharacterIdForRoom(room.id),
+                            ).isEmpty &&
+                            !_invited.contains(room.id),
+                        onInvite: () => _openInvite(room),
                       ),
                       const SizedBox(height: 18),
+                      if (_invited.contains(room.id) &&
+                          !_decorated.contains(room.id))
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8),
+                          child: _NudgeBubble(
+                            textKey: _NudgeKind.decorate,
+                            tail: _NudgeTail.down,
+                            alignEnd: false,
+                          ),
+                        ),
                       Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) => DdayWidgetDecorateScreen(
-                                  roomId: room.id,
-                                ),
-                              ),
-                            );
-                          },
+                          onTap: () => _openDecorate(room.id),
                           borderRadius: BorderRadius.circular(10),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 6),
@@ -182,15 +227,7 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                           return _RoomWidgetPreview(
                             room: room,
                             cheerText: text,
-                            onOpenDecorate: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => DdayWidgetDecorateScreen(
-                                    roomId: room.id,
-                                  ),
-                                ),
-                              );
-                            },
+                            onOpenDecorate: () => _openDecorate(room.id),
                           );
                         },
                       ),
@@ -207,10 +244,15 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
 }
 
 class _FriendsCard extends StatelessWidget {
-  const _FriendsCard({required this.room, required this.onInvite});
+  const _FriendsCard({
+    required this.room,
+    required this.onInvite,
+    required this.showInviteNudge,
+  });
 
   final DdayItem room;
   final VoidCallback onInvite;
+  final bool showInviteNudge;
 
   @override
   Widget build(BuildContext context) {
@@ -272,6 +314,17 @@ class _FriendsCard extends StatelessWidget {
               ),
             ],
           ),
+          if (showInviteNudge) ...[
+            const SizedBox(height: 10),
+            const Align(
+              alignment: Alignment.centerRight,
+              child: _NudgeBubble(
+                textKey: _NudgeKind.invite,
+                tail: _NudgeTail.up,
+                alignEnd: true,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -468,5 +521,89 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
       ),
     );
   }
+}
+
+enum _NudgeKind { invite, decorate }
+
+enum _NudgeTail { up, down }
+
+class _NudgeBubble extends StatelessWidget {
+  const _NudgeBubble({
+    required this.textKey,
+    required this.tail,
+    required this.alignEnd,
+  });
+
+  final _NudgeKind textKey;
+  final _NudgeTail tail;
+  final bool alignEnd;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppStrings.current;
+    final text = textKey == _NudgeKind.invite
+        ? t.togetherInviteNudge
+        : t.togetherDecorateNudge;
+    final accent = context.palette.accent;
+    final bubble = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: accent,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        text,
+        style: AppTheme.body.copyWith(
+          color: Colors.white,
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+    final pointer = Padding(
+      padding: EdgeInsets.only(right: alignEnd ? 12 : 0, left: alignEnd ? 0 : 18),
+      child: CustomPaint(
+        size: const Size(14, 8),
+        painter: _NudgeTailPainter(color: accent, up: tail == _NudgeTail.up),
+      ),
+    );
+    return Column(
+      crossAxisAlignment:
+          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        if (tail == _NudgeTail.up) pointer,
+        bubble,
+        if (tail == _NudgeTail.down) pointer,
+      ],
+    );
+  }
+}
+
+class _NudgeTailPainter extends CustomPainter {
+  const _NudgeTailPainter({required this.color, required this.up});
+
+  final Color color;
+  final bool up;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path();
+    if (up) {
+      path
+        ..moveTo(0, size.height)
+        ..lineTo(size.width / 2, 0)
+        ..lineTo(size.width, size.height);
+    } else {
+      path
+        ..moveTo(0, 0)
+        ..lineTo(size.width / 2, size.height)
+        ..lineTo(size.width, 0);
+    }
+    canvas.drawPath(path, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(covariant _NudgeTailPainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.up != up;
 }
 

@@ -506,11 +506,22 @@ class _ShopTile extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(10),
-                child: Image.asset(
-                  character.assetPath,
-                  fit: BoxFit.contain,
-                  filterQuality: FilterQuality.none,
-                  isAntiAlias: false,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final side = constraints.biggest.shortestSide;
+                    final px = (side *
+                            MediaQuery.devicePixelRatioOf(context))
+                        .round()
+                        .clamp(1, 720);
+                    return Image.asset(
+                      character.assetPath,
+                      fit: BoxFit.contain,
+                      cacheWidth: px,
+                      gaplessPlayback: true,
+                      filterQuality: FilterQuality.none,
+                      isAntiAlias: false,
+                    );
+                  },
                 ),
               ),
               if (locked)

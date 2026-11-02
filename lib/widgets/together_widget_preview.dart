@@ -41,12 +41,28 @@ class TogetherPreviewSprite {
   final ValueChanged<double>? onRotate;
 }
 
-Widget _backgroundImage(String path, bool isPixel) {
+/// Decode only the pixels the preview actually shows. Source files are
+/// ~1600px; decoding them whole stalls the decorate screen on each change.
+int _decodePx(BuildContext context, double logical) {
+  final ratio = MediaQuery.devicePixelRatioOf(context);
+  return (logical * ratio).round().clamp(1, 1600);
+}
+
+Widget _backgroundImage(
+  BuildContext context,
+  String path,
+  bool isPixel,
+  double width,
+) {
   final quality = isPixel ? FilterQuality.none : FilterQuality.medium;
+  // One side only. Setting both forces the bitmap into that box and squashes it.
+  final cacheW = _decodePx(context, width);
   if (path.startsWith('assets/')) {
     return Image.asset(
       path,
       fit: BoxFit.fill,
+      cacheWidth: cacheW,
+      gaplessPlayback: true,
       filterQuality: quality,
       isAntiAlias: !isPixel,
       errorBuilder: (_, _, _) => const SizedBox.shrink(),
@@ -56,7 +72,8 @@ Widget _backgroundImage(String path, bool isPixel) {
     File(path),
     key: ValueKey(path),
     fit: BoxFit.cover,
-    gaplessPlayback: false,
+    cacheWidth: cacheW,
+    gaplessPlayback: true,
     filterQuality: quality,
     isAntiAlias: !isPixel,
     errorBuilder: (_, _, _) => const SizedBox.shrink(),
@@ -332,6 +349,8 @@ class TogetherWidgetPreview extends StatelessWidget {
                       width: spriteW,
                       height: spriteH,
                       fit: BoxFit.contain,
+                      cacheWidth: _decodePx(context, math.max(spriteW, spriteH)),
+                      gaplessPlayback: true,
                       filterQuality: rotation % 90 == 0 && isPixel
                           ? FilterQuality.none
                           : FilterQuality.medium,
@@ -517,7 +536,12 @@ class TogetherWidgetPreview extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(radius),
                 child: RepaintBoundary(
-                  child: _backgroundImage(bgAssetPath!, isPixel),
+                  child: _backgroundImage(
+                    context,
+                    bgAssetPath!,
+                    isPixel,
+                    width,
+                  ),
                 ),
               ),
             ),

@@ -480,8 +480,10 @@ class AuthController extends ChangeNotifier {
       await _setUser(
         AuthUser.fromFirebase(fbUser, emailFallback: account.email),
       );
-      await UserProfileSync.upsertCurrentUser();
-      await DdayCloudSync.start();
+      // Room sync can take a long time. Login is done once Firebase has the
+      // Google user; waiting here kept the "로그인 중" cover up after success.
+      unawaited(UserProfileSync.upsertCurrentUser());
+      unawaited(DdayCloudSync.start());
       return true;
     } on FirebaseAuthException catch (e) {
       _lastError = e.code == 'invalid-credential' || e.code == 'operation-not-allowed'

@@ -146,7 +146,16 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
   Widget _buildScreen(BuildContext context) {
     final t = AppStrings.current;
     final palette = context.palette;
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        final code = _code;
+        Navigator.of(context).pop(
+          code != null && code.isNotEmpty ? _roomId : null,
+        );
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFFF3F7FD),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF3F7FD),
@@ -281,6 +290,7 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
             ],
           );
         },
+      ),
       ),
     );
   }
