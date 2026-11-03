@@ -357,7 +357,17 @@ class _CharBubble extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.asset(asset, width: 52, height: 52, fit: BoxFit.cover),
+            child: Image.asset(
+              asset,
+              width: 52,
+              height: 52,
+              fit: BoxFit.cover,
+              cacheWidth: (52 * MediaQuery.devicePixelRatioOf(context))
+                  .round()
+                  .clamp(1, 512),
+              filterQuality: FilterQuality.none,
+              isAntiAlias: false,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -403,7 +413,9 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
   }
 
   Future<void> _loadHostSize() async {
-    await HomeWidgetSync.syncDday();
+    // Opening the room only reads the launcher cell. Redrawing the home
+    // widget here decodes the full background and characters during the
+    // page transition.
     final host = await HomeWidgetSync.loadHostPreviewSize(
       roomId: widget.room.id,
     );

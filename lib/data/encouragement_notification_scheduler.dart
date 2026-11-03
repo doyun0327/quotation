@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
-/// Fortune at 08:00. One afternoon cheer: lunch at 12:00 or evening at 19:00.
+/// Fortune at 08:00. Evening encouragement at 19:00. Lunch is not sent.
 abstract final class EncouragementNotificationScheduler {
   static const _prefsEnabledKey = 'encouragement_notifications_enabled';
   static const _channelId = 'daily_encouragement';
@@ -22,7 +22,6 @@ abstract final class EncouragementNotificationScheduler {
   static const _eveningBase = 6600;
   static const _legacyBases = [6100, 6200, 6300];
   static const _fortuneHour = 8;
-  static const _lunchHour = 12;
   static const _eveningHour = 19;
 
   static final FlutterLocalNotificationsPlugin _plugin =
@@ -63,7 +62,7 @@ abstract final class EncouragementNotificationScheduler {
       const AndroidNotificationChannel(
         _channelId,
         _channelName,
-        description: 'Fortune at 8:00 and one afternoon encouragement',
+        description: 'Fortune at 8:00 and evening encouragement at 19:00',
         importance: Importance.high,
       ),
     );
@@ -161,10 +160,6 @@ abstract final class EncouragementNotificationScheduler {
 
     final lang = localeController.language.id;
     final now = tz.TZDateTime.now(tz.local);
-    final lunch = await EncouragementMessageLoader.load(
-      EncouragementSlot.lunch,
-      languageId: lang,
-    );
     final evening = await EncouragementMessageLoader.load(
       EncouragementSlot.evening,
       languageId: lang,
@@ -185,18 +180,13 @@ abstract final class EncouragementNotificationScheduler {
           'body': _fortuneBody(day, fortunes, fortuneFallback),
         });
       }
-      final lunchToday = _afternoonIsLunch(day);
-      final slot = lunchToday ? EncouragementSlot.lunch : EncouragementSlot.evening;
-      final pool = lunchToday ? lunch : evening;
-      final fallback = lunchToday ? evening : lunch;
-      final messages = pool.isNotEmpty ? pool : fallback;
       await _scheduleCheer(
-        id: (lunchToday ? _lunchBase : _eveningBase) + i,
+        id: _eveningBase + i,
         day: day,
-        hour: lunchToday ? _lunchHour : _eveningHour,
+        hour: _eveningHour,
         now: now,
-        slot: slot,
-        messages: messages,
+        slot: EncouragementSlot.evening,
+        messages: evening,
       );
     }
 
@@ -207,13 +197,6 @@ abstract final class EncouragementNotificationScheduler {
         });
       } catch (_) {}
     }
-  }
-
-  /// Same calendar day always picks the same side, and never both.
-  static bool _afternoonIsLunch(DateTime day) {
-    final key =
-        '${day.year.toString().padLeft(4, '0')}${day.month.toString().padLeft(2, '0')}${day.day.toString().padLeft(2, '0')}:afternoon';
-    return (key.hashCode & 1) == 0;
   }
 
   static Future<void> _scheduleCheer({
@@ -307,7 +290,7 @@ abstract final class EncouragementNotificationScheduler {
       android: AndroidNotificationDetails(
         _channelId,
         _channelName,
-        channelDescription: 'Fortune at 8:00 and one afternoon encouragement',
+        channelDescription: 'Fortune at 8:00 and evening encouragement at 19:00',
         importance: Importance.high,
         priority: Priority.high,
         styleInformation: BigTextStyleInformation(body),

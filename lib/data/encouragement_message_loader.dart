@@ -35,6 +35,13 @@ class EncouragementMessage {
 abstract final class EncouragementMessageLoader {
   static final Map<String, List<EncouragementMessage>> _cache = {};
 
+  /// Evening alerts use these files only. Lunch copy is not scheduled.
+  static const eveningAssets = <String, String>{
+    'ko': 'assets/quotes/ko/evening_eungwon_messages_400_unique.json',
+    'en': 'assets/quotes/en/evening_encouragement_messages_400_en.json',
+    'ja': 'assets/quotes/ja/evening_encouragement_messages_400_ja.json',
+  };
+
   static Future<List<EncouragementMessage>> load(
     EncouragementSlot slot, {
     String? languageId,
@@ -65,7 +72,7 @@ abstract final class EncouragementMessageLoader {
                 ? item['day'] as int
                 : int.tryParse('${item['day']}') ?? 0,
             title: _text(item['title']),
-            body: _text(item['body']),
+            body: _body(item),
           ),
     ].where((m) => m.title.isNotEmpty && m.body.isNotEmpty).toList(
           growable: false,
@@ -111,10 +118,19 @@ abstract final class EncouragementMessageLoader {
     return pool[Random().nextInt(pool.length)];
   }
 
+  static String _body(Map<String, dynamic> item) {
+    final body = _text(item['body']);
+    if (body.isNotEmpty) return body;
+    return _text(item['message']);
+  }
+
   static Future<String?> _findAssetPath(
     EncouragementSlot slot,
     String languageId,
   ) async {
+    if (slot == EncouragementSlot.evening) {
+      return eveningAssets[languageId] ?? eveningAssets['ko'];
+    }
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
     final assets = manifest.listAssets();
 
