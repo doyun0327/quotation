@@ -39,6 +39,10 @@ object DdayWidgetVisuals {
       if (n != null && n in 1..15) {
         return "assets/images/character/man/character ($n).png"
       }
+      // m18–m28 are man/character(16).png … character(26).png.
+      if (n != null && n in 18..28) {
+        return "assets/images/character/man/character(${n - 2}).png"
+      }
     }
     if (characterId.startsWith("c")) {
       val n = characterId.removePrefix("c").toIntOrNull()

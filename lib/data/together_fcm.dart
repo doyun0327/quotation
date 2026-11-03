@@ -409,11 +409,21 @@ abstract final class TogetherFcm {
     for (var attempt = 0; attempt < 8; attempt++) {
       final nav = navigatorKey?.currentState;
       if (nav != null) {
-        await nav.push(
-          MaterialPageRoute<void>(
-            builder: (_) => TogetherRoomScreen(roomId: id),
-          ),
-        );
+        // Each widget/notification tap used to push another room (and the
+        // decorator above it) onto the stack, so Back had to be pressed
+        // over and over. Return to an open copy of this room, or to the
+        // main shell, before opening it.
+        final name = TogetherRoomScreen.routeNameFor(id);
+        var found = false;
+        nav.popUntil((route) {
+          if (route.settings.name == name) {
+            found = true;
+            return true;
+          }
+          return route.isFirst;
+        });
+        if (found) return;
+        await nav.push(TogetherRoomScreen.route(id));
         return;
       }
       await Future<void>.delayed(const Duration(milliseconds: 250));

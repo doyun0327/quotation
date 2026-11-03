@@ -18,7 +18,7 @@ class TogetherBgTheme {
   static const none = TogetherBgTheme(id: 'none', assetPath: '');
 
   /// Themes from [assets/images/widgetbackground/].
-  static const all = <TogetherBgTheme>[
+  static final all = <TogetherBgTheme>[
     none,
     TogetherBgTheme(
       id: 'widget_background',
@@ -27,10 +27,6 @@ class TogetherBgTheme {
     TogetherBgTheme(
       id: 'widget_background2',
       assetPath: 'assets/images/widgetbackground/widget_background2.png',
-    ),
-    TogetherBgTheme(
-      id: 'widget_background5',
-      assetPath: 'assets/images/widgetbackground/ground5.png',
     ),
     TogetherBgTheme(
       id: 'widget_background6',
@@ -45,28 +41,12 @@ class TogetherBgTheme {
       assetPath: 'assets/images/widgetbackground/background8.png',
     ),
     TogetherBgTheme(
-      id: 'widget_background9',
-      assetPath: 'assets/images/widgetbackground/widget_background9.png',
-    ),
-    TogetherBgTheme(
       id: 'widget_background10',
       assetPath: 'assets/images/widgetbackground/widget_background10.png',
     ),
     TogetherBgTheme(
-      id: 'background9',
-      assetPath: 'assets/images/widgetbackground/background9.png',
-    ),
-    TogetherBgTheme(
-      id: 'background10',
-      assetPath: 'assets/images/widgetbackground/background10.png',
-    ),
-    TogetherBgTheme(
       id: 'background11',
       assetPath: 'assets/images/widgetbackground/background11.png',
-    ),
-    TogetherBgTheme(
-      id: 'background12',
-      assetPath: 'assets/images/widgetbackground/grackgroudn12.png',
     ),
     TogetherBgTheme(
       id: 'background13',
@@ -76,6 +56,11 @@ class TogetherBgTheme {
       id: 'back_gr',
       assetPath: 'assets/images/widgetbackground/back_gr.png',
     ),
+    for (var i = 1; i <= 9; i++)
+      TogetherBgTheme(
+        id: 'background_final_$i',
+        assetPath: 'assets/images/widgetbackground/background_final ($i).png',
+      ),
   ];
 
   /// Picker shows transparent plus every bundled photo.

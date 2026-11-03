@@ -68,9 +68,7 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
       await HomeWidgetSync.syncDday();
       if (!mounted) return;
       await Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(
-          builder: (_) => TogetherRoomScreen(roomId: roomId),
-        ),
+        TogetherRoomScreen.route(roomId),
       );
     } catch (e) {
       if (!mounted) return;

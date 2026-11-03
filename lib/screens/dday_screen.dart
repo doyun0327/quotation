@@ -47,9 +47,7 @@ class _DdayScreenState extends State<DdayScreen> {
 
   Future<void> _openRoom(DdayItem item) async {
     await Navigator.of(context).push<void>(
-      MaterialPageRoute(
-        builder: (_) => TogetherRoomScreen(roomId: item.id),
-      ),
+      TogetherRoomScreen.route(item.id),
     );
   }
 

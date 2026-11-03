@@ -26,6 +26,15 @@ class TogetherRoomScreen extends StatefulWidget {
 
   final String roomId;
 
+  /// Route name so a widget/notification tap can find an already-open room
+  /// instead of stacking another copy on top.
+  static String routeNameFor(String roomId) => '/together_room/$roomId';
+
+  static Route<void> route(String roomId) => MaterialPageRoute<void>(
+        settings: RouteSettings(name: routeNameFor(roomId)),
+        builder: (_) => TogetherRoomScreen(roomId: roomId),
+      );
+
   @override
   State<TogetherRoomScreen> createState() => _TogetherRoomScreenState();
 }

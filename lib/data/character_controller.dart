@@ -100,6 +100,12 @@ class AppCharacter {
       assetPath: 'assets/images/character/man/character(2).png',
       group: CharacterGroup.male,
     ),
+    for (var i = 16; i <= 26; i++)
+      AppCharacter(
+        id: 'm${i + 2}',
+        assetPath: 'assets/images/character/man/character($i).png',
+        group: CharacterGroup.male,
+      ),
   ];
 
   static List<AppCharacter> inGroup(CharacterGroup group) {
