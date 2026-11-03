@@ -6,6 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
+import 'package:quotation/data/membership_controller.dart';
+import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/widget_fonts.dart';
@@ -269,6 +272,8 @@ class _RoomOffsets {
     this.widgetSize = 's42',
     this.crowdKey = '',
     this.crowd = const [],
+    this.bubbles = const [],
+    this.paidLooks = const {},
   });
 
   final int meX;
@@ -292,6 +297,11 @@ class _RoomOffsets {
   final String widgetSize;
   final String crowdKey;
   final List<TogetherCrowdSaved> crowd;
+  final List<TogetherBubble> bubbles;
+
+  /// Premium looks ([PaidLook] keys) last picked by a paying subscriber.
+  /// Those stay visible to everyone in the room, subscribed or not.
+  final Set<String> paidLooks;
 
   Map<String, dynamic> toJson() => {
         'meX': meX,
@@ -322,6 +332,9 @@ class _RoomOffsets {
                 'rotation': slot.rotation,
               },
           ],
+        if (bubbles.isNotEmpty)
+          'bubbles': [for (final b in bubbles) b.toJson()],
+        if (paidLooks.isNotEmpty) 'paidLooks': paidLooks.toList(),
       };
 
   factory _RoomOffsets.fromJson(Map<String, dynamic> json) {
@@ -354,6 +367,8 @@ class _RoomOffsets {
       widgetSize: json['widgetSize'] as String? ?? 's42',
       crowdKey: json['crowdKey'] as String? ?? '',
       crowd: _crowdFromJson(json['crowd']),
+      bubbles: TogetherBubble.listFromJson(json['bubbles']),
+      paidLooks: PaidLook.parse(json['paidLooks']) ?? const {},
     );
   }
 
@@ -396,6 +411,8 @@ class _RoomOffsets {
     String? widgetSize,
     String? crowdKey,
     List<TogetherCrowdSaved>? crowd,
+    List<TogetherBubble>? bubbles,
+    Set<String>? paidLooks,
   }) {
     return _RoomOffsets(
       meX: meX ?? this.meX,
@@ -419,11 +436,34 @@ class _RoomOffsets {
       widgetSize: widgetSize ?? this.widgetSize,
       crowdKey: crowdKey ?? this.crowdKey,
       crowd: crowd ?? this.crowd,
+      bubbles: bubbles ?? this.bubbles,
+      paidLooks: paidLooks ?? this.paidLooks,
     );
   }
 }
 
+/// Keys for [_RoomOffsets.paidLooks].
+abstract final class PaidLook {
+  static const bg = 'bg';
+  static const font = 'font';
+  static const bubbles = 'bubbles';
+
+  /// Null when the field is missing (layout from an older app version).
+  static Set<String>? parse(Object? raw) {
+    if (raw is! List) return null;
+    return {
+      for (final key in raw)
+        if (key == bg || key == font || key == bubbles) key as String,
+    };
+  }
+}
+
 class DdayController extends ChangeNotifier {
+  DdayController() {
+    // Trial end / subscription change swaps premium looks for free ones.
+    membershipController.addListener(notifyListeners);
+  }
+
   static const _prefsKey = 'dday_items_v1';
   static const _offsetsPrefsKey = 'dday_duo_offsets_v3';
   static const _legacyOffsetsPrefsKey = 'dday_duo_offsets_v2';
@@ -626,6 +666,8 @@ class DdayController extends ChangeNotifier {
       widgetSize: TogetherWidgetSize.byId(o.widgetSize).id,
       crowdKey: o.crowdKey,
       crowd: o.crowd,
+      bubbles: o.bubbles,
+      paidLooks: o.paidLooks,
     );
   }
 
@@ -641,16 +683,58 @@ class DdayController extends ChangeNotifier {
   int textScaleForRoom(String roomId) => _offsetsForRoom(roomId).textScale;
   int bgColorForRoom(String roomId) => _offsetsForRoom(roomId).bgColor;
   int bgOpacityForRoom(String roomId) => _offsetsForRoom(roomId).bgOpacity;
-  String bgThemeForRoom(String roomId) => _offsetsForRoom(roomId).bgTheme;
+  /// Premium looks show when this phone is subscribed (or in the free week),
+  /// or when a paying subscriber in the room picked them. Otherwise they fall
+  /// back to the free look; the saved pick is kept.
+  bool _showsPaidLook(String roomId, String look) =>
+      membershipController.hasPremiumContent ||
+      _offsetsForRoom(roomId).paidLooks.contains(look);
+
+  /// Premium backgrounds fall back to Transparent (see [_showsPaidLook]).
+  String bgThemeForRoom(String roomId) {
+    final id = _offsetsForRoom(roomId).bgTheme;
+    if (_showsPaidLook(roomId, PaidLook.bg)) return id;
+    return TogetherBgTheme.requiresPremium(TogetherBgTheme.byId(id))
+        ? TogetherBgTheme.none.id
+        : id;
+  }
   int textColorForRoom(String roomId) => _offsetsForRoom(roomId).textColor;
-  WidgetFont textFontForRoom(String roomId) =>
-      WidgetFont.byId(_offsetsForRoom(roomId).textFont);
+  /// Same as [bgThemeForRoom]: a premium font falls back to the first one.
+  WidgetFont textFontForRoom(String roomId) {
+    final font = WidgetFont.byId(_offsetsForRoom(roomId).textFont);
+    if (!font.requiresPremium || _showsPaidLook(roomId, PaidLook.font)) {
+      return font;
+    }
+    return WidgetFont.values.first;
+  }
   TogetherWidgetShape shapeForRoom(String roomId) =>
       TogetherWidgetShape.byId(_offsetsForRoom(roomId).shape);
   TogetherWidgetSize widgetSizeForRoom(String roomId) => TogetherWidgetSize.s42;
   String crowdKeyForRoom(String roomId) => _offsetsForRoom(roomId).crowdKey;
   List<TogetherCrowdSaved> crowdForRoom(String roomId) =>
       _offsetsForRoom(roomId).crowd;
+  /// Speech bubbles are premium too (see [_showsPaidLook]).
+  List<TogetherBubble> bubblesForRoom(String roomId) =>
+      _showsPaidLook(roomId, PaidLook.bubbles)
+          ? _offsetsForRoom(roomId).bubbles
+          : const [];
+
+  /// Saved looks as picked, before any free fallback. This is what the room
+  /// shares, so a free member saving never wipes a subscriber's picks.
+  ({
+    String bgTheme,
+    WidgetFont textFont,
+    List<TogetherBubble> bubbles,
+    Set<String> paidLooks,
+  }) sharedLooksForRoom(String roomId) {
+    final o = _offsetsForRoom(roomId);
+    return (
+      bgTheme: o.bgTheme,
+      textFont: WidgetFont.byId(o.textFont),
+      bubbles: o.bubbles,
+      paidLooks: o.paidLooks,
+    );
+  }
 
   Future<void> _persistRoomOffsets() async {
     final prefs = await SharedPreferences.getInstance();
@@ -689,12 +773,25 @@ class DdayController extends ChangeNotifier {
     double? canvasH,
     String? crowdKey,
     List<TogetherCrowdSaved>? crowd,
+    List<TogetherBubble>? bubbles,
+    Set<String>? paidLooks,
   }) async {
     final targetId = roomId ?? widgetDday?.id;
     if (targetId == null) return;
 
+    if (!fromCloud) {
+      // The decorator saves what it shows. A look still equal to its free
+      // fallback was not touched, so keep the saved (maybe premium) pick.
+      if (bgTheme == bgThemeForRoom(targetId)) bgTheme = null;
+      if (textFont == textFontForRoom(targetId)) textFont = null;
+      if (bubbles != null &&
+          TogetherBubble.sameList(bubbles, bubblesForRoom(targetId))) {
+        bubbles = null;
+      }
+    }
+
     final cur = _offsetsForRoom(targetId);
-    final next = cur.copyWith(
+    final draft = cur.copyWith(
       meX: meX == null ? null : _clampX(meX),
       meY: meY == null ? null : _clampY(meY),
       friendX: friendX == null ? null : _clampX(friendX),
@@ -714,6 +811,12 @@ class DdayController extends ChangeNotifier {
       widgetSize: widgetSize?.id,
       crowdKey: crowdKey,
       crowd: crowd,
+      bubbles: bubbles,
+    );
+    final next = draft.copyWith(
+      paidLooks: fromCloud
+          ? (paidLooks ?? cur.paidLooks)
+          : _markPaidLooks(cur, draft),
     );
     final same = cur.meX == next.meX &&
         cur.meY == next.meY &&
@@ -732,7 +835,9 @@ class DdayController extends ChangeNotifier {
         cur.textFont == next.textFont &&
         cur.shape == next.shape &&
         cur.widgetSize == next.widgetSize &&
-        _sameCrowd(cur, next);
+        _sameCrowd(cur, next) &&
+        TogetherBubble.sameList(cur.bubbles, next.bubbles) &&
+        setEquals(cur.paidLooks, next.paidLooks);
     if (same) {
       if (!fromCloud && notifyFriends) {
         await DdayCloudSync.pushSharedLayout(
@@ -763,6 +868,28 @@ class DdayController extends ChangeNotifier {
         canvasH: canvasH,
       );
     }
+  }
+
+  /// A paying subscriber who saves vouches for every look in the room, picks
+  /// from their own free week included. Anyone else (the free week does not
+  /// carry over to friends) clears the mark on looks they change. Moving a
+  /// bubble keeps its mark; new words or a new tail do not.
+  Set<String> _markPaidLooks(_RoomOffsets cur, _RoomOffsets next) {
+    if (membershipController.isPremium) {
+      return const {PaidLook.bg, PaidLook.font, PaidLook.bubbles};
+    }
+    final paid = {...cur.paidLooks};
+    void mark(String look, bool changed) {
+      if (changed) paid.remove(look);
+    }
+
+    mark(PaidLook.bg, cur.bgTheme != next.bgTheme);
+    mark(PaidLook.font, cur.textFont != next.textFont);
+    mark(
+      PaidLook.bubbles,
+      !TogetherBubble.sameContent(cur.bubbles, next.bubbles),
+    );
+    return paid;
   }
 
   bool _sameCrowd(_RoomOffsets a, _RoomOffsets b) {

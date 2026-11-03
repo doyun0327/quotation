@@ -176,6 +176,7 @@ object DdayWidgetVisuals {
       friendScale: Int,
       sizeCharFactor: Float,
       chars: JSONArray? = null,
+      bubbles: JSONArray? = null,
       pixelsPerDp: Float = 0f,
   ): Bitmap {
     val deviceDensity = context.resources.displayMetrics.density.coerceAtLeast(0.5f)
@@ -318,6 +319,7 @@ object DdayWidgetVisuals {
         }
         bmp.recycle()
       }
+      drawBubbles(context, canvas, bubbles, contentW, contentH, density, isPixel)
       canvas.restore()
       return bitmap
     }
@@ -352,8 +354,103 @@ object DdayWidgetVisuals {
       friendBmp.recycle()
     }
 
+    drawBubbles(context, canvas, bubbles, contentW, contentH, density, isPixel)
     canvas.restore()
     return bitmap
+  }
+
+  // Same numbers as Flutter TogetherBubbleLayout (lib/data/together_bubble.dart).
+  private const val BUBBLE_FONT_DP = 12f
+  private const val BUBBLE_LINE_HEIGHT = 1.2f
+  private const val BUBBLE_PAD_X_DP = 8f
+  private const val BUBBLE_PAD_Y_DP = 5f
+  private const val BUBBLE_RADIUS_DP = 6f
+  private const val BUBBLE_BORDER_DP = 1.5f
+  private const val BUBBLE_TAIL_W_DP = 8f
+  private const val BUBBLE_TAIL_H_DP = 6f
+  private const val BUBBLE_TAIL_INSET_DP = 10f
+  private const val BUBBLE_INK = 0xFF2C3340.toInt()
+
+  /**
+   * Speech bubbles on top of the characters. Each entry: t (text), x/y
+   * (center offset from the card center in dp, y up), d ("l"/"r" tail side).
+   */
+  private fun drawBubbles(
+      context: Context,
+      canvas: Canvas,
+      bubbles: JSONArray?,
+      widthPx: Float,
+      heightPx: Float,
+      density: Float,
+      isPixel: Boolean,
+  ) {
+    if (bubbles == null || bubbles.length() == 0) return
+    val textPaint =
+        TextPaint().apply {
+          color = BUBBLE_INK
+          textSize = BUBBLE_FONT_DP * density
+          typeface =
+              if (isPixel) pixelTypeface(context)
+              else Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+          isAntiAlias = !isPixel
+        }
+    val metrics = textPaint.fontMetrics
+    val fontHeight = metrics.descent - metrics.ascent
+    val lineH = BUBBLE_FONT_DP * BUBBLE_LINE_HEIGHT * density
+    val stroke = BUBBLE_BORDER_DP * density
+    val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
+    val outline =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+          color = BUBBLE_INK
+          style = Paint.Style.STROKE
+          strokeWidth = stroke
+          strokeJoin = Paint.Join.ROUND
+        }
+    for (i in 0 until bubbles.length()) {
+      val obj = bubbles.optJSONObject(i) ?: continue
+      val text = obj.optString("t").trim()
+      if (text.isEmpty()) continue
+      val boxW = textPaint.measureText(text) + BUBBLE_PAD_X_DP * 2f * density
+      val boxH = lineH + (BUBBLE_PAD_Y_DP * 2f + BUBBLE_TAIL_H_DP) * density
+      val left = widthPx / 2f + obj.optInt("x", 0) * density - boxW / 2f
+      val top = heightPx / 2f - obj.optInt("y", 0) * density - boxH / 2f
+      val tailLeft = obj.optString("d") != "r"
+      // Stroke stays inside the box so the tail tip is not cut.
+      canvas.save()
+      canvas.translate(left + stroke / 2f, top + stroke / 2f)
+      val path = bubblePath(boxW - stroke, boxH - stroke, tailLeft, density)
+      canvas.drawPath(path, fill)
+      canvas.drawPath(path, outline)
+      // Flutter centers the glyphs in a line box of fontSize × 1.2.
+      val baseline =
+          BUBBLE_PAD_Y_DP * density - stroke / 2f + (lineH - fontHeight) / 2f - metrics.ascent
+      canvas.drawText(text, BUBBLE_PAD_X_DP * density - stroke / 2f, baseline, textPaint)
+      canvas.restore()
+    }
+  }
+
+  /** Body + tail as one outline, matching Flutter _BubblePainter.outline. */
+  private fun bubblePath(w: Float, h: Float, tailLeft: Boolean, density: Float): Path {
+    val tailH = BUBBLE_TAIL_H_DP * density
+    val tailW = BUBBLE_TAIL_W_DP * density
+    val inset = BUBBLE_TAIL_INSET_DP * density
+    val radius = BUBBLE_RADIUS_DP * density
+    val bodyH = h - tailH
+    val body =
+        Path().apply {
+          addRoundRect(RectF(0f, 0f, w, bodyH), radius, radius, Path.Direction.CW)
+        }
+    val baseStart = if (tailLeft) inset else w - inset - tailW
+    val tipX = if (tailLeft) baseStart - 2f * density else baseStart + tailW + 2f * density
+    val tail =
+        Path().apply {
+          moveTo(baseStart, bodyH - density)
+          lineTo(baseStart + tailW, bodyH - density)
+          lineTo(tipX, h)
+          close()
+        }
+    body.op(tail, Path.Op.UNION)
+    return body
   }
 
   /** Cheer text as bitmap so pixel (Galmuri) / clean fonts both work in RemoteViews. */

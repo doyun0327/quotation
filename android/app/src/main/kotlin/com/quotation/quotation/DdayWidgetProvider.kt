@@ -103,6 +103,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val meId = roomStr(room, "me", readString(widgetData, "ddayCharMe")).ifBlank { "basic" }
     val friendId = roomStr(room, "friend", readString(widgetData, "ddayCharFriend"))
     val chars = room?.optJSONArray("chars") ?: JSONArray()
+    val bubbles = room?.optJSONArray("bubbles") ?: JSONArray()
     val style = readString(widgetData, "visualStyle").ifBlank { "pixel" }
     val meOffsetX = roomInt(room, "meX", readInt(widgetData, "ddayMeOffsetX", 0))
     val meOffsetY = roomInt(room, "meY", readInt(widgetData, "ddayMeOffsetY", 0))
@@ -151,6 +152,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             friendScale = friendScale,
             sizeCharFactor = DdayWidgetVisuals.charFactor(sizeId),
             chars = chars,
+            bubbles = bubbles,
             pixelsPerDp = DdayWidgetVisuals.WIDGET_PIXELS_PER_DP,
         )
 
@@ -233,6 +235,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val meId = roomStr(room, "me", readString(prefs, "ddayCharMe")).ifBlank { "basic" }
     val friendId = roomStr(room, "friend", readString(prefs, "ddayCharFriend"))
     val chars = room?.optJSONArray("chars") ?: JSONArray()
+    val bubbles = room?.optJSONArray("bubbles") ?: JSONArray()
     val style = readString(prefs, "visualStyle").ifBlank { "pixel" }
     val meOffsetX = roomInt(room, "meX", readInt(prefs, "ddayMeOffsetX", 0))
     val meOffsetY = roomInt(room, "meY", readInt(prefs, "ddayMeOffsetY", 0))
@@ -281,6 +284,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             friendScale = friendScale,
             sizeCharFactor = DdayWidgetVisuals.charFactor(normalized),
             chars = chars,
+            bubbles = bubbles,
         )
     val preview = scaleForPinSheet(bitmap, isPixel)
     return wrapPinPreview(context, preview, canvasW, canvasH)

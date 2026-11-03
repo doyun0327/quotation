@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
+import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/data/widget_fonts.dart';
+import 'package:quotation/widgets/together_bubble_view.dart';
 
 typedef TogetherWidgetPanDelta = void Function(double dx, double dy);
 
@@ -39,6 +41,27 @@ class TogetherPreviewSprite {
   final TogetherWidgetPanDelta? onPan;
   final VoidCallback? onSelect;
   final ValueChanged<double>? onRotate;
+}
+
+/// One speech bubble in the decorate preview.
+class TogetherPreviewBubble {
+  const TogetherPreviewBubble({
+    required this.bubble,
+    this.highlight = false,
+    this.onPan,
+    this.onSelect,
+    this.onTap,
+  });
+
+  final TogetherBubble bubble;
+  final bool highlight;
+  final TogetherWidgetPanDelta? onPan;
+
+  /// Drag start: focus this bubble without opening its editor.
+  final VoidCallback? onSelect;
+
+  /// Tap: open the editor (text + tail direction).
+  final VoidCallback? onTap;
 }
 
 /// Decode only the pixels the preview actually shows. Source files are
@@ -123,6 +146,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.onDragStart,
     this.onDragEnd,
     this.crowd,
+    this.bubbles = const [],
   });
 
   final double width;
@@ -170,6 +194,9 @@ class TogetherWidgetPreview extends StatelessWidget {
 
   /// When set, these sprites replace the single me/friend pair.
   final List<TogetherPreviewSprite>? crowd;
+
+  /// Drawn above the characters, same as the home widget.
+  final List<TogetherPreviewBubble> bubbles;
 
   /// Same dp as the home widget: measured launcher cell, else One UI span.
   static Size sizeForShape(
@@ -459,6 +486,13 @@ class TogetherWidgetPreview extends StatelessWidget {
       return [meSprite, ?friendSprite];
     }
 
+    final bubbleBoxes = [
+      for (final b in bubbles)
+        TogetherBubbleLayout.size(b.bubble.text, isPixel: isPixel),
+    ];
+    Offset bubbleAt(int i) =>
+        TogetherBubbleLayout.topLeft(bubbles[i].bubble, bubbleBoxes[i], width, height);
+
     final hasImage = bgAssetPath != null && bgAssetPath!.isNotEmpty;
     final rotatingText = highlightText && onTextRotate != null;
     const textKnob = 36.0;
@@ -578,12 +612,58 @@ class TogetherWidgetPreview extends StatelessWidget {
                 borderRadius: BorderRadius.circular(radius),
                 child: Stack(
                   clipBehavior: Clip.none,
-                  children: spriteLayer(art: true),
+                  children: [
+                    ...spriteLayer(art: true),
+                    for (var i = 0; i < bubbles.length; i++)
+                      Positioned(
+                        key: ValueKey('bubble-art-${bubbles[i].bubble.id}'),
+                        left: bubbleAt(i).dx,
+                        top: bubbleAt(i).dy,
+                        child: TogetherBubbleView(
+                          text: bubbles[i].bubble.text,
+                          tail: bubbles[i].bubble.tail,
+                          isPixel: isPixel,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
           ),
           ...spriteLayer(art: false),
+          // Bubbles sit on top of the characters, so their hit boxes do too.
+          for (var i = 0; i < bubbles.length; i++)
+            Positioned(
+              key: ValueKey('bubble-hit-${bubbles[i].bubble.id}'),
+              left: bubbleAt(i).dx,
+              top: bubbleAt(i).dy,
+              width: bubbleBoxes[i].width,
+              height: bubbleBoxes[i].height,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: bubbles[i].onTap,
+                onPanStart: bubbles[i].onPan == null
+                    ? null
+                    : (_) {
+                        bubbles[i].onSelect?.call();
+                        onDragStart?.call();
+                      },
+                onPanUpdate: bubbles[i].onPan == null
+                    ? null
+                    : (d) => bubbles[i].onPan!(d.delta.dx, -d.delta.dy),
+                onPanEnd: bubbles[i].onPan == null
+                    ? null
+                    : (_) => onDragEnd?.call(),
+                onPanCancel: bubbles[i].onPan == null
+                    ? null
+                    : () => onDragEnd?.call(),
+                child: bubbles[i].highlight
+                    ? const IgnorePointer(
+                        child: CustomPaint(painter: _PixelSelectPainter()),
+                      )
+                    : const SizedBox.expand(),
+              ),
+            ),
           // Above the characters. Their hit boxes used to cover this handle,
           // and a knob drawn outside the text box cannot receive drags.
           if (rotatingText)

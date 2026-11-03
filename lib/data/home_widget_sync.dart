@@ -10,8 +10,10 @@ import 'package:home_widget/home_widget.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/character_controller.dart';
+import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/dday_controller.dart';
+import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/selection_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
@@ -192,8 +194,19 @@ abstract final class HomeWidgetSync {
     }
   }
 
+  static bool? _premiumLooks;
+
   static Future<void> initialize() async {
     if (!_supportsWidgets) return;
+    // Trial end or a new subscription changes the background/font the
+    // Together widget may use, so redraw it.
+    _premiumLooks = membershipController.hasPremiumContent;
+    membershipController.addListener(() {
+      final now = membershipController.hasPremiumContent;
+      if (now == _premiumLooks) return;
+      _premiumLooks = now;
+      unawaited(syncDday(reloadFromPrefs: false));
+    });
 
     try {
       if (_isIOS) {
@@ -712,6 +725,9 @@ abstract final class HomeWidgetSync {
         // Android loads this from flutter_assets. Empty keeps the style font.
         'textFont': ddayController.textFontForRoom(item.id).asset ?? '',
         'chars': TogetherCrowdLayout.widgetChars(placed),
+        'bubbles': TogetherBubble.widgetJson(
+          ddayController.bubblesForRoom(item.id),
+        ),
       };
     }
     await HomeWidget.saveWidgetData<String>(
@@ -904,6 +920,7 @@ abstract final class HomeWidgetSync {
         textFont: ddayController.textFontForRoom(item.id),
         bgAsset: bgAsset,
         placed: placed,
+        bubbles: ddayController.bubblesForRoom(item.id),
       );
     }
   }
@@ -922,6 +939,7 @@ abstract final class HomeWidgetSync {
     required WidgetFont textFont,
     required String bgAsset,
     required List<TogetherPlaced> placed,
+    List<TogetherBubble> bubbles = const [],
   }) async {
     if (!_isIOS) return;
     final decoded = <String, ui.Image>{};
@@ -966,6 +984,7 @@ abstract final class HomeWidgetSync {
               textRotation: textRotation,
               textFont: textFont,
               cornerRadius: corner,
+              bubbles: bubbles,
             ),
           ),
         ),

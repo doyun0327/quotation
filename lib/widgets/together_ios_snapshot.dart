@@ -2,9 +2,11 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/widget_fonts.dart';
+import 'package:quotation/widgets/together_bubble_view.dart';
 
 /// Offscreen Together card for the iOS home widget — same layout as decorate.
 class TogetherIosSnapshot extends StatelessWidget {
@@ -27,6 +29,7 @@ class TogetherIosSnapshot extends StatelessWidget {
     required this.textRotation,
     required this.textFont,
     required this.cornerRadius,
+    this.bubbles = const [],
   });
 
   final double width;
@@ -48,6 +51,7 @@ class TogetherIosSnapshot extends StatelessWidget {
   final double textRotation;
   final WidgetFont textFont;
   final double cornerRadius;
+  final List<TogetherBubble> bubbles;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +120,27 @@ class TogetherIosSnapshot extends StatelessWidget {
                         ),
                 ),
               ),
+            for (final bubble in bubbles)
+              if (bubble.text.isNotEmpty)
+                Positioned(
+                  left: TogetherBubbleLayout.topLeft(
+                    bubble,
+                    TogetherBubbleLayout.size(bubble.text, isPixel: isPixel),
+                    width,
+                    height,
+                  ).dx,
+                  top: TogetherBubbleLayout.topLeft(
+                    bubble,
+                    TogetherBubbleLayout.size(bubble.text, isPixel: isPixel),
+                    width,
+                    height,
+                  ).dy,
+                  child: TogetherBubbleView(
+                    text: bubble.text,
+                    tail: bubble.tail,
+                    isPixel: isPixel,
+                  ),
+                ),
           ],
         ),
       ),

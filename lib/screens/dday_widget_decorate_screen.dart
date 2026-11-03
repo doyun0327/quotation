@@ -9,6 +9,7 @@ import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
@@ -24,6 +25,7 @@ import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
 import 'package:quotation/widgets/ios_widget_guide.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
+import 'package:quotation/widgets/together_bubble_view.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
 /// In-app editor for a Together room home widget.
@@ -79,6 +81,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   bool _crowdDirty = false;
   List<TogetherPlaced> _placed = const [];
   String _placedKey = '';
+  List<TogetherBubble> _bubbles = const [];
+  String? _bubbleId;
+  bool _editingBubble = false;
   bool _savingCheer = false;
   final bool _loggingIn = false;
 
@@ -120,6 +125,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final migrateAlbum = savedTheme == TogetherBgTheme.albumId;
     _textColor = ddayController.textColorForRoom(id);
     _textFont = ddayController.textFontForRoom(id);
+    _bubbles = ddayController.bubblesForRoom(id);
     _widgetSize = TogetherWidgetSize.s42;
     final rooms = ddayController.items.where((e) => e.id == id);
     _cheerCtrl.text =
@@ -163,6 +169,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final theme = ddayController.bgThemeForRoom(id);
     final color = ddayController.textColorForRoom(id);
     final font = ddayController.textFontForRoom(id);
+    // The open edit sheet owns the draft; a reload would drop a new bubble.
+    final bubbles =
+        _editingBubble ? _bubbles : ddayController.bubblesForRoom(id);
     final layoutChanged = _meX != meX ||
         _meY != meY ||
         _friendX != friendX ||
@@ -175,7 +184,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _textScale != textScale ||
         _bgThemeId != theme ||
         _textColor != color ||
-        _textFont != font;
+        _textFont != font ||
+        !TogetherBubble.sameList(_bubbles, bubbles);
     final crowdChanged = _adoptCrowd();
     if (layoutChanged || crowdChanged) {
       setState(() {
@@ -192,6 +202,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _bgThemeId = theme;
         _textColor = color;
         _textFont = font;
+        _bubbles = bubbles;
+        if (!_bubbles.any((b) => b.id == _bubbleId)) _bubbleId = null;
         if (_focus == _DecorateFocus.friend) _scaleMe = false;
       });
     }
@@ -346,6 +358,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       textFont: _textFont,
       shape: _shape,
       widgetSize: _widgetSize,
+      bubbles: _bubbles,
       notifyFriends: applyToHome,
       canvasW: _previewSize.width,
       canvasH: _previewSize.height,
@@ -702,6 +715,124 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _dragTick.value++;
   }
 
+  List<TogetherPreviewBubble> _bubbleSprites() => [
+        for (final b in _bubbles)
+          TogetherPreviewBubble(
+            bubble: b,
+            highlight: _focus == _DecorateFocus.bubble && _bubbleId == b.id,
+            onSelect: () => _selectBubble(b.id),
+            onPan: (dx, dy) => _moveBubble(b.id, dx, dy),
+            onTap: () => _editBubble(b.id),
+          ),
+      ];
+
+  void _selectBubble(String id) {
+    if (_focus == _DecorateFocus.bubble && _bubbleId == id) return;
+    setState(() {
+      _focus = _DecorateFocus.bubble;
+      _bubbleId = id;
+    });
+  }
+
+  void _updateBubble(String id, TogetherBubble Function(TogetherBubble) edit) {
+    _bubbles = [
+      for (final b in _bubbles) b.id == id ? edit(b) : b,
+    ];
+    _dragTick.value++;
+  }
+
+  /// Center stays on the card; the clip cuts whatever hangs past the edge.
+  void _moveBubble(String id, double dx, double dy) {
+    final size = _previewSize;
+    _updateBubble(
+      id,
+      (b) => b.copyWith(
+        x: (b.x + dx).clamp(-size.width / 2, size.width / 2),
+        y: (b.y + dy).clamp(-size.height / 2, size.height / 2),
+      ),
+    );
+  }
+
+  /// Each tap adds one more bubble, a little apart from the last.
+  Future<void> _addBubble() async {
+    final t = AppStrings.current;
+    if (!membershipController.hasPremiumContent) {
+      await _showPremiumLock();
+      return;
+    }
+    if (_bubbles.length >= TogetherBubble.maxCount) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(t.ddayDecorateBubbleLimit)),
+      );
+      return;
+    }
+    final n = _bubbles.length;
+    final bubble = TogetherBubble(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      text: t.ddayDecorateBubbleDefault,
+      x: -60.0 + 30 * n,
+      y: 30.0 - 10 * n,
+      tail: n.isEven ? TogetherBubbleTail.left : TogetherBubbleTail.right,
+    );
+    setState(() {
+      _bubbles = [..._bubbles, bubble];
+      _focus = _DecorateFocus.bubble;
+      _bubbleId = bubble.id;
+    });
+    _dragTick.value++;
+    await _editBubble(bubble.id);
+  }
+
+  /// Text, tail direction and delete. Changes show on the preview live.
+  Future<void> _editBubble(String id) async {
+    if (!membershipController.hasPremiumContent) {
+      await _showPremiumLock();
+      return;
+    }
+    final bubble = _bubbles.where((b) => b.id == id).firstOrNull;
+    if (bubble == null) return;
+    _selectBubble(id);
+    _editingBubble = true;
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) => _BubbleEditSheet(
+        bubble: bubble,
+        accent: context.palette.accent,
+        onText: (text) => setState(
+          () => _updateBubble(id, (b) => b.copyWith(text: text)),
+        ),
+        onTail: (tail) => setState(
+          () => _updateBubble(id, (b) => b.copyWith(tail: tail)),
+        ),
+        onDelete: () {
+          setState(() {
+            _bubbles = [for (final b in _bubbles) if (b.id != id) b];
+            _bubbleId = null;
+            _focus = _DecorateFocus.me;
+          });
+          _dragTick.value++;
+          Navigator.of(sheetContext).pop();
+        },
+      ),
+    );
+    _editingBubble = false;
+    if (!mounted) return;
+    // An emptied bubble would draw as a blank box on the widget.
+    if (_bubbles.any((b) => b.id == id && b.text.isEmpty)) {
+      setState(() {
+        _bubbles = [for (final b in _bubbles) if (b.id != id) b];
+        _bubbleId = null;
+      });
+      _dragTick.value++;
+    }
+    await _persist();
+  }
+
   void _setDragging(bool value) {
     if (_dragging == value) return;
     setState(() => _dragging = value);
@@ -908,6 +1039,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             friendX: _friendX,
                             friendY: _friendY,
                             crowd: _crowdSprites(),
+                            bubbles: _bubbleSprites(),
                             textX: _textX,
                             textY: _textY,
                             textRotation: _textRotation,
@@ -927,7 +1059,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             cornerRadius: _hostCornerDp,
                             onMePan: (_focus == _DecorateFocus.me ||
                                     (!liveHasFriend &&
-                                        _focus != _DecorateFocus.text))
+                                        _focus == _DecorateFocus.friend))
                                 ? _clampMe
                                 : null,
                             onFriendPan: (liveHasFriend &&
@@ -946,7 +1078,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                 liveHasFriend ? _selectFriend : null,
                             highlightMe: _focus == _DecorateFocus.me ||
                                 (!liveHasFriend &&
-                                    _focus != _DecorateFocus.text),
+                                    _focus == _DecorateFocus.friend),
                             highlightFriend: liveHasFriend &&
                                 _focus == _DecorateFocus.friend,
                             highlightText: _focus == _DecorateFocus.text,
@@ -1126,10 +1258,42 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
-                        itemCount: TogetherBgTheme.choices.length,
+                        // +1: the speech-bubble tile right after Transparent.
+                        itemCount: TogetherBgTheme.choices.length + 1,
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
-                          final theme = TogetherBgTheme.choices[index];
+                          if (index == 1) {
+                            return _bgChoice(
+                              selected: _focus == _DecorateFocus.bubble,
+                              accent: palette.accent,
+                              locked: !isPremium,
+                              onTap: isPremium ? _addBubble : _showPremiumLock,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const TogetherBubbleView(
+                                    text: '+',
+                                    tail: TogetherBubbleTail.left,
+                                    isPixel: true,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${t.ddayDecorateBubbleLabel} '
+                                    '${_bubbles.length}/${TogetherBubble.maxCount}',
+                                    textAlign: TextAlign.center,
+                                    style: AppTheme.body.copyWith(
+                                      fontFamily: 'Galmuri',
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      color: const Color(0xFF5B6B8C),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          final theme =
+                              TogetherBgTheme.choices[index == 0 ? 0 : index - 1];
                           final locked =
                               !isPremium && TogetherBgTheme.requiresPremium(theme);
                           return _bgChoice(
@@ -1384,7 +1548,190 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
 }
 
-enum _DecorateFocus { me, friend, text }
+enum _DecorateFocus { me, friend, text, bubble }
+
+/// Edits one speech bubble: its words, which side the tail points to, delete.
+class _BubbleEditSheet extends StatefulWidget {
+  const _BubbleEditSheet({
+    required this.bubble,
+    required this.accent,
+    required this.onText,
+    required this.onTail,
+    required this.onDelete,
+  });
+
+  final TogetherBubble bubble;
+  final Color accent;
+  final ValueChanged<String> onText;
+  final ValueChanged<TogetherBubbleTail> onTail;
+  final VoidCallback onDelete;
+
+  @override
+  State<_BubbleEditSheet> createState() => _BubbleEditSheetState();
+}
+
+class _BubbleEditSheetState extends State<_BubbleEditSheet> {
+  late final _ctrl = TextEditingController(text: widget.bubble.text);
+  late TogetherBubbleTail _tail = widget.bubble.tail;
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _pickTail(TogetherBubbleTail tail) {
+    if (_tail == tail) return;
+    setState(() => _tail = tail);
+    widget.onTail(tail);
+  }
+
+  Widget _tailButton(TogetherBubbleTail tail, String label) {
+    final selected = _tail == tail;
+    final accent = widget.accent;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _pickTail(tail),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          height: 64,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected ? accent.withValues(alpha: 0.12) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected ? accent : const Color(0xFFE4ECF7),
+              width: selected ? 2 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TogetherBubbleView(
+                text: '...',
+                tail: tail,
+                isPixel: true,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: AppTheme.body.copyWith(
+                  fontFamily: 'Galmuri',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: selected ? accent : const Color(0xFF2C3340),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppStrings.current;
+    final accent = widget.accent;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        16,
+        20,
+        16 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _ctrl,
+              maxLength: TogetherBubble.maxLength,
+              textInputAction: TextInputAction.done,
+              onChanged: (v) => widget.onText(TogetherBubble.clean(v)),
+              onSubmitted: (_) => Navigator.of(context).maybePop(),
+              style: AppTheme.body.copyWith(
+                fontFamily: 'Galmuri',
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF2C3340),
+              ),
+              decoration: InputDecoration(
+                hintText: t.ddayDecorateBubbleTextHint,
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFE4ECF7)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: accent),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              t.ddayDecorateBubbleDirection,
+              style: AppTheme.body.copyWith(
+                fontFamily: 'Galmuri',
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: accent,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                _tailButton(TogetherBubbleTail.left, t.ddayDecorateBubbleLeft),
+                const SizedBox(width: 10),
+                _tailButton(TogetherBubbleTail.right, t.ddayDecorateBubbleRight),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                TextButton.icon(
+                  onPressed: widget.onDelete,
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Color(0xFFE53935),
+                  ),
+                  label: Text(
+                    t.ddayDecorateBubbleDelete,
+                    style: AppTheme.body.copyWith(
+                      fontFamily: 'Galmuri',
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFE53935),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                FilledButton(
+                  onPressed: () => Navigator.of(context).maybePop(),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: accent,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: Text(
+                    t.ddayDecorateBubbleDone,
+                    style: AppTheme.body.copyWith(
+                      fontFamily: 'Galmuri',
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _RoomMember {
   const _RoomMember({

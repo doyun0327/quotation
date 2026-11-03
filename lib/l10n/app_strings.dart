@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/dday_friend_models.dart';
+import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 
@@ -110,6 +111,15 @@ class AppStrings {
   String get ddayDecoratePalettePresets => _t('팔레트', 'Palette', 'パレット');
   String get ddayDecorateMoreColors => _t('더 고르기', 'More colors', 'もっと選ぶ');
   String get ddayDecorateChangeMyCharacter => _t('변경', 'Change', '変更');
+  String get ddayDecorateBubbleLabel => _t('말풍선', 'Speech bubbles', '吹き出し');
+  String get ddayDecorateBubbleDefault => _t('안녕!', 'Hi!', 'やあ!');
+  String get ddayDecorateBubbleTextHint => _t('말풍선에 쓸 말', 'Bubble text', '吹き出しの言葉');
+  String get ddayDecorateBubbleDirection => _t('방향', 'Direction', '向き');
+  String get ddayDecorateBubbleLeft => _t('왼쪽', 'Left', '左');
+  String get ddayDecorateBubbleRight => _t('오른쪽', 'Right', '右');
+  String get ddayDecorateBubbleDelete => _t('삭제', 'Delete', '削除');
+  String get ddayDecorateBubbleDone => _t('완료', 'Done', '完了');
+  String get ddayDecorateBubbleLimit => _t('말풍선은 ${TogetherBubble.maxCount}개까지 넣을 수 있어요', 'You can add up to ${TogetherBubble.maxCount} bubbles', '吹き出しは${TogetherBubble.maxCount}個まで追加できます');
   String get ddayDecorateCharScaleLabel => _t('캐릭터 크기', 'Character size', 'キャラクターサイズ');
   String ddayDecorateCharScaleFor(String name) =>
       _t('$name 크기', '$name size', '$nameのサイズ');

@@ -7,6 +7,7 @@ import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
@@ -453,7 +454,8 @@ class DdayCloudSync {
         !data.containsKey('layoutTextColor') &&
         !data.containsKey('layoutTextFont') &&
         !data.containsKey('layoutTextX') &&
-        !data.containsKey('layoutCrowdKey')) {
+        !data.containsKey('layoutCrowdKey') &&
+        !data.containsKey('layoutBubbles')) {
       return;
     }
     final local = await _localCanvas(roomId);
@@ -501,6 +503,11 @@ class DdayCloudSync {
     final sharedCrowdKey = (crowdKey == null || crowdKey.isEmpty)
         ? null
         : crowdKey;
+    // Absent on layouts pushed by older app versions: keep what we have.
+    final bubbles = data.containsKey('layoutBubbles')
+        ? TogetherBubble.listFromJson(data['layoutBubbles'], ax: ax, ay: ay)
+        : null;
+    final paidLooks = PaidLook.parse(data['layoutPaidLooks']);
     if (iAmHost) {
       await ddayController.setDuoOffsets(
         roomId: roomId,
@@ -521,6 +528,8 @@ class DdayCloudSync {
         widgetSize: widgetSize,
         crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
         crowd: sharedCrowd,
+        bubbles: bubbles,
+        paidLooks: paidLooks,
         fromCloud: true,
       );
     } else {
@@ -543,6 +552,8 @@ class DdayCloudSync {
         widgetSize: widgetSize,
         crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
         crowd: sharedCrowd,
+        bubbles: bubbles,
+        paidLooks: paidLooks,
         fromCloud: true,
       );
     }
@@ -620,13 +631,17 @@ class DdayCloudSync {
     final meScale = ddayController.charScaleForRoom(item.id);
     final friendScale = ddayController.friendScaleForRoom(item.id);
     final textScale = ddayController.textScaleForRoom(item.id);
-    final bgTheme = ddayController.bgThemeForRoom(item.id);
+    // Saved picks, not this phone's free fallback: a free member applying
+    // the widget must not strip a subscriber's background for everyone.
+    final looks = ddayController.sharedLooksForRoom(item.id);
+    final bgTheme = looks.bgTheme;
     final textColor = ddayController.textColorForRoom(item.id);
-    final textFont = ddayController.textFontForRoom(item.id);
+    final textFont = looks.textFont;
     const shape = TogetherWidgetShape.square;
     final widgetSize = ddayController.widgetSizeForRoom(item.id);
     final crowdKey = ddayController.crowdKeyForRoom(item.id);
     final crowd = ddayController.crowdForRoom(item.id);
+    final bubbles = looks.bubbles;
     var hostUid = item.cloudOwnerUid ?? '';
     try {
       final mem = await _db.collection('dday_memberships').doc(item.id).get();
@@ -693,6 +708,9 @@ class DdayCloudSync {
                     'characterId': charByUid[slot.uid],
                 },
             ],
+          // Always written so a deleted bubble disappears for friends too.
+          'layoutBubbles': [for (final b in bubbles) b.toJson()],
+          'layoutPaidLooks': looks.paidLooks.toList(),
           'layoutUpdatedBy': uid,
           'layoutUpdatedByName':
               (await UserProfileSync.savedNickname()) ?? '',

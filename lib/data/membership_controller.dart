@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +16,7 @@ class MembershipController extends ChangeNotifier {
   bool _isPremium = false;
   DateTime? _firstOpenAt;
   bool _trialNoticePending = false;
+  Timer? _trialEndTimer;
 
   /// Paid / restored subscription only (not the free trial).
   bool get isPremium => _isPremium;
@@ -57,7 +60,19 @@ class MembershipController extends ChangeNotifier {
       _isPremium = saved;
       changed = true;
     }
+    _scheduleTrialEnd();
     if (changed) notifyListeners();
+  }
+
+  /// The free week can end while the app is open; tell listeners so premium
+  /// looks (backgrounds, fonts) switch back right away.
+  void _scheduleTrialEnd() {
+    _trialEndTimer?.cancel();
+    final start = _firstOpenAt;
+    if (start == null || !isInFreeTrial) return;
+    final left =
+        start.add(const Duration(days: trialDays)).difference(DateTime.now());
+    _trialEndTimer = Timer(left + const Duration(seconds: 1), notifyListeners);
   }
 
   /// Whether the install trial welcome dialog should still be shown.
