@@ -14,6 +14,7 @@ import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
+import 'package:quotation/data/together_editing.dart';
 import 'package:quotation/data/together_guide.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
@@ -23,6 +24,7 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
+import 'package:quotation/widgets/editing_spinner_overlay.dart';
 import 'package:quotation/widgets/ios_widget_guide.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
 import 'package:quotation/widgets/together_bubble_view.dart';
@@ -84,6 +86,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   List<TogetherBubble> _bubbles = const [];
   String? _bubbleId;
   bool _editingBubble = false;
+  Timer? _presenceBeat;
   bool _savingCheer = false;
   final bool _loggingIn = false;
 
@@ -151,6 +154,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     }
     // The launcher may report a new cell size after the refresh.
     await _loadHostSize();
+    _startPresence();
+  }
+
+  /// Friends see a spinner on my character while this screen is open.
+  /// Only rooms with friends, so a solo room never writes.
+  void _startPresence() {
+    if (!mounted || (_room?.friends.isEmpty ?? true)) return;
+    unawaited(TogetherEditingPresence.write(widget.roomId, editing: true));
+    _presenceBeat = Timer.periodic(TogetherEditingPresence.heartbeat, (_) {
+      unawaited(TogetherEditingPresence.write(widget.roomId, editing: true));
+    });
   }
 
   void _syncFromController() {
@@ -255,6 +269,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   @override
   void dispose() {
+    if (_presenceBeat != null) {
+      _presenceBeat!.cancel();
+      unawaited(TogetherEditingPresence.write(widget.roomId, editing: false));
+    }
     ddayController.removeListener(_syncFromController);
     _cheerCtrl.removeListener(_onCheerEdited);
     _cheerCtrl.dispose();
@@ -722,7 +740,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
             highlight: _focus == _DecorateFocus.bubble && _bubbleId == b.id,
             onSelect: () => _selectBubble(b.id),
             onPan: (dx, dy) => _moveBubble(b.id, dx, dy),
-            onTap: () => _editBubble(b.id),
+            onDoubleTap: () => _editBubble(b.id),
+            onRotate: (degrees) => _updateBubble(
+              b.id,
+              (bubble) => bubble.copyWith(rotation: degrees.round()),
+            ),
           ),
       ];
 
@@ -992,6 +1014,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           localeController,
           authController,
           membershipController,
+          togetherEditing,
         ]),
         builder: (context, _) {
           final isPremium = membershipController.hasPremiumContent;
@@ -1140,6 +1163,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         ))
                           _RoomMember(
                             friendUid: friend.uid,
+                            editing: togetherEditing.isEditing(
+                              widget.roomId,
+                              friend.uid,
+                            ),
                             assetPath: AppCharacter.byId(
                               friend.characterId,
                             ).assetPath,
@@ -1739,10 +1766,14 @@ class _RoomMember {
     required this.nickname,
     this.isMe = false,
     this.friendUid,
+    this.editing = false,
   });
 
   final bool isMe;
   final String? friendUid;
+
+  /// This friend has the decorator open right now.
+  final bool editing;
   final String assetPath;
   final String nickname;
 }
@@ -1850,14 +1881,18 @@ class _MemberChip extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Image.asset(
-              member.assetPath,
-              height: 44,
-              fit: BoxFit.contain,
-              cacheHeight: (44 * MediaQuery.devicePixelRatioOf(context)).round(),
-              gaplessPlayback: true,
-              filterQuality: FilterQuality.none,
-              isAntiAlias: false,
+            EditingSpinnerOverlay(
+              editing: member.editing,
+              child: Image.asset(
+                member.assetPath,
+                height: 44,
+                fit: BoxFit.contain,
+                cacheHeight:
+                    (44 * MediaQuery.devicePixelRatioOf(context)).round(),
+                gaplessPlayback: true,
+                filterQuality: FilterQuality.none,
+                isAntiAlias: false,
+              ),
             ),
             const SizedBox(height: 4),
             Text(

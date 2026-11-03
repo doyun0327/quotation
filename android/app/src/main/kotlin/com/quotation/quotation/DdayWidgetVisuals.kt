@@ -415,8 +415,12 @@ object DdayWidgetVisuals {
       val left = widthPx / 2f + obj.optInt("x", 0) * density - boxW / 2f
       val top = heightPx / 2f - obj.optInt("y", 0) * density - boxH / 2f
       val tailLeft = obj.optString("d") != "r"
-      // Stroke stays inside the box so the tail tip is not cut.
+      val degrees = ((obj.optInt("r", 0) % 360) + 360) % 360
       canvas.save()
+      if (degrees != 0) {
+        canvas.rotate(degrees.toFloat(), left + boxW / 2f, top + boxH / 2f)
+      }
+      // Stroke stays inside the box so the tail tip is not cut.
       canvas.translate(left + stroke / 2f, top + stroke / 2f)
       val path = bubblePath(boxW - stroke, boxH - stroke, tailLeft, density)
       canvas.drawPath(path, fill)

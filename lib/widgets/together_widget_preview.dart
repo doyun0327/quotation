@@ -50,18 +50,22 @@ class TogetherPreviewBubble {
     this.highlight = false,
     this.onPan,
     this.onSelect,
-    this.onTap,
+    this.onDoubleTap,
+    this.onRotate,
   });
 
   final TogetherBubble bubble;
   final bool highlight;
   final TogetherWidgetPanDelta? onPan;
 
-  /// Drag start: focus this bubble without opening its editor.
+  /// Tap or drag start: focus this bubble so it can be moved and turned.
   final VoidCallback? onSelect;
 
-  /// Tap: open the editor (text + tail direction).
-  final VoidCallback? onTap;
+  /// Double tap: open the editor (text + tail direction).
+  final VoidCallback? onDoubleTap;
+
+  /// Rotate handle above the bubble while it is selected.
+  final ValueChanged<double>? onRotate;
 }
 
 /// Decode only the pixels the preview actually shows. Source files are
@@ -619,10 +623,13 @@ class TogetherWidgetPreview extends StatelessWidget {
                         key: ValueKey('bubble-art-${bubbles[i].bubble.id}'),
                         left: bubbleAt(i).dx,
                         top: bubbleAt(i).dy,
-                        child: TogetherBubbleView(
-                          text: bubbles[i].bubble.text,
-                          tail: bubbles[i].bubble.tail,
-                          isPixel: isPixel,
+                        child: Transform.rotate(
+                          angle: bubbles[i].bubble.rotation * math.pi / 180,
+                          child: TogetherBubbleView(
+                            text: bubbles[i].bubble.text,
+                            tail: bubbles[i].bubble.tail,
+                            isPixel: isPixel,
+                          ),
                         ),
                       ),
                   ],
@@ -641,7 +648,8 @@ class TogetherWidgetPreview extends StatelessWidget {
               height: bubbleBoxes[i].height,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: bubbles[i].onTap,
+                onTap: bubbles[i].onSelect,
+                onDoubleTap: bubbles[i].onDoubleTap,
                 onPanStart: bubbles[i].onPan == null
                     ? null
                     : (_) {
@@ -658,12 +666,34 @@ class TogetherWidgetPreview extends StatelessWidget {
                     ? null
                     : () => onDragEnd?.call(),
                 child: bubbles[i].highlight
-                    ? const IgnorePointer(
-                        child: CustomPaint(painter: _PixelSelectPainter()),
+                    ? IgnorePointer(
+                        child: Transform.rotate(
+                          angle: bubbles[i].bubble.rotation * math.pi / 180,
+                          child: const CustomPaint(
+                            painter: _PixelSelectPainter(),
+                          ),
+                        ),
                       )
                     : const SizedBox.expand(),
               ),
             ),
+          // Same handle as a character, above the selected bubble.
+          for (var i = 0; i < bubbles.length; i++)
+            if (bubbles[i].highlight && bubbles[i].onRotate != null)
+              Positioned(
+                key: ValueKey('bubble-knob-${bubbles[i].bubble.id}'),
+                left: bubbleAt(i).dx + (bubbleBoxes[i].width - textKnob) / 2,
+                top: bubbleAt(i).dy - textKnobGap - textKnob + textKnobDrop,
+                width: textKnob,
+                height: textKnob,
+                child: _RotateKnob(
+                  spriteHeight: bubbleBoxes[i].height,
+                  gap: textKnobGap - textKnobDrop,
+                  onRotate: bubbles[i].onRotate!,
+                  onDragStart: onDragStart,
+                  onDragEnd: onDragEnd,
+                ),
+              ),
           // Above the characters. Their hit boxes used to cover this handle,
           // and a knob drawn outside the text box cannot receive drags.
           if (rotatingText)

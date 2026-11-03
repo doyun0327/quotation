@@ -135,10 +135,13 @@ class TogetherIosSnapshot extends StatelessWidget {
                     width,
                     height,
                   ).dy,
-                  child: TogetherBubbleView(
-                    text: bubble.text,
-                    tail: bubble.tail,
-                    isPixel: isPixel,
+                  child: Transform.rotate(
+                    angle: bubble.rotation * math.pi / 180,
+                    child: TogetherBubbleView(
+                      text: bubble.text,
+                      tail: bubble.tail,
+                      isPixel: isPixel,
+                    ),
                   ),
                 ),
           ],

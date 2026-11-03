@@ -9,6 +9,7 @@ import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
+import 'package:quotation/data/together_editing.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
@@ -77,6 +78,7 @@ class DdayCloudSync {
     for (final id in _roomSubs.keys.toList()) {
       if (ids.contains(id)) continue;
       _roomSubs.remove(id)?.cancel();
+      _layoutSig.remove(id);
     }
     for (final id in ids) {
       if (_roomSubs.containsKey(id)) continue;
@@ -85,6 +87,12 @@ class DdayCloudSync {
         (snap) async {
           final data = snap.data();
           if (data == null || !_started) return;
+          togetherEditing.applyDoc(snap.id, data);
+          // Someone opening/closing the decorator only touches `editing`.
+          // Skip the layout apply and the (heavy) widget redraw for that.
+          final sig = (Map.of(data)..remove('editing')).toString();
+          if (!first && sig == _layoutSig[id]) return;
+          _layoutSig[id] = sig;
           final notify = !first;
           first = false;
           try {
@@ -109,11 +117,16 @@ class DdayCloudSync {
     }
   }
 
+  /// Last membership doc per room without `editing`, to spot presence-only
+  /// snapshots.
+  static final Map<String, String> _layoutSig = {};
+
   static Future<void> stop() async {
     for (final s in _roomSubs.values) {
       await s.cancel();
     }
     _roomSubs.clear();
+    _layoutSig.clear();
     _started = false;
   }
 

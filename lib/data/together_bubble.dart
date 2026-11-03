@@ -21,6 +21,7 @@ class TogetherBubble {
     this.x = 0,
     this.y = 0,
     this.tail = TogetherBubbleTail.left,
+    this.rotation = 0,
   });
 
   static const maxCount = 5;
@@ -32,11 +33,15 @@ class TogetherBubble {
   final double y;
   final TogetherBubbleTail tail;
 
+  /// Clockwise degrees around the bubble center, 0–359.
+  final int rotation;
+
   TogetherBubble copyWith({
     String? text,
     double? x,
     double? y,
     TogetherBubbleTail? tail,
+    int? rotation,
   }) {
     return TogetherBubble(
       id: id,
@@ -44,7 +49,13 @@ class TogetherBubble {
       x: x ?? this.x,
       y: y ?? this.y,
       tail: tail ?? this.tail,
+      rotation: rotation == null ? this.rotation : normDegrees(rotation),
     );
+  }
+
+  static int normDegrees(int value) {
+    final n = value % 360;
+    return n < 0 ? n + 360 : n;
   }
 
   Map<String, dynamic> toJson() => {
@@ -53,6 +64,7 @@ class TogetherBubble {
         'x': x.round(),
         'y': y.round(),
         'tail': tail.name,
+        if (rotation != 0) 'rotation': rotation,
       };
 
   /// Single line, capped — the home widget draws it without wrapping.
@@ -82,6 +94,7 @@ class TogetherBubble {
           x: (ax == null ? x : ax(x)).toDouble(),
           y: (ay == null ? y : ay(y)).toDouble(),
           tail: TogetherBubbleTail.byId(entry['tail']),
+          rotation: normDegrees((entry['rotation'] as num?)?.toInt() ?? 0),
         ),
       );
       if (out.length >= maxCount) break;
@@ -98,7 +111,8 @@ class TogetherBubble {
           l.text != r.text ||
           l.x.round() != r.x.round() ||
           l.y.round() != r.y.round() ||
-          l.tail != r.tail) {
+          l.tail != r.tail ||
+          l.rotation != r.rotation) {
         return false;
       }
     }
@@ -127,6 +141,7 @@ class TogetherBubble {
               'x': b.x.round(),
               'y': b.y.round(),
               'd': b.tail == TogetherBubbleTail.right ? 'r' : 'l',
+              'r': b.rotation,
             },
       ];
 }
