@@ -24,7 +24,7 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
-import 'package:quotation/widgets/editing_spinner_overlay.dart';
+import 'package:quotation/widgets/editing_dots_overlay.dart';
 import 'package:quotation/widgets/ios_widget_guide.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
 import 'package:quotation/widgets/together_bubble_view.dart';
@@ -87,6 +87,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   String? _bubbleId;
   bool _editingBubble = false;
   Timer? _presenceBeat;
+  AppLifecycleListener? _presenceLife;
   bool _savingCheer = false;
   final bool _loggingIn = false;
 
@@ -157,14 +158,34 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _startPresence();
   }
 
-  /// Friends see a spinner on my character while this screen is open.
+  /// Friends see typing dots over my character while this screen is open.
   /// Only rooms with friends, so a solo room never writes.
   void _startPresence() {
     if (!mounted || (_room?.friends.isEmpty ?? true)) return;
+    _beginPresence();
+    // Leaving the app with the decorator open is not editing: clear the
+    // stamp right away instead of waiting for it to expire.
+    _presenceLife = AppLifecycleListener(
+      onPause: _endPresence,
+      onResume: () {
+        if (mounted) _beginPresence();
+      },
+    );
+  }
+
+  void _beginPresence() {
+    _presenceBeat?.cancel();
     unawaited(TogetherEditingPresence.write(widget.roomId, editing: true));
     _presenceBeat = Timer.periodic(TogetherEditingPresence.heartbeat, (_) {
       unawaited(TogetherEditingPresence.write(widget.roomId, editing: true));
     });
+  }
+
+  void _endPresence() {
+    if (_presenceBeat == null) return;
+    _presenceBeat!.cancel();
+    _presenceBeat = null;
+    unawaited(TogetherEditingPresence.write(widget.roomId, editing: false));
   }
 
   void _syncFromController() {
@@ -269,10 +290,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   @override
   void dispose() {
-    if (_presenceBeat != null) {
-      _presenceBeat!.cancel();
-      unawaited(TogetherEditingPresence.write(widget.roomId, editing: false));
-    }
+    _presenceLife?.dispose();
+    _endPresence();
     ddayController.removeListener(_syncFromController);
     _cheerCtrl.removeListener(_onCheerEdited);
     _cheerCtrl.dispose();
@@ -1869,7 +1888,7 @@ class _MemberChip extends StatelessWidget {
         ),
         child: Column(
           children: [
-            EditingSpinnerOverlay(
+            EditingDotsOverlay(
               editing: member.editing,
               child: Image.asset(
                 member.assetPath,

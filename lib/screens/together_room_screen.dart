@@ -5,7 +5,6 @@ import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
-import 'package:quotation/data/together_editing.dart';
 import 'package:quotation/data/together_guide.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/widget_album_background.dart';
@@ -20,7 +19,6 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
-import 'package:quotation/widgets/editing_spinner_overlay.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
 class TogetherRoomScreen extends StatefulWidget {
@@ -99,7 +97,6 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
         characterController,
         blockedUsersController,
         authController,
-        togetherEditing,
       ]),
       builder: (context, _) {
         final t = AppStrings.current;
@@ -303,7 +300,6 @@ class _FriendsCard extends StatelessWidget {
                       _CharBubble(
                         asset: AppCharacter.byId(f.characterId).assetPath,
                         label: _friendLabel(f),
-                        editing: togetherEditing.isEditing(room.id, f.uid),
                       ),
                   ],
                 ),
@@ -360,14 +356,10 @@ class _CharBubble extends StatelessWidget {
   const _CharBubble({
     required this.asset,
     required this.label,
-    this.editing = false,
   });
 
   final String asset;
   final String label;
-
-  /// This friend has the widget decorator open right now.
-  final bool editing;
 
   @override
   Widget build(BuildContext context) {
@@ -375,21 +367,18 @@ class _CharBubble extends StatelessWidget {
       width: 64,
       child: Column(
         children: [
-          EditingSpinnerOverlay(
-            editing: editing,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                asset,
-                width: 52,
-                height: 52,
-                fit: BoxFit.cover,
-                cacheWidth: (52 * MediaQuery.devicePixelRatioOf(context))
-                    .round()
-                    .clamp(1, 512),
-                filterQuality: FilterQuality.none,
-                isAntiAlias: false,
-              ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.asset(
+              asset,
+              width: 52,
+              height: 52,
+              fit: BoxFit.cover,
+              cacheWidth: (52 * MediaQuery.devicePixelRatioOf(context))
+                  .round()
+                  .clamp(1, 512),
+              filterQuality: FilterQuality.none,
+              isAntiAlias: false,
             ),
           ),
           const SizedBox(height: 4),

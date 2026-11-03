@@ -13,13 +13,15 @@ import 'package:quotation/data/cloud_consent.dart';
 /// the screen stays open. A stamp older than [ttl] counts as gone, which
 /// covers an app that was killed before it could clear its own.
 class TogetherEditingPresence extends ChangeNotifier {
-  static const ttl = Duration(minutes: 3);
-  static const heartbeat = Duration(minutes: 2);
+  static const ttl = Duration(seconds: 90);
+  static const heartbeat = Duration(seconds: 60);
 
   final Map<String, Map<String, DateTime>> _byRoom = {};
   Timer? _expiry;
 
+  /// Never true for me — only friends' editing is shown.
   bool isEditing(String roomId, String uid) {
+    if (uid == FirebaseAuth.instance.currentUser?.uid) return false;
     final at = _byRoom[roomId]?[uid];
     return at != null && _fresh(at);
   }
@@ -42,7 +44,7 @@ class TogetherEditingPresence extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Redraw when the oldest live stamp runs out, so a stale spinner clears.
+  /// Redraw when the oldest live stamp runs out, so stale dots clear.
   void _scheduleExpiry() {
     _expiry?.cancel();
     DateTime? soonest;
@@ -64,7 +66,7 @@ class TogetherEditingPresence extends ChangeNotifier {
   }
 
   /// Marks me as editing [roomId] (or clears it). Best effort: a failed
-  /// write only means friends do not see the spinner.
+  /// write only means friends do not see the dots.
   static Future<void> write(String roomId, {required bool editing}) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null || !CloudConsent.accepted) return;
