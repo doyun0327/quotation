@@ -117,9 +117,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _bgThemeId = savedTheme == TogetherBgTheme.albumId
         ? 'widget_background'
         : savedTheme;
-    if (savedTheme == TogetherBgTheme.albumId) {
-      unawaited(_persist());
-    }
+    final migrateAlbum = savedTheme == TogetherBgTheme.albumId;
     _textColor = ddayController.textColorForRoom(id);
     _textFont = ddayController.textFontForRoom(id);
     _widgetSize = TogetherWidgetSize.s42;
@@ -130,6 +128,23 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _cheerCtrl.addListener(_onCheerEdited);
     _adoptCrowd();
     ddayController.addListener(_syncFromController);
+    unawaited(_syncAfterOpen(migrateAlbum: migrateAlbum));
+  }
+
+  /// Widget re-render is heavy, so it waits until the push transition has
+  /// finished; running it during the slide made opening the decorator stall.
+  Future<void> _syncAfterOpen({required bool migrateAlbum}) async {
+    await Future<void>.delayed(const Duration(milliseconds: 450));
+    if (!mounted) return;
+    if (migrateAlbum) {
+      await _persist();
+    } else {
+      try {
+        await HomeWidgetSync.syncDday();
+      } catch (_) {}
+    }
+    // The launcher may report a new cell size after the refresh.
+    await _loadHostSize();
   }
 
   void _syncFromController() {
@@ -197,13 +212,20 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
   Future<void> _loadHostSize() async {
+    // Offsets changed from the home-widget ⚙ screen. Cheap prefs read; the
+    // full widget redraw runs later in _syncAfterOpen.
     try {
-      await HomeWidgetSync.syncDday();
+      await ddayController.reloadOffsetsFromPrefs();
     } catch (_) {}
     final host = await HomeWidgetSync.loadHostPreviewSize(
       roomId: widget.roomId,
     );
     if (!mounted || host == null) return;
+    if (host.size == _hostSize &&
+        host.forSize == _hostForSize &&
+        host.cornerDp == _hostCornerDp) {
+      return;
+    }
     setState(() {
       _hostSize = host.size;
       _hostForSize = host.forSize;
