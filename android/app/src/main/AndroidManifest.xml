@@ -39,8 +39,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="dearly" android:host="invite" />
             </intent-filter>
-            <!-- HTTPS invite landing (Firebase Hosting) -->
-            <intent-filter android:autoVerify="false">
+            <!-- HTTPS invite landing (Firebase Hosting). autoVerify lets Android
+                 check /.well-known/assetlinks.json so the link opens the app
+                 directly instead of a chooser or the browser. -->
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
