@@ -153,8 +153,10 @@ abstract final class TogetherBubbleLayout {
   static const lineHeight = 1.2;
   static const padX = 8.0;
   static const padY = 5.0;
-  static const radius = 6.0;
-  static const border = 1.5;
+  /// Pixel-art outline: one "pixel" step for the notched corners and the
+  /// stair-step tail, and the border is one pixel thick (no anti-aliasing).
+  static const pixel = 2.0;
+  static const border = pixel;
   static const tailW = 8.0;
   static const tailH = 6.0;
   static const tailInset = 10.0;

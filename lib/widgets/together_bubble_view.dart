@@ -43,28 +43,39 @@ class _BubblePainter extends CustomPainter {
 
   final TogetherBubbleTail tail;
 
-  /// Body + tail as one outline, so no seam shows where they meet.
+  /// Pixel-art outline built from axis-aligned rects (body + tail as one
+  /// shape, so no seam shows): corners are notched by one pixel and the tail
+  /// steps down in pixel rows toward its outer side.
   static Path outline(Size size, TogetherBubbleTail tail) {
+    const u = TogetherBubbleLayout.pixel;
     const t = TogetherBubbleLayout.tailH;
     const tw = TogetherBubbleLayout.tailW;
     const inset = TogetherBubbleLayout.tailInset;
+    final w = size.width;
     final bodyH = size.height - t;
-    final body = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.width, bodyH),
-          const Radius.circular(TogetherBubbleLayout.radius),
-        ),
-      );
+    Path rect(double l, double top, double r, double b) =>
+        Path()..addRect(Rect.fromLTRB(l, top, r, b));
+    var path = Path.combine(
+      PathOperation.union,
+      rect(u, 0, w - u, bodyH),
+      rect(0, u, w, bodyH - u),
+    );
     final left = tail == TogetherBubbleTail.left;
-    final baseStart = left ? inset : size.width - inset - tw;
-    final tipX = left ? baseStart - 2 : baseStart + tw + 2;
-    final tailPath = Path()
-      ..moveTo(baseStart, bodyH - 1)
-      ..lineTo(baseStart + tw, bodyH - 1)
-      ..lineTo(tipX, size.height)
-      ..close();
-    return Path.combine(PathOperation.union, body, tailPath);
+    final base = left ? inset : w - inset - tw;
+    final rows = (t / u).round();
+    final unitsW = (tw / u).round();
+    for (var k = 0; k < rows; k++) {
+      final rowW = (unitsW * (rows - k) / rows).round().clamp(1, unitsW) * u;
+      final l = left ? base : base + tw - rowW;
+      // First row overlaps the body bottom so the outline merges cleanly.
+      final top = k == 0 ? bodyH - u : bodyH + k * u;
+      path = Path.combine(
+        PathOperation.union,
+        path,
+        rect(l, top, l + rowW, bodyH + (k + 1) * u),
+      );
+    }
+    return path;
   }
 
   @override
@@ -75,14 +86,20 @@ class _BubblePainter extends CustomPainter {
     canvas.save();
     canvas.translate(stroke / 2, stroke / 2);
     final path = outline(inner, tail);
-    canvas.drawPath(path, Paint()..color = TogetherBubbleLayout.fill);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = TogetherBubbleLayout.fill
+        ..isAntiAlias = false,
+    );
     canvas.drawPath(
       path,
       Paint()
         ..color = TogetherBubbleLayout.ink
         ..style = PaintingStyle.stroke
         ..strokeWidth = stroke
-        ..strokeJoin = StrokeJoin.round,
+        ..strokeJoin = StrokeJoin.miter
+        ..isAntiAlias = false,
     );
     canvas.restore();
   }

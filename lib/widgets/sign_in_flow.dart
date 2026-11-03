@@ -149,7 +149,15 @@ Future<bool> _signInWithGoogle(BuildContext context) async {
     case 'canceled_or_config':
     case 'config':
     case 'clientConfigurationError':
-      _toast(context, t.googleLoginConfigError);
+      // Show the platform code (e.g. "sign_in_failed … 10:") so a missing
+      // SHA-1 / OAuth client can be told apart from other setup problems.
+      final detail = authController.lastErrorDetail?.trim() ?? '';
+      _toast(
+        context,
+        detail.isEmpty
+            ? t.googleLoginConfigError
+            : '${t.googleLoginConfigError}\n($detail)',
+      );
     case 'missing_client_id':
       _toast(context, t.googleLoginConfigMissing);
     default:

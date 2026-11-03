@@ -364,8 +364,10 @@ object DdayWidgetVisuals {
   private const val BUBBLE_LINE_HEIGHT = 1.2f
   private const val BUBBLE_PAD_X_DP = 8f
   private const val BUBBLE_PAD_Y_DP = 5f
-  private const val BUBBLE_RADIUS_DP = 6f
-  private const val BUBBLE_BORDER_DP = 1.5f
+  // Pixel-art outline (Flutter TogetherBubbleLayout.pixel): notched corners,
+  // stair-step tail, one-pixel border without anti-aliasing.
+  private const val BUBBLE_PIXEL_DP = 2f
+  private const val BUBBLE_BORDER_DP = BUBBLE_PIXEL_DP
   private const val BUBBLE_TAIL_W_DP = 8f
   private const val BUBBLE_TAIL_H_DP = 6f
   private const val BUBBLE_TAIL_INSET_DP = 10f
@@ -398,13 +400,17 @@ object DdayWidgetVisuals {
     val fontHeight = metrics.descent - metrics.ascent
     val lineH = BUBBLE_FONT_DP * BUBBLE_LINE_HEIGHT * density
     val stroke = BUBBLE_BORDER_DP * density
-    val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
+    val fill = Paint().apply {
+      color = Color.WHITE
+      isAntiAlias = false
+    }
     val outline =
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        Paint().apply {
           color = BUBBLE_INK
           style = Paint.Style.STROKE
           strokeWidth = stroke
-          strokeJoin = Paint.Join.ROUND
+          strokeJoin = Paint.Join.MITER
+          isAntiAlias = false
         }
     for (i in 0 until bubbles.length()) {
       val obj = bubbles.optJSONObject(i) ?: continue
@@ -433,28 +439,27 @@ object DdayWidgetVisuals {
     }
   }
 
-  /** Body + tail as one outline, matching Flutter _BubblePainter.outline. */
+  /** Pixel outline from axis-aligned rects, matching Flutter _BubblePainter.outline. */
   private fun bubblePath(w: Float, h: Float, tailLeft: Boolean, density: Float): Path {
+    val u = BUBBLE_PIXEL_DP * density
     val tailH = BUBBLE_TAIL_H_DP * density
     val tailW = BUBBLE_TAIL_W_DP * density
     val inset = BUBBLE_TAIL_INSET_DP * density
-    val radius = BUBBLE_RADIUS_DP * density
     val bodyH = h - tailH
-    val body =
-        Path().apply {
-          addRoundRect(RectF(0f, 0f, w, bodyH), radius, radius, Path.Direction.CW)
-        }
-    val baseStart = if (tailLeft) inset else w - inset - tailW
-    val tipX = if (tailLeft) baseStart - 2f * density else baseStart + tailW + 2f * density
-    val tail =
-        Path().apply {
-          moveTo(baseStart, bodyH - density)
-          lineTo(baseStart + tailW, bodyH - density)
-          lineTo(tipX, h)
-          close()
-        }
-    body.op(tail, Path.Op.UNION)
-    return body
+    fun rect(l: Float, t: Float, r: Float, b: Float) =
+        Path().apply { addRect(RectF(l, t, r, b), Path.Direction.CW) }
+    val path = rect(u, 0f, w - u, bodyH)
+    path.op(rect(0f, u, w, bodyH - u), Path.Op.UNION)
+    val base = if (tailLeft) inset else w - inset - tailW
+    val rows = (BUBBLE_TAIL_H_DP / BUBBLE_PIXEL_DP).roundToInt()
+    val unitsW = (BUBBLE_TAIL_W_DP / BUBBLE_PIXEL_DP).roundToInt()
+    for (k in 0 until rows) {
+      val rowW = (unitsW * (rows - k).toFloat() / rows).roundToInt().coerceIn(1, unitsW) * u
+      val l = if (tailLeft) base else base + tailW - rowW
+      val top = if (k == 0) bodyH - u else bodyH + k * u
+      path.op(rect(l, top, l + rowW, bodyH + (k + 1) * u), Path.Op.UNION)
+    }
+    return path
   }
 
   /** Cheer text as bitmap so pixel (Galmuri) / clean fonts both work in RemoteViews. */

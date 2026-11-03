@@ -953,22 +953,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           ),
         ),
         clipBehavior: Clip.hardEdge,
+        // Premium-only: just dimmed (no lock badge) so it reads as unavailable.
         child: Opacity(
           opacity: locked ? 0.42 : 1,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              child,
-              if (locked)
-                Center(
-                  child: Icon(
-                    Icons.lock_rounded,
-                    size: 22,
-                    color: selected ? accent : const Color(0xFF5B6B8C),
-                  ),
-                ),
-            ],
-          ),
+          child: child,
         ),
       ),
     );
@@ -2002,14 +1990,6 @@ class _FontChip extends StatelessWidget {
                   color: selected ? accent : AppColors.ink,
                 ),
               ),
-              if (locked) ...[
-                const SizedBox(width: 6),
-                Icon(
-                  Icons.lock_rounded,
-                  size: 14,
-                  color: selected ? accent : const Color(0xFF5B6B8C),
-                ),
-              ],
             ],
           ),
         ),

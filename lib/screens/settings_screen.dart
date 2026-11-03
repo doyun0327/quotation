@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
+import 'package:quotation/data/encouragement_notification_scheduler.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/screens/account_deletion_screen.dart';
@@ -254,6 +255,11 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 18),
                       SettingsSection(
+                        title: t.notificationSection,
+                        children: const [_EveningCheerToggle()],
+                      ),
+                      const SizedBox(height: 18),
+                      SettingsSection(
                         title: t.languageSection,
                         children: [
                           SettingsItem(
@@ -408,6 +414,49 @@ class SettingsScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Evening (19:00) cheer notification on/off. Morning fortune stays as is.
+class _EveningCheerToggle extends StatefulWidget {
+  const _EveningCheerToggle();
+
+  @override
+  State<_EveningCheerToggle> createState() => _EveningCheerToggleState();
+}
+
+class _EveningCheerToggleState extends State<_EveningCheerToggle> {
+  bool _on = true;
+
+  @override
+  void initState() {
+    super.initState();
+    EncouragementNotificationScheduler.isEveningEnabled().then((on) {
+      if (mounted) setState(() => _on = on);
+    });
+  }
+
+  void _set(bool value) {
+    setState(() => _on = value);
+    EncouragementNotificationScheduler.setEveningEnabled(value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppStrings.current;
+    final palette = context.palette;
+    return SettingsItem(
+      icon: Icons.notifications_active_rounded,
+      title: t.eveningCheerTitle,
+      subtitle: t.eveningCheerSubtitle,
+      iconColor: palette.accent,
+      trailing: Switch.adaptive(
+        value: _on,
+        activeTrackColor: palette.accent,
+        onChanged: _set,
+      ),
+      onTap: () => _set(!_on),
     );
   }
 }

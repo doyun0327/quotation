@@ -13,6 +13,7 @@ import 'package:timezone/timezone.dart' as tz;
 /// Fortune at 08:00. Evening encouragement at 19:00. Lunch is not sent.
 abstract final class EncouragementNotificationScheduler {
   static const _prefsEnabledKey = 'encouragement_notifications_enabled';
+  static const _prefsEveningKey = 'evening_encouragement_enabled';
   static const _channelId = 'daily_encouragement';
   static const _channelName = 'Daily encouragement';
   static const _scheduleDays = 14;
@@ -109,6 +110,19 @@ abstract final class EncouragementNotificationScheduler {
     return prefs.getBool(_prefsEnabledKey) ?? true;
   }
 
+  /// Evening cheer (19:00) on/off from Settings; the morning fortune is
+  /// unaffected. On by default.
+  static Future<bool> isEveningEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_prefsEveningKey) ?? true;
+  }
+
+  static Future<void> setEveningEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefsEveningKey, enabled);
+    await reschedule();
+  }
+
   static Future<void> setEnabled(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefsEnabledKey, enabled);
@@ -169,6 +183,7 @@ abstract final class EncouragementNotificationScheduler {
     final fortuneFallback = AppStrings.current.fortuneFallbackLine;
     final mornings = <Map<String, Object>>[];
     final wallNow = DateTime.now();
+    final eveningOn = await isEveningEnabled();
 
     for (var i = 0; i < _scheduleDays; i++) {
       final day = DateTime(now.year, now.month, now.day).add(Duration(days: i));
@@ -180,6 +195,7 @@ abstract final class EncouragementNotificationScheduler {
           'body': _fortuneBody(day, fortunes, fortuneFallback),
         });
       }
+      if (!eveningOn) continue;
       await _scheduleCheer(
         id: _eveningBase + i,
         day: day,

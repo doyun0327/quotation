@@ -486,6 +486,9 @@ class AppStrings {
       _t('Apple 로그인에 실패했어요', 'Apple sign-in failed', 'Appleログインに失敗しました');
   String appleLoginFailedDetail(String detail) => _t('Apple 로그인 실패: $detail', 'Apple sign-in failed: $detail', 'Appleログイン失敗: $detail');
 
+  String get notificationSection => _t('알림', 'Notifications', '通知');
+  String get eveningCheerTitle => _t('저녁 응원 문구', 'Evening cheer', '夜の応援メッセージ');
+  String get eveningCheerSubtitle => _t('매일 저녁 7시에 응원 문구를 보내드려요', 'A cheer message every day at 7 PM', '毎日19時に応援メッセージをお届けします');
   String get languageSection => _t('앱 언어', 'App language', 'アプリの言語');
   String get languageTitle => _t('앱 언어', 'App language', 'アプリの言語');
   String get languageSubtitle =>
