@@ -22,9 +22,19 @@ service cloud.firestore {
       allow create: if signedIn()
         && request.resource.data.ownerUid == request.auth.uid;
       // Owner edits content; guests may bump status/memberCount on accept.
+      // Taking over ownerUid needs the room behind it: only whoever its
+      // membership names as host may become owner (an Apple account switch
+      // claims the membership first, see isHandoffClaim). Writing your own
+      // uid used to be enough, which let anyone take any D-day.
+      function roomHostIsMe() {
+        return exists(/databases/$(database)/documents/dday_memberships/$(ddayId))
+          && get(/databases/$(database)/documents/dday_memberships/$(ddayId))
+              .data.hostUid == request.auth.uid;
+      }
       allow update: if signedIn()
         && (resource.data.ownerUid == request.auth.uid
-            || request.auth.uid == request.resource.data.ownerUid
+            || (request.resource.data.ownerUid == request.auth.uid
+                && roomHostIsMe())
             || request.resource.data.diff(resource.data).affectedKeys()
                 .hasOnly(['status', 'memberCount', 'updatedAt']));
       allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
@@ -70,6 +80,19 @@ service cloud.firestore {
             && request.resource.data.members.size() <= 9;
       }
 
+      // After an Apple sign-in switches accounts, the new account takes over
+      // the rooms the old anonymous account left a key on
+      // (AccountMigration.leaveHandoffs). It proves the key against the
+      // stored sha256 and must remove the handoff in the same write, so each
+      // key works once.
+      function isHandoffClaim() {
+        return resource.data.get('handoff', null) is map
+            && request.resource.data.get('handoffKey', null) is string
+            && hashing.sha256(request.resource.data.handoffKey).toHexString().lower()
+                == resource.data.handoff.keyHash
+            && !('handoff' in request.resource.data);
+      }
+
       // Join transaction must read the room before the friend is a member.
       allow get: if signedIn();
       allow list: if signedIn() && isRoomMember();
@@ -78,7 +101,17 @@ service cloud.firestore {
         && request.resource.data.hostUid == request.auth.uid
         && request.resource.data.members is list
         && request.resource.data.guestUids is list;
-      allow update: if signedIn() && (isRoomMember() || isJoiningSelf());
+      // hostUid moves only by the host (Google account switch) or a handoff
+      // claim (Apple). A guest rewriting it would make themselves host, and
+      // through roomHostIsMe owner of the D-day as well.
+      function keepsHost() {
+        return request.resource.data.get('hostUid', null)
+            == resource.data.get('hostUid', null);
+      }
+      allow update: if signedIn()
+        && ((isRoomMember() && (keepsHost() || isHost()))
+            || isJoiningSelf()
+            || isHandoffClaim());
       allow delete: if signedIn() && resource.data.hostUid == request.auth.uid;
     }
 

@@ -1,7 +1,7 @@
 name: quotation
 description: "Quotation app"
 publish_to: 'none'
-version: 1.0.13+36
+version: 1.0.13+38
 
 environment:
   sdk: ^3.12.2
@@ -18,6 +18,8 @@ dependencies:
   timezone: ^0.11.2
   flutter_timezone: ^5.1.1
   shared_preferences: ^2.5.6
+  # sha256 for the room handoff key (Apple account switch).
+  crypto: ^3.0.7
   # 6.x uses classic Google Sign-In (clearer Android errors than Credential Manager in 7.x).
   google_sign_in: ^6.2.2
   # Firebase iOS SDK 12.x line: google_sign_in_ios (GoogleSignIn-iOS 8/9) is not

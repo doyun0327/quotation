@@ -330,6 +330,7 @@ class _RoomOffsets {
                 'x': slot.x,
                 'y': slot.y,
                 'rotation': slot.rotation,
+                if (slot.scale > 0) 's': slot.scale,
               },
           ],
         if (bubbles.isNotEmpty)
@@ -386,6 +387,7 @@ class _RoomOffsets {
         rotation: (entry['rotation'] as num?)?.toInt() ??
             (entry['r'] as num?)?.toInt() ??
             0,
+        scale: (entry['s'] as num?)?.toInt() ?? 0,
       ));
     }
     return out;
@@ -902,7 +904,8 @@ class DdayController extends ChangeNotifier {
       if (left.uid != right.uid ||
           left.x != right.x ||
           left.y != right.y ||
-          left.rotation != right.rotation) {
+          left.rotation != right.rotation ||
+          left.scale != right.scale) {
         return false;
       }
     }
@@ -970,6 +973,42 @@ class DdayController extends ChangeNotifier {
     _items[index] = item;
     await _persist();
     unawaited(DdayCloudSync.pushDday(item));
+    // Every member edits the same room; the shared copy reaches all phones.
+    unawaited(DdayCloudSync.pushRoomInfo(item));
+  }
+
+  /// Room name, date and icon a member saved, from the shared room doc.
+  /// Applied as-is (no push back), so it does not echo. Returns whether the
+  /// local copy changed.
+  Future<bool> applyRoomInfoFromCloud(
+    String roomId, {
+    String? title,
+    DateTime? targetDate,
+    String? iconId,
+    bool? repeatYearly,
+  }) async {
+    final index = _items.indexWhere((e) => e.id == roomId);
+    if (index < 0) return false;
+    final cur = _items[index];
+    final day = targetDate == null
+        ? null
+        : DateTime(targetDate.year, targetDate.month, targetDate.day);
+    final next = cur.copyWith(
+      title: (title == null || title.trim().isEmpty) ? null : title.trim(),
+      targetDate: day,
+      iconId: (iconId == null || iconId.isEmpty) ? null : iconId,
+      repeatYearly: repeatYearly,
+    );
+    if (next.title == cur.title &&
+        next.targetDate == cur.targetDate &&
+        next.iconId == cur.iconId &&
+        next.repeatYearly == cur.repeatYearly) {
+      return false;
+    }
+    _items[index] = next;
+    await _persist();
+    notifyListeners();
+    return true;
   }
 
   Future<void> remove(String id) async {

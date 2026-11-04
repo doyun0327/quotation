@@ -50,19 +50,31 @@ class TogetherPreviewBubble {
     this.highlight = false,
     this.onPan,
     this.onSelect,
-    this.onDoubleTap,
+    this.onEdit,
     this.onRotate,
+    this.onTextEdit,
+    this.onFlipTail,
+    this.onDelete,
   });
 
   final TogetherBubble bubble;
   final bool highlight;
   final TogetherWidgetPanDelta? onPan;
 
-  /// Tap or drag start: focus this bubble so it can be moved and turned.
+  /// Drag start: focus this bubble so it can be moved and turned.
   final VoidCallback? onSelect;
 
-  /// Double tap: open the editor (text + tail direction).
-  final VoidCallback? onDoubleTap;
+  /// Tap: select, or start typing when already selected. Falls back to
+  /// [onSelect].
+  final VoidCallback? onEdit;
+
+  /// Toolbar under the selected bubble. Hidden when all three are null.
+  final VoidCallback? onTextEdit;
+  final VoidCallback? onFlipTail;
+  final VoidCallback? onDelete;
+
+  bool get hasToolbar =>
+      onTextEdit != null || onFlipTail != null || onDelete != null;
 
   /// Rotate handle above the bubble while it is selected.
   final ValueChanged<double>? onRotate;
@@ -653,8 +665,7 @@ class TogetherWidgetPreview extends StatelessWidget {
               height: bubbleBoxes[i].height,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: bubbles[i].onSelect,
-                onDoubleTap: bubbles[i].onDoubleTap,
+                onTap: bubbles[i].onEdit ?? bubbles[i].onSelect,
                 onPanStart: bubbles[i].onPan == null
                     ? null
                     : (_) {
@@ -699,6 +710,16 @@ class TogetherWidgetPreview extends StatelessWidget {
                   onDragEnd: onDragEnd,
                 ),
               ),
+          // Edit / tail / delete under the selected bubble. Kept inside the
+          // card: anything drawn past the preview edge cannot be tapped.
+          for (var i = 0; i < bubbles.length; i++)
+            if (bubbles[i].highlight && bubbles[i].hasToolbar)
+              _bubbleToolbar(
+                bubbles[i],
+                bubbleAt(i),
+                bubbleBoxes[i],
+                knobSpace: textKnob + textKnobGap - textKnobDrop,
+              ),
           // Above the characters. Their hit boxes used to cover this handle,
           // and a knob drawn outside the text box cannot receive drags.
           if (rotatingText)
@@ -721,6 +742,99 @@ class TogetherWidgetPreview extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Below the bubble when it fits, else above its rotate handle.
+extension on TogetherWidgetPreview {
+  Widget _bubbleToolbar(
+    TogetherPreviewBubble bubble,
+    Offset at,
+    Size box, {
+    required double knobSpace,
+  }) {
+    const gap = 4.0;
+    final below = at.dy + box.height + gap;
+    final above = at.dy - knobSpace - gap - _BubbleToolbar.height;
+    final top = below + _BubbleToolbar.height <= height
+        ? below
+        : math.max(0.0, above);
+    final left = (at.dx + (box.width - _BubbleToolbar.width) / 2)
+        .clamp(0.0, math.max(0.0, width - _BubbleToolbar.width))
+        .toDouble();
+    return Positioned(
+      key: ValueKey('bubble-tools-${bubble.bubble.id}'),
+      left: left,
+      top: top,
+      width: _BubbleToolbar.width,
+      height: _BubbleToolbar.height,
+      child: _BubbleToolbar(
+        onTextEdit: bubble.onTextEdit,
+        onFlipTail: bubble.onFlipTail,
+        onDelete: bubble.onDelete,
+      ),
+    );
+  }
+}
+
+class _BubbleToolbar extends StatelessWidget {
+  const _BubbleToolbar({this.onTextEdit, this.onFlipTail, this.onDelete});
+
+  static const double button = 34;
+  static const double height = 34;
+  static const double width = button * 3 + 6;
+
+  final VoidCallback? onTextEdit;
+  final VoidCallback? onFlipTail;
+  final VoidCallback? onDelete;
+
+  Widget _button(IconData icon, VoidCallback? onTap, Color color) {
+    return SizedBox(
+      width: button,
+      height: button,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Icon(
+          icon,
+          size: 18,
+          color: onTap == null ? const Color(0xFFB8C2D3) : color,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const ink = Color(0xFF2C3340);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(height / 2),
+        border: Border.all(color: const Color(0xFFD5DEEB)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x22000000),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 3),
+        child: Row(
+          children: [
+            _button(Icons.edit_rounded, onTextEdit, ink),
+            _button(Icons.swap_horiz_rounded, onFlipTail, ink),
+            _button(
+              Icons.delete_outline_rounded,
+              onDelete,
+              const Color(0xFFE53935),
+            ),
+          ],
+        ),
       ),
     );
   }

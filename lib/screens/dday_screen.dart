@@ -74,6 +74,11 @@ class _DdayScreenState extends State<DdayScreen> {
     );
     if (ok == true) {
       await ddayController.remove(item.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppStrings.current.roomDeletedToast)),
+        );
+      }
       await HomeWidgetSync.syncDday();
     }
   }

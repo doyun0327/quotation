@@ -171,7 +171,6 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                         showInviteNudge: TogetherCrowdLayout.withoutMe(
                               room.friends,
                               myIds: authController.myIds,
-                              myName: authController.nickname?.trim() ?? '',
                               myCharacterId: ddayController
                                   .meCharacterIdForRoom(room.id),
                             ).isEmpty &&
@@ -272,7 +271,6 @@ class _FriendsCard extends StatelessWidget {
     final friends = TogetherCrowdLayout.withoutMe(
       room.friends,
       myIds: authController.myIds,
-      myName: authController.nickname?.trim() ?? '',
       myCharacterId: me.id,
     );
 
@@ -470,7 +468,6 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
     final people = TogetherCrowdLayout.roster(
       myUid: authController.viewerUid,
       myCharacterId: ddayController.meCharacterIdForRoom(room.id),
-      myName: authController.nickname?.trim() ?? '',
       myIds: authController.myIds,
       hostUid: room.cloudOwnerUid,
       friends: room.friends,
@@ -486,6 +483,9 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
       myUid: authController.viewerUid,
       meScale: ddayController.charScaleForRoom(room.id),
       friendScale: ddayController.friendScaleForRoom(room.id),
+      saved: TogetherCrowdLayout.scalesOf(
+        ddayController.crowdForRoom(room.id),
+      ),
     );
 
     return Material(

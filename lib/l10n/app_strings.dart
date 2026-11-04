@@ -221,6 +221,11 @@ class AppStrings {
       _t('응원을 남기려면 Google로 로그인해 주세요', 'Sign in with Google to cheer', '応援を残すにはGoogleでログインしてください');
   String get togetherCheerFailed =>
       _t('응원을 남기지 못했어요', 'Could not send cheer', '応援を残せませんでした');
+  String get togetherCheerOtherAccount => _t(
+        '이 방은 다른 계정에서 만들어졌어요. 방을 만든 계정으로 로그인해 주세요',
+        'This room was made on another account. Sign in with that account',
+        'このルームは別のアカウントで作られました。そのアカウントでログインしてください',
+      );
   String get togetherCheerPermission => _t('Google 로그인 후 다시 시도해 주세요', 'No permission to cheer. Sign in with Google and try again', 'Googleでログインしてから、もう一度お試しください');
   String get togetherWidgetPinnedToast => _t('홈 화면 추가 창이 열렸어요. 추가를 눌러 주세요', 'Add-to-home sheet opened — tap Add to place the widget', 'ホーム画面への追加が表示されました。追加をタップしてください');
   String get togetherWidgetSyncToast => _t('위젯에 수정 내용을 반영했어요!', 'Widget updated!', '変更をウィジェットに反映しました！');
@@ -902,6 +907,7 @@ class AppStrings {
         'Delete room "$title"?',
         '「$title」ルームを削除しますか？',
       );
+  String get roomDeletedToast => _t('삭제되었습니다.', 'Deleted.', '削除しました。');
   String get homeGreeting => _t(
         '안녕, 오늘도 잘하고 있어.',
         "Hi, you're doing well today.",

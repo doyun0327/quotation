@@ -193,6 +193,34 @@ class DdayCloudSync {
     }
   }
 
+  /// Room name, date, icon and yearly repeat on the room's membership doc,
+  /// which every member already listens to. Any member may write it, so an
+  /// edit from a friend reaches everyone, not only the host's.
+  /// A room without a membership doc (solo, never shared) has no one to tell.
+  static Future<void> pushRoomInfo(DdayItem item) async {
+    if (!CloudConsent.accepted) return;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      await _db.collection('dday_memberships').doc(item.id).update({
+        'roomTitle': item.title,
+        'roomTargetDate': Timestamp.fromDate(
+          DateTime(
+            item.targetDate.year,
+            item.targetDate.month,
+            item.targetDate.day,
+          ),
+        ),
+        'roomIconId': item.iconId,
+        'roomRepeatYearly': item.repeatYearly,
+        'roomInfoBy': uid,
+        'roomInfoAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('pushRoomInfo ${item.id}: $e');
+    }
+  }
+
   static Future<void> pullMemberships() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
@@ -302,7 +330,6 @@ class DdayCloudSync {
         : TogetherCrowdLayout.withoutMe(
             friendsForMe,
             myIds: {myUid, 'local'},
-            myName: (await UserProfileSync.savedNickname()) ?? '',
             myCharacterId: ddayController.meCharacterIdForRoom(ddayId),
           );
 
@@ -355,6 +382,27 @@ class DdayCloudSync {
         latestCheerAuthorUid: data['latestCheerAuthorUid'] as String?,
         cheerCleared: cheerCleared,
       );
+    }
+
+    // Room info a member edited. Older app versions never wrote it, so a
+    // missing field keeps what this phone (or the ddays doc above) has.
+    if (data.containsKey('roomTitle')) {
+      final changed = await ddayController.applyRoomInfoFromCloud(
+        ddayId,
+        title: data['roomTitle'] as String?,
+        targetDate: (data['roomTargetDate'] as Timestamp?)?.toDate(),
+        iconId: data['roomIconId'] as String?,
+        repeatYearly: data['roomRepeatYearly'] as bool?,
+      );
+      // The host keeps the D-day doc in step for friends who join later.
+      if (changed && myUid == hostUid) {
+        final room = ddayController.items.where((e) => e.id == ddayId);
+        if (room.isNotEmpty) {
+          unawaited(pushDday(room.first).catchError((Object e) {
+            debugPrint('pushDday after room info: $e');
+          }));
+        }
+      }
     }
 
     final actor =
@@ -417,7 +465,6 @@ class DdayCloudSync {
     final people = TogetherCrowdLayout.roster(
       myUid: myUid,
       myCharacterId: ddayController.meCharacterIdForRoom(ddayId),
-      myName: (await UserProfileSync.savedNickname()) ?? '',
       myIds: {myUid, 'local'},
       hostUid: room.cloudOwnerUid,
       friends: room.friends,
@@ -437,6 +484,8 @@ class DdayCloudSync {
       saved: saved,
     );
     if (placed.isEmpty) return;
+    // Someone joined: keep everyone's saved size; the newcomer starts unset.
+    final scales = TogetherCrowdLayout.scalesOf(saved);
     await ddayController.setDuoOffsets(
       roomId: ddayId,
       crowdKey: key,
@@ -447,6 +496,7 @@ class DdayCloudSync {
             x: slot.x.round(),
             y: slot.y.round(),
             rotation: slot.rotationDegrees,
+            scale: scales[slot.uid] ?? 0,
           ),
       ],
       fromCloud: true,
@@ -594,6 +644,8 @@ class DdayCloudSync {
         rotation: (entry['rotation'] as num?)?.toInt() ??
             (entry['r'] as num?)?.toInt() ??
             0,
+        // A percent, not a canvas offset: the same on every phone.
+        scale: (entry['s'] as num?)?.toInt() ?? 0,
       ));
     }
     return out;
@@ -668,7 +720,6 @@ class DdayCloudSync {
     final people = TogetherCrowdLayout.roster(
       myUid: uid,
       myCharacterId: ddayController.meCharacterIdForRoom(item.id),
-      myName: (await UserProfileSync.savedNickname()) ?? '',
       myIds: {uid, 'local'},
       hostUid: hostUid.isEmpty ? item.cloudOwnerUid : hostUid,
       friends: item.friends,
@@ -721,6 +772,7 @@ class DdayCloudSync {
                   'x': slot.x,
                   'y': slot.y,
                   'rotation': slot.rotation,
+                  if (slot.scale > 0) 's': slot.scale,
                   if ((charByUid[slot.uid] ?? '').isNotEmpty)
                     'characterId': charByUid[slot.uid],
                 },

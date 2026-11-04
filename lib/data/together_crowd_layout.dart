@@ -1,8 +1,17 @@
 import 'dart:math' as math;
 
+import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 
-typedef TogetherCrowdSaved = ({String uid, int x, int y, int rotation});
+/// [scale] is that person's size slider in percent; 0 when the layout came
+/// from an app that only knew one size for me and one for every friend.
+typedef TogetherCrowdSaved = ({
+  String uid,
+  int x,
+  int y,
+  int rotation,
+  int scale,
+});
 
 /// One person in a shared room, in stable draw order.
 class TogetherCrowdPerson {
@@ -69,28 +78,23 @@ abstract final class TogetherCrowdLayout {
   static String keyFor(List<TogetherCrowdPerson> people) =>
       people.map((p) => p.uid).join('|');
 
-  /// The signed-in person, including the same account saved under another uid.
-  /// A second login keeps the old id in the room, so the name is the match
-  /// once the character is no longer the default.
+  /// The signed-in person, by uid only. Matching by nickname used to catch
+  /// the same person left in a room under an old login, but it also hid a
+  /// real friend who happened to share my nickname. Account switches now move
+  /// rooms to the new uid (AccountMigration), so the uid is enough.
   static bool isCurrentUser(
     DdayFriendMember friend, {
     required Set<String> myIds,
-    required String myName,
     required String myCharacterId,
   }) {
-    if (friend.uid.isEmpty || friend.uid == 'local' || myIds.contains(friend.uid)) {
-      return true;
-    }
-    final name = friend.displayName?.trim() ?? '';
-    // Same nickname under another login id. The two copies can use different
-    // characters, so [myCharacterId] is not compared.
-    return myName.isNotEmpty && name == myName;
+    return friend.uid.isEmpty ||
+        friend.uid == 'local' ||
+        myIds.contains(friend.uid);
   }
 
   static List<DdayFriendMember> withoutMe(
     List<DdayFriendMember> friends, {
     required Set<String> myIds,
-    required String myName,
     required String myCharacterId,
   }) {
     return [
@@ -98,7 +102,6 @@ abstract final class TogetherCrowdLayout {
         if (!isCurrentUser(
           friend,
           myIds: myIds,
-          myName: myName,
           myCharacterId: myCharacterId,
         ))
           friend,
@@ -111,7 +114,6 @@ abstract final class TogetherCrowdLayout {
     required String myCharacterId,
     required String? hostUid,
     required List<DdayFriendMember> friends,
-    String myName = '',
     Set<String> myIds = const {},
   }) {
     final people = <TogetherCrowdPerson>[
@@ -125,7 +127,6 @@ abstract final class TogetherCrowdLayout {
       if (isCurrentUser(
         friend,
         myIds: ids,
-        myName: myName,
         myCharacterId: myCharacterId,
       )) {
         continue;
@@ -277,14 +278,22 @@ abstract final class TogetherCrowdLayout {
   static double userFactor(int scalePercent) =>
       (scalePercent / 100).clamp(0.6, 1.48);
 
+  /// Saved size per person. Every phone reads the same numbers, so a guest
+  /// no longer sees the host's size on the other guests.
+  static Map<String, int> scalesOf(List<TogetherCrowdSaved> saved) => {
+        for (final slot in saved)
+          if (slot.scale > 0) slot.uid: slot.scale,
+      };
+
+  /// [saved] (per person) wins. [meScale] / [friendScale] only fill in for
+  /// people an older layout never sized.
   static List<TogetherPlaced> withUserScale({
     required List<TogetherPlaced> placed,
     required String myUid,
     required int meScale,
     required int friendScale,
+    Map<String, int> saved = const {},
   }) {
-    final me = userFactor(meScale);
-    final friend = userFactor(friendScale);
     return [
       for (final slot in placed)
         TogetherPlaced(
@@ -292,7 +301,10 @@ abstract final class TogetherCrowdLayout {
           characterId: slot.characterId,
           x: slot.x,
           y: slot.y,
-          scale: slot.scale * (slot.uid == myUid ? me : friend),
+          scale: slot.scale *
+              userFactor(
+                saved[slot.uid] ?? (slot.uid == myUid ? meScale : friendScale),
+              ),
           rotation: slot.rotation,
         ),
     ];
@@ -303,6 +315,8 @@ abstract final class TogetherCrowdLayout {
       for (final slot in placed)
         {
           'id': slot.characterId,
+          // Android draws this file; its own id table can lag behind ours.
+          'asset': AppCharacter.byId(slot.characterId).assetPath,
           'x': slot.x.round(),
           'y': slot.y.round(),
           's': (slot.scale * 100).round().clamp(28, 400),

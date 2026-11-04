@@ -31,7 +31,6 @@ object DdayWidgetVisuals {
 
   /** Flutter asset for a shop character. Falls back to the default sprite. */
   fun assetFor(characterId: String): String {
-    if (characterId == "c65") return "assets/images/character/woman/character(65).png"
     if (characterId == "m16") return "assets/images/character/man/charcter(1).png"
     if (characterId == "m17") return "assets/images/character/man/character(2).png"
     if (characterId.startsWith("m")) {
@@ -39,8 +38,9 @@ object DdayWidgetVisuals {
       if (n != null && n in 1..15) {
         return "assets/images/character/man/character ($n).png"
       }
-      // m18–m28 are man/character(16).png … character(26).png.
-      if (n != null && n in 18..28) {
+      // m18 and up are man/character(16).png, character(17).png, …
+      // Open-ended so a new man character does not fall back to the default.
+      if (n != null && n >= 18) {
         return "assets/images/character/man/character(${n - 2}).png"
       }
     }
@@ -48,6 +48,10 @@ object DdayWidgetVisuals {
       val n = characterId.removePrefix("c").toIntOrNull()
       if (n != null && n in 1..64) {
         return "assets/images/character/woman/character ($n).png"
+      }
+      // c65 and up drop the space: woman/character(65).png, (66), …
+      if (n != null && n >= 65) {
+        return "assets/images/character/woman/character($n).png"
       }
     }
     if (characterId == "bul") return "assets/images/character/woman/character (1).png"
@@ -288,6 +292,8 @@ object DdayWidgetVisuals {
       for (i in 0 until chars.length()) {
         val obj = chars.optJSONObject(i) ?: continue
         val id = obj.optString("id").ifBlank { "basic" }
+        // Flutter sends the exact asset, so ids it adds later still draw.
+        val asset = obj.optString("asset")
         val offsetX = obj.optInt("x", 0)
         val offsetY = obj.optInt("y", 0)
         // Upper bound matches Flutter widgetChars (400) so large sizes survive.
@@ -300,6 +306,7 @@ object DdayWidgetVisuals {
             characterBitmap(
                 context = context,
                 characterId = id,
+                assetPath = asset,
                 widthDp = spriteWDp,
                 heightDp = spriteHDp,
                 isPixel = isPixel,
@@ -555,13 +562,15 @@ object DdayWidgetVisuals {
       heightDp: Int,
       isPixel: Boolean,
       pixelsPerDp: Float = 0f,
+      assetPath: String = "",
   ): Bitmap {
     val scale = if (pixelsPerDp > 0f) pixelsPerDp else context.resources.displayMetrics.density
     val w = (widthDp * scale).roundToInt().coerceAtLeast(8)
     val h = (heightDp * scale).roundToInt().coerceAtLeast(8)
     val resId = drawableFor(characterId)
     val src =
-        decodeFlutterAsset(context, assetFor(characterId))
+        (if (assetPath.isNotBlank()) decodeFlutterAsset(context, assetPath) else null)
+            ?: decodeFlutterAsset(context, assetFor(characterId))
             ?: BitmapFactory.decodeResource(context.resources, resId)
             ?: run {
               val drawable =

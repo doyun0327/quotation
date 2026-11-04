@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:quotation/config/google_auth_config.dart';
+import 'package:quotation/data/account_migration.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/together_test_room.dart';
@@ -369,7 +371,29 @@ class AuthController extends ChangeNotifier {
           if (e.code != 'credential-already-in-use' || existing == null) {
             rethrow;
           }
-          result = await FirebaseAuth.instance.signInWithCredential(existing);
+          // An Apple credential works once, so the new uid cannot be looked
+          // up first like Google. Leave keys on the rooms while still the
+          // anonymous user, then take them over as the Apple user.
+          var handoffs = const <RoomHandoff>[];
+          try {
+            handoffs = await AccountMigration.leaveHandoffs(current.uid);
+          } catch (err) {
+            debugPrint('leave room handoffs: $err');
+          }
+          try {
+            result = await FirebaseAuth.instance.signInWithCredential(existing);
+          } catch (_) {
+            await AccountMigration.dropHandoffs(handoffs);
+            rethrow;
+          }
+          final appleUid = result.user?.uid;
+          if (appleUid != null && handoffs.isNotEmpty) {
+            try {
+              await AccountMigration.claimHandoffs(handoffs, appleUid);
+            } catch (err) {
+              debugPrint('claim room handoffs: $err');
+            }
+          }
         }
       } else {
         result = await FirebaseAuth.instance.signInWithProvider(provider);
@@ -433,6 +457,33 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  /// The anonymous [anon] is about to be replaced by the Firebase user that
+  /// already owns [credential]. Its rooms would be stranded under a uid no one
+  /// can sign into again, so hand them to the new uid first, while [anon] may
+  /// still write them. The new uid comes from signing in on a throwaway app
+  /// instance, which leaves this app's session untouched.
+  /// Never blocks sign-in: a failure only means the rooms stay where they are.
+  Future<void> _moveRoomsBeforeSwitch(User anon, AuthCredential credential) async {
+    FirebaseApp? probe;
+    try {
+      probe = await Firebase.initializeApp(
+        name: 'auth-probe-${DateTime.now().microsecondsSinceEpoch}',
+        options: Firebase.app().options,
+      );
+      final probeAuth = FirebaseAuth.instanceFor(app: probe);
+      final target = (await probeAuth.signInWithCredential(credential)).user?.uid;
+      await probeAuth.signOut();
+      if (target == null || target == anon.uid) return;
+      await AccountMigration.moveRooms(fromUid: anon.uid, toUid: target);
+    } catch (e) {
+      debugPrint('move rooms before account switch: $e');
+    } finally {
+      try {
+        await probe?.delete();
+      } catch (_) {}
+    }
+  }
+
   /// Exchange Google tokens for Firebase session (no browser).
   Future<bool> _linkFirebase(GoogleSignInAccount account) async {
     final auth = await account.authentication;
@@ -462,10 +513,12 @@ class AuthController extends ChangeNotifier {
           };
           debugPrint('linkWithCredential: ${e.code} ${e.message}');
           if (switchCodes.contains(e.code)) {
+            await _moveRoomsBeforeSwitch(current, credential);
             result = await FirebaseAuth.instance.signInWithCredential(
               e.credential ?? credential,
             );
           } else if (e.code == 'unknown' || e.code == 'internal-error') {
+            await _moveRoomsBeforeSwitch(current, credential);
             await FirebaseAuth.instance.signOut();
             result = await FirebaseAuth.instance.signInWithCredential(credential);
           } else {

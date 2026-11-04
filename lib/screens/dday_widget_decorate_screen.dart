@@ -68,6 +68,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   late double _textRotation;
   late int _meScale;
   late int _friendScale;
+
+  /// Size slider per friend in the room (uid → percent). [_friendScale] is
+  /// only the fallback for friends an older layout never sized.
+  Map<String, int> _personScale = {};
   late int _textScale;
   _DecorateFocus _focus = _DecorateFocus.me;
   String? _pickedFriendUid;
@@ -94,6 +98,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   final _cheerCtrl = TextEditingController();
   final _cheerDraft = ValueNotifier<String>('');
   final _cheerFocus = FocusNode();
+  final _bubbleCtrl = TextEditingController();
+  final _bubbleFocus = FocusNode();
   final _dragTick = ValueNotifier<int>(0);
   bool _applyingRemote = false;
   bool _samsung = false;
@@ -121,6 +127,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _textRotation = ddayController.textRotationForRoom(id).toDouble();
     _meScale = ddayController.charScaleForRoom(id);
     _friendScale = ddayController.friendScaleForRoom(id);
+    _adoptSavedScales(TogetherCrowdLayout.scalesOf(ddayController.crowdForRoom(id)));
     _textScale = ddayController.textScaleForRoom(id);
     final savedTheme = ddayController.bgThemeForRoom(id);
     _bgThemeId = savedTheme == TogetherBgTheme.albumId
@@ -136,6 +143,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         rooms.isEmpty ? '' : (rooms.first.latestCheer?.trim() ?? '');
     _cheerDraft.value = _cheerCtrl.text;
     _cheerCtrl.addListener(_onCheerEdited);
+    // Tapping anywhere else drops the keyboard focus; that ends typing too.
+    _bubbleFocus.addListener(() {
+      if (!_bubbleFocus.hasFocus) _finishBubbleEdit();
+    });
     _adoptCrowd();
     ddayController.addListener(_syncFromController);
     unawaited(_syncAfterOpen(migrateAlbum: migrateAlbum));
@@ -222,7 +233,12 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _textFont != font ||
         !TogetherBubble.sameList(_bubbles, bubbles);
     final crowdChanged = _adoptCrowd();
-    if (layoutChanged || crowdChanged) {
+    // Sizes a friend saved for each person. Skipped while my own crowd edit
+    // is unsaved so the slider I am dragging does not jump back.
+    final scales = TogetherCrowdLayout.scalesOf(ddayController.crowdForRoom(id));
+    final scalesChanged = !_crowdDirty && _savedScalesDiffer(scales);
+    if (scalesChanged) _adoptSavedScales(scales);
+    if (layoutChanged || crowdChanged || scalesChanged) {
       setState(() {
         _meX = meX;
         _meY = meY;
@@ -297,6 +313,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _cheerCtrl.dispose();
     _cheerDraft.dispose();
     _cheerFocus.dispose();
+    _bubbleCtrl.dispose();
+    _bubbleFocus.dispose();
     _dragTick.dispose();
     super.dispose();
   }
@@ -355,6 +373,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final message = switch (result.errorCode) {
       'not_signed_in' => t.togetherCheerNeedLogin,
       'permission' => t.togetherCheerPermission,
+      'other_account' => t.togetherCheerOtherAccount,
       _ => t.togetherCheerFailed,
     };
     ScaffoldMessenger.of(context).showSnackBar(
@@ -374,9 +393,14 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
   Future<void> _persist({bool applyToHome = false, bool toast = false}) async {
+    // A cheer the room did not take must not look applied: the cloud copy
+    // would put the old words back a moment later.
+    var cheerOk = true;
     if (applyToHome) {
-      await _saveCheerIfNeeded(quiet: !toast);
-      await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
+      cheerOk = await _saveCheerIfNeeded(quiet: !toast);
+      if (cheerOk) {
+        await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
+      }
     }
     await ddayController.setDuoOffsets(
       roomId: widget.roomId,
@@ -409,6 +433,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                   x: person.x.round(),
                   y: person.y.round(),
                   rotation: person.rotationDegrees,
+                  scale: _scaleOf(person.uid),
                 ),
             ]
           : null,
@@ -425,7 +450,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         await TogetherGuide.markExportedWidget();
         _widgetExported = true;
       }
-      if (toast && mounted) {
+      if (toast && cheerOk && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppStrings.current.togetherWidgetSyncToast)),
         );
@@ -473,7 +498,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final people = TogetherCrowdLayout.roster(
       myUid: authController.viewerUid,
       myCharacterId: _meChar.id,
-      myName: authController.nickname?.trim() ?? '',
       myIds: authController.myIds,
       hostUid: room.cloudOwnerUid,
       friends: room.friends,
@@ -548,14 +572,56 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _dragTick.value++;
   }
 
+  /// Size slider for [uid]: mine, that friend's own, else the shared
+  /// friend fallback.
+  int _scaleOf(String uid) => uid == authController.viewerUid
+      ? _meScale
+      : (_personScale[uid] ?? _friendScale);
+
+  void _adoptSavedScales(Map<String, int> scales) {
+    final me = authController.viewerUid;
+    final mine = scales[me];
+    if (mine != null) _meScale = mine;
+    _personScale = {
+      for (final e in scales.entries)
+        if (e.key != me) e.key: e.value,
+    };
+  }
+
+  bool _savedScalesDiffer(Map<String, int> scales) {
+    final me = authController.viewerUid;
+    if (scales.containsKey(me) && scales[me] != _meScale) return true;
+    for (final e in scales.entries) {
+      if (e.key != me && _personScale[e.key] != e.value) return true;
+    }
+    return false;
+  }
+
+  /// The slider moved for the friend I picked. Friends not sized yet keep
+  /// the size they show now, so only the picked one changes.
+  void _setFriendScale(int value) {
+    final picked = _pickedFriendUid;
+    if (picked == null || _placed.isEmpty) {
+      _friendScale = value;
+      return;
+    }
+    final me = authController.viewerUid;
+    for (final person in _placed) {
+      if (person.uid == me) continue;
+      _personScale.putIfAbsent(person.uid, () => _friendScale);
+    }
+    _personScale[picked] = value;
+    _crowdDirty = true;
+  }
+
   /// Clamps [person] inside the background at the size it is actually drawn
   /// (layout scale × size slider), so a scaled-up character cannot be
   /// dragged or grown past the edge.
   TogetherPlaced _fitPerson(TogetherPlaced person, double x, double y) {
     final size = _previewSize;
     final isMe = person.uid == authController.viewerUid;
-    final scale = person.scale *
-        TogetherCrowdLayout.userFactor(isMe ? _meScale : _friendScale);
+    final scale =
+        person.scale * TogetherCrowdLayout.userFactor(_scaleOf(person.uid));
     final fitted = TogetherCharacterBounds.me(
       x: x,
       y: y,
@@ -603,9 +669,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           x: person.x,
           y: person.y,
           scale: person.scale *
-              TogetherCrowdLayout.userFactor(
-                person.uid == myUid ? _meScale : _friendScale,
-              ),
+              TogetherCrowdLayout.userFactor(_scaleOf(person.uid)),
           rotation: person.rotation,
           onRotate: (person.uid == myUid
                   ? _focus == _DecorateFocus.me
@@ -759,21 +823,39 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
             bubble: b,
             highlight: _focus == _DecorateFocus.bubble && _bubbleId == b.id,
             onSelect: () => _selectBubble(b.id),
-            onPan: (dx, dy) => _moveBubble(b.id, dx, dy),
-            onDoubleTap: () => _editBubble(b.id),
-            onRotate: (degrees) => _updateBubble(
-              b.id,
-              (bubble) => bubble.copyWith(rotation: degrees.round()),
-            ),
+            onPan: _editingBubble
+                ? null
+                : (dx, dy) => _moveBubble(b.id, dx, dy),
+            onEdit: () => _tapBubble(b.id),
+            onRotate: _editingBubble
+                ? null
+                : (degrees) => _updateBubble(
+                      b.id,
+                      (bubble) => bubble.copyWith(rotation: degrees.round()),
+                    ),
+            // While typing, the bar under the preview owns the bubble.
+            onTextEdit: _editingBubble ? null : () => _startBubbleEdit(b.id),
+            onFlipTail: _editingBubble ? null : () => _flipBubbleTail(b.id),
+            onDelete: _editingBubble ? null : () => _deleteBubble(b.id),
           ),
       ];
 
   void _selectBubble(String id) {
     if (_focus == _DecorateFocus.bubble && _bubbleId == id) return;
+    if (_editingBubble) _finishBubbleEdit();
     setState(() {
       _focus = _DecorateFocus.bubble;
       _bubbleId = id;
     });
+  }
+
+  /// First tap selects (the toolbar shows); a tap on the selected one types.
+  void _tapBubble(String id) {
+    if (_focus == _DecorateFocus.bubble && _bubbleId == id) {
+      if (!_editingBubble) _startBubbleEdit(id);
+      return;
+    }
+    _selectBubble(id);
   }
 
   void _updateBubble(String id, TogetherBubble Function(TogetherBubble) edit) {
@@ -808,6 +890,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       );
       return;
     }
+    if (_editingBubble) _finishBubbleEdit();
     final n = _bubbles.length;
     final bubble = TogetherBubble(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -822,57 +905,155 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       _bubbleId = bubble.id;
     });
     _dragTick.value++;
-    await _editBubble(bubble.id);
+    _startBubbleEdit(bubble.id);
   }
 
-  /// Text, tail direction and delete. Changes show on the preview live.
-  Future<void> _editBubble(String id) async {
+  /// Types straight into the bubble: the bar under the preview takes the
+  /// keys and the preview above it redraws each letter. All text starts
+  /// selected, so the first key replaces the old words.
+  void _startBubbleEdit(String id) {
     if (!membershipController.hasPremiumContent) {
-      await _showPremiumLock();
+      unawaited(_showPremiumLock());
       return;
     }
     final bubble = _bubbles.where((b) => b.id == id).firstOrNull;
     if (bubble == null) return;
-    _selectBubble(id);
-    _editingBubble = true;
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (sheetContext) => _BubbleEditSheet(
-        bubble: bubble,
-        accent: context.palette.accent,
-        onText: (text) => setState(
-          () => _updateBubble(id, (b) => b.copyWith(text: text)),
-        ),
-        onTail: (tail) => setState(
-          () => _updateBubble(id, (b) => b.copyWith(tail: tail)),
-        ),
-        onDelete: () {
-          setState(() {
-            _bubbles = [for (final b in _bubbles) if (b.id != id) b];
-            _bubbleId = null;
-            _focus = _DecorateFocus.me;
-          });
-          _dragTick.value++;
-          Navigator.of(sheetContext).pop();
-        },
-      ),
+    _bubbleCtrl.value = TextEditingValue(
+      text: bubble.text,
+      selection: TextSelection(baseOffset: 0, extentOffset: bubble.text.length),
     );
+    setState(() {
+      _focus = _DecorateFocus.bubble;
+      _bubbleId = id;
+      _editingBubble = true;
+    });
+    _dragTick.value++;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _editingBubble) _bubbleFocus.requestFocus();
+    });
+  }
+
+  void _onBubbleTyped(String raw) {
+    final id = _bubbleId;
+    if (id == null) return;
+    final text = TogetherBubble.clean(raw);
+    // setState too: the letter count in the bar follows the text.
+    setState(() => _updateBubble(id, (b) => b.copyWith(text: text)));
+  }
+
+  /// Ends typing. An emptied bubble would draw as a blank box, so it goes.
+  void _finishBubbleEdit() {
+    if (!_editingBubble || !mounted) return;
+    final id = _bubbleId;
+    // Cleared first: unfocus calls back in here through the focus listener.
     _editingBubble = false;
-    if (!mounted) return;
-    // An emptied bubble would draw as a blank box on the widget.
-    if (_bubbles.any((b) => b.id == id && b.text.isEmpty)) {
-      setState(() {
+    _bubbleFocus.unfocus();
+    setState(() {
+      if (id != null && _bubbles.any((b) => b.id == id && b.text.isEmpty)) {
         _bubbles = [for (final b in _bubbles) if (b.id != id) b];
         _bubbleId = null;
-      });
-      _dragTick.value++;
-    }
-    await _persist();
+        _focus = _DecorateFocus.me;
+      }
+    });
+    _dragTick.value++;
+    unawaited(_persist());
+  }
+
+  void _flipBubbleTail(String id) {
+    setState(() {
+      _updateBubble(
+        id,
+        (b) => b.copyWith(
+          tail: b.tail == TogetherBubbleTail.left
+              ? TogetherBubbleTail.right
+              : TogetherBubbleTail.left,
+        ),
+      );
+    });
+    unawaited(_persist());
+  }
+
+  void _deleteBubble(String id) {
+    setState(() {
+      _bubbles = [for (final b in _bubbles) if (b.id != id) b];
+      _bubbleId = null;
+      _focus = _DecorateFocus.me;
+    });
+    _dragTick.value++;
+    unawaited(_persist());
+  }
+
+  /// Replaces the drag hint while typing, right under the preview, so the
+  /// bubble stays in sight above the keyboard.
+  Widget _bubbleEditBar(Color accent) {
+    final t = AppStrings.current;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _bubbleCtrl,
+              focusNode: _bubbleFocus,
+              maxLength: TogetherBubble.maxLength,
+              textInputAction: TextInputAction.done,
+              onChanged: _onBubbleTyped,
+              onSubmitted: (_) => _finishBubbleEdit(),
+              style: AppTheme.body.copyWith(
+                fontFamily: 'Galmuri',
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF2C3340),
+              ),
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: t.ddayDecorateBubbleTextHint,
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                // Count sits inside the field so the bar stays one line.
+                counterText: '',
+                suffixText: '${_bubbleCtrl.text.length}'
+                    '/${TogetherBubble.maxLength}',
+                suffixStyle: AppTheme.body.copyWith(
+                  fontFamily: 'Galmuri',
+                  fontSize: 11,
+                  color: AppColors.muted,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFFE4ECF7)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: accent),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          FilledButton(
+            onPressed: _finishBubbleEdit,
+            style: FilledButton.styleFrom(
+              backgroundColor: accent,
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            child: Text(
+              t.ddayDecorateBubbleDone,
+              style: AppTheme.body.copyWith(
+                fontFamily: 'Galmuri',
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _setDragging(bool value) {
@@ -1123,15 +1304,18 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      t.ddayDuoDecorateDragHint,
-                      textAlign: TextAlign.center,
-                      style: AppTheme.body.copyWith(
-            fontFamily: 'Galmuri',
-                        fontSize: 12,
-                        color: AppColors.muted,
+                    if (_editingBubble)
+                      _bubbleEditBar(palette.accent)
+                    else
+                      Text(
+                        t.ddayDuoDecorateDragHint,
+                        textAlign: TextAlign.center,
+                        style: AppTheme.body.copyWith(
+                          fontFamily: 'Galmuri',
+                          fontSize: 12,
+                          color: AppColors.muted,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -1166,7 +1350,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         for (final friend in TogetherCrowdLayout.withoutMe(
                           live?.friends ?? const [],
                           myIds: authController.myIds,
-                          myName: authController.nickname?.trim() ?? '',
                           myCharacterId: _meChar.id,
                         ))
                           _RoomMember(
@@ -1478,20 +1661,24 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                     Slider(
-                      value: (_scaleMe || !liveHasFriend ? _meScale : _friendScale)
+                      value: (_scaleMe || !liveHasFriend
+                              ? _meScale
+                              : _scaleOf(_pickedFriendUid ?? ''))
                           .toDouble(),
                       min: DdayController.scaleMin.toDouble(),
                       max: DdayController.charScaleMax.toDouble(),
                       divisions:
                           DdayController.charScaleMax - DdayController.scaleMin,
                       label:
-                          '${_scaleMe || !liveHasFriend ? _meScale : _friendScale}%',
+                          '${_scaleMe || !liveHasFriend ? _meScale : _scaleOf(_pickedFriendUid ?? '')}%',
                       onChanged: (v) {
                         setState(() {
                           if (_scaleMe || !liveHasFriend) {
                             _meScale = v.round();
+                            // My size travels with the crowd too.
+                            if (_placed.isNotEmpty) _crowdDirty = true;
                           } else {
-                            _friendScale = v.round();
+                            _setFriendScale(v.round());
                           }
                           _fitCharacters();
                         });
@@ -1584,189 +1771,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 }
 
 enum _DecorateFocus { me, friend, text, bubble }
-
-/// Edits one speech bubble: its words, which side the tail points to, delete.
-class _BubbleEditSheet extends StatefulWidget {
-  const _BubbleEditSheet({
-    required this.bubble,
-    required this.accent,
-    required this.onText,
-    required this.onTail,
-    required this.onDelete,
-  });
-
-  final TogetherBubble bubble;
-  final Color accent;
-  final ValueChanged<String> onText;
-  final ValueChanged<TogetherBubbleTail> onTail;
-  final VoidCallback onDelete;
-
-  @override
-  State<_BubbleEditSheet> createState() => _BubbleEditSheetState();
-}
-
-class _BubbleEditSheetState extends State<_BubbleEditSheet> {
-  late final _ctrl = TextEditingController(text: widget.bubble.text);
-  late TogetherBubbleTail _tail = widget.bubble.tail;
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  void _pickTail(TogetherBubbleTail tail) {
-    if (_tail == tail) return;
-    setState(() => _tail = tail);
-    widget.onTail(tail);
-  }
-
-  Widget _tailButton(TogetherBubbleTail tail, String label) {
-    final selected = _tail == tail;
-    final accent = widget.accent;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _pickTail(tail),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          height: 64,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: selected ? accent.withValues(alpha: 0.12) : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: selected ? accent : const Color(0xFFE4ECF7),
-              width: selected ? 2 : 1,
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TogetherBubbleView(
-                text: '...',
-                tail: tail,
-                isPixel: false,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: AppTheme.body.copyWith(
-                  fontFamily: 'Galmuri',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: selected ? accent : const Color(0xFF2C3340),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppStrings.current;
-    final accent = widget.accent;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        20,
-        16,
-        20,
-        16 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _ctrl,
-              maxLength: TogetherBubble.maxLength,
-              textInputAction: TextInputAction.done,
-              onChanged: (v) => widget.onText(TogetherBubble.clean(v)),
-              onSubmitted: (_) => Navigator.of(context).maybePop(),
-              style: AppTheme.body.copyWith(
-                fontFamily: 'Galmuri',
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF2C3340),
-              ),
-              decoration: InputDecoration(
-                hintText: t.ddayDecorateBubbleTextHint,
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFE4ECF7)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: accent),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              t.ddayDecorateBubbleDirection,
-              style: AppTheme.body.copyWith(
-                fontFamily: 'Galmuri',
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: accent,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                _tailButton(TogetherBubbleTail.left, t.ddayDecorateBubbleLeft),
-                const SizedBox(width: 10),
-                _tailButton(TogetherBubbleTail.right, t.ddayDecorateBubbleRight),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                TextButton.icon(
-                  onPressed: widget.onDelete,
-                  icon: const Icon(
-                    Icons.delete_outline_rounded,
-                    color: Color(0xFFE53935),
-                  ),
-                  label: Text(
-                    t.ddayDecorateBubbleDelete,
-                    style: AppTheme.body.copyWith(
-                      fontFamily: 'Galmuri',
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFFE53935),
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                FilledButton(
-                  onPressed: () => Navigator.of(context).maybePop(),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: accent,
-                    shape: const StadiumBorder(),
-                  ),
-                  child: Text(
-                    t.ddayDecorateBubbleDone,
-                    style: AppTheme.body.copyWith(
-                      fontFamily: 'Galmuri',
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _RoomMember {
   const _RoomMember({

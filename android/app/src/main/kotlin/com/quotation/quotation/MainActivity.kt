@@ -5,16 +5,20 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.RemoteViews
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.util.concurrent.Executors
 
 class MainActivity : FlutterActivity() {
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
-    DailyWordWidgetProvider.publishPickerPreviews(applicationContext)
+    val appContext = applicationContext
+    widgetWorker.execute { DailyWordWidgetProvider.publishPickerPreviews(appContext) }
     MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
         call,
         result ->
@@ -28,13 +32,10 @@ class MainActivity : FlutterActivity() {
         }
         "pinCharacterWidget" -> result.success(pinCharacterWidget())
         "refreshCharacterWidget" -> {
-          DailyWordWidgetProvider.refreshQuoteFamily(applicationContext)
-          result.success(true)
+          val appContext = applicationContext
+          offMain(result) { DailyWordWidgetProvider.refreshQuoteFamily(appContext) }
         }
-        "refreshTogetherWidget" -> {
-          refreshTogetherWidgets()
-          result.success(true)
-        }
+        "refreshTogetherWidget" -> offMain(result) { refreshTogetherWidgets() }
         "togetherWidgetState" -> result.success(togetherWidgetState())
         "isSamsungDevice" ->
           result.success(Build.MANUFACTURER.equals("samsung", ignoreCase = true))
@@ -174,7 +175,28 @@ class MainActivity : FlutterActivity() {
     provider.onUpdate(applicationContext, manager, ids)
   }
 
+  /**
+   * Widget bitmaps (1600px backgrounds, every size, picker previews) take
+   * seconds. Flutter now shares Android's main thread, so drawing there froze
+   * the app until the widget was done. One worker keeps redraws in order.
+   */
+  private fun offMain(result: MethodChannel.Result, work: () -> Unit) {
+    widgetWorker.execute {
+      val ok =
+          try {
+            work()
+            true
+          } catch (e: Exception) {
+            Log.e(TAG, "widget refresh failed", e)
+            false
+          }
+      mainHandler.post { result.success(ok) }
+    }
+  }
+
   companion object {
+    private val widgetWorker = Executors.newSingleThreadExecutor()
+    private val mainHandler = Handler(Looper.getMainLooper())
     private const val CHANNEL = "com.quotation.quotation/widget_pin"
     private const val TAG = "WidgetPin"
   }

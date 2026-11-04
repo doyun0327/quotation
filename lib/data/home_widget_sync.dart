@@ -688,7 +688,6 @@ abstract final class HomeWidgetSync {
           people: TogetherCrowdLayout.roster(
             myUid: authController.viewerUid,
             myCharacterId: meId,
-            myName: authController.nickname?.trim() ?? '',
             myIds: authController.myIds,
             hostUid: item.cloudOwnerUid,
             friends: item.friends,
@@ -701,6 +700,9 @@ abstract final class HomeWidgetSync {
         myUid: authController.viewerUid,
         meScale: ddayController.charScaleForRoom(item.id),
         friendScale: ddayController.friendScaleForRoom(item.id),
+        saved: TogetherCrowdLayout.scalesOf(
+          ddayController.crowdForRoom(item.id),
+        ),
       );
       rooms[item.id] = {
         'label': label,
@@ -893,7 +895,6 @@ abstract final class HomeWidgetSync {
           people: TogetherCrowdLayout.roster(
             myUid: authController.viewerUid,
             myCharacterId: meId,
-            myName: authController.nickname?.trim() ?? '',
             myIds: authController.myIds,
             hostUid: item.cloudOwnerUid,
             friends: item.friends,
@@ -906,6 +907,9 @@ abstract final class HomeWidgetSync {
         myUid: authController.viewerUid,
         meScale: ddayController.charScaleForRoom(item.id),
         friendScale: ddayController.friendScaleForRoom(item.id),
+        saved: TogetherCrowdLayout.scalesOf(
+          ddayController.crowdForRoom(item.id),
+        ),
       );
       await _renderIosTogetherCard(
         box: box,

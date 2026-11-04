@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show StringCharacters;
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/dday_controller.dart';
@@ -63,7 +64,9 @@ abstract final class TogetherCheerRepository {
     // Empty is allowed: it clears the room's cheer for everyone. It is stored
     // as '' (not deleted) so friends can tell a clear from a missing field.
     final trimmed = text.trim();
-    if (trimmed.length > 80) {
+    // Same count as the field's maxLength (letters, not UTF-16 units), so
+    // emoji do not push an allowed cheer over the limit.
+    if (trimmed.characters.length > 80) {
       return const TogetherCheerPostResult(ok: false, errorCode: 'invalid_text');
     }
 
@@ -111,6 +114,14 @@ abstract final class TogetherCheerRepository {
     } catch (e) {
       debugPrint('TogetherCheerRepository.save: $e');
       final msg = e.toString();
+      // The room was made on another Firebase account (for example the
+      // anonymous one before Google sign-in switched accounts).
+      if (msg.contains('not_member') || msg.contains('not_host')) {
+        return const TogetherCheerPostResult(
+          ok: false,
+          errorCode: 'other_account',
+        );
+      }
       if (msg.contains('permission-denied')) {
         return const TogetherCheerPostResult(
           ok: false,
