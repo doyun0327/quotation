@@ -378,7 +378,7 @@ class AppStrings {
   String characterName(String id) {
     if (id == 'bul') return _t('불', 'Bul', 'ブル');
     if (id == 'basic') return _t('기본', 'Basic', '基本');
-    if (id.startsWith('c')) {
+    if (id.startsWith('c') || id.startsWith('m')) {
       final n = id.substring(1);
       return _t('스타일 $n', 'Style $n', 'スタイル $n');
     }

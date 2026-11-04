@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/data/widget_fonts.dart';
 
 /// Which bottom corner the speech-bubble tail points out of.
 enum TogetherBubbleTail {
@@ -153,9 +154,8 @@ abstract final class TogetherBubbleLayout {
   static const lineHeight = 1.2;
   static const padX = 8.0;
   static const padY = 5.0;
-  /// Pixel-art outline: one "pixel" step for the notched corners and the
-  /// stair-step tail, and the border is one pixel thick (no anti-aliasing).
-  static const pixel = 2.0;
+  /// Outline stroke for the clean rounded bubble.
+  static const pixel = 1.2;
   static const border = pixel;
   static const tailW = 8.0;
   static const tailH = 6.0;
@@ -163,19 +163,37 @@ abstract final class TogetherBubbleLayout {
   static const fill = Color(0xFFFFFFFF);
   static const ink = Color(0xFF2C3340);
 
-  static TextStyle style({required bool isPixel}) => TextStyle(
-        fontFamily: isPixel ? 'Galmuri' : null,
-        fontSize: fontSize,
-        // Galmuri ships one weight; a heavier one would fake bold here only.
-        fontWeight: isPixel ? FontWeight.w400 : FontWeight.w700,
-        height: lineHeight,
-        color: ink,
-      );
+  /// [font] is the room's decorate font, shared with the cheer text.
+  static TextStyle style({
+    required bool isPixel,
+    WidgetFont font = WidgetFont.basic,
+  }) {
+    final family = font.family;
+    // Bundled fonts and Galmuri ship one weight; a heavier one would fake
+    // bold here while Android draws the plain face.
+    final plain = family != null || isPixel;
+    return TextStyle(
+      fontFamily: family ?? (isPixel ? 'Galmuri' : null),
+      fontSize: fontSize,
+      fontWeight: plain ? FontWeight.w400 : FontWeight.w700,
+      height: lineHeight,
+      color: ink,
+    );
+  }
 
   /// Whole bubble including the tail.
-  static Size size(String text, {required bool isPixel}) {
+  ///
+  /// Bubbles always use the clean face so decorate, iOS, and Android match.
+  static Size size(
+    String text, {
+    required bool isPixel,
+    WidgetFont font = WidgetFont.basic,
+  }) {
     final painter = TextPainter(
-      text: TextSpan(text: text.isEmpty ? ' ' : text, style: style(isPixel: isPixel)),
+      text: TextSpan(
+        text: text.isEmpty ? ' ' : text,
+        style: style(isPixel: false, font: font),
+      ),
       textDirection: TextDirection.ltr,
       textScaler: TextScaler.noScaling,
       maxLines: 1,

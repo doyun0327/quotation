@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/together_bubble.dart';
+import 'package:quotation/data/widget_fonts.dart';
 
 /// Speech bubble drawn on the Together widget. Size comes from
 /// [TogetherBubbleLayout.size] so callers can position it before layout.
+///
+/// Always drawn as a clean (non-pixel) rounded bubble so decorate and the
+/// home widget match, even when the rest of the card is pixel style.
 class TogetherBubbleView extends StatelessWidget {
   const TogetherBubbleView({
     super.key,
     required this.text,
     required this.tail,
     required this.isPixel,
+    this.font = WidgetFont.basic,
   });
 
   final String text;
   final TogetherBubbleTail tail;
+  /// Kept for call-site compatibility; bubble outline/text stay clean.
   final bool isPixel;
+  final WidgetFont font;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +38,7 @@ class TogetherBubbleView extends StatelessWidget {
           maxLines: 1,
           softWrap: false,
           textScaler: TextScaler.noScaling,
-          style: TogetherBubbleLayout.style(isPixel: isPixel),
+          style: TogetherBubbleLayout.style(isPixel: false, font: font),
         ),
       ),
     );
@@ -43,39 +50,29 @@ class _BubblePainter extends CustomPainter {
 
   final TogetherBubbleTail tail;
 
-  /// Pixel-art outline built from axis-aligned rects (body + tail as one
-  /// shape, so no seam shows): corners are notched by one pixel and the tail
-  /// steps down in pixel rows toward its outer side.
+  /// Smooth rounded body + triangular tail (clean style).
   static Path outline(Size size, TogetherBubbleTail tail) {
-    const u = TogetherBubbleLayout.pixel;
     const t = TogetherBubbleLayout.tailH;
     const tw = TogetherBubbleLayout.tailW;
     const inset = TogetherBubbleLayout.tailInset;
+    const radius = 10.0;
     final w = size.width;
     final bodyH = size.height - t;
-    Path rect(double l, double top, double r, double b) =>
-        Path()..addRect(Rect.fromLTRB(l, top, r, b));
-    var path = Path.combine(
-      PathOperation.union,
-      rect(u, 0, w - u, bodyH),
-      rect(0, u, w, bodyH - u),
+    final body = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, w, bodyH),
+      const Radius.circular(radius),
     );
     final left = tail == TogetherBubbleTail.left;
     final base = left ? inset : w - inset - tw;
-    final rows = (t / u).round();
-    final unitsW = (tw / u).round();
-    for (var k = 0; k < rows; k++) {
-      final rowW = (unitsW * (rows - k) / rows).round().clamp(1, unitsW) * u;
-      final l = left ? base : base + tw - rowW;
-      // First row overlaps the body bottom so the outline merges cleanly.
-      final top = k == 0 ? bodyH - u : bodyH + k * u;
-      path = Path.combine(
-        PathOperation.union,
-        path,
-        rect(l, top, l + rowW, bodyH + (k + 1) * u),
-      );
-    }
-    return path;
+    final tipX = base + tw / 2;
+    final tipY = size.height;
+    final path = Path()..addRRect(body);
+    final tailPath = Path()
+      ..moveTo(base, bodyH - 1)
+      ..lineTo(tipX, tipY)
+      ..lineTo(base + tw, bodyH - 1)
+      ..close();
+    return Path.combine(PathOperation.union, path, tailPath);
   }
 
   @override
@@ -90,7 +87,7 @@ class _BubblePainter extends CustomPainter {
       path,
       Paint()
         ..color = TogetherBubbleLayout.fill
-        ..isAntiAlias = false,
+        ..isAntiAlias = true,
     );
     canvas.drawPath(
       path,
@@ -98,8 +95,8 @@ class _BubblePainter extends CustomPainter {
         ..color = TogetherBubbleLayout.ink
         ..style = PaintingStyle.stroke
         ..strokeWidth = stroke
-        ..strokeJoin = StrokeJoin.miter
-        ..isAntiAlias = false,
+        ..strokeJoin = StrokeJoin.round
+        ..isAntiAlias = true,
     );
     canvas.restore();
   }

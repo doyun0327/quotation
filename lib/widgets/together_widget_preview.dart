@@ -492,7 +492,11 @@ class TogetherWidgetPreview extends StatelessWidget {
 
     final bubbleBoxes = [
       for (final b in bubbles)
-        TogetherBubbleLayout.size(b.bubble.text, isPixel: isPixel),
+        TogetherBubbleLayout.size(
+          b.bubble.text,
+          isPixel: isPixel,
+          font: textFont,
+        ),
     ];
     Offset bubbleAt(int i) =>
         TogetherBubbleLayout.topLeft(bubbles[i].bubble, bubbleBoxes[i], width, height);
@@ -629,6 +633,7 @@ class TogetherWidgetPreview extends StatelessWidget {
                             text: bubbles[i].bubble.text,
                             tail: bubbles[i].bubble.tail,
                             isPixel: isPixel,
+                            font: textFont,
                           ),
                         ),
                       ),

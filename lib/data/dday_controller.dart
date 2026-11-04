@@ -1026,6 +1026,7 @@ class DdayController extends ChangeNotifier {
   Future<void> upsertFromCloud(
     DdayItem item, {
     String? cheerAuthorUid,
+    bool cheerCleared = false,
   }) async {
     final index = _items.indexWhere((e) => e.id == item.id);
     if (index < 0) {
@@ -1037,6 +1038,7 @@ class DdayController extends ChangeNotifier {
         current: existing.latestCheer,
         incoming: item.latestCheer,
         incomingAuthorUid: cheerAuthorUid,
+        cleared: cheerCleared,
       );
       _items[index] = item.copyWith(
         pinnedForWidget: existing.pinnedForWidget,
@@ -1054,6 +1056,7 @@ class DdayController extends ChangeNotifier {
     String? cloudOwnerUid,
     String? latestCheer,
     String? latestCheerAuthorUid,
+    bool cheerCleared = false,
   }) async {
     final index = _items.indexWhere((e) => e.id == ddayId);
     if (index < 0) return;
@@ -1070,6 +1073,7 @@ class DdayController extends ChangeNotifier {
       current: cur.latestCheer,
       incoming: latestCheer,
       incomingAuthorUid: latestCheerAuthorUid,
+      cleared: cheerCleared,
     );
     final sameCheer = (cur.latestCheer ?? '') == (nextCheer ?? '');
     if (sameFriends &&
@@ -1088,21 +1092,26 @@ class DdayController extends ChangeNotifier {
 
   /// Room cheer is shared. Keep a local edit only when the cloud copy is still
   /// this phone's older text, so a friend's cheer replaces the widget.
+  /// [cleared]: someone saved an empty cheer on purpose (the field is there
+  /// but blank), which clears it like new text would replace it. A missing
+  /// field still keeps what this phone has.
   String? _cheerFromCloud({
     required String roomId,
     required String? current,
     String? incoming,
     String? incomingAuthorUid,
+    bool cleared = false,
   }) {
     final remote = incoming?.trim();
     final next = (remote == null || remote.isEmpty) ? null : remote;
-    if (!_localCheerIds.contains(roomId)) return next ?? current;
+    if (next == null && !cleared) return current;
+    if (!_localCheerIds.contains(roomId)) return next;
     final mine = FirebaseAuth.instance.currentUser?.uid ?? '';
     final fromMe = incomingAuthorUid != null &&
         incomingAuthorUid.isNotEmpty &&
         mine.isNotEmpty &&
         incomingAuthorUid == mine;
-    if (next == null || (fromMe && next != (current ?? '').trim())) {
+    if (fromMe && (next ?? '') != (current ?? '').trim()) {
       return current;
     }
     _localCheerIds.remove(roomId);

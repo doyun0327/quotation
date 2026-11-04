@@ -330,7 +330,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final t = AppStrings.current;
     final text = _cheerCtrl.text.trim();
     final existing = _room?.latestCheer?.trim() ?? '';
-    if (text.isEmpty || text == existing) return true;
+    // An emptied field is saved too, so the old cheer does not come back.
+    if (text == existing) return true;
     if (_savingCheer || _loggingIn) return false;
 
     final ok = await authController.ensureFirebaseSession();
@@ -1308,7 +1309,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                   const TogetherBubbleView(
                                     text: '+',
                                     tail: TogetherBubbleTail.left,
-                                    isPixel: true,
+                                    isPixel: false,
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -1644,7 +1645,7 @@ class _BubbleEditSheetState extends State<_BubbleEditSheet> {
               TogetherBubbleView(
                 text: '...',
                 tail: tail,
-                isPixel: true,
+                isPixel: false,
               ),
               const SizedBox(height: 4),
               Text(

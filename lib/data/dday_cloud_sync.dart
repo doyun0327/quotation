@@ -262,6 +262,8 @@ class DdayCloudSync {
     }
     final rawCheer = (data['latestCheer'] as String?)?.trim() ?? '';
     final latestCheer = _cheerForDevice(ddayId, data);
+    // Saved blank on purpose (see TogetherCheerRepository.save).
+    final cheerCleared = data.containsKey('latestCheer') && rawCheer.isEmpty;
     if (rawCheer.isNotEmpty && (latestCheer == null || latestCheer.isEmpty)) {
       final stored = ddayController.items.where((e) => e.id == ddayId);
       final localCheer = stored.isEmpty
@@ -340,6 +342,7 @@ class DdayCloudSync {
               : latestCheer,
         ),
         cheerAuthorUid: data['latestCheerAuthorUid'] as String?,
+        cheerCleared: cheerCleared,
       );
     } else {
       await ddayController.applyFriendsFromCloud(
@@ -350,6 +353,7 @@ class DdayCloudSync {
             ? null
             : latestCheer,
         latestCheerAuthorUid: data['latestCheerAuthorUid'] as String?,
+        cheerCleared: cheerCleared,
       );
     }
 

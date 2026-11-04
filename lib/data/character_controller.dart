@@ -84,6 +84,16 @@ class AppCharacter {
       assetPath: 'assets/images/character/woman/character(65).png',
       group: CharacterGroup.female,
     ),
+    const AppCharacter(
+      id: 'c66',
+      assetPath: 'assets/images/character/woman/character(66).png',
+      group: CharacterGroup.female,
+    ),
+    const AppCharacter(
+      id: 'c67',
+      assetPath: 'assets/images/character/woman/character(67).png',
+      group: CharacterGroup.female,
+    ),
     for (var i = 1; i <= 15; i++)
       AppCharacter(
         id: 'm$i',
@@ -100,7 +110,7 @@ class AppCharacter {
       assetPath: 'assets/images/character/man/character(2).png',
       group: CharacterGroup.male,
     ),
-    for (var i = 16; i <= 26; i++)
+    for (var i = 16; i <= 27; i++)
       AppCharacter(
         id: 'm${i + 2}',
         assetPath: 'assets/images/character/man/character($i).png',

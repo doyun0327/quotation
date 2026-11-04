@@ -111,6 +111,8 @@ class CharacterArtInsets {
     'character (8).png': CharacterArtInsets(1.0210, 0.251, 0.255, 0.129, 0.030),
     'character (9).png': CharacterArtInsets(1.0218, 0.224, 0.224, 0.082, 0.035),
     'character(65).png': CharacterArtInsets(1.0000, 0.245, 0.255, 0.208, 0.132),
+    'character(66).png': CharacterArtInsets(1.0000, 0.213, 0.214, 0.054, 0.056),
+    'character(67).png': CharacterArtInsets(1.0000, 0.197, 0.206, 0.153, 0.059),
     'character.png': CharacterArtInsets(1.0000, 0.242, 0.255, 0.203, 0.125),
     // man/ (looked up as 'man/<file>'; some names repeat woman files)
     'man/character (1).png': CharacterArtInsets(1.0218, 0.263, 0.256, 0.089, 0.037),
@@ -129,6 +131,18 @@ class CharacterArtInsets {
     'man/character (8).png': CharacterArtInsets(1.0234, 0.259, 0.268, 0.118, 0.031),
     'man/character (9).png': CharacterArtInsets(1.0185, 0.246, 0.280, 0.115, 0.053),
     'man/character(2).png': CharacterArtInsets(1.0218, 0.263, 0.256, 0.089, 0.037),
+    'man/character(16).png': CharacterArtInsets(1.0000, 0.264, 0.269, 0.108, 0.060),
+    'man/character(17).png': CharacterArtInsets(1.0000, 0.000, 0.000, 0.000, 0.000),
+    'man/character(18).png': CharacterArtInsets(1.0000, 0.000, 0.000, 0.000, 0.000),
+    'man/character(19).png': CharacterArtInsets(1.0218, 0.267, 0.260, 0.114, 0.035),
+    'man/character(20).png': CharacterArtInsets(1.0000, 0.267, 0.263, 0.112, 0.053),
+    'man/character(21).png': CharacterArtInsets(1.0218, 0.268, 0.261, 0.114, 0.034),
+    'man/character(22).png': CharacterArtInsets(1.0000, 0.268, 0.264, 0.112, 0.061),
+    'man/character(23).png': CharacterArtInsets(1.0000, 0.268, 0.264, 0.110, 0.059),
+    'man/character(24).png': CharacterArtInsets(1.0000, 0.267, 0.264, 0.111, 0.053),
+    'man/character(25).png': CharacterArtInsets(1.0000, 0.268, 0.265, 0.112, 0.059),
+    'man/character(26).png': CharacterArtInsets(1.0000, 0.268, 0.242, 0.107, 0.061),
+    'man/character(27).png': CharacterArtInsets(1.0000, 0.221, 0.231, 0.135, 0.060),
     'man/charcter(1).png': CharacterArtInsets(1.0185, 0.264, 0.278, 0.125, 0.029),
   };
 }

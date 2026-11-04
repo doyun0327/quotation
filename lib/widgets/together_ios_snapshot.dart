@@ -125,13 +125,21 @@ class TogetherIosSnapshot extends StatelessWidget {
                 Positioned(
                   left: TogetherBubbleLayout.topLeft(
                     bubble,
-                    TogetherBubbleLayout.size(bubble.text, isPixel: isPixel),
+                    TogetherBubbleLayout.size(
+                      bubble.text,
+                      isPixel: isPixel,
+                      font: textFont,
+                    ),
                     width,
                     height,
                   ).dx,
                   top: TogetherBubbleLayout.topLeft(
                     bubble,
-                    TogetherBubbleLayout.size(bubble.text, isPixel: isPixel),
+                    TogetherBubbleLayout.size(
+                      bubble.text,
+                      isPixel: isPixel,
+                      font: textFont,
+                    ),
                     width,
                     height,
                   ).dy,
@@ -141,6 +149,7 @@ class TogetherIosSnapshot extends StatelessWidget {
                       text: bubble.text,
                       tail: bubble.tail,
                       isPixel: isPixel,
+                      font: textFont,
                     ),
                   ),
                 ),

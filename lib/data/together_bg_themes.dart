@@ -61,6 +61,10 @@ class TogetherBgTheme {
         id: 'background_final_$i',
         assetPath: 'assets/images/widgetbackground/background_final ($i).png',
       ),
+    const TogetherBgTheme(
+      id: 'background_final_10',
+      assetPath: 'assets/images/widgetbackground/background_final(10).png',
+    ),
   ];
 
   /// Picker shows transparent plus every bundled photo.

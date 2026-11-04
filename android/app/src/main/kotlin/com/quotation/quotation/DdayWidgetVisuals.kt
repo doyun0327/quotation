@@ -319,7 +319,7 @@ object DdayWidgetVisuals {
         }
         bmp.recycle()
       }
-      drawBubbles(context, canvas, bubbles, contentW, contentH, density, isPixel)
+      drawBubbles(context, canvas, bubbles, contentW, contentH, density, isPixel, textFontAsset)
       canvas.restore()
       return bitmap
     }
@@ -354,7 +354,7 @@ object DdayWidgetVisuals {
       friendBmp.recycle()
     }
 
-    drawBubbles(context, canvas, bubbles, contentW, contentH, density, isPixel)
+    drawBubbles(context, canvas, bubbles, contentW, contentH, density, isPixel, textFontAsset)
     canvas.restore()
     return bitmap
   }
@@ -364,10 +364,10 @@ object DdayWidgetVisuals {
   private const val BUBBLE_LINE_HEIGHT = 1.2f
   private const val BUBBLE_PAD_X_DP = 8f
   private const val BUBBLE_PAD_Y_DP = 5f
-  // Pixel-art outline (Flutter TogetherBubbleLayout.pixel): notched corners,
-  // stair-step tail, one-pixel border without anti-aliasing.
-  private const val BUBBLE_PIXEL_DP = 2f
-  private const val BUBBLE_BORDER_DP = BUBBLE_PIXEL_DP
+  // Clean rounded outline (Flutter TogetherBubbleView): soft corners + triangle
+  // tail, with anti-aliasing. Bubbles stay clean even when the card is pixel.
+  private const val BUBBLE_BORDER_DP = 1.2f
+  private const val BUBBLE_CORNER_DP = 10f
   private const val BUBBLE_TAIL_W_DP = 8f
   private const val BUBBLE_TAIL_H_DP = 6f
   private const val BUBBLE_TAIL_INSET_DP = 10f
@@ -385,16 +385,19 @@ object DdayWidgetVisuals {
       heightPx: Float,
       density: Float,
       isPixel: Boolean,
+      fontAsset: String = "",
   ) {
     if (bubbles == null || bubbles.length() == 0) return
+    // Room font picked in the app, same as the cheer label (buildLabelBitmap).
+    // Bubbles always use a clean face so they do not look pixelated.
+    val custom = if (fontAsset.isBlank()) null else assetTypeface(context, fontAsset)
     val textPaint =
         TextPaint().apply {
           color = BUBBLE_INK
           textSize = BUBBLE_FONT_DP * density
           typeface =
-              if (isPixel) pixelTypeface(context)
-              else Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-          isAntiAlias = !isPixel
+              custom ?: Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+          isAntiAlias = true
         }
     val metrics = textPaint.fontMetrics
     val fontHeight = metrics.descent - metrics.ascent
@@ -402,15 +405,15 @@ object DdayWidgetVisuals {
     val stroke = BUBBLE_BORDER_DP * density
     val fill = Paint().apply {
       color = Color.WHITE
-      isAntiAlias = false
+      isAntiAlias = true
     }
     val outline =
         Paint().apply {
           color = BUBBLE_INK
           style = Paint.Style.STROKE
           strokeWidth = stroke
-          strokeJoin = Paint.Join.MITER
-          isAntiAlias = false
+          strokeJoin = Paint.Join.ROUND
+          isAntiAlias = true
         }
     for (i in 0 until bubbles.length()) {
       val obj = bubbles.optJSONObject(i) ?: continue
@@ -439,26 +442,28 @@ object DdayWidgetVisuals {
     }
   }
 
-  /** Pixel outline from axis-aligned rects, matching Flutter _BubblePainter.outline. */
+  /** Smooth rounded body + triangle tail, matching Flutter _BubblePainter.outline. */
   private fun bubblePath(w: Float, h: Float, tailLeft: Boolean, density: Float): Path {
-    val u = BUBBLE_PIXEL_DP * density
     val tailH = BUBBLE_TAIL_H_DP * density
     val tailW = BUBBLE_TAIL_W_DP * density
     val inset = BUBBLE_TAIL_INSET_DP * density
+    val corner = BUBBLE_CORNER_DP * density
     val bodyH = h - tailH
-    fun rect(l: Float, t: Float, r: Float, b: Float) =
-        Path().apply { addRect(RectF(l, t, r, b), Path.Direction.CW) }
-    val path = rect(u, 0f, w - u, bodyH)
-    path.op(rect(0f, u, w, bodyH - u), Path.Op.UNION)
+    val path =
+        Path().apply {
+          addRoundRect(RectF(0f, 0f, w, bodyH), corner, corner, Path.Direction.CW)
+        }
     val base = if (tailLeft) inset else w - inset - tailW
-    val rows = (BUBBLE_TAIL_H_DP / BUBBLE_PIXEL_DP).roundToInt()
-    val unitsW = (BUBBLE_TAIL_W_DP / BUBBLE_PIXEL_DP).roundToInt()
-    for (k in 0 until rows) {
-      val rowW = (unitsW * (rows - k).toFloat() / rows).roundToInt().coerceIn(1, unitsW) * u
-      val l = if (tailLeft) base else base + tailW - rowW
-      val top = if (k == 0) bodyH - u else bodyH + k * u
-      path.op(rect(l, top, l + rowW, bodyH + (k + 1) * u), Path.Op.UNION)
-    }
+    val tipX = base + tailW / 2f
+    val tipY = h
+    val tail =
+        Path().apply {
+          moveTo(base, bodyH - 1f)
+          lineTo(tipX, tipY)
+          lineTo(base + tailW, bodyH - 1f)
+          close()
+        }
+    path.op(tail, Path.Op.UNION)
     return path
   }
 

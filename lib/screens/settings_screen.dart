@@ -202,7 +202,6 @@ class SettingsScreen extends StatelessWidget {
                             icon: Icons.auto_awesome_rounded,
                             title: t.premiumTitle,
                             subtitle: t.premiumSubtitle,
-                            iconColor: palette.accent,
                             trailing: SettingsOutlineButton(
                               label: t.viewPremium,
                               onPressed: billingController.isBusy
@@ -217,7 +216,6 @@ class SettingsScreen extends StatelessWidget {
                             icon: Icons.restore_rounded,
                             title: t.restorePurchasesTitle,
                             subtitle: t.restorePurchasesSubtitle,
-                            iconColor: palette.accent,
                             onTap: billingController.isBusy
                                 ? null
                                 : () => _restore(context),
@@ -226,7 +224,6 @@ class SettingsScreen extends StatelessWidget {
                             icon: Icons.workspace_premium_rounded,
                             title: t.premiumToggleTitle,
                             subtitle: t.premiumToggleSubtitle,
-                            iconColor: palette.accent,
                             trailing: Switch.adaptive(
                               value: isPremium,
                               activeTrackColor: palette.accent,
@@ -450,7 +447,6 @@ class _EveningCheerToggleState extends State<_EveningCheerToggle> {
       icon: Icons.notifications_active_rounded,
       title: t.eveningCheerTitle,
       subtitle: t.eveningCheerSubtitle,
-      iconColor: palette.accent,
       trailing: Switch.adaptive(
         value: _on,
         activeTrackColor: palette.accent,

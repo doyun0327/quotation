@@ -60,8 +60,10 @@ abstract final class TogetherCheerRepository {
     if (user == null) {
       return const TogetherCheerPostResult(ok: false, errorCode: 'not_signed_in');
     }
+    // Empty is allowed: it clears the room's cheer for everyone. It is stored
+    // as '' (not deleted) so friends can tell a clear from a missing field.
     final trimmed = text.trim();
-    if (trimmed.isEmpty || trimmed.length > 80) {
+    if (trimmed.length > 80) {
       return const TogetherCheerPostResult(ok: false, errorCode: 'invalid_text');
     }
 
@@ -101,6 +103,7 @@ abstract final class TogetherCheerRepository {
         cloudOwnerUid: room?.cloudOwnerUid,
         latestCheer: trimmed,
         latestCheerAuthorUid: user.uid,
+        cheerCleared: trimmed.isEmpty,
       );
       await HomeWidgetSync.syncDday();
 
