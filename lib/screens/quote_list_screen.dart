@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
@@ -24,6 +25,7 @@ import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
 
 class QuoteListScreen extends StatefulWidget {
@@ -43,10 +45,13 @@ class QuoteListScreen extends StatefulWidget {
 }
 
 class _QuoteListScreenState extends State<QuoteListScreen> {
+  static const _archiveHintKey = 'archive_paw_hint_dismissed';
+
   final GlobalKey _shareKey = GlobalKey();
   final Random _random = Random();
   late final PageController _pageController;
   bool _sharing = false;
+  bool _showArchiveHint = false;
   List<Quote> _order = const [];
   String _orderKey = '';
   int _page = 0;
@@ -62,6 +67,20 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     _order = _shuffled(source);
     _page = _startPage(source);
     _pageController = PageController(initialPage: _page);
+    _loadArchiveHint();
+  }
+
+  Future<void> _loadArchiveHint() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() => _showArchiveHint = prefs.getBool(_archiveHintKey) != true);
+  }
+
+  Future<void> _dismissArchiveHint() async {
+    if (!_showArchiveHint) return;
+    setState(() => _showArchiveHint = false);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_archiveHintKey, true);
   }
 
   String _orderKeyFor(List<Quote> source) {
@@ -387,6 +406,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     required String categoryTitle,
     required String subTitle,
   }) {
+    unawaited(_dismissArchiveHint());
     final t = AppStrings.current;
     final nowSaved = archiveController.toggle(
       id: quote.id,
@@ -545,24 +565,36 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _ActionButton(
-                            mark: HamfootIcon(
-                              size: 24,
-                              active: archiveController.contains(
-                                quotes[_page.clamp(0, quotes.length - 1)].id,
+                          Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: [
+                              _ActionButton(
+                                mark: HamfootIcon(
+                                  size: 24,
+                                  active: archiveController.contains(
+                                    quotes[_page.clamp(0, quotes.length - 1)]
+                                        .id,
+                                  ),
+                                ),
+                                label: '',
+                                color: AppColors.heart,
+                                onTap: () {
+                                  final quote = quotes[
+                                      _page.clamp(0, quotes.length - 1)];
+                                  _toggleHeart(
+                                    quote: quote,
+                                    categoryTitle: categoryTitle,
+                                    subTitle: title,
+                                  );
+                                },
                               ),
-                            ),
-                            label: '',
-                            color: AppColors.heart,
-                            onTap: () {
-                              final quote =
-                                  quotes[_page.clamp(0, quotes.length - 1)];
-                              _toggleHeart(
-                                quote: quote,
-                                categoryTitle: categoryTitle,
-                                subTitle: title,
-                              );
-                            },
+                              if (_showArchiveHint)
+                                const Positioned(
+                                  bottom: 58,
+                                  child: _ArchivePawHint(),
+                                ),
+                            ],
                           ),
                           const SizedBox(width: 28),
                           _ActionButton(
@@ -721,4 +753,116 @@ class _ActionButton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// First-time tip floating above the paw, with a caret pointing at it.
+class _ArchivePawHint extends StatefulWidget {
+  const _ArchivePawHint();
+
+  @override
+  State<_ArchivePawHint> createState() => _ArchivePawHintState();
+}
+
+class _ArchivePawHintState extends State<_ArchivePawHint>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _bounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _bounce = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _bounce.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return AnimatedBuilder(
+      animation: Listenable.merge([_bounce, localeController]),
+      builder: (context, _) {
+        return Transform.translate(
+          offset: Offset(0, -5 * _bounce.value),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: palette.accent, width: 1.4),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x22000000),
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Text(
+                    AppStrings.current.archivePawHint,
+                    textAlign: TextAlign.center,
+                    style: AppTheme.body.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: palette.accent,
+                    ),
+                  ),
+                ),
+              ),
+              CustomPaint(
+                size: const Size(14, 8),
+                painter: _HintCaretPainter(color: palette.accent),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _HintCaretPainter extends CustomPainter {
+  const _HintCaretPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final fill = Paint()..color = Colors.white;
+    final stroke = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.4
+      ..strokeJoin = StrokeJoin.round;
+    final path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width / 2, size.height)
+      ..lineTo(size.width, 0)
+      ..close();
+    canvas.drawPath(path, fill);
+    // Cover the top edge so it blends into the bubble border.
+    canvas.drawLine(
+      const Offset(1, 0),
+      Offset(size.width - 1, 0),
+      Paint()
+        ..color = Colors.white
+        ..strokeWidth = 2,
+    );
+    canvas.drawPath(path, stroke);
+  }
+
+  @override
+  bool shouldRepaint(covariant _HintCaretPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

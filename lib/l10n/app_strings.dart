@@ -44,6 +44,7 @@ class AppStrings {
       _t('아직 같이 방이 없어요', 'No rooms yet', 'まだ一緒のルームがありません');
   String get ddayEmptyHint => _t('방을 만들거나, 상단 초대 코드로 참여해 보세요', 'Create a room, or join with an invite code above', 'ルームを作るか、上の招待コードで参加してみてください');
   String get ddayLeaveRoom => _t('방 나가기', 'Leave room', 'ルームを出る');
+  String get ddayLeave => _t('나가기', 'Leave', '退出');
   String get ddayAdd => _t('방 만들기', 'Create room', 'ルームを作る');
   String get ddayEdit => _t('방 수정', 'Edit room', 'ルームを編集');
   String get ddayAddSubtitle => _t('친구들과 응원할 방 이름을 정해 보세요', 'Name a room to cheer with friends', '友だちと応援するルームの名前を決めましょう');
@@ -255,6 +256,7 @@ class AppStrings {
       );
   String get safetyBlockUser =>
       _t('이 사용자 차단', 'Block this person', 'このユーザーをブロック');
+  String get safetyBlock => _t('차단', 'Block', 'ブロック');
   String get safetyBlockHint => _t(
         '차단하면 이 기기에서 그 사람의 문구와 캐릭터가 보이지 않습니다.',
         'Blocking hides their cheer and character on this device.',
@@ -282,9 +284,9 @@ class AppStrings {
         'ブロックした人のメッセージは非表示です',
       );
   String get safetyNoCheer => _t(
-        '지금 신고할 응원 문구가 없어요. 방에 있는 친구는 아래에서 차단할 수 있어요.',
-        'There is no cheer to report. You can still block a friend below.',
-        '今通報できる応援メッセージはありません。下の友だちはブロックできます。',
+        '부적절한 문구를 사용한 사용자는 차단할 수 있어요.',
+        'You can block users who posted inappropriate messages.',
+        '不適切なメッセージを使ったユーザーはブロックできます。',
       );
   String get safetyOwnCheer => _t(
         '불쾌한 문구는 신고할 수 있어요.',
@@ -325,6 +327,10 @@ class AppStrings {
       _t('캐릭터를 골라 주세요', 'Pick your character', 'キャラクターを選んでください');
   String get characterSelectSubtitle => _t('나중에 설정에서 언제든 바꿀 수 있어요', 'You can change this anytime in Settings', 'あとから設定でいつでも変えられます');
   String get characterTapHint => _t('클릭해보세요!', 'Tap here!', 'タップしてみて！');
+  String get dateTapHint =>
+      _t('날짜 탭하면 문구가 바뀌어요!', 'Tap the date to change the quote!', '日付をタップすると文章が変わります！');
+  String get archivePawHint =>
+      _t('🐾 누르면 보관함에 담겨요!', '🐾 Tap to save to Archive!', '🐾 タップすると保存に入ります！');
   String get characterWidgetHint => _t('캐릭터와 말풍선을 위젯으로 내보낼 수 있어요!', 'You can send your character and speech bubble to a widget!', 'キャラクターと吹き出しをウィジェットに書き出せます！');
   String get characterWidgetHintExport => _t('내보내기', 'Export', '書き出す');
   String get characterWidgetHintClose => _t('닫기', 'Close', '閉じる');
@@ -702,6 +708,18 @@ class AppStrings {
     switch (id) {
       case 'cake':
         return _t('케이크', 'Cake', 'ケーキ');
+      case 'ring':
+        return _t('반지', 'Ring', '指輪');
+      case 'gift':
+        return _t('선물', 'Gift', 'プレゼント');
+      case 'grad':
+        return _t('졸업', 'Grad', '卒業');
+      case 'flower':
+        return _t('꽃', 'Flower', '花');
+      case 'music':
+        return _t('음악', 'Music', '音楽');
+      case 'bunny':
+        return _t('토끼', 'Bunny', 'うさぎ');
       case 'plane':
         return _t('비행기', 'Plane', '飛行機');
       case 'cat':
@@ -902,12 +920,13 @@ class AppStrings {
 
   String get cancel => _t('취소', 'Cancel', 'キャンセル');
   String get meLabel => _t('나', 'Me', 'わたし');
-  String deleteRoomConfirm(String title) => _t(
-        '「$title」 방을 삭제할까요?',
-        'Delete room "$title"?',
-        '「$title」ルームを削除しますか？',
+  String leaveRoomConfirm(String title) => _t(
+        '「$title」 방을 나갈까요?',
+        'Leave room "$title"?',
+        '「$title」ルームを出ますか？',
       );
-  String get roomDeletedToast => _t('삭제되었습니다.', 'Deleted.', '削除しました。');
+  String get roomLeftToast =>
+      _t('방에서 나왔어요.', 'You left the room.', 'ルームを出ました。');
   String get homeGreeting => _t(
         '안녕, 오늘도 잘하고 있어.',
         "Hi, you're doing well today.",

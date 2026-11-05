@@ -161,6 +161,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.highlightFriend = false,
     this.onDragStart,
     this.onDragEnd,
+    this.onBlankTap,
     this.crowd,
     this.bubbles = const [],
   });
@@ -207,6 +208,9 @@ class TogetherWidgetPreview extends StatelessWidget {
   final bool highlightFriend;
   final VoidCallback? onDragStart;
   final VoidCallback? onDragEnd;
+
+  /// Empty card area (not character / cheer / bubble). Clears decorate selection.
+  final VoidCallback? onBlankTap;
 
   /// When set, these sprites replace the single me/friend pair.
   final List<TogetherPreviewSprite>? crowd;
@@ -385,36 +389,47 @@ class TogetherWidgetPreview extends StatelessWidget {
                 child: Transform.rotate(
                   alignment: Alignment.center,
                   angle: rotation * math.pi / 180,
-                  child: Opacity(
-                    opacity: art ? 1 : 0,
-                    child: Image.asset(
-                      asset,
-                      width: spriteW,
-                      height: spriteH,
-                      fit: BoxFit.contain,
-                      cacheWidth: _decodePx(context, math.max(spriteW, spriteH)),
-                      gaplessPlayback: true,
-                      filterQuality: rotation % 90 == 0 && isPixel
-                          ? FilterQuality.none
-                          : FilterQuality.medium,
-                      isAntiAlias: !isPixel || rotation % 90 != 0,
-                    ),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Opacity(
+                        opacity: art ? 1 : 0,
+                        child: Image.asset(
+                          asset,
+                          width: spriteW,
+                          height: spriteH,
+                          fit: BoxFit.contain,
+                          cacheWidth:
+                              _decodePx(context, math.max(spriteW, spriteH)),
+                          gaplessPlayback: true,
+                          filterQuality: rotation % 90 == 0 && isPixel
+                              ? FilterQuality.none
+                              : FilterQuality.medium,
+                          isAntiAlias: !isPixel || rotation % 90 != 0,
+                        ),
+                      ),
+                      // Same dashed frame as the art, so it turns with the sprite.
+                      if (highlight)
+                        Positioned(
+                          left: artGap.left,
+                          top: artGap.top,
+                          width: math.max(
+                            1.0,
+                            spriteW - artGap.left - artGap.right,
+                          ),
+                          height: math.max(
+                            1.0,
+                            spriteH - artGap.top - artGap.bottom,
+                          ),
+                          child: const IgnorePointer(
+                            child: CustomPaint(painter: _PixelSelectPainter()),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
             ),
-            // Hug the drawn art (per-character transparent margins), not the
-            // 3:4 sprite box.
-            if (highlight)
-              Positioned(
-                left: artGap.left,
-                bottom: artGap.bottom,
-                width: math.max(1.0, spriteW - artGap.left - artGap.right),
-                height: math.max(1.0, spriteH - artGap.top - artGap.bottom),
-                child: const IgnorePointer(
-                  child: CustomPaint(painter: _PixelSelectPainter()),
-                ),
-              ),
             if (showKnob)
               Positioned(
                 left: (spriteW - knob) / 2,
@@ -599,6 +614,14 @@ class TogetherWidgetPreview extends StatelessWidget {
                 ),
               ),
             ),
+          // Behind characters / cheer / bubbles so empty taps clear selection.
+          if (onBlankTap != null)
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onBlankTap,
+              ),
+            ),
           Positioned(
             left: (width - innerW) / 2 + textX,
             top: (height - innerH) / 2 - textY,
@@ -646,6 +669,7 @@ class TogetherWidgetPreview extends StatelessWidget {
                             tail: bubbles[i].bubble.tail,
                             isPixel: isPixel,
                             font: textFont,
+                            textColor: Color(textColor),
                           ),
                         ),
                       ),

@@ -58,8 +58,9 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _toggleQuote(BuildContext context, Quote quote) {
-    final category = selectionController.mainCategory;
-    final subId = selectionController.subCategoryId;
+    final located = QuoteRepository.locateQuote(quote.id);
+    final category = located?.main ?? selectionController.mainCategory;
+    final subId = located?.sub.id ?? selectionController.subCategoryId;
     final t = AppStrings.current;
     final subTitle = subId == null ? null : t.subCategoryTitle(subId);
 
@@ -80,31 +81,26 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _openBubbleDetail(BuildContext context, Quote quote) {
-    final main = selectionController.mainCategory;
-    final subId = selectionController.subCategoryId;
-    SubCategory? sub =
-        subId == null ? null : QuoteRepository.subById(main.id, subId);
-
-    if (sub == null || !sub.quotes.any((q) => q.id == quote.id)) {
-      for (final candidate in main.subCategories) {
-        if (candidate.quotes.any((q) => q.id == quote.id)) {
-          sub = candidate;
-          break;
-        }
-      }
-    }
-    sub ??= main.subCategories.isEmpty ? null : main.subCategories.first;
+    final located = QuoteRepository.locateQuote(quote.id);
+    final main = located?.main ?? selectionController.mainCategory;
+    final sub = located?.sub ??
+        (selectionController.subCategoryId == null
+            ? null
+            : QuoteRepository.subById(
+                main.id,
+                selectionController.subCategoryId!,
+              ));
     if (sub == null || sub.quotes.isEmpty) return;
 
     final quotes = QuoteRepository.quotesFor(main.id, sub.id);
-    final index = quotes.indexWhere((q) => q.id == quote.id);
+    final index = located?.index ?? quotes.indexWhere((q) => q.id == quote.id);
 
     selectionController.selectSubCategory(main.id, sub.id);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => QuoteListScreen(
           mainCategory: main,
-          subCategory: sub!,
+          subCategory: sub,
           initialIndex: index < 0 ? 0 : index,
         ),
       ),
@@ -257,6 +253,7 @@ typedef _ArtInk = ({
 
 class _HomeQuoteCardState extends State<_HomeQuoteCard> {
   static const _tapHintKey = 'character_tap_hint_dismissed';
+  static const _dateHintKey = 'date_tap_hint_dismissed';
 
   /// Character plus name tag height as a share of the quote box height.
   static const _groupShare = 0.75;
@@ -276,12 +273,13 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
   static final _inkCache = <String, _ArtInk>{};
 
   bool _showTapHint = false;
+  bool _showDateHint = false;
   String? _measuring;
 
   @override
   void initState() {
     super.initState();
-    _loadTapHint();
+    _loadTapHints();
   }
 
   /// Measures the opaque bounds once per image, so every character is drawn
@@ -330,10 +328,25 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
     }
   }
 
-  Future<void> _loadTapHint() async {
+  Future<void> _loadTapHints() async {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
-    setState(() => _showTapHint = prefs.getBool(_tapHintKey) != true);
+    setState(() {
+      _showTapHint = prefs.getBool(_tapHintKey) != true;
+      _showDateHint = prefs.getBool(_dateHintKey) != true;
+    });
+  }
+
+  Future<void> _dismissDateHint() async {
+    if (!_showDateHint) return;
+    setState(() => _showDateHint = false);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_dateHintKey, true);
+  }
+
+  Future<void> _onDateTap() async {
+    await _dismissDateHint();
+    widget.onDateTap?.call();
   }
 
   Future<void> _openCharacter() async {
@@ -409,7 +422,7 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
                   children: [
                     Expanded(
                       child: GestureDetector(
-                        onTap: widget.onDateTap,
+                        onTap: _onDateTap,
                         behavior: HitTestBehavior.opaque,
                         child: Align(
                           alignment: Alignment.centerLeft,
@@ -477,6 +490,15 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
             bottom: 0,
             child: box,
           ),
+          if (_showDateHint)
+            Positioned(
+              left: boxLeft + textInset - 4,
+              top: -34,
+              child: GestureDetector(
+                onTap: _onDateTap,
+                child: const _HomeTapHint(messageKey: _HomeTapHintKind.date),
+              ),
+            ),
           // Image placed so its opaque body lands on the computed bounds.
           Positioned(
             left: bodyLeft - drawnW * ink.left,
@@ -499,7 +521,9 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
               left: tagCenter - 80,
               width: 160,
               top: bodyTop + bodyHeight - 28,
-              child: const Center(child: _CharacterTapHint()),
+              child: const Center(
+                child: _HomeTapHint(messageKey: _HomeTapHintKind.character),
+              ),
             ),
           Positioned(
             left: tagCenter - tagMax / 2,
@@ -663,14 +687,18 @@ class _HomeFrame extends StatelessWidget {
   }
 }
 
-class _CharacterTapHint extends StatefulWidget {
-  const _CharacterTapHint();
+enum _HomeTapHintKind { character, date }
+
+class _HomeTapHint extends StatefulWidget {
+  const _HomeTapHint({required this.messageKey});
+
+  final _HomeTapHintKind messageKey;
 
   @override
-  State<_CharacterTapHint> createState() => _CharacterTapHintState();
+  State<_HomeTapHint> createState() => _HomeTapHintState();
 }
 
-class _CharacterTapHintState extends State<_CharacterTapHint>
+class _HomeTapHintState extends State<_HomeTapHint>
     with SingleTickerProviderStateMixin {
   late final AnimationController _bounce;
 
@@ -692,6 +720,11 @@ class _CharacterTapHintState extends State<_CharacterTapHint>
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final t = AppStrings.current;
+    final message = switch (widget.messageKey) {
+      _HomeTapHintKind.character => t.characterTapHint,
+      _HomeTapHintKind.date => t.dateTapHint,
+    };
     return AnimatedBuilder(
       animation: Listenable.merge([_bounce, localeController]),
       builder: (context, _) {
@@ -713,7 +746,7 @@ class _CharacterTapHintState extends State<_CharacterTapHint>
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Text(
-                AppStrings.current.characterTapHint,
+                message,
                 style: AppTheme.body.copyWith(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,

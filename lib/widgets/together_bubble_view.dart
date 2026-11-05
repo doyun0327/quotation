@@ -14,6 +14,7 @@ class TogetherBubbleView extends StatelessWidget {
     required this.tail,
     required this.isPixel,
     this.font = WidgetFont.basic,
+    this.textColor = TogetherBubbleLayout.ink,
   });
 
   final String text;
@@ -21,6 +22,7 @@ class TogetherBubbleView extends StatelessWidget {
   /// Kept for call-site compatibility; bubble outline/text stay clean.
   final bool isPixel;
   final WidgetFont font;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,11 @@ class TogetherBubbleView extends StatelessWidget {
           maxLines: 1,
           softWrap: false,
           textScaler: TextScaler.noScaling,
-          style: TogetherBubbleLayout.style(isPixel: false, font: font),
+          style: TogetherBubbleLayout.style(
+            isPixel: false,
+            font: font,
+            color: textColor,
+          ),
         ),
       ),
     );

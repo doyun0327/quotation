@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/character_controller.dart';
+import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
@@ -51,14 +52,14 @@ class _DdayScreenState extends State<DdayScreen> {
     );
   }
 
-  Future<void> _confirmDelete(DdayItem item) async {
+  Future<void> _confirmLeave(DdayItem item) async {
     final t = AppStrings.current;
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(t.delete),
-          content: Text(t.deleteRoomConfirm(item.title)),
+          title: Text(t.ddayLeaveRoom),
+          content: Text(t.leaveRoomConfirm(item.title)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -66,17 +67,19 @@ class _DdayScreenState extends State<DdayScreen> {
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(t.delete),
+              child: Text(t.ddayLeave),
             ),
           ],
         );
       },
     );
     if (ok == true) {
+      // Drop me from cloud membership first so friends lose my character.
+      await DdayCloudSync.leaveRoom(item.id);
       await ddayController.remove(item.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.roomDeletedToast)),
+          SnackBar(content: Text(AppStrings.current.roomLeftToast)),
         );
       }
       await HomeWidgetSync.syncDday();
@@ -238,7 +241,7 @@ class _DdayScreenState extends State<DdayScreen> {
                             return _TogetherRoomCard(
                               item: item,
                               onOpen: () => _openRoom(item),
-                              onDelete: () => _confirmDelete(item),
+                              onDelete: () => _confirmLeave(item),
                               onToggleFavorite: () =>
                                   ddayController.toggleFavorite(item.id),
                             );

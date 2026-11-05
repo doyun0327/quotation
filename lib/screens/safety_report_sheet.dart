@@ -365,7 +365,7 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
                 }
                 if (mounted) setState(() => _busy = false);
               },
-        child: Text(blocked ? t.safetyUnblock : t.safetyBlockUser),
+        child: Text(blocked ? t.safetyUnblock : t.safetyBlock),
       ),
     );
   }

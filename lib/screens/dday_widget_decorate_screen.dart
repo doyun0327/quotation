@@ -73,7 +73,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   /// only the fallback for friends an older layout never sized.
   Map<String, int> _personScale = {};
   late int _textScale;
-  _DecorateFocus _focus = _DecorateFocus.me;
+  _DecorateFocus _focus = _DecorateFocus.none;
   String? _pickedFriendUid;
   bool _scaleMe = true;
   late String _bgThemeId;
@@ -143,6 +143,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         rooms.isEmpty ? '' : (rooms.first.latestCheer?.trim() ?? '');
     _cheerDraft.value = _cheerCtrl.text;
     _cheerCtrl.addListener(_onCheerEdited);
+    // Typing cheer clears character / bubble selection on the preview.
+    _cheerFocus.addListener(_onCheerFocusChanged);
     // Tapping anywhere else drops the keyboard focus; that ends typing too.
     _bubbleFocus.addListener(() {
       if (!_bubbleFocus.hasFocus) _finishBubbleEdit();
@@ -150,6 +152,22 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _adoptCrowd();
     ddayController.addListener(_syncFromController);
     unawaited(_syncAfterOpen(migrateAlbum: migrateAlbum));
+  }
+
+  void _onCheerFocusChanged() {
+    if (!_cheerFocus.hasFocus) return;
+    _clearSelection();
+  }
+
+  /// Drops character / bubble / cheer selection on the preview.
+  void _clearSelection() {
+    if (_focus == _DecorateFocus.none && !_editingBubble) return;
+    if (_editingBubble) _finishBubbleEdit();
+    if (!mounted) return;
+    setState(() {
+      _focus = _DecorateFocus.none;
+      _bubbleId = null;
+    });
   }
 
   /// Widget re-render is heavy, so it waits until the push transition has
@@ -310,6 +328,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _endPresence();
     ddayController.removeListener(_syncFromController);
     _cheerCtrl.removeListener(_onCheerEdited);
+    _cheerFocus.removeListener(_onCheerFocusChanged);
     _cheerCtrl.dispose();
     _cheerDraft.dispose();
     _cheerFocus.dispose();
@@ -952,7 +971,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       if (id != null && _bubbles.any((b) => b.id == id && b.text.isEmpty)) {
         _bubbles = [for (final b in _bubbles) if (b.id != id) b];
         _bubbleId = null;
-        _focus = _DecorateFocus.me;
+        _focus = _DecorateFocus.none;
       }
     });
     _dragTick.value++;
@@ -977,7 +996,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     setState(() {
       _bubbles = [for (final b in _bubbles) if (b.id != id) b];
       _bubbleId = null;
-      _focus = _DecorateFocus.me;
+      _focus = _DecorateFocus.none;
     });
     _dragTick.value++;
     unawaited(_persist());
@@ -1288,12 +1307,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             onMeSelect: _selectMe,
                             onFriendSelect:
                                 liveHasFriend ? _selectFriend : null,
-                            highlightMe: _focus == _DecorateFocus.me ||
-                                (!liveHasFriend &&
-                                    _focus == _DecorateFocus.friend),
+                            highlightMe: _focus == _DecorateFocus.me,
                             highlightFriend: liveHasFriend &&
                                 _focus == _DecorateFocus.friend,
                             highlightText: _focus == _DecorateFocus.text,
+                            onBlankTap: _clearSelection,
                             onDragStart: () => _setDragging(true),
                             onDragEnd: () {
                               _setDragging(false);
@@ -1421,6 +1439,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     TextField(
                       controller: _cheerCtrl,
                       focusNode: _cheerFocus,
+                      onTap: _clearSelection,
                       maxLength: 80,
                       maxLines: 3,
                       minLines: 2,
@@ -1489,10 +1508,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const TogetherBubbleView(
+                                  TogetherBubbleView(
                                     text: '+',
                                     tail: TogetherBubbleTail.left,
                                     isPixel: false,
+                                    textColor: Color(_textColor),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -1523,6 +1543,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                 _showPremiumLock();
                                 return;
                               }
+                              _clearSelection();
                               setState(() => _bgThemeId = theme.id);
                               _persist();
                             },
@@ -1588,6 +1609,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                 return;
                               }
                               if (_textFont == font) return;
+                              _clearSelection();
                               setState(() => _textFont = font);
                               _dragTick.value++;
                               _persist();
@@ -1620,6 +1642,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               accent: palette.accent,
                               label: t.ddayDecorateMoreColors,
                               onTap: () async {
+                                _clearSelection();
                                 final picked = await showColorPaletteSheet(
                                   context,
                                   initialArgb: _textColor,
@@ -1639,6 +1662,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             transparent: false,
                             accent: palette.accent,
                             onTap: () {
+                              _clearSelection();
                               setState(() => _textColor = c);
                               _persist();
                             },
@@ -1770,7 +1794,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
 }
 
-enum _DecorateFocus { me, friend, text, bubble }
+enum _DecorateFocus { none, me, friend, text, bubble }
 
 class _RoomMember {
   const _RoomMember({

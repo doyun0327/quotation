@@ -794,5 +794,77 @@ class DdayCloudSync {
     }
   }
 
+  /// Drop me from the shared membership so friends' widgets lose my character.
+  /// Host with remaining guests hands the room to the first guest.
+  static Future<void> leaveRoom(String roomId) async {
+    if (!CloudConsent.accepted) return;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || roomId.isEmpty) return;
+    if (roomId == TogetherTestRoom.roomId) return;
+
+    final ref = _db.collection('dday_memberships').doc(roomId);
+    try {
+      await _db.runTransaction((tx) async {
+        final snap = await tx.get(ref);
+        if (!snap.exists) return;
+        final data = snap.data() ?? {};
+        final hostUid = data['hostUid'] as String? ?? '';
+        final members = (data['members'] as List<dynamic>? ?? [])
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
+        final crowd = (data['layoutCrowd'] as List<dynamic>? ?? [])
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .where((m) => (m['uid'] as String? ?? '') != uid)
+            .toList();
+
+        if (hostUid == uid) {
+          if (members.isEmpty) {
+            tx.delete(ref);
+            return;
+          }
+          final next = members.removeAt(0);
+          tx.set(ref, {
+            'hostUid': next['uid'],
+            'hostCharacterId': next['characterId'] ?? 'basic',
+            'hostDisplayName': next['displayName'],
+            'members': members,
+            'guestUids': [
+              for (final m in members) m['uid'] as String? ?? '',
+            ]..removeWhere((id) => id.isEmpty),
+            'layoutCrowd': crowd,
+            'updatedBy': uid,
+            'updatedAt': FieldValue.serverTimestamp(),
+            'layoutNotifyAt': FieldValue.serverTimestamp(),
+          });
+          return;
+        }
+
+        final before = members.length;
+        members.removeWhere((m) => m['uid'] == uid);
+        if (members.length == before &&
+            !(data['guestUids'] as List<dynamic>? ?? []).contains(uid)) {
+          // Not in this room's cloud roster — nothing to update.
+          return;
+        }
+        tx.set(
+          ref,
+          {
+            'members': members,
+            'guestUids': [
+              for (final m in members) m['uid'] as String? ?? '',
+            ]..removeWhere((id) => id.isEmpty),
+            'layoutCrowd': crowd,
+            'updatedBy': uid,
+            'updatedAt': FieldValue.serverTimestamp(),
+            'layoutNotifyAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+      });
+    } catch (e) {
+      debugPrint('leaveRoom $roomId: $e');
+    }
+  }
+
   static bool get isStarted => _started;
 }

@@ -64,12 +64,12 @@ Future<void> main() async {
   await QuoteRepository.initialize();
   localeController.addListener(() {
     QuoteRepository.onLocaleChanged();
-    selectionController.syncAfterQuotesReady();
+    unawaited(selectionController.syncAfterQuotesReady());
   });
   await ddayController.load();
   await blockedUsersController.load();
   await CloudConsent.load();
-  selectionController.syncAfterQuotesReady();
+  await selectionController.syncAfterQuotesReady();
   selectionController.addListener(HomeWidgetSync.syncFromHome);
   themeController.addListener(HomeWidgetSync.syncThemeOnly);
   characterController.addListener(() {

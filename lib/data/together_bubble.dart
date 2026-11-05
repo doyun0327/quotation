@@ -164,9 +164,11 @@ abstract final class TogetherBubbleLayout {
   static const ink = Color(0xFF2C3340);
 
   /// [font] is the room's decorate font, shared with the cheer text.
+  /// [color] follows the room text-color picker (defaults to [ink]).
   static TextStyle style({
     required bool isPixel,
     WidgetFont font = WidgetFont.basic,
+    Color color = ink,
   }) {
     final family = font.family;
     // Bundled fonts and Galmuri ship one weight; a heavier one would fake
@@ -177,7 +179,7 @@ abstract final class TogetherBubbleLayout {
       fontSize: fontSize,
       fontWeight: plain ? FontWeight.w400 : FontWeight.w700,
       height: lineHeight,
-      color: ink,
+      color: color,
     );
   }
 

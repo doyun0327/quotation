@@ -140,10 +140,11 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                           itemCount: DdayIconKind.all.length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            mainAxisSpacing: 8,
-                            crossAxisSpacing: 8,
-                            childAspectRatio: 0.92,
+                            // 20 icons → four even rows of five.
+                            crossAxisCount: 5,
+                            mainAxisSpacing: 7,
+                            crossAxisSpacing: 7,
+                            childAspectRatio: 0.86,
                           ),
                           itemBuilder: (context, index) {
                             final kind = DdayIconKind.all[index];

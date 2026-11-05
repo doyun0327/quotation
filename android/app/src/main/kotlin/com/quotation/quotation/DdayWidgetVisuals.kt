@@ -326,7 +326,17 @@ object DdayWidgetVisuals {
         }
         bmp.recycle()
       }
-      drawBubbles(context, canvas, bubbles, contentW, contentH, density, isPixel, textFontAsset)
+      drawBubbles(
+          context,
+          canvas,
+          bubbles,
+          contentW,
+          contentH,
+          density,
+          isPixel,
+          textFontAsset,
+          textColorArgb,
+      )
       canvas.restore()
       return bitmap
     }
@@ -361,7 +371,17 @@ object DdayWidgetVisuals {
       friendBmp.recycle()
     }
 
-    drawBubbles(context, canvas, bubbles, contentW, contentH, density, isPixel, textFontAsset)
+    drawBubbles(
+        context,
+        canvas,
+        bubbles,
+        contentW,
+        contentH,
+        density,
+        isPixel,
+        textFontAsset,
+        textColorArgb,
+    )
     canvas.restore()
     return bitmap
   }
@@ -393,14 +413,17 @@ object DdayWidgetVisuals {
       density: Float,
       isPixel: Boolean,
       fontAsset: String = "",
+      textColorArgb: Int = BUBBLE_INK,
   ) {
     if (bubbles == null || bubbles.length() == 0) return
     // Room font picked in the app, same as the cheer label (buildLabelBitmap).
     // Bubbles always use a clean face so they do not look pixelated.
+    // Glyph color follows the decorate text-color picker.
     val custom = if (fontAsset.isBlank()) null else assetTypeface(context, fontAsset)
+    val glyphColor = if (textColorArgb == 0) BUBBLE_INK else textColorArgb
     val textPaint =
         TextPaint().apply {
-          color = BUBBLE_INK
+          color = glyphColor
           textSize = BUBBLE_FONT_DP * density
           typeface =
               custom ?: Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
