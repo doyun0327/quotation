@@ -29,6 +29,7 @@ import 'package:quotation/widgets/ios_widget_guide.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
 import 'package:quotation/widgets/together_bubble_view.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
+import 'package:quotation/widgets/subscription_terms.dart';
 
 /// In-app editor for a Together room home widget.
 class DdayWidgetDecorateScreen extends StatefulWidget {
@@ -1102,8 +1103,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
               color: AppColors.ink,
             ),
           ),
-          content: Text(
-            t.premiumLockedDecorateBody,
+          content: SubscriptionPromptBody(
+            message: t.premiumLockedDecorateBody,
             style: AppTheme.body.copyWith(
               fontFamily: 'Galmuri',
               fontSize: 13.5,

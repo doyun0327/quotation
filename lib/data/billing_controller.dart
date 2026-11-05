@@ -97,6 +97,39 @@ class BillingController extends ChangeNotifier {
     }
   }
 
+  String? _monthlyPrice;
+  Future<void>? _loadingMonthlyPrice;
+
+  /// Store price of the monthly plan (e.g. "₩2,900"), or null until loaded.
+  /// Shown before the purchase sheet, as store policy asks.
+  String? get monthlyPrice => _monthlyPrice;
+
+  Future<void> loadMonthlyPrice() {
+    if (_monthlyPrice != null) return Future.value();
+    return _loadingMonthlyPrice ??= _fetchMonthlyPrice().whenComplete(
+      () => _loadingMonthlyPrice = null,
+    );
+  }
+
+  Future<void> _fetchMonthlyPrice() async {
+    if (await _ensureConfigured() != null) return;
+    try {
+      final package = _monthlyPackage(await Purchases.getOfferings());
+      var price = package?.storeProduct.priceString;
+      if (price == null) {
+        final product = _monthlyProduct(
+          await Purchases.getProducts([kPremiumMonthlyProductId]),
+        );
+        price = product?.priceString;
+      }
+      if (price == null || price.isEmpty) return;
+      _monthlyPrice = price;
+      notifyListeners();
+    } catch (error) {
+      debugPrint('loadMonthlyPrice: $error');
+    }
+  }
+
   final Map<String, String> _packPrices = {};
 
   /// Store price for [pack] (e.g. "₩900"), or null until it has loaded.

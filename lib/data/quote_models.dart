@@ -5,7 +5,8 @@ class Quote {
   const Quote({
     required this.id,
     required this.text,
-    this.author = '작가 미상',
+    // Empty, never "작가 미상": screens hide the author line when it is empty.
+    this.author = '',
     this.featured = false,
   });
 

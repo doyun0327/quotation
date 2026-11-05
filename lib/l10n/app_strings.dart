@@ -555,6 +555,23 @@ class AppStrings {
       );
   String get premiumLockedDismiss => _t('닫기', 'Close', '閉じる');
   String get premiumLockedCta => _t('월 구독하기', 'Subscribe monthly', '月額で登録');
+  String subscriptionPriceLine(String price) =>
+      _t('월 $price', '$price / month', '月額 $price');
+  String get subscriptionPriceUnknown => _t(
+        '월 구독 · 가격은 결제 화면에서 확인할 수 있어요',
+        'Monthly plan · the price is shown on the payment screen',
+        '月額プラン・料金は決済画面で確認できます',
+      );
+  String subscriptionRenewNotice(String store) => _t(
+        '매월 자동으로 갱신되며, $store에서 언제든 해지할 수 있어요.',
+        'Renews automatically every month. Cancel anytime in $store.',
+        '毎月自動で更新されます。$storeでいつでも解約できます。',
+      );
+  String get subscriptionTrialNote => _t(
+        '앱의 7일 무료 체험은 끝나도 자동으로 결제되지 않아요.',
+        "The app's 7-day free trial never charges you when it ends.",
+        'アプリの7日間無料体験は、終わっても自動で課金されません。',
+      );
 
   String get trialWelcomeTitle =>
       _t('7일 무료 체험', '7-day free trial', '7日間無料体験');

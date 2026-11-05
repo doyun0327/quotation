@@ -296,6 +296,10 @@ class ThemeSwatchRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Same selected look as the style / font / language rows: a 2px border
+    // in the current theme's line color (it used to be black ink). A white
+    // ring keeps it visible against the swatch's own theme color.
+    final active = context.palette;
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
       child: Row(
@@ -309,14 +313,23 @@ class ThemeSwatchRow extends StatelessWidget {
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
                       height: 36,
+                      padding: EdgeInsets.all(selectedId == palette.id ? 2 : 0),
                       decoration: BoxDecoration(
-                        color: palette.accent,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: selectedId == palette.id
-                              ? AppColors.ink
+                              ? active.settingsLine
                               : palette.border,
-                          width: selectedId == palette.id ? 2.2 : 1,
+                          width: selectedId == palette.id ? 2 : 1,
+                        ),
+                      ),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: palette.accent,
+                          borderRadius: BorderRadius.circular(
+                            selectedId == palette.id ? 7 : 9,
+                          ),
                         ),
                       ),
                     ),

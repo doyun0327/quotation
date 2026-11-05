@@ -253,7 +253,10 @@ abstract final class QuoteAssetLoader {
   }) async {
     final raw = await rootBundle.loadString(path);
     final decoded = jsonDecode(raw);
-    final items = _asItemList(decoded);
+    final items = [
+      for (final item in _asItemList(decoded))
+        if (!(item is Map && _isMadeUpQuote(item))) item,
+    ];
     if (items.isEmpty) return const [];
 
     return [
@@ -271,6 +274,17 @@ abstract final class QuoteAssetLoader {
             author: authorOf(Map<String, dynamic>.from(item)),
           ),
     ].where((quote) => quote.text.isNotEmpty).toList(growable: false);
+  }
+
+  /// The famous-quote files mark lines that the named person never said
+  /// ("주제형 창작 문구", "original wording, not a verified quotation").
+  /// Shown under 유명인 명언 they would put words in a real person's mouth,
+  /// so only verified quotes are loaded. The files keep them for later use.
+  static bool _isMadeUpQuote(Map<dynamic, dynamic> item) {
+    final note = item['note'];
+    if (note is! String) return false;
+    return note.contains('실제 발언이 아니라') ||
+        note.contains('not a verified quotation');
   }
 
   static List<dynamic> _asItemList(Object? decoded) {

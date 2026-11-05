@@ -13,6 +13,7 @@ import 'package:quotation/widgets/category_pixel_icon.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dashed_border.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
+import 'package:quotation/widgets/subscription_terms.dart';
 
 class CategoryBrowseSection extends StatelessWidget {
   const CategoryBrowseSection({
@@ -43,8 +44,8 @@ class CategoryBrowseSection extends StatelessWidget {
               color: AppColors.ink,
             ),
           ),
-          content: Text(
-            t.premiumLockedBody,
+          content: SubscriptionPromptBody(
+            message: t.premiumLockedBody,
             style: AppTheme.body.copyWith(
               fontSize: 13.5,
               height: 1.45,

@@ -37,11 +37,24 @@ abstract final class QuoteRepository {
       _english[key] ?? const <Quote>[],
     );
     if (loaded.isNotEmpty) return loaded;
-    if (localeController.isKorean) {
-      return quoteBank[key] ?? const <Quote>[];
+    if (localeController.isKorean && !_noFallback.contains(key)) {
+      return [
+        for (final quote in quoteBank[key] ?? const <Quote>[])
+          quote.author == _unknownAuthor
+              ? Quote(id: quote.id, text: quote.text, featured: quote.featured)
+              : quote,
+      ];
     }
     return const <Quote>[];
   }
+
+  /// The built-in list only covers a file that failed to load. Its famous
+  /// quotes are made up and pinned on real people, so those categories stay
+  /// empty instead.
+  static const _noFallback = {'literature:quotes', 'literature:writers'};
+
+  /// Older built-in lines say "작가 미상"; they are shown with no author.
+  static const _unknownAuthor = '작가 미상';
 
   /// Korean and English files stay on their own language.
   /// Japanese never falls through to the English file.

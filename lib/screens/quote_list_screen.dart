@@ -27,6 +27,7 @@ import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
+import 'package:quotation/widgets/subscription_terms.dart';
 
 class QuoteListScreen extends StatefulWidget {
   const QuoteListScreen({
@@ -359,8 +360,8 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
               fontWeight: FontWeight.w900,
             ),
           ),
-          content: Text(
-            t.premiumLockedBody,
+          content: SubscriptionPromptBody(
+            message: t.premiumLockedBody,
             style: AppTheme.body.copyWith(
               fontSize: 13.5,
               height: 1.45,

@@ -17,6 +17,7 @@ import 'package:quotation/widgets/language_row.dart';
 import 'package:quotation/widgets/nickname_dialog.dart';
 import 'package:quotation/widgets/settings_widgets.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
+import 'package:quotation/widgets/subscription_terms.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({
@@ -38,6 +39,8 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Future<void> _subscribe(BuildContext context) async {
+    // Price and renewal terms first, then sign-in and the store sheet.
+    if (!await confirmSubscription(context) || !context.mounted) return;
     if (!await suggestSignInBeforePurchase(context)) return;
     final code = await billingController.buyMonthly();
     if (!context.mounted || code == null) return;

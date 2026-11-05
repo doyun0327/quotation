@@ -16,6 +16,7 @@ import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
+import 'package:quotation/widgets/subscription_terms.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({
@@ -157,7 +158,10 @@ class _ShopScreenState extends State<ShopScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(t.premiumTitle, style: AppTheme.body),
-        content: Text(t.shopNeedPremium, style: AppTheme.body),
+        content: SubscriptionPromptBody(
+          message: t.shopNeedPremium,
+          style: AppTheme.body,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
