@@ -227,6 +227,12 @@ class DdayCloudSync {
     try {
       final docs = await DdayInviteRepository.allMembershipsForUser(uid);
       for (final doc in docs) {
+        // Still listed as a member of a room I left: the leave did not reach
+        // the cloud, so send it again rather than bringing the room back.
+        if (ddayController.hasLeft(doc.id)) {
+          await leaveRoom(doc.id);
+          continue;
+        }
         await _applyMembershipDoc(doc.id, doc.data(), uid);
       }
       await HomeWidgetSync.syncDday();
@@ -253,6 +259,8 @@ class DdayCloudSync {
     bool notifyRemote = false,
   }) async {
     final hostUid = data['hostUid'] as String? ?? '';
+    // A room I left stays gone, whatever the cloud copy still says.
+    if (ddayController.hasLeft(ddayId)) return null;
     final hostCharacterId = data['hostCharacterId'] as String? ?? 'basic';
     final layoutBy = (data['layoutUpdatedBy'] as String?)?.trim() ?? '';
     final layoutName = (data['layoutUpdatedByName'] as String?)?.trim() ?? '';
@@ -348,6 +356,14 @@ class DdayCloudSync {
     }
 
     final hasLocal = ddayController.items.any((e) => e.id == ddayId);
+    final guestUids = [
+      for (final g in data['guestUids'] as List<dynamic>? ?? const [])
+        g.toString(),
+    ];
+    final iAmMember = hostUid == myUid || guestUids.contains(myUid);
+    if (!hasLocal && !iAmMember && ddayId != TogetherTestRoom.roomId) {
+      return null;
+    }
 
     if (!hasLocal) {
       // Guest may not have the room locally — pull from cloud.

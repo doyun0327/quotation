@@ -1,34 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Gallery preview — keep light (no large character bitmaps). -->
+<!-- 함께 picker preview before the app draws the live card (older Android,
+     or before first launch). A sample room card at the iPhone systemMedium
+     ratio (2.14:1): background, two characters, the cheer. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="8dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="220dp"
-        android:layout_height="88dp"
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="@drawable/dday_widget_duo_frame"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dday_widget_label_l"
-            android:textColor="#F26B8A"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="오늘도 화이팅!"
-            android:textColor="#3A3F4A"
-            android:textSize="13sp" />
-    </LinearLayout>
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/dday_widget_label_l"
+        android:scaleType="fitCenter"
+        android:src="@drawable/together_preview_card" />
 </FrameLayout>

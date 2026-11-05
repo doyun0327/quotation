@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- 오늘의 문구 medium (4×2) picker preview for older Android, like the iPhone
+     widget: a dashed box with the quote only. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:gravity="center"
-    android:padding="12dp"
-    android:text="@string/widget_quote_label"
-    android:textColor="#3C4C60"
-    android:textSize="16sp"
-    android:textStyle="bold" />
+    android:padding="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/widget_preview_quote_box"
+        android:gravity="top|start"
+        android:padding="12dp"
+        android:text="@string/widget_placeholder_quote"
+        android:textColor="#3C4C60"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+</FrameLayout>

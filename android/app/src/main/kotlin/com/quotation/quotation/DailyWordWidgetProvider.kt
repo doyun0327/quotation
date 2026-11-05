@@ -100,12 +100,7 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
               val (widthDp, heightDp) = widgetSizeDp(context, options)
               setImageViewBitmap(
                   R.id.widget_card,
-                  buildHomeCard(
-                      context = context,
-                      widgetData = widgetData,
-                      widthDp = widthDp,
-                      heightDp = heightDp,
-                  ),
+                  cardFor(context, widgetData, widthDp, heightDp),
               )
             }
 
@@ -115,13 +110,24 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       }
     }
   }
+  /** The home-screen export keeps the app-style card; the picker sizes override. */
+  protected open fun cardFor(
+      context: Context,
+      widgetData: SharedPreferences,
+      widthDp: Int,
+      heightDp: Int,
+  ): Bitmap = buildHomeCard(context, widgetData, widthDp, heightDp)
+
   companion object {
     const val ACTION_HOURLY_REFRESH =
         "com.quotation.quotation.ACTION_HOURLY_WIDGET_REFRESH"
 
     private const val DEFAULT_ACCENT = 0xFF5B8DEF.toInt()
-    private const val DATE_COLOR = 0xFF8EA0B5.toInt()
     private const val QUOTE_COLOR = 0xFF3C4C60.toInt()
+    private const val DATE_COLOR = 0xFF8EA0B5.toInt()
+    /** iOS dateColor (0.45, 0.55, 0.68). */
+    private const val IOS_DATE_COLOR = 0xFF738CAD.toInt()
+    private const val PAW_ASSET = "assets/images/like/hamfoot.png"
     private const val HOUR_MS = AlarmManager.INTERVAL_HOUR
 
     fun buildPinBitmap(
@@ -141,6 +147,8 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
      * standing in front of its left edge, name tag on the box's bottom line.
      * No favorite paw on the widget. Long quotes shrink to fit instead of
      * scrolling, since home widgets cannot scroll.
+     * Used by the home-screen export (내보내기) and widgets already placed;
+     * the picker's 오늘의 말 sizes draw [buildIosHomeCard] instead.
      */
     fun buildHomeCard(
         context: Context,
@@ -286,6 +294,188 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
           startSize = dp(if (heightDp < 140) 13f else 15f),
           minSize = dp(7f),
       )
+      return bitmap
+    }
+
+    /**
+     * Same layout as the iPhone "오늘의 말" widget (DailyWordWidget.swift):
+     * the character and nickname in a panel on the left, the date panel top
+     * right and the quote panel with the paw below it. Every panel is a
+     * dashed rounded box; the space around them stays transparent. Long
+     * quotes shrink to fit instead of scrolling, since widgets cannot scroll.
+     */
+    fun buildIosHomeCard(
+        context: Context,
+        widgetData: SharedPreferences,
+        widthDp: Int,
+        heightDp: Int,
+    ): Bitmap {
+      val metricsDensity =
+          context.resources.displayMetrics.density.coerceAtLeast(1f)
+      var scale = 1f
+      var width = (widthDp * metricsDensity).roundToInt().coerceAtLeast(1)
+      var height = (heightDp * metricsDensity).roundToInt().coerceAtLeast(1)
+      while (width.toLong() * height > 420_000L && scale > 0.5f) {
+        scale -= 0.08f
+        width = (widthDp * metricsDensity * scale).roundToInt().coerceAtLeast(1)
+        height = (heightDp * metricsDensity * scale).roundToInt().coerceAtLeast(1)
+      }
+      val d = metricsDensity * scale
+      fun dp(value: Float) = value * d
+
+      val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+      val canvas = Canvas(bitmap)
+      val accent = readColor(widgetData, "themeAccent", DEFAULT_ACCENT)
+      // iOS: accent at 75% opacity for the dashes, panels white at 92%.
+      val frame = (accent and 0x00FFFFFF) or (0xBF shl 24)
+      val pixel = prefString(widgetData, "visualStyle") != "clean"
+      val face = bodyTypeface(context, pixel)
+      val quote =
+          prefString(widgetData, "quoteText").ifEmpty {
+            context.getString(R.string.widget_placeholder_quote)
+          }
+      val characterId = prefString(widgetData, "characterId").ifEmpty { "basic" }
+      val nickname = prefString(widgetData, "nickname")
+
+      val gap = dp(8f)
+      val corner = dp(12f)
+      val stroke = dp(1.5f)
+      val panelFill =
+          Paint().apply {
+            color = 0xEBFFFFFF.toInt()
+            style = Paint.Style.FILL
+            isAntiAlias = true
+          }
+      fun panel(rect: RectF) {
+        canvas.drawRoundRect(rect, corner, corner, panelFill)
+        drawDashedRoundRect(canvas, rect, corner, frame, stroke, dp(5f), dp(3.5f))
+      }
+
+      val w = width.toFloat()
+      val h = height.toFloat()
+      val leftW = min(w * 0.30f, dp(110f))
+      val rightW = max(w - leftW - gap * 3f, dp(80f))
+      val dateH = dp(36f)
+      val quoteH = max(h - dateH - gap * 3f, dp(40f))
+      val leftBox = RectF(gap, gap, gap + leftW, h - gap)
+      val rightX = leftBox.right + gap
+      val dateBox = RectF(rightX, gap, rightX + rightW, gap + dateH)
+      val quoteBox =
+          RectF(rightX, dateBox.bottom + gap, rightX + rightW, dateBox.bottom + gap + quoteH)
+      panel(leftBox)
+      panel(dateBox)
+      panel(quoteBox)
+
+      // Left: character over the nickname, centered together.
+      val namePaint =
+          TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = QUOTE_COLOR
+            textSize = dp(12f)
+            setTypeface(face)
+            isFakeBoldText = !pixel
+          }
+      val maxName = (leftW - dp(16f)).coerceAtLeast(dp(24f))
+      // Like minimumScaleFactor(0.7): shrink a long name before cutting it.
+      while (nickname.isNotEmpty() &&
+          namePaint.measureText(nickname) > maxName &&
+          namePaint.textSize > dp(8.4f)) {
+        namePaint.textSize -= dp(0.5f)
+      }
+      val nameH = if (nickname.isEmpty()) 0f else namePaint.descent() - namePaint.ascent()
+      val spacing = if (nickname.isEmpty()) 0f else dp(6f)
+      val art =
+          DdayWidgetVisuals.characterBitmap(
+              context = context,
+              characterId = characterId,
+              widthDp = 160,
+              heightDp = 160,
+              isPixel = true,
+          )
+      val ink = inkBounds(art)
+      val maxCharW = (leftW - dp(20f)) * 0.82f
+      val maxCharH = (h - gap * 2f - dp(36f)) * 0.72f
+      val fit =
+          min(
+              maxCharW / ink.width().coerceAtLeast(1),
+              maxCharH / ink.height().coerceAtLeast(1),
+          )
+      val charW = ink.width() * fit
+      val charH = ink.height() * fit
+      val groupTop = leftBox.centerY() - (charH + spacing + nameH) / 2f
+      val charLeft = leftBox.centerX() - charW / 2f
+      canvas.drawBitmap(
+          art,
+          ink,
+          RectF(charLeft, groupTop, charLeft + charW, groupTop + charH),
+          Paint().apply {
+            isFilterBitmap = false
+            isAntiAlias = false
+          },
+      )
+      art.recycle()
+      if (nickname.isNotEmpty()) {
+        val label =
+            TextUtils.ellipsize(nickname, namePaint, maxName, TextUtils.TruncateAt.END)
+                .toString()
+        val baseline = groupTop + charH + spacing - namePaint.ascent()
+        canvas.drawText(
+            label,
+            leftBox.centerX() - namePaint.measureText(label) / 2f,
+            baseline,
+            namePaint,
+        )
+      }
+
+      // Top right: date, right-aligned.
+      val datePaint =
+          Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = IOS_DATE_COLOR
+            textSize = dp(12f)
+            setTypeface(face)
+            isFakeBoldText = !pixel
+          }
+      val dateLabel = homeDateLabel()
+      val dateY = dateBox.centerY() - (datePaint.ascent() + datePaint.descent()) / 2f
+      canvas.drawText(
+          dateLabel,
+          dateBox.right - dp(10f) - datePaint.measureText(dateLabel),
+          dateY,
+          datePaint,
+      )
+
+      // Bottom right: quote from the top left, paw in the bottom-right corner.
+      drawFitted(
+          canvas = canvas,
+          text = quote,
+          face = face,
+          fakeBold = !pixel,
+          left = quoteBox.left + dp(10f),
+          top = quoteBox.top + dp(8f),
+          maxWidth = (quoteBox.width() - dp(20f)).coerceAtLeast(dp(24f)),
+          maxHeight = (quoteBox.height() - dp(8f) - dp(22f)).coerceAtLeast(dp(12f)),
+          startSize = dp(13f),
+          minSize = dp(9f),
+      )
+      val paw = DdayWidgetVisuals.decodeFlutterAsset(context, PAW_ASSET)
+      if (paw != null) {
+        val size = dp(18f)
+        val pad = dp(8f)
+        canvas.drawBitmap(
+            paw,
+            null,
+            RectF(
+                quoteBox.right - pad - size,
+                quoteBox.bottom - pad - size,
+                quoteBox.right - pad,
+                quoteBox.bottom - pad,
+            ),
+            Paint().apply {
+              isFilterBitmap = false
+              isAntiAlias = false
+            },
+        )
+        paw.recycle()
+      }
       return bitmap
     }
 
@@ -534,6 +724,7 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
     fun quoteFamilyClasses(): List<Class<out android.appwidget.AppWidgetProvider>> =
         listOf(
             DailyWordWidgetProvider::class.java,
+            DailyWordWidgetProviderMedium::class.java,
             DailyWordWidgetProviderLarge::class.java,
             QuoteOnlyWidgetProvider::class.java,
             QuoteOnlyWidgetProviderMedium::class.java,
@@ -573,18 +764,23 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
           android.util.Log.w("WidgetPreview", clazz.simpleName, e)
         }
       }
+      // One entry per iPhone size, each drawn at the size it is placed at.
+      // The export widget (DailyWordWidgetProvider) is hidden from the picker.
       show(
-          DailyWordWidgetProvider::class.java,
-          previewCard(context, buildPinBitmap(context, prefs), 300, 150),
+          DailyWordWidgetProviderMedium::class.java,
+          previewCard(context, buildIosHomeCard(context, prefs, 300, 150), 300, 150),
+      )
+      show(
+          DailyWordWidgetProviderLarge::class.java,
+          previewCard(context, buildIosHomeCard(context, prefs, 300, 300), 300, 300),
       )
       show(
           QuoteOnlyWidgetProvider::class.java,
-          previewCard(
-              context,
-              buildQuoteOnlyCard(context, prefs, widthDp = 220, heightDp = 220),
-              150,
-              150,
-          ),
+          previewCard(context, buildQuoteOnlyCard(context, prefs, 150, 150), 150, 150),
+      )
+      show(
+          QuoteOnlyWidgetProviderMedium::class.java,
+          previewCard(context, buildQuoteOnlyCard(context, prefs, 300, 150), 300, 150),
       )
       try {
         show(
@@ -647,5 +843,24 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
   }
 }
 
+/** iOS systemMedium for 오늘의 말, as listed in the widget picker. */
+class DailyWordWidgetProviderMedium : DailyWordWidgetProvider() {
+  override fun cardFor(
+      context: Context,
+      widgetData: SharedPreferences,
+      widthDp: Int,
+      heightDp: Int,
+  ): Bitmap =
+      DailyWordWidgetProvider.buildIosHomeCard(context, widgetData, widthDp, heightDp)
+}
+
 /** iOS systemLarge for 오늘의 말. */
-class DailyWordWidgetProviderLarge : DailyWordWidgetProvider()
+class DailyWordWidgetProviderLarge : DailyWordWidgetProvider() {
+  override fun cardFor(
+      context: Context,
+      widgetData: SharedPreferences,
+      widthDp: Int,
+      heightDp: Int,
+  ): Bitmap =
+      DailyWordWidgetProvider.buildIosHomeCard(context, widgetData, widthDp, heightDp)
+}

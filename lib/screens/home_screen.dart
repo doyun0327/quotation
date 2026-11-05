@@ -252,7 +252,9 @@ typedef _ArtInk = ({
 });
 
 class _HomeQuoteCardState extends State<_HomeQuoteCard> {
-  static const _tapHintKey = 'character_tap_hint_dismissed';
+  // v2: Android backup restores prefs on reinstall, so the old key kept the
+  // hint hidden even on a fresh install. A new key shows it once more.
+  static const _tapHintKey = 'character_tap_hint_v2_dismissed';
   static const _dateHintKey = 'date_tap_hint_dismissed';
 
   /// Character plus name tag height as a share of the quote box height.

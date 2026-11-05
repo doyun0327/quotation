@@ -1,41 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Picker preview for older Android (15+ draws the live card instead).
+     Same layout as the iPhone "오늘의 말": character panel left, date panel
+     top right, quote panel with the paw below it. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:padding="8dp">
 
-    <ImageView
-        android:layout_width="72dp"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:contentDescription="@string/widget_character_cd"
-        android:scaleType="fitCenter"
-        android:src="@drawable/character" />
+        android:layout_weight="3"
+        android:background="@drawable/widget_preview_panel"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/widget_character_cd"
+            android:scaleType="fitCenter"
+            android:src="@drawable/character" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:maxLines="1"
+            android:text="Dearly"
+            android:textColor="#3C4C60"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginStart="8dp"
-        android:layout_weight="1"
+        android:layout_weight="7"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="2026. 11. 2"
-            android:textColor="#8EA0B5"
+            android:layout_height="36dp"
+            android:background="@drawable/widget_preview_panel"
+            android:gravity="end|center_vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="2026. 11. 5"
+            android:textColor="#738CAD"
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:text="@string/widget_placeholder_quote"
-            android:textColor="#3C4C60"
-            android:textSize="13sp" />
+            android:background="@drawable/widget_preview_panel">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="10dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="22dp"
+                android:text="@string/widget_placeholder_quote"
+                android:textColor="#3C4C60"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/widget_paw" />
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

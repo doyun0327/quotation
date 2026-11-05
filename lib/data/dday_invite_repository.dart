@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/character_controller.dart';
+import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 
@@ -291,6 +292,8 @@ class DdayInviteRepository {
       );
     });
 
+    // Rejoining a room I once left on this phone.
+    await ddayController.forgetLeft(ddayId);
     return ddayId;
   }
 

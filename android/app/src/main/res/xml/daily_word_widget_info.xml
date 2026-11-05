@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 오늘의 말 · medium. 300×150dp maps to 4×2; 250dp is read as 3 cells. -->
+<!-- 오늘의 말 from the home-screen export (내보내기). Kept as it was, and
+     hidden from the picker, which lists the iPhone-style sizes instead.
+     300×150dp maps to 4×2; 250dp is read as 3 cells. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/widget_description"
     android:initialLayout="@layout/daily_word_widget"
@@ -14,4 +16,5 @@
     android:targetCellHeight="2"
     android:targetCellWidth="4"
     android:updatePeriodMillis="3600000"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen"
+    android:widgetFeatures="hide_from_picker" />

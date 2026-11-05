@@ -470,6 +470,31 @@ class DdayController extends ChangeNotifier {
   static const _offsetsPrefsKey = 'dday_duo_offsets_v3';
   static const _legacyOffsetsPrefsKey = 'dday_duo_offsets_v2';
   static const _meCharPrefsKey = 'dday_me_character_v1';
+  static const _leftPrefsKey = 'dday_left_rooms_v1';
+
+  /// Rooms I left on this phone. The cloud copy can outlive the leave (a
+  /// failed write, or the room listener firing right after), and pulling it
+  /// back used to restore the room. Only a new invite clears an entry.
+  final Set<String> _leftRoomIds = {};
+
+  bool hasLeft(String roomId) => _leftRoomIds.contains(roomId);
+  Set<String> get leftRoomIds => Set.unmodifiable(_leftRoomIds);
+
+  Future<void> markLeft(String roomId) async {
+    if (roomId.isEmpty || !_leftRoomIds.add(roomId)) return;
+    await _persistLeft();
+  }
+
+  /// Joined again through an invite.
+  Future<void> forgetLeft(String roomId) async {
+    if (!_leftRoomIds.remove(roomId)) return;
+    await _persistLeft();
+  }
+
+  Future<void> _persistLeft() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_leftPrefsKey, _leftRoomIds.toList());
+  }
 
   /// My character per room, picked in the widget decorator. Rooms without an
   /// entry use the main-screen character, which is only the default.
@@ -583,6 +608,9 @@ class DdayController extends ChangeNotifier {
     }
     await _loadRoomOffsets(prefs);
     _loadMeCharacters(prefs);
+    _leftRoomIds
+      ..clear()
+      ..addAll(prefs.getStringList(_leftPrefsKey) ?? const []);
     _applyActiveOffsetsFromPinned();
     _loaded = true;
     notifyListeners();

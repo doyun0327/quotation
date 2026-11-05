@@ -74,7 +74,10 @@ class _DdayScreenState extends State<DdayScreen> {
       },
     );
     if (ok == true) {
-      // Drop me from cloud membership first so friends lose my character.
+      // Remembered first: the cloud listener or the next start must not bring
+      // the room back, even if the leave below fails.
+      await ddayController.markLeft(item.id);
+      // Drop me from cloud membership so friends lose my character.
       await DdayCloudSync.leaveRoom(item.id);
       await ddayController.remove(item.id);
       if (mounted) {

@@ -2,11 +2,11 @@
 <resources>
     <string name="app_name">Dearly</string>
     <string name="widget_description">캐릭터·날짜·응원 문구를 함께 보여 줍니다.</string>
-    <string name="widget_description_large">큰 크기. 캐릭터·날짜·응원 문구를 함께 보여 줍니다.</string>
+    <string name="widget_description_large">캐릭터·날짜·응원 문구를 함께 보여 줍니다.</string>
     <string name="widget_character_label">오늘의 말</string>
     <string name="widget_quote_label">오늘의 문구</string>
     <string name="widget_quote_description_small">점선 네모 안에 응원 문구만 보여 줍니다.</string>
-    <string name="widget_quote_description">중간 크기. 점선 네모 안에 응원 문구만 보여 줍니다.</string>
+    <string name="widget_quote_description">점선 네모 안에 응원 문구만 보여 줍니다.</string>
     <string name="dday_widget_description">친구와 공유하는 캐릭터와 응원 문구를 보여 줍니다.</string>
     <string name="dday_widget_label">같이</string>
     <string name="dday_widget_label_s">같이 2×2</string>

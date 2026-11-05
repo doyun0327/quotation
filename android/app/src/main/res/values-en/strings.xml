@@ -2,11 +2,11 @@
 <resources>
     <string name="app_name">Dearly</string>
     <string name="widget_description">Character, date, and a line of encouragement.</string>
-    <string name="widget_description_large">Large. Character, date, and a line of encouragement.</string>
+    <string name="widget_description_large">Character, date, and a line of encouragement.</string>
     <string name="widget_character_label">Today\'s word</string>
     <string name="widget_quote_label">Today\'s line</string>
     <string name="widget_quote_description_small">The encouragement line only, inside a dashed box.</string>
-    <string name="widget_quote_description">Medium. The encouragement line only, inside a dashed box.</string>
+    <string name="widget_quote_description">The encouragement line only, inside a dashed box.</string>
     <string name="dday_widget_description">Characters and a cheer you share with friends.</string>
     <string name="dday_widget_label">Together</string>
     <string name="dday_widget_label_s">Together 2×2</string>
