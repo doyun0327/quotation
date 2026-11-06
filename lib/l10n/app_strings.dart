@@ -555,30 +555,37 @@ class AppStrings {
       );
   String get premiumLockedDismiss => _t('닫기', 'Close', '閉じる');
   String get premiumLockedCta => _t('월 구독하기', 'Subscribe monthly', '月額で登録');
+  /// Two per row in Korean, one per line in English and Japanese. Matches
+  /// the code: categories and decorating
+  /// (membershipController.hasPremiumContent), standard characters
+  /// (characterController.isUsable; packs excluded, hence "기본" /
+  /// "standard" / "基本": keep that word) and
+  /// no banner (main.dart showAd).
+  List<String> get subscriptionBenefits => [
+        _t('명언 전체 카테고리 해제', 'Unlock all quote categories', '名言の全カテゴリーを解放'),
+        _t('기본 캐릭터 전체 해제', 'Unlock all standard characters', '基本キャラクターをすべて解放'),
+        _t('위젯 꾸미기 전체 기능', 'Every widget decorating feature', 'ウィジェット装飾の全機能'),
+        _t('배너 광고 제거', 'No banner ads', 'バナー広告なし'),
+      ];
   String subscriptionPriceLine(String price) =>
       _t('월 $price', '$price / month', '月額 $price');
   String get subscriptionPriceUnknown => _t(
         '월 구독 · 가격은 결제 화면에서 확인할 수 있어요',
-        'Monthly plan · the price is shown on the payment screen',
+        'Monthly plan · the price is shown at checkout',
         '月額プラン・料金は決済画面で確認できます',
       );
-  String subscriptionRenewNotice(String store) => _t(
+  String subscriptionFinePrint(String store) => _t(
         '매월 자동으로 갱신되며, $store에서 언제든 해지할 수 있어요.',
-        'Renews automatically every month. Cancel anytime in $store.',
-        '毎月自動で更新されます。$storeでいつでも解約できます。',
-      );
-  String get subscriptionTrialNote => _t(
-        '앱의 7일 무료 체험은 끝나도 자동으로 결제되지 않아요.',
-        "The app's 7-day free trial never charges you when it ends.",
-        'アプリの7日間無料体験は、終わっても自動で課金されません。',
+        'Your plan renews automatically every month, and you can cancel anytime in $store.',
+        '毎月自動で更新され、$storeでいつでも解約できます。',
       );
 
   String get trialWelcomeTitle =>
       _t('7일 무료 체험', '7-day free trial', '7日間無料体験');
   String get trialWelcomeBody => _t(
-        '다양한 명언부터 나만의 위젯 꾸미기까지, 프리미엄 기능을 7일간 무료로 체험해 보세요!',
-        'From a wide range of quotes to your own widget design — try premium free for 7 days!',
-        'さまざまな名言から自分だけのウィジェット装飾まで、プレミアム機能を7日間無料で体験してみてください！',
+        '다양한 명언부터 나만의 위젯 꾸미기까지, 프리미엄 기능을 7일간 무료로 체험해 보세요! 체험이 끝나도 자동으로 결제되지 않아요.',
+        'From a wide range of quotes to your own widget design — try premium free for 7 days! Nothing is charged when the trial ends.',
+        'さまざまな名言から自分だけのウィジェット装飾まで、プレミアム機能を7日間無料で体験してみてください！体験が終わっても自動で課金されません。',
       );
   String get trialWelcomeConfirm => _t('확인', 'Got it', 'OK');
 

@@ -70,7 +70,7 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
         border: Border(top: BorderSide(color: Color(0xFFE3E7EF), width: 1)),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: _gap, bottom: 4),
+        padding: const EdgeInsets.only(top: _gap, bottom: 2),
         child: SizedBox(
           width: double.infinity,
           height: height,
@@ -89,5 +89,7 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   }
 
   /// Space between the tab bar and the ad.
-  static const _gap = 10.0;
+  /// 6dp still keeps a finger's edge off the ad, with the divider and the
+  /// grey band marking where the tabs end.
+  static const _gap = 6.0;
 }
