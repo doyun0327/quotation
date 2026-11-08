@@ -144,7 +144,7 @@ const _korean = LegalCopy(
       '7. 이용자의 권리와 삭제',
       '로그인 없이 앱을 이용할 수 있습니다. 설정의 로그아웃은 이 기기에서 Google 연결을 해제합니다. 알림은 기기 설정에서 끌 수 있습니다. 광고 맞춤설정은 기기의 광고 설정에서 제한할 수 있습니다.\n\n'
           '클라우드에 저장된 계정 정보의 열람 또는 삭제는 ${LegalCopy.contact} 으로 요청할 수 있습니다. 계정에 등록된 이메일로 보내 주거나, 다른 주소로 보낼 때는 어떤 계정을 지울지 알려 주세요. 합리적 기간 안에 해당 계정의 클라우드 프로필을 삭제하고, 법령상 남겨야 하는 항목이 있으면 알려 드립니다.\n\n'
-          '앱을 삭제하면 그 기기의 로컬 데이터는 지워집니다. 앱 삭제만으로 구독이 해지되거나 클라우드 계정이 삭제되지는 않습니다. 구독은 Google Play 또는 iPhone 설정의 구독에서 해지하고, 계정 삭제는 이메일로 요청해 주세요.',
+          '앱을 삭제하면 그 기기의 로컬 데이터는 지워집니다. 앱 삭제만으로 구독이 해지되거나 클라우드 계정이 삭제되지는 않습니다. 구독은 Google Play 또는 iPhone 설정의 구독에서 해지하고, 계정 삭제는 앱의 설정 > 계정 삭제에서 바로 하거나 이메일로 요청할 수 있습니다.',
     ),
     LegalBlock(
       '8. 아동',
@@ -273,7 +273,7 @@ const _english = LegalCopy(
       '7. Your choices and deletion',
       'You can use the app without signing in. Sign-out in Settings disconnects Google on this device. You can turn notifications off in device settings and limit ad personalization in your device’s ad settings.\n\n'
           'To access or delete the account information stored in the cloud, email ${LegalCopy.contact}. Use the email on the account, or tell us which account to delete if you write from another address. Within a reasonable time we will delete the cloud profile tied to that account and tell you if a record must be kept by law.\n\n'
-          'Uninstalling the app removes local data on that device. Uninstalling does not cancel a subscription or delete the cloud account. Cancel the subscription in Google Play or in iPhone Settings > Subscriptions, and email us to delete the account.',
+          'Uninstalling the app removes local data on that device. Uninstalling does not cancel a subscription or delete the cloud account. Cancel the subscription in Google Play or in iPhone Settings > Subscriptions, and delete the account in the app under Settings > Delete account, or email us.',
     ),
     LegalBlock(
       '8. Children',
@@ -402,7 +402,7 @@ const _japanese = LegalCopy(
       '7. 利用者の選択と削除',
       'ログインなしでアプリを利用できます。設定のログアウトは、この端末でのGoogleとの接続を解除します。通知は端末の設定で止められます。広告のパーソナライズは端末の広告設定で制限できます。\n\n'
           'クラウドに保存されたアカウント情報の開示または削除は ${LegalCopy.contact} に依頼できます。アカウントのメールアドレスから送るか、別のアドレスから送る場合は削除するアカウントを知らせてください。合理的な期間内にそのアカウントのクラウド上のプロフィールを削除し、法令上残す必要があるものがあればお知らせします。\n\n'
-          'アプリを削除すると、その端末のローカルデータは消えます。アプリの削除だけでは定期購入は解約されず、クラウドのアカウントも削除されません。定期購入はGoogle PlayまたはiPhoneの設定の「サブスクリプション」で解約し、アカウントの削除はメールで依頼してください。',
+          'アプリを削除すると、その端末のローカルデータは消えます。アプリの削除だけでは定期購入は解約されず、クラウドのアカウントも削除されません。定期購入はGoogle PlayまたはiPhoneの設定の「サブスクリプション」で解約し、アカウントの削除はアプリの「設定 > アカウント削除」から行うか、メールで依頼してください。',
     ),
     LegalBlock(
       '8. 子ども',

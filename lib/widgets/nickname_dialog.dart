@@ -61,6 +61,12 @@ class _NicknameDialogState extends State<_NicknameDialog> {
     }
     // Name tag on the home character widget.
     unawaited(HomeWidgetSync.syncCharacter());
+    // Confirm edits from settings; the first-run prompt needs no toast.
+    if (!widget.requiredName) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(t.nicknameUpdated)));
+    }
     Navigator.of(context).pop();
   }
 

@@ -20,6 +20,11 @@ class AppStrings {
     }
   }
 
+  /// Store that sells the subscription on this device.
+  String get _store => defaultTargetPlatform == TargetPlatform.iOS
+      ? 'App Store'
+      : 'Google Play';
+
   List<String> _lines(List<String> ko, List<String> en, List<String> ja) {
     switch (language) {
       case AppLanguage.korean:
@@ -452,6 +457,7 @@ class AppStrings {
   String get nicknameRequired =>
       _t('닉네임을 입력해 주세요', 'Enter a nickname', 'ニックネームを入力してください');
   String get nicknameSaved => _t('닉네임을 저장했어요', 'Nickname saved', 'ニックネームを保存しました');
+  String get nicknameUpdated => _t('수정되었습니다.', 'Updated.', '変更しました。');
   String get googleLoginTitle =>
       _t('Google 계정으로 로그인', 'Sign in with Google', 'Googleアカウントでログイン');
   String get googleLoginSubtitle => _t('로그인하면 데이터를 동기화할 수 있어요', 'Sign in to sync your data', 'ログインするとデータを同期できます');
@@ -470,8 +476,8 @@ class AppStrings {
       _t('로그아웃했어요', 'Signed out', 'ログアウトしました');
   String get googleLoginCanceled =>
       _t('로그인을 취소했어요', 'Sign-in canceled', 'ログインをキャンセルしました');
-  String get googleLoginConfigError => _t('Google 설정 오류예요. OAuth 동의 화면이 Testing이면 Test users에 본인 계정을 추가하고, Android 클라이언트(패키지+SHA-1)를 확인해 주세요', 'Google config error. If consent is Testing, add your account under Test users, and verify Android OAuth package+SHA-1', 'Googleの設定エラーです。同意画面がTestingならTest usersに自分のアカウントを追加し、Androidクライアント（パッケージ+SHA-1）を確認してください');
-  String get googleLoginConfigMissing => _t('Google Web 클라이언트 ID를 아직 설정하지 않았어요', 'Google Web client ID is not configured yet', 'Google WebクライアントIDがまだ設定されていません');
+  String get googleLoginConfigError => _t('지금은 Google 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요', 'Google sign-in is unavailable right now. Please try again later', '現在Googleログインを利用できません。しばらくしてからもう一度お試しください');
+  String get googleLoginConfigMissing => _t('지금은 Google 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요', 'Google sign-in is unavailable right now. Please try again later', '現在Googleログインを利用できません。しばらくしてからもう一度お試しください');
   String get googleLoginFailed =>
       _t('Google 로그인에 실패했어요', 'Google sign-in failed', 'Googleログインに失敗しました');
   String googleLoginFailedDetail(String detail) => _t('Google 로그인 실패: $detail', 'Google sign-in failed: $detail', 'Googleログイン失敗: $detail');
@@ -492,7 +498,7 @@ class AppStrings {
       _t('로그인 없이 계속', 'Continue without signing in', 'ログインせずに続ける');
   String get appleLoginSuccess =>
       _t('Apple 로그인 완료', 'Signed in with Apple', 'Appleログインが完了しました');
-  String get appleLoginConfigError => _t('Apple 로그인 설정 오류예요. Firebase에서 Apple 제공업체를 켜고 Xcode에 Sign in with Apple 기능을 추가해 주세요', 'Apple sign-in config error. Enable the Apple provider in Firebase and add the Sign in with Apple capability in Xcode', 'Appleサインインの設定エラーです。FirebaseでAppleプロバイダを有効にし、XcodeでSign in with Apple機能を追加してください');
+  String get appleLoginConfigError => _t('지금은 Apple 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요', 'Sign in with Apple is unavailable right now. Please try again later', '現在Appleでサインインを利用できません。しばらくしてからもう一度お試しください');
   String get appleLoginFailed =>
       _t('Apple 로그인에 실패했어요', 'Apple sign-in failed', 'Appleログインに失敗しました');
   String appleLoginFailedDetail(String detail) => _t('Apple 로그인 실패: $detail', 'Apple sign-in failed: $detail', 'Appleログイン失敗: $detail');
@@ -515,7 +521,7 @@ class AppStrings {
   String billingError(String code) {
     switch (code) {
       case 'missing_key':
-        return _t('RevenueCat 공개 키가 아직 없어요. 키를 넣은 뒤 다시 눌러 주세요', 'The RevenueCat public key is missing. Add it, then try again', 'RevenueCatの公開キーがまだありません。キーを入れてからもう一度押してください');
+        return _t('지금은 결제를 사용할 수 없어요. 잠시 후 다시 시도해 주세요', 'Purchases are unavailable right now. Please try again later', '現在決済を利用できません。しばらくしてからもう一度お試しください');
       case 'unavailable':
         return defaultTargetPlatform == TargetPlatform.iOS
             ? _t('App Store 결제를 사용할 수 없어요', 'App Store payments are unavailable', 'App Storeの決済を利用できません')
@@ -523,7 +529,7 @@ class AppStrings {
       case 'restore_none':
         return _t('복원할 구독이 없어요', 'No subscription to restore', '復元できる購読がありません');
       case 'not_found':
-        return _t('월 구독 상품을 아직 찾을 수 없어요. RevenueCat 오퍼링을 만든 뒤 다시 눌러 주세요', 'Monthly plan is not available yet. Create the RevenueCat offering, then try again', '月額プランがまだ見つかりません。RevenueCatのオファリングを作ってからもう一度押してください');
+        return _t('상품 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요', 'Could not load the product. Please try again later', '商品情報を読み込めませんでした。しばらくしてからもう一度お試しください');
       default:
         return _t('구독을 시작하지 못했어요', 'Could not start the subscription', '登録を開始できませんでした');
     }
@@ -581,11 +587,12 @@ class AppStrings {
       );
 
   String get trialWelcomeTitle =>
-      _t('7일 무료 체험', '7-day free trial', '7日間無料体験');
+      _t('설치 환영 선물', 'A welcome gift', 'インストール記念プレゼント');
+  // Not a store free trial: no subscription starts and nothing is charged.
   String get trialWelcomeBody => _t(
-        '다양한 명언부터 나만의 위젯 꾸미기까지, 프리미엄 기능을 7일간 무료로 체험해 보세요! 체험이 끝나도 자동으로 결제되지 않아요.',
-        'From a wide range of quotes to your own widget design — try premium free for 7 days! Nothing is charged when the trial ends.',
-        'さまざまな名言から自分だけのウィジェット装飾まで、プレミアム機能を7日間無料で体験してみてください！体験が終わっても自動で課金されません。',
+        '설치 후 7일 동안 모든 명언 카테고리와 위젯 꾸미기를 열어 드려요.\n구독이 시작되지 않고 결제도 되지 않아요. 7일이 지나면 자동으로 원래대로 돌아가요.',
+        'For 7 days after installing, every quote category and widget decorating are open to you.\nNo subscription starts and you are not charged. Everything returns to normal after 7 days.',
+        'インストール後7日間、すべての名言カテゴリーとウィジェット装飾を開放します。\n購読は始まらず、料金もかかりません。7日が過ぎると自動で元に戻ります。',
       );
   String get trialWelcomeConfirm => _t('확인', 'Got it', 'OK');
 
@@ -616,14 +623,14 @@ class AppStrings {
   String get accountDeleteSubscriptionHeading =>
       _t('구독 이용 안내', 'About your subscription', '定期購入についてのご案内');
   String get accountDeleteSubscriptionKeep => _t(
-        '현재 구독 중인 경우 계정을 삭제해도 Google Play 정기결제는 자동으로 해지되지 않아요.',
-        'If you are subscribed, deleting your account does not automatically cancel the Google Play subscription.',
-        '定期購入中の場合、アカウントを削除しても Google Play の定期購入は自動では解約されません。',
+        '현재 구독 중인 경우 계정을 삭제해도 $_store 정기결제는 자동으로 해지되지 않아요.',
+        'If you are subscribed, deleting your account does not automatically cancel the $_store subscription.',
+        '定期購入中の場合、アカウントを削除しても $_store の定期購入は自動では解約されません。',
       );
   String get accountDeleteSubscriptionCancel => _t(
-        '추가 결제가 발생하지 않도록 Google Play 스토어에서 직접 구독을 해지해 주세요.',
-        'Cancel the subscription yourself in the Google Play Store so you are not charged again.',
-        '追加の請求が発生しないよう、Google Play ストアでご自身で定期購入を解約してください。',
+        '추가 결제가 발생하지 않도록 $_store에서 직접 구독을 해지해 주세요.',
+        'Cancel the subscription yourself in the $_store so you are not charged again.',
+        '追加の請求が発生しないよう、$_store でご自身で定期購入を解約してください。',
       );
   String get accountDeleteSubscriptionRenew => _t(
         '계정 삭제 후에도 구독은 별도로 해지하기 전까지 자동 갱신될 수 있어요.',
@@ -631,30 +638,30 @@ class AppStrings {
         'アカウント削除後も、別途解約するまで定期購入は自動更新されることがあります。',
       );
   String get accountDeleteSubtitle => _t(
-        '앱에서 Firebase 계정과 클라우드 데이터를 삭제합니다',
-        'Delete your Firebase account and cloud data in the app',
-        'アプリで Firebase アカウントとクラウドデータを削除します',
+        '앱에서 계정과 클라우드 데이터를 삭제합니다',
+        'Delete your account and cloud data in the app',
+        'アプリでアカウントとクラウドデータを削除します',
       );
   String get accountDeleteBody => _t(
-        '아래 버튼으로 이 앱에서 Firebase 계정, 프로필, 같이 방 클라우드 데이터를 바로 삭제할 수 있어요.\n\n'
+        '아래 버튼으로 이 앱에서 계정, 프로필, 같이 방 클라우드 데이터를 바로 삭제할 수 있어요.\n\n'
             '메일이 필요할 때는 계정에 쓰는 이메일로 보내 주세요. 다른 주소에서 보낼 때는 어떤 계정을 지울지 적어 주세요.\n\n'
             '법령상 남겨야 하는 항목이 있으면 알려 드려요. '
-            '구독은 Google Play에서 따로 해지해야 해요. 기기에만 있는 데이터는 앱을 삭제하면 지워집니다.',
-        'The button below deletes your Firebase account, profile, and Together cloud data from this app.\n\n'
+            '구독은 $_store에서 따로 해지해야 해요. 기기에만 있는 데이터는 앱을 삭제하면 지워집니다.',
+        'The button below deletes your account, profile, and Together cloud data from this app.\n\n'
             'If you also email us, write from the address on the account. From another address, say which account to delete.\n\n'
             'We will tell you if a record must be kept by law. '
-            'Cancel a subscription in Google Play separately. On-device data is removed when you uninstall.',
-        '下のボタンで、このアプリから Firebase アカウント、プロフィール、一緒ルームのクラウドデータを削除できます。\n\n'
+            'Cancel a subscription in $_store separately. On-device data is removed when you uninstall.',
+        '下のボタンで、このアプリからアカウント、プロフィール、一緒ルームのクラウドデータを削除できます。\n\n'
             'メールでも依頼する場合は、アカウントのメールから送ってください。別のアドレスから送るときは、削除するアカウントを書いてください。\n\n'
             '法令上残すものがあればお知らせします。'
-            '定期購入は Google Play で別途解約してください。端末だけのデータはアプリ削除で消えます。',
+            '定期購入は $_store で別途解約してください。端末だけのデータはアプリ削除で消えます。',
       );
   String get accountDeleteNow =>
       _t('앱에서 계정 삭제', 'Delete account in the app', 'アプリでアカウントを削除');
   String get accountDeleteConfirmBody => _t(
-        'Firebase 계정, 프로필, 같이 방 클라우드 데이터를 지웁니다. 이 작업은 되돌릴 수 없어요.\n\n구독은 계정 삭제와 함께 해지되지 않아요. Google Play에서 따로 해지해 주세요.',
-        'This deletes your Firebase account, profile, and Together cloud data. It cannot be undone.\n\nDeleting the account does not cancel a subscription. Cancel it separately in Google Play.',
-        'Firebase アカウント、プロフィール、一緒ルームのクラウドデータを削除します。この操作は元に戻せません。\n\nアカウントを削除しても定期購入は解約されません。Google Playで別途解約してください。',
+        '계정, 프로필, 같이 방 클라우드 데이터를 지웁니다. 이 작업은 되돌릴 수 없어요.\n\n구독은 계정 삭제와 함께 해지되지 않아요. $_store에서 따로 해지해 주세요.',
+        'This deletes your account, profile, and Together cloud data. It cannot be undone.\n\nDeleting the account does not cancel a subscription. Cancel it separately in $_store.',
+        'アカウント、プロフィール、一緒ルームのクラウドデータを削除します。この操作は元に戻せません。\n\nアカウントを削除しても定期購入は解約されません。$_store で別途解約してください。',
       );
   String get accountDeleteDone => _t(
         '계정과 클라우드 데이터를 삭제했어요',

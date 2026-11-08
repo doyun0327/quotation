@@ -51,11 +51,17 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 
   String _packPrice(CharacterPack pack) =>
-      billingController.packPrice(pack) ?? '₩900';
+      billingController.packPrice(pack) ?? '…';
 
   /// Confirms and buys [pack] once (owned forever, separate from premium).
   Future<void> _buyPack(CharacterPack pack) async {
     final t = AppStrings.current;
+    // Never ask to buy without the real store price on screen.
+    if (billingController.packPrice(pack) == null) {
+      unawaited(billingController.loadPackPrices());
+      _toast(t.billingError('not_found'));
+      return;
+    }
     final name = t.characterPackName(pack.id);
     final price = _packPrice(pack);
     final ok = await showDialog<bool>(

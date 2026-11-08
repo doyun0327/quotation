@@ -51,8 +51,21 @@
 	<string>313256890607-mu1tu53b288lskhiaou3mb7vsolin1gv.apps.googleusercontent.com</string>
 	<key>GIDServerClientID</key>
 	<string>313256890607-q02od35jq32g1lp2atr7ou0oi2feqs0g.apps.googleusercontent.com</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Dearly uses the camera only when you take a photo for your widget background.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Dearly uses a photo you choose as your widget background. The photo stays on this device.</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

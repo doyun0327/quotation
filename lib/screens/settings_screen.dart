@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
@@ -223,6 +224,8 @@ class SettingsScreen extends StatelessWidget {
                                 ? null
                                 : () => _restore(context),
                           ),
+                          // Developer-only switch; never shown in store builds.
+                          if (kDebugMode)
                           SettingsItem(
                             icon: Icons.workspace_premium_rounded,
                             title: t.premiumToggleTitle,
