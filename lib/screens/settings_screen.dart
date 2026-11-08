@@ -126,7 +126,9 @@ class SettingsScreen extends StatelessWidget {
                         title: t.accountSection,
                         children: [
                           SettingsItem(
-                            leading: signedIn && user.photoUrl != null
+                            leading: signedIn && authController.signedInWithApple
+                                ? const AppleMark()
+                                : signedIn && user.photoUrl != null
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.network(

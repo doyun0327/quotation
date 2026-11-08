@@ -184,6 +184,33 @@ class SettingsOutlineButton extends StatelessWidget {
   }
 }
 
+/// Account badge for Sign in with Apple, which gives no profile photo.
+class AppleMark extends StatelessWidget {
+  const AppleMark({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: palette.settingsSoft,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        'A',
+        style: AppTheme.pixel.copyWith(
+          fontSize: 14,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+}
+
 class GoogleMark extends StatelessWidget {
   const GoogleMark({super.key});
 

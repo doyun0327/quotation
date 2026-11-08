@@ -108,6 +108,14 @@ class AuthController extends ChangeNotifier {
     return email.isEmpty ? null : email;
   }
 
+  /// Signed in through Sign in with Apple (and not Google).
+  bool get signedInWithApple {
+    final fb = FirebaseAuth.instance.currentUser;
+    if (fb == null || fb.isAnonymous) return false;
+    final ids = fb.providerData.map((info) => info.providerId);
+    return ids.contains('apple.com') && !ids.contains('google.com');
+  }
+
   /// Signed in with Apple and the email is a "Hide My Email" relay (or none),
   /// so the address means nothing to the user.
   bool get hidesAppleEmail {
