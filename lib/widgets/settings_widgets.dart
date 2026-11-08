@@ -310,25 +310,49 @@ class ThemeSwatchRow extends StatelessWidget {
                 onTap: () => onSelected(palette),
                 child: Column(
                   children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      height: 36,
-                      padding: EdgeInsets.all(selectedId == palette.id ? 2 : 0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: selectedId == palette.id
-                              ? active.settingsLine
-                              : palette.border,
-                          width: selectedId == palette.id ? 2 : 1,
-                        ),
-                      ),
-                      child: DecoratedBox(
+                    // Square mini screen: title bar, soft body, accent button.
+                    AspectRatio(
+                      aspectRatio: 1,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        padding:
+                            EdgeInsets.all(selectedId == palette.id ? 2 : 0),
                         decoration: BoxDecoration(
-                          color: palette.accent,
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: selectedId == palette.id
+                                ? active.settingsLine
+                                : palette.border,
+                            width: selectedId == palette.id ? 2 : 1,
+                          ),
+                        ),
+                        child: ClipRRect(
                           borderRadius: BorderRadius.circular(
                             selectedId == palette.id ? 7 : 9,
+                          ),
+                          child: ColoredBox(
+                            color: palette.accentSoft,
+                            child: Column(
+                              children: [
+                                Container(height: 10, color: palette.accent),
+                                Expanded(
+                                  child: Center(
+                                    child: FractionallySizedBox(
+                                      widthFactor: 0.6,
+                                      child: Container(
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          color: palette.accent,
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
