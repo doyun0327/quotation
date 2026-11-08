@@ -99,6 +99,18 @@
           return;
         }
         location.href = appUrl();
+        if (isIOS && APP_STORE_ID) {
+          // iOS has no store fallback for app schemes. If the app opened,
+          // this page goes to the background; otherwise send to the App Store.
+          var timer = setTimeout(function () {
+            if (!document.hidden) {
+              location.href = 'https://apps.apple.com/app/id' + APP_STORE_ID;
+            }
+          }, 1800);
+          var cancel = function () { if (document.hidden) clearTimeout(timer); };
+          document.addEventListener('visibilitychange', cancel);
+          window.addEventListener('pagehide', function () { clearTimeout(timer); });
+        }
       }
 
       function copyCode(btn) {
