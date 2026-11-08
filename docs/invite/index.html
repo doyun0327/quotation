@@ -49,22 +49,107 @@
       text-decoration: none;
       font-weight: 700;
     }
+    a.btn.sub {
+      background: #fff;
+      color: #5b8def;
+      border: 1.5px solid #5b8def;
+      padding: 10px 18px;
+    }
+    .hidden { display: none !important; }
+    .note { font-size: .82rem; margin-top: 14px; }
   </style>
   <script>
     (function () {
+      // App Store numeric id (App Store Connect > 앱 정보 > Apple ID).
+      // Leave empty until the app is live; the App Store button stays hidden.
+      var APP_STORE_ID = '6827842803';
+      var ANDROID_PACKAGE = 'com.dearly.quoteswidget';
+      var PLAY_URL = 'https://play.google.com/store/apps/details?id=' + ANDROID_PACKAGE;
+
       var parts = location.pathname.split('/').filter(Boolean);
       var code = '';
       if (parts[0] === 'invite' && parts[1]) code = parts[1].toUpperCase();
       window.__INVITE_CODE__ = code;
+
+      var ua = navigator.userAgent || '';
+      var isAndroid = /Android/i.test(ua);
+      var isIOS = /iPhone|iPad|iPod/i.test(ua) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      // KakaoTalk's in-app browser blocks custom app schemes.
+      var isKakao = /KAKAOTALK/i.test(ua);
+
+      function appUrl() {
+        var c = encodeURIComponent(code);
+        if (isAndroid) {
+          // Opens the app, or the Play Store when it is not installed.
+          return 'intent://invite/' + c + '#Intent;scheme=dearly;package=' +
+            ANDROID_PACKAGE + ';S.browser_fallback_url=' +
+            encodeURIComponent(PLAY_URL) + ';end';
+        }
+        return 'dearly://invite/' + c;
+      }
+
       function openApp() {
         if (!code) return;
-        location.href = 'dearly://invite/' + encodeURIComponent(code);
+        if (isKakao) {
+          // Reopen this page in the phone's default browser, which can
+          // hand the link to the app.
+          location.href = 'kakaotalk://web/openExternal?url=' +
+            encodeURIComponent(location.href);
+          return;
+        }
+        location.href = appUrl();
       }
+
+      function copyCode(btn) {
+        if (!code) return;
+        var done = function () {
+          btn.textContent = '복사했어요!';
+          setTimeout(function () { btn.textContent = '코드 복사'; }, 1500);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(done, function () {
+            fallbackCopy(); done();
+          });
+        } else {
+          fallbackCopy(); done();
+        }
+      }
+
+      function fallbackCopy() {
+        var input = document.createElement('textarea');
+        input.value = code;
+        input.setAttribute('readonly', '');
+        input.style.position = 'absolute';
+        input.style.left = '-9999px';
+        document.body.appendChild(input);
+        input.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(input);
+      }
+
       window.addEventListener('DOMContentLoaded', function () {
         var el = document.getElementById('code');
         if (el) el.textContent = code || '———';
-        var btn = document.getElementById('open');
-        if (btn) btn.addEventListener('click', openApp);
+
+        var open = document.getElementById('open');
+        open.addEventListener('click', function (e) { e.preventDefault(); openApp(); });
+
+        var copy = document.getElementById('copy');
+        copy.addEventListener('click', function (e) { e.preventDefault(); copyCode(copy); });
+        if (!code) copy.classList.add('hidden');
+
+        var store = document.getElementById('store');
+        if (isAndroid) {
+          store.href = PLAY_URL;
+          store.textContent = 'Play 스토어에서 받기';
+        } else if (isIOS && APP_STORE_ID) {
+          store.href = 'https://apps.apple.com/app/id' + APP_STORE_ID;
+          store.textContent = 'App Store에서 받기';
+        } else {
+          store.classList.add('hidden');
+        }
+
         if (code) setTimeout(openApp, 400);
       });
     })();
@@ -77,6 +162,9 @@
     <p>앱이 설치되어 있으면 바로 열려요. 코드는 앱의 「초대 코드로 참여」에도 입력할 수 있어요.</p>
     <code id="code">———</code>
     <div><a class="btn" id="open" href="#">앱에서 열기</a></div>
+    <div><a class="btn sub" id="copy" href="#">코드 복사</a></div>
+    <div><a class="btn sub" id="store" href="#">앱 받기</a></div>
+    <p class="note">앱이 없다면 먼저 설치한 뒤, 앱의 「초대 코드로 참여」에 위 코드를 입력해 주세요.</p>
   </div>
 </body>
 </html>
