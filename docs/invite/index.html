@@ -89,27 +89,47 @@
         return 'dearly://invite/' + c;
       }
 
+      // Runs [then] after [ms] unless this page went to the background
+      // (another app or browser took over).
+      function unlessLeft(ms, then) {
+        var timer = setTimeout(function () {
+          if (!document.hidden) then();
+        }, ms);
+        document.addEventListener('visibilitychange', function () {
+          if (document.hidden) clearTimeout(timer);
+        });
+        window.addEventListener('pagehide', function () { clearTimeout(timer); });
+      }
+
+      function goToStore() {
+        if (isAndroid) {
+          location.href = PLAY_URL;
+        } else if (isIOS && APP_STORE_ID) {
+          location.href = 'https://apps.apple.com/app/id' + APP_STORE_ID;
+        }
+      }
+
       function openApp() {
         if (!code) return;
         if (isKakao) {
           // Reopen this page in the phone's default browser, which can
-          // hand the link to the app.
+          // hand the link to the app (or send to the store).
           location.href = 'kakaotalk://web/openExternal?url=' +
             encodeURIComponent(location.href);
+          // Older KakaoTalk ignores openExternal. Android's in-app browser
+          // still understands intent:// (app or Play Store); on iPhone the
+          // app scheme is blocked, so go straight to the App Store.
+          unlessLeft(1500, function () {
+            if (isAndroid) location.href = appUrl();
+            else goToStore();
+          });
           return;
         }
         location.href = appUrl();
-        if (isIOS && APP_STORE_ID) {
+        if (isIOS) {
           // iOS has no store fallback for app schemes. If the app opened,
           // this page goes to the background; otherwise send to the App Store.
-          var timer = setTimeout(function () {
-            if (!document.hidden) {
-              location.href = 'https://apps.apple.com/app/id' + APP_STORE_ID;
-            }
-          }, 1800);
-          var cancel = function () { if (document.hidden) clearTimeout(timer); };
-          document.addEventListener('visibilitychange', cancel);
-          window.addEventListener('pagehide', function () { clearTimeout(timer); });
+          unlessLeft(1800, goToStore);
         }
       }
 
