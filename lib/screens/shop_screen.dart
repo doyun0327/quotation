@@ -18,9 +18,6 @@ import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
 import 'package:quotation/widgets/subscription_terms.dart';
 
-/// Special character packs are hidden until their in-app purchases go live.
-const bool _showSpecialPacks = false;
-
 class ShopScreen extends StatefulWidget {
   const ShopScreen({
     super.key,
@@ -371,7 +368,6 @@ class _ShopScreenState extends State<ShopScreen> {
                       accent: palette.accent,
                       onTap: () => setState(() => _group = CharacterGroup.male),
                     ),
-                    if (_showSpecialPacks) ...[
                     const SizedBox(width: 8),
                     _GroupChip(
                       label: t.shopGroupSpecial,
@@ -383,7 +379,6 @@ class _ShopScreenState extends State<ShopScreen> {
                         unawaited(characterController.markPacksSeen());
                       },
                     ),
-                    ],
                   ],
                 ),
               ),
