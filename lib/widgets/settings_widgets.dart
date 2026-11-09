@@ -337,7 +337,6 @@ class ThemeSwatchRow extends StatelessWidget {
                 onTap: () => onSelected(palette),
                 child: Column(
                   children: [
-                    // Square mini screen: title bar, soft body, accent button.
                     AspectRatio(
                       aspectRatio: 1,
                       child: AnimatedContainer(
@@ -354,31 +353,11 @@ class ThemeSwatchRow extends StatelessWidget {
                             width: selectedId == palette.id ? 2 : 1,
                           ),
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            selectedId == palette.id ? 7 : 9,
-                          ),
-                          child: ColoredBox(
-                            color: palette.accentSoft,
-                            child: Column(
-                              children: [
-                                Container(height: 10, color: palette.accent),
-                                Expanded(
-                                  child: Center(
-                                    child: FractionallySizedBox(
-                                      widthFactor: 0.6,
-                                      child: Container(
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                          color: palette.accent,
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: palette.accent,
+                            borderRadius: BorderRadius.circular(
+                              selectedId == palette.id ? 7 : 9,
                             ),
                           ),
                         ),
