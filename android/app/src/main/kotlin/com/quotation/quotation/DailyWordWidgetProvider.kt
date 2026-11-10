@@ -858,15 +858,12 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
           android.util.Log.w("WidgetPreview", clazz.simpleName, e)
         }
       }
-      // One entry per iPhone size, each drawn at the size it is placed at.
-      // The export widget (DailyWordWidgetProvider) is hidden from the picker.
+      // 오늘의 말 is offered as the speech bubble from the app home. The
+      // classic export and the iPhone-style sizes are hidden from the picker
+      // (widgets already placed keep working).
       show(
-          DailyWordWidgetProviderMedium::class.java,
-          previewCard(context, buildIosHomeCard(context, prefs, 300, 150), 300, 150),
-      )
-      show(
-          DailyWordWidgetProviderLarge::class.java,
-          previewCard(context, buildIosHomeCard(context, prefs, 300, 300), 300, 300),
+          DailyWordBubbleWidgetProvider::class.java,
+          previewCard(context, buildHomeCard(context, prefs, 300, 150, bubble = true), 300, 150),
       )
       show(
           QuoteOnlyWidgetProvider::class.java,
@@ -891,18 +888,15 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
         bitmap: Bitmap,
         widthDp: Int,
         heightDp: Int,
-    ): RemoteViews {
-      val density = context.resources.displayMetrics.density.coerceAtLeast(1f)
-      val width = (widthDp * density).roundToInt().coerceAtLeast(1)
-      val height = (heightDp * density).roundToInt().coerceAtLeast(1)
-      return RemoteViews(context.packageName, R.layout.daily_word_widget).apply {
-        setImageViewBitmap(R.id.widget_card, bitmap)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-          setViewLayoutWidth(R.id.widget_card, width.toFloat(), TypedValue.COMPLEX_UNIT_PX)
-          setViewLayoutHeight(R.id.widget_card, height.toFloat(), TypedValue.COMPLEX_UNIT_PX)
-        }
-      }
-    }
+    ): RemoteViews =
+        // Same as 함께: shrunk to fit the picker cell so the whole card shows.
+        // Drawn at full widget size it was cut off at the edges.
+        DdayWidgetProvider().wrapPinPreview(
+            context = context,
+            bitmap = bitmap,
+            widthDp = widthDp.toFloat(),
+            heightDp = heightDp.toFloat(),
+        )
 
     fun scheduleHourlyRefresh(context: Context) {
       val alarmManager = context.getSystemService(AlarmManager::class.java) ?: return

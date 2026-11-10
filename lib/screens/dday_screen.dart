@@ -15,7 +15,6 @@ import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
-import 'package:quotation/widgets/share_event.dart';
 
 class DdayScreen extends StatefulWidget {
   const DdayScreen({super.key});
@@ -178,10 +177,6 @@ class _DdayScreenState extends State<DdayScreen> {
                       color: AppColors.muted,
                     ),
                   ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
-                  child: ShareEventCard(),
                 ),
                 Expanded(
                   child: items.isEmpty

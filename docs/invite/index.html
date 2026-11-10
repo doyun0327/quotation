@@ -70,6 +70,12 @@
       var code = '';
       if (parts[0] === 'invite' && parts[1]) code = parts[1].toUpperCase();
       window.__INVITE_CODE__ = code;
+      // Play hands this to the app after install (install referrer), so the
+      // invite opens on first launch without typing the code.
+      if (code) {
+        PLAY_URL += '&referrer=' + encodeURIComponent('invite_code=' + code);
+      }
+      var APP_STORE_URL = 'https://apps.apple.com/app/id' + APP_STORE_ID;
 
       var ua = navigator.userAgent || '';
       var isAndroid = /Android/i.test(ua);
@@ -105,12 +111,30 @@
         if (isAndroid) {
           location.href = PLAY_URL;
         } else if (isIOS && APP_STORE_ID) {
-          location.href = 'https://apps.apple.com/app/id' + APP_STORE_ID;
+          location.href = APP_STORE_URL;
         }
       }
 
-      function openApp() {
+      // iPhone: the App Store cannot carry the code, so it goes on the
+      // clipboard and the app reads it on first launch. Safari only allows
+      // this inside a tap.
+      function copyForInstall() {
+        if (!isIOS || !code) return;
+        writeClipboard('Dearly 초대 코드 ' + code);
+      }
+
+      // iPhone without the app: no automatic App Store jump (that would lose
+      // the code); one tap on the highlighted button copies it and goes.
+      function promptStoreIOS() {
+        var store = document.getElementById('store');
+        var note = document.getElementById('install-note');
+        if (store) store.className = 'btn';
+        if (note) note.classList.remove('hidden');
+      }
+
+      function openApp(fromTap) {
         if (!code) return;
+        if (fromTap) copyForInstall();
         if (isKakao) {
           // Reopen this page in the phone's default browser, which can
           // hand the link to the app (or send to the store).
@@ -128,8 +152,20 @@
         location.href = appUrl();
         if (isIOS) {
           // iOS has no store fallback for app schemes. If the app opened,
-          // this page goes to the background; otherwise send to the App Store.
-          unlessLeft(1800, goToStore);
+          // this page goes to the background; otherwise a tap goes to the
+          // App Store (the tap already copied the code), or the store button
+          // is offered when this ran on its own.
+          unlessLeft(1800, fromTap ? goToStore : promptStoreIOS);
+        }
+      }
+
+      function writeClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(function () {
+            fallbackCopy(text);
+          });
+        } else {
+          fallbackCopy(text);
         }
       }
 
@@ -141,16 +177,16 @@
         };
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(code).then(done, function () {
-            fallbackCopy(); done();
+            fallbackCopy(code); done();
           });
         } else {
-          fallbackCopy(); done();
+          fallbackCopy(code); done();
         }
       }
 
-      function fallbackCopy() {
+      function fallbackCopy(text) {
         var input = document.createElement('textarea');
-        input.value = code;
+        input.value = text;
         input.setAttribute('readonly', '');
         input.style.position = 'absolute';
         input.style.left = '-9999px';
@@ -165,7 +201,7 @@
         if (el) el.textContent = code || '———';
 
         var open = document.getElementById('open');
-        open.addEventListener('click', function (e) { e.preventDefault(); openApp(); });
+        open.addEventListener('click', function (e) { e.preventDefault(); openApp(true); });
 
         var copy = document.getElementById('copy');
         copy.addEventListener('click', function (e) { e.preventDefault(); copyCode(copy); });
@@ -176,13 +212,18 @@
           store.href = PLAY_URL;
           store.textContent = 'Play 스토어에서 받기';
         } else if (isIOS && APP_STORE_ID) {
-          store.href = 'https://apps.apple.com/app/id' + APP_STORE_ID;
+          store.href = APP_STORE_URL;
           store.textContent = 'App Store에서 받기';
+          store.addEventListener('click', function (e) {
+            e.preventDefault();
+            copyForInstall();
+            location.href = APP_STORE_URL;
+          });
         } else {
           store.classList.add('hidden');
         }
 
-        if (code) setTimeout(openApp, 400);
+        if (code) setTimeout(function () { openApp(false); }, 400);
       });
     })();
   </script>
@@ -196,6 +237,7 @@
     <div><a class="btn" id="open" href="#">앱에서 열기</a></div>
     <div><a class="btn sub" id="copy" href="#">코드 복사</a></div>
     <div><a class="btn sub" id="store" href="#">앱 받기</a></div>
+    <p class="note hidden" id="install-note">앱이 없네요! 위 버튼으로 설치하면 처음 열 때 초대가 바로 이어져요.</p>
     <p class="note">앱이 없다면 먼저 설치한 뒤, 앱의 「초대 코드로 참여」에 위 코드를 입력해 주세요.</p>
   </div>
 </body>

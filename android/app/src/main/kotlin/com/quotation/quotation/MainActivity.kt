@@ -38,6 +38,7 @@ class MainActivity : FlutterActivity() {
         }
         "refreshTogetherWidget" -> offMain(result) { refreshTogetherWidgets() }
         "togetherWidgetState" -> result.success(togetherWidgetState())
+        "installReferrer" -> readInstallReferrer(result)
         "isSamsungDevice" ->
           result.success(Build.MANUFACTURER.equals("samsung", ignoreCase = true))
         "scheduleMorningFortunes" -> {
@@ -89,6 +90,52 @@ class MainActivity : FlutterActivity() {
           putParcelable(AppWidgetManager.EXTRA_APPWIDGET_PREVIEW, preview)
         }
     return manager.requestPinAppWidget(provider, extras, null)
+  }
+
+  /**
+   * Play Store install referrer, e.g. "invite_code=ABC123" when the app was
+   * installed from an invite link. Null when there is none or Play cannot
+   * be reached.
+   */
+  private fun readInstallReferrer(result: MethodChannel.Result) {
+    val client =
+        com.android.installreferrer.api.InstallReferrerClient.newBuilder(applicationContext)
+            .build()
+    var answered = false
+    fun answer(value: String?) {
+      if (answered) return
+      answered = true
+      runOnUiThread { result.success(value) }
+      try {
+        client.endConnection()
+      } catch (_: Exception) {}
+    }
+    try {
+      client.startConnection(
+          object : com.android.installreferrer.api.InstallReferrerStateListener {
+            override fun onInstallReferrerSetupFinished(responseCode: Int) {
+              if (responseCode ==
+                  com.android.installreferrer.api.InstallReferrerClient.InstallReferrerResponse.OK) {
+                answer(
+                    try {
+                      client.installReferrer.installReferrer
+                    } catch (_: Exception) {
+                      null
+                    },
+                )
+              } else {
+                answer(null)
+              }
+            }
+
+            override fun onInstallReferrerServiceDisconnected() {
+              answer(null)
+            }
+          },
+      )
+    } catch (_: Exception) {
+      answer(null)
+    }
   }
 
   private fun pinCharacterWidget(bubble: Boolean): Boolean {

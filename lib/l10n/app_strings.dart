@@ -401,9 +401,9 @@ class AppStrings {
   String get shareEventOpenedTitle =>
       _t('새 캐릭터가 열렸어요!', 'New character unlocked!', '新しいキャラクターが開放されました！');
   String get shareEventOpenedBody => _t(
-        '초대해 줘서 고마워요. 캐릭터 상점의 스페셜 탭에서 고를 수 있어요.',
-        'Thanks for inviting. Pick it in the Special tab of the character shop.',
-        '招待してくれてありがとう。キャラクターショップのスペシャルタブで選べます。',
+        '초대해줘서 고마워요!\n캐릭터 상점의 스페셜 탭에서 고를 수 있어요.',
+        'Thanks for inviting!\nPick it in the Special tab of the character shop.',
+        '招待してくれてありがとう！\nキャラクターショップのスペシャルタブで選べます。',
       );
   String get shareEventSection => _t('이벤트', 'Event', 'イベント');
   String characterPackName(String packId) {
@@ -566,6 +566,10 @@ class AppStrings {
       );
   String get eveningCheerTitle => _t('저녁 응원 문구', 'Evening cheer', '夜の応援メッセージ');
   String get eveningCheerSubtitle => _t('매일 저녁에 응원 문구를 보내드려요', 'A cheer message every day at 7 PM', '毎日19時に応援メッセージをお届けします');
+  String get notificationEnabledToast =>
+      _t('알림을 켰어요', 'Notifications turned on', '通知をオンにしました');
+  String get notificationDisabledToast =>
+      _t('알림을 껐어요', 'Notifications turned off', '通知をオフにしました');
   String get languageSection => _t('앱 언어', 'App language', 'アプリの言語');
   String get languageTitle => _t('앱 언어', 'App language', 'アプリの言語');
   String get languageSubtitle =>

@@ -14,6 +14,9 @@
     .muted { color: #666; font-size: 0.9rem; }
     details { background: #fff; border-radius: 12px; padding: 8px 16px 12px; margin: 14px 0; }
     summary { cursor: pointer; font-weight: 700; padding: 8px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 8px 0; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #e6e9ef; vertical-align: top; }
+    th { color: #666; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -37,16 +40,19 @@
       <p>로그인 유지, 같이 방 참여자에게 닉네임과 캐릭터 표시, 방과 응원 및 관련 알림 전달, 구독 확인과 복원, 구독자에게 배너 광고 숨김, 무료 이용 중 광고 표시, 이메일 문의 응답, 서비스 유지와 부정 이용 방지에 사용합니다. 기기에 예약된 아침 알림의 문구는 그 목적으로 서버에 보내지 않습니다.</p>
       <h2>4. 보유 기간</h2>
       <p>계정과 방 정보는 계정 또는 방이 유지되는 동안 보관합니다. 삭제를 요청하면 법령, 분쟁, 보안상 보관이 필요한 항목을 제외하고 프로필, 참여 표시 이름, 알림 토큰을 삭제하거나 식별할 수 없게 합니다. 이용자가 적은 방 문구는 방이 지워지기 전까지 남을 수 있으며, 앱에서 계정을 삭제하면 그 문구에 표시되던 이름과 작성자 식별자는 제거합니다. 결제 기록은 세금과 스토어 정책이 요구하는 기간 동안 보관될 수 있습니다. 기기에만 있는 보관함, 위젯, 언어 설정은 앱 데이터를 지우거나 앱을 삭제할 때까지 기기에 남습니다.</p>
-      <h2>5. 제공과 처리 위탁</h2>
-      <p>개인정보를 판매하지 않습니다. Google Firebase(로그인, 데이터베이스, 클라우드 메시징), Google 로그인, Google Play 결제, RevenueCat(구독 상태), Google AdMob(광고)이 서비스 운영에 필요한 범위에서 처리합니다. 법령에 따르거나 이용자를 부정 이용으로부터 보호해야 할 때 정보를 공개할 수 있습니다.</p>
-      <h2>6. 국외 이전</h2>
-      <p>위 사업자는 대한민국 밖의 서버, 특히 미국을 포함한 지역에서 정보를 처리할 수 있습니다. 이전은 이 방침에 적힌 서비스 제공을 위해서입니다.</p>
+      <h2>5. 정보를 맡기는 곳</h2>
+      <p>개인정보를 판매하지 않습니다. 앱이 동작하려면 아래 일을 다음 회사에 맡깁니다.</p>
+      <table><tr><th>맡긴 일</th><th>회사</th><th>처리되는 곳</th></tr><tr><td>로그인, 같이 방 저장, 알림 보내기</td><td>Google (Firebase)</td><td>미국</td></tr><tr><td>Google 계정으로 로그인</td><td>Google</td><td>미국</td></tr><tr><td>구독이 유효한지 확인</td><td>RevenueCat</td><td>미국</td></tr><tr><td>광고 보여 주기</td><td>Google (AdMob)</td><td>미국</td></tr><tr><td>결제</td><td>Google Play, Apple App Store</td><td>각 스토어</td></tr></table>
+      <p>법령에 따르거나 이용자를 부정 이용으로부터 보호해야 할 때 정보를 공개할 수 있습니다.</p>
+      <h2>6. 해외로 옮겨지는 정보</h2>
+      <p>위 회사들은 서비스를 위해 대한민국 밖(주로 미국)의 서버에서 정보를 처리합니다.</p>
+      <ul><li>옮겨지는 정보: 2번에 적은 정보 중 각 회사가 맡은 일에 필요한 것</li><li>언제, 어떻게: 앱을 쓸 때 인터넷으로 전송</li><li>보관 기간: 4번과 같음</li><li>원하지 않으면: 로그인과 같이 방을 쓰지 않거나 계정을 삭제할 수 있습니다. 이때 같이 방 등 일부 기능을 쓸 수 없습니다.</li></ul>
       <h2>7. 이용자의 권리와 삭제</h2>
       <p>로그인 없이 앱을 이용할 수 있습니다. 설정의 로그아웃은 이 기기에서 Google 연결을 해제합니다. 알림과 광고 맞춤설정은 기기 설정에서 제한할 수 있습니다.</p>
       <p>클라우드에 저장된 계정 정보의 열람 또는 삭제는 <a href="./delete-account.html">계정 삭제 요청 페이지</a> 또는 <a href="mailto:idoyun781@gmail.com">idoyun781@gmail.com</a>으로 요청할 수 있습니다. 계정에 등록된 이메일로 보내 주거나, 다른 주소로 보낼 때는 어떤 계정을 지울지 알려 주세요. 합리적 기간 안에 해당 계정의 클라우드 프로필을 삭제하고, 법령상 남겨야 하는 항목이 있으면 알려 드립니다.</p>
       <p>앱을 삭제하면 그 기기의 로컬 데이터는 지워집니다. 앱 삭제만으로 구독이 해지되거나 클라우드 계정이 삭제되지는 않습니다. 구독은 Google Play에서 해지하고, 계정 삭제는 앱의 설정 &gt; 계정 삭제에서 하거나 이메일로 요청해 주세요.</p>
-      <h2>8. 아동</h2>
-      <p>Dearly는 만 14세 미만 아동을 대상으로 하지 않으며, 아동의 개인정보를 고의로 수집하지 않습니다. 아동의 정보가 수집된 사실을 알게 되면 이메일로 알려 주세요. 삭제하겠습니다.</p>
+      <h2>8. 이용 연령</h2>
+      <p>Dearly는 만 14세 이상을 위한 서비스입니다. 만 14세 미만 어린이의 개인정보는 일부러 수집하지 않습니다.</p>
       <h2>9. 안전조치와 변경</h2>
       <p>Firebase와 Google 로그인의 접근 통제를 사용합니다. 방침이 바뀌면 상단의 업데이트 날짜를 변경합니다.</p>
       <h2>10. 문의</h2>
@@ -68,16 +74,19 @@
       <p>We use this information to keep you signed in, show your nickname and character to room members, deliver rooms, cheers, and related notifications, confirm and restore a subscription, hide banner ads for subscribers, show ads in the free experience, answer email you send us, and keep the service reliable and free of abuse. Text for reminders scheduled on the device is not sent to our server for that purpose.</p>
       <h2>4. How long we keep it</h2>
       <p>Account and room information is kept while the account or room exists. If you ask us to delete the account, we delete or de-identify the profile, membership display name, and messaging token, except for records we must keep for law, disputes, or security. Cheers you wrote may remain until the room is deleted. Deleting the account in the app removes your name and account identifier from them. Purchase records may be kept as required by tax rules and the store. On-device archive, widget, and language settings remain until you clear app data or uninstall.</p>
-      <h2>5. Sharing</h2>
-      <p>We do not sell personal information. Google Firebase (sign-in, database, cloud messaging), Google Sign-In, Google Play Billing, RevenueCat (subscription status), and Google AdMob (ads) process it only to run Dearly. We may disclose information if the law requires it or to protect users from abuse.</p>
-      <h2>6. International processing</h2>
-      <p>These providers may process information on servers outside your country, including in the United States, to provide the service described in this policy.</p>
+      <h2>5. Who handles your information</h2>
+      <p>We do not sell personal information. To work, the app hands these jobs to these companies.</p>
+      <table><tr><th>Job</th><th>Company</th><th>Where</th></tr><tr><td>Sign-in, saving Together rooms, sending notifications</td><td>Google (Firebase)</td><td>United States</td></tr><tr><td>Signing in with Google</td><td>Google</td><td>United States</td></tr><tr><td>Checking that a subscription is active</td><td>RevenueCat</td><td>United States</td></tr><tr><td>Showing ads</td><td>Google (AdMob)</td><td>United States</td></tr><tr><td>Payments</td><td>Google Play, Apple App Store</td><td>Each store</td></tr></table>
+      <p>We may disclose information if the law requires it or to protect users from abuse.</p>
+      <h2>6. Information processed abroad</h2>
+      <p>These companies process information on servers outside your country, mainly in the United States, to provide the service.</p>
+      <ul><li>What: the information in section 2 that each company needs for its job</li><li>When and how: sent over the internet while you use the app</li><li>How long: as in section 4</li><li>If you do not want this: you can skip sign-in and Together rooms, or delete your account. Some features, such as Together rooms, then do not work.</li></ul>
       <h2>7. Your choices and deletion</h2>
       <p>You can use the app without signing in. Sign-out in Settings disconnects Google on this device. You can turn notifications off and limit ad personalization in device settings.</p>
       <p>To access or delete the account information stored in the cloud, use the <a href="./delete-account.html">account deletion page</a> or email <a href="mailto:idoyun781@gmail.com">idoyun781@gmail.com</a>. Use the email on the account, or tell us which account to delete if you write from another address. Within a reasonable time we will delete the cloud profile tied to that account and tell you if a record must be kept by law.</p>
       <p>Uninstalling removes local data on that device. It does not cancel a subscription or delete the cloud account. Cancel the subscription in Google Play, and delete the account in the app under Settings &gt; Delete account, or email us.</p>
-      <h2>8. Children</h2>
-      <p>Dearly is not directed to children under 14, or under the higher age required in your country. We do not knowingly collect their personal information. If you believe a child has given us personal information, email us and we will delete it.</p>
+      <h2>8. Age</h2>
+      <p>Dearly is meant for people aged 14 and over, or the higher age your country sets. We do not knowingly collect personal information from younger children.</p>
       <h2>9. Security and changes</h2>
       <p>We rely on the access controls of Firebase and Google sign-in. When this policy changes, we update the date at the top.</p>
       <h2>10. Contact</h2>
@@ -99,16 +108,19 @@
       <p>ログイン状態の維持、一緒ルームの参加者へのニックネームとキャラクターの表示、部屋・応援・関連通知の提供、定期購入の確認と復元、登録者へのバナー広告の非表示、無料利用中の広告表示、問い合わせへの回答、サービスの維持と不正利用の防止に使います。端末に予約された通知の文章は、その目的でサーバーへ送りません。</p>
       <h2>4. 保管期間</h2>
       <p>アカウントと部屋の情報は、アカウントまたは部屋がある間保管します。削除を求められた場合、法令・紛争・安全のために残す必要があるものを除き、プロフィール、参加時の表示名、通知トークンを削除するか、識別できないようにします。書いた応援は部屋が削除されるまで残ることがあります。アプリでアカウントを削除すると、名前の表示と作成者の識別子は外します。購入記録は税務とストアの規則が求める期間保管されることがあります。端末だけにある設定は、アプリデータを消すかアプリを削除するまで残ります。</p>
-      <h2>5. 提供と委託</h2>
-      <p>個人情報を販売しません。Google Firebase（ログイン、データベース、クラウドメッセージング）、Googleログイン、Google Playの決済、RevenueCat（定期購入の状態）、Google AdMob（広告）が、運営に必要な範囲で取り扱います。法令に基づく場合、または利用者を不正利用から守る必要がある場合に開示することがあります。</p>
-      <h2>6. 国外での取り扱い</h2>
-      <p>上記の事業者は、お住まいの国の外、特に米国を含む地域のサーバーで情報を処理することがあります。処理はこの方針に書いたサービス提供のためです。</p>
+      <h2>5. 情報を預ける先</h2>
+      <p>個人情報を販売しません。アプリを動かすため、次の作業を次の会社に任せています。</p>
+      <table><tr><th>任せる作業</th><th>会社</th><th>処理する場所</th></tr><tr><td>ログイン、一緒ルームの保存、通知の送信</td><td>Google（Firebase）</td><td>米国</td></tr><tr><td>Googleアカウントでのログイン</td><td>Google</td><td>米国</td></tr><tr><td>定期購入が有効かの確認</td><td>RevenueCat</td><td>米国</td></tr><tr><td>広告の表示</td><td>Google（AdMob）</td><td>米国</td></tr><tr><td>決済</td><td>Google Play、Apple App Store</td><td>各ストア</td></tr></table>
+      <p>法令に基づく場合、または利用者を不正利用から守る必要がある場合に開示することがあります。</p>
+      <h2>6. 国外で取り扱う情報</h2>
+      <p>上記の会社は、サービス提供のため、お住まいの国の外（主に米国）のサーバーで情報を処理します。</p>
+      <ul><li>対象: 2に記載した情報のうち、各社の作業に必要なもの</li><li>時期と方法: アプリの利用中にインターネットで送信</li><li>保管期間: 4と同じ</li><li>望まない場合: ログインと一緒ルームを使わない、またはアカウントを削除できます。その場合、一緒ルームなど一部の機能は使えません。</li></ul>
       <h2>7. 利用者の選択と削除</h2>
       <p>ログインなしでアプリを利用できます。設定のログアウトは、この端末でのGoogleとの接続を解除します。通知と広告のパーソナライズは端末の設定で制限できます。</p>
       <p>クラウドに保存されたアカウント情報の開示または削除は <a href="./delete-account.html">アカウント削除ページ</a> または <a href="mailto:idoyun781@gmail.com">idoyun781@gmail.com</a> に依頼できます。アカウントのメールアドレスから送るか、別のアドレスから送る場合は削除するアカウントを知らせてください。合理的な期間内にクラウド上のプロフィールを削除し、法令上残す必要があるものがあればお知らせします。</p>
       <p>アプリを削除すると、その端末のローカルデータは消えます。削除だけでは定期購入は解約されず、クラウドのアカウントも削除されません。定期購入はGoogle Playで解約し、アカウントの削除はアプリの「設定 &gt; アカウント削除」から行うか、メールで依頼してください。</p>
-      <h2>8. 子ども</h2>
-      <p>Dearlyは14歳未満の子ども、またはお住まいの国でそれより高い年齢が定められている場合はその年齢未満の子どもを対象にしていません。子どもの個人情報を故意に収集しません。提供されたと思われる場合はメールで知らせてください。削除します。</p>
+      <h2>8. 利用年齢</h2>
+      <p>Dearlyは14歳以上（お住まいの国でそれより高い年齢が定められている場合はその年齢以上）の方のためのサービスです。それ未満の子どもの個人情報を故意に収集することはありません。</p>
       <h2>9. 安全管理と変更</h2>
       <p>FirebaseとGoogleログインのアクセス制御を使います。方針が変わったときは、上部の更新日を変更します。</p>
       <h2>10. お問い合わせ</h2>

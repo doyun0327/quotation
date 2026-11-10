@@ -127,18 +127,22 @@ const _korean = LegalCopy(
       '계정과 방 정보는 계정 또는 방이 유지되는 동안 보관합니다. 삭제를 요청하면 법령, 분쟁, 보안상 보관이 필요한 항목을 제외하고 프로필, 참여 표시 이름, 알림 토큰을 삭제하거나 식별할 수 없게 합니다. 이용자가 적은 방 문구는 방이 지워지기 전까지 남을 수 있으며, 앱에서 계정을 삭제하면 그 문구에 표시되던 이름과 작성자 식별자는 제거합니다. 결제 기록은 세금과 스토어 정책이 요구하는 기간 동안 보관될 수 있습니다. 기기에만 있는 보관함, 위젯, 언어 설정은 앱 데이터를 지우거나 앱을 삭제할 때까지 기기에 남습니다.',
     ),
     LegalBlock(
-      '5. 제공과 처리 위탁',
-      '개인정보를 판매하지 않습니다. 서비스 운영에 필요한 범위에서 다음 사업자가 처리합니다.\n'
-          '• Google Firebase: 로그인, 데이터베이스, 클라우드 메시징\n'
-          '• Google 로그인\n'
-          '• Google Play 결제, Apple App Store 결제\n'
-          '• RevenueCat: 구독 상태 확인\n'
-          '• Google AdMob: 광고\n'
+      '5. 정보를 맡기는 곳',
+      '개인정보를 판매하지 않습니다. 앱이 동작하려면 아래 일을 다음 회사에 맡깁니다.\n\n'
+          '• 로그인, 같이 방 저장, 알림 보내기 → Google (Firebase) · 미국\n'
+          '• Google 계정으로 로그인 → Google · 미국\n'
+          '• 구독이 유효한지 확인 → RevenueCat · 미국\n'
+          '• 광고 보여 주기 → Google (AdMob) · 미국\n'
+          '• 결제 → Google Play, Apple App Store\n\n'
           '법령에 따르거나 이용자를 부정 이용으로부터 보호해야 할 때 정보를 공개할 수 있습니다.',
     ),
     LegalBlock(
-      '6. 국외 이전',
-      '위 사업자는 대한민국 밖의 서버, 특히 미국을 포함한 지역에서 정보를 처리할 수 있습니다. 이전은 이 방침에 적힌 서비스 제공을 위해서입니다.',
+      '6. 해외로 옮겨지는 정보',
+      '위 회사들은 서비스를 위해 대한민국 밖(주로 미국)의 서버에서 정보를 처리합니다.\n'
+          '• 옮겨지는 정보: 2번에 적은 정보 중 각 회사가 맡은 일에 필요한 것\n'
+          '• 언제, 어떻게: 앱을 쓸 때 인터넷으로 전송\n'
+          '• 보관 기간: 4번과 같음\n'
+          '• 원하지 않으면: 로그인과 같이 방을 쓰지 않거나 계정을 삭제할 수 있습니다. 이때 같이 방 등 일부 기능을 쓸 수 없습니다.',
     ),
     LegalBlock(
       '7. 이용자의 권리와 삭제',
@@ -147,8 +151,8 @@ const _korean = LegalCopy(
           '앱을 삭제하면 그 기기의 로컬 데이터는 지워집니다. 앱 삭제만으로 구독이 해지되거나 클라우드 계정이 삭제되지는 않습니다. 구독은 Google Play 또는 iPhone 설정의 구독에서 해지하고, 계정 삭제는 앱의 설정 > 계정 삭제에서 바로 하거나 이메일로 요청할 수 있습니다.',
     ),
     LegalBlock(
-      '8. 아동',
-      'Dearly는 만 14세 미만 아동을 대상으로 하지 않으며, 아동의 개인정보를 고의로 수집하지 않습니다. 아동의 정보가 수집된 사실을 알게 되면 이메일로 알려 주세요. 삭제하겠습니다.',
+      '8. 이용 연령',
+      'Dearly는 만 14세 이상을 위한 서비스입니다. 만 14세 미만 어린이의 개인정보는 일부러 수집하지 않습니다.',
     ),
     LegalBlock(
       '9. 안전조치',
@@ -256,18 +260,22 @@ const _english = LegalCopy(
       'Account and room information is kept while the account or room exists. If you ask us to delete the account, we delete or de-identify the profile, membership display name, and messaging token, except for records we must keep for law, disputes, or security. Cheers you wrote may remain until the room is deleted. Deleting the account in the app removes your name and account identifier from them. Purchase records may be kept as required by tax rules and the store. Archive, widget, and language settings stored only on the device remain until you clear app data or uninstall.',
     ),
     LegalBlock(
-      '5. Sharing',
-      'We do not sell personal information. These providers process it only to run Dearly:\n'
-          '• Google Firebase, for sign-in, the database, and cloud messaging\n'
-          '• Google Sign-In\n'
-          '• Google Play Billing and Apple App Store payments\n'
-          '• RevenueCat, for subscription status\n'
-          '• Google AdMob, for ads\n'
+      '5. Who handles your information',
+      'We do not sell personal information. To work, the app hands these jobs to these companies:\n\n'
+          '• Sign-in, saving Together rooms, sending notifications → Google (Firebase) · United States\n'
+          '• Signing in with Google → Google · United States\n'
+          '• Checking that a subscription is active → RevenueCat · United States\n'
+          '• Showing ads → Google (AdMob) · United States\n'
+          '• Payments → Google Play, Apple App Store\n\n'
           'We may disclose information if the law requires it or to protect users from abuse.',
     ),
     LegalBlock(
-      '6. International processing',
-      'These providers may process information on servers outside your country, including in the United States. They do so to provide the Service described in this policy.',
+      '6. Information processed abroad',
+      'These companies process information on servers outside your country, mainly in the United States, to provide the Service.\n'
+          '• What: the information in section 2 that each company needs for its job\n'
+          '• When and how: sent over the internet while you use the app\n'
+          '• How long: as in section 4\n'
+          '• If you do not want this: you can skip sign-in and Together rooms, or delete your account. Some features, such as Together rooms, then do not work.',
     ),
     LegalBlock(
       '7. Your choices and deletion',
@@ -276,8 +284,8 @@ const _english = LegalCopy(
           'Uninstalling the app removes local data on that device. Uninstalling does not cancel a subscription or delete the cloud account. Cancel the subscription in Google Play or in iPhone Settings > Subscriptions, and delete the account in the app under Settings > Delete account, or email us.',
     ),
     LegalBlock(
-      '8. Children',
-      'Dearly is not directed to children under 14, or under the higher age required in your country. We do not knowingly collect their personal information. If you believe a child has given us personal information, email us and we will delete it.',
+      '8. Age',
+      'Dearly is meant for people aged 14 and over, or the higher age your country sets. We do not knowingly collect personal information from younger children.',
     ),
     LegalBlock(
       '9. Security',
@@ -385,18 +393,22 @@ const _japanese = LegalCopy(
       'アカウントと部屋の情報は、アカウントまたは部屋がある間保管します。削除を求められた場合、法令・紛争・安全のために残す必要があるものを除き、プロフィール、参加時の表示名、通知トークンを削除するか、識別できないようにします。利用者が書いた応援は部屋が削除されるまで残ることがあります。アプリでアカウントを削除すると、名前の表示と作成者の識別子は外します。購入記録は、税務とストアの規則が求める期間保管されることがあります。端末だけにある保存庫、ウィジェット、言語設定は、アプリデータを消すかアプリを削除するまで端末に残ります。',
     ),
     LegalBlock(
-      '5. 提供と委託',
-      '個人情報を販売しません。本サービスの運営に必要な範囲で、次の事業者が取り扱います。\n'
-          '• Google Firebase: ログイン、データベース、クラウドメッセージング\n'
-          '• Googleログイン\n'
-          '• Google Playの決済、Apple App Storeの決済\n'
-          '• RevenueCat: 定期購入の状態確認\n'
-          '• Google AdMob: 広告\n'
+      '5. 情報を預ける先',
+      '個人情報を販売しません。アプリを動かすため、次の作業を次の会社に任せています。\n\n'
+          '• ログイン、一緒ルームの保存、通知の送信 → Google（Firebase）・米国\n'
+          '• Googleアカウントでのログイン → Google・米国\n'
+          '• 定期購入が有効かの確認 → RevenueCat・米国\n'
+          '• 広告の表示 → Google（AdMob）・米国\n'
+          '• 決済 → Google Play、Apple App Store\n\n'
           '法令に基づく場合、または利用者を不正利用から守る必要がある場合に情報を開示することがあります。',
     ),
     LegalBlock(
-      '6. 国外での取り扱い',
-      '上記の事業者は、お住まいの国の外、特に米国を含む地域のサーバーで情報を処理することがあります。処理はこの方針に書いたサービス提供のためです。',
+      '6. 国外で取り扱う情報',
+      '上記の会社は、サービス提供のため、お住まいの国の外（主に米国）のサーバーで情報を処理します。\n'
+          '• 対象: 2に記載した情報のうち、各社の作業に必要なもの\n'
+          '• 時期と方法: アプリの利用中にインターネットで送信\n'
+          '• 保管期間: 4と同じ\n'
+          '• 望まない場合: ログインと一緒ルームを使わない、またはアカウントを削除できます。その場合、一緒ルームなど一部の機能は使えません。',
     ),
     LegalBlock(
       '7. 利用者の選択と削除',
@@ -405,8 +417,8 @@ const _japanese = LegalCopy(
           'アプリを削除すると、その端末のローカルデータは消えます。アプリの削除だけでは定期購入は解約されず、クラウドのアカウントも削除されません。定期購入はGoogle PlayまたはiPhoneの設定の「サブスクリプション」で解約し、アカウントの削除はアプリの「設定 > アカウント削除」から行うか、メールで依頼してください。',
     ),
     LegalBlock(
-      '8. 子ども',
-      'Dearlyは14歳未満の子ども、またはお住まいの国でそれより高い年齢が定められている場合はその年齢未満の子どもを対象にしていません。子どもの個人情報を故意に収集しません。子どもが情報を提供したと思われる場合はメールで知らせてください。削除します。',
+      '8. 利用年齢',
+      'Dearlyは14歳以上（お住まいの国でそれより高い年齢が定められている場合はその年齢以上）の方のためのサービスです。それ未満の子どもの個人情報を故意に収集することはありません。',
     ),
     LegalBlock(
       '9. 安全管理',

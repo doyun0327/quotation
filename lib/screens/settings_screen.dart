@@ -186,8 +186,12 @@ class SettingsScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ],
-                                    child: _AccountMoreButton(
-                                      color: palette.accent,
+                                    child: Padding(
+                                      // Keep the bordered mark small; widen only the tap target.
+                                      padding: const EdgeInsets.all(10),
+                                      child: _AccountMoreButton(
+                                        color: palette.accent,
+                                      ),
                                     ),
                                   )
                                 : SettingsOutlineButton(
@@ -263,9 +267,16 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(height: 18),
                       SettingsSection(
                         title: t.notificationSection,
-                        children: const [
-                          _EveningCheerToggle(morning: true),
-                          _EveningCheerToggle(),
+                        children: [
+                          _EveningCheerToggle(
+                            morning: true,
+                            title: t.morningFortuneTitle,
+                            subtitle: t.morningFortuneSubtitle,
+                          ),
+                          _EveningCheerToggle(
+                            title: t.eveningCheerTitle,
+                            subtitle: t.eveningCheerSubtitle,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 18),
@@ -438,12 +449,18 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-/// Evening (19:00) cheer notification on/off. Morning fortune stays as is.
 /// Morning fortune (08:00) or evening cheer (19:00) on/off.
 class _EveningCheerToggle extends StatefulWidget {
-  const _EveningCheerToggle({this.morning = false});
+  const _EveningCheerToggle({
+    super.key,
+    this.morning = false,
+    required this.title,
+    required this.subtitle,
+  });
 
   final bool morning;
+  final String title;
+  final String subtitle;
 
   @override
   State<_EveningCheerToggle> createState() => _EveningCheerToggleState();
@@ -455,6 +472,18 @@ class _EveningCheerToggleState extends State<_EveningCheerToggle> {
   @override
   void initState() {
     super.initState();
+    _loadEnabled();
+  }
+
+  @override
+  void didUpdateWidget(covariant _EveningCheerToggle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.morning != widget.morning) {
+      _loadEnabled();
+    }
+  }
+
+  void _loadEnabled() {
     (widget.morning
             ? EncouragementNotificationScheduler.isMorningEnabled()
             : EncouragementNotificationScheduler.isEveningEnabled())
@@ -470,19 +499,29 @@ class _EveningCheerToggleState extends State<_EveningCheerToggle> {
     } else {
       EncouragementNotificationScheduler.setEveningEnabled(value);
     }
+    final t = AppStrings.current;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          value ? t.notificationEnabledToast : t.notificationDisabledToast,
+          style: AppTheme.body.copyWith(color: Colors.white),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.ink,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = AppStrings.current;
     final palette = context.palette;
     return SettingsItem(
       icon: widget.morning
           ? Icons.wb_sunny_rounded
           : Icons.notifications_active_rounded,
-      title: widget.morning ? t.morningFortuneTitle : t.eveningCheerTitle,
-      subtitle:
-          widget.morning ? t.morningFortuneSubtitle : t.eveningCheerSubtitle,
+      title: widget.title,
+      subtitle: widget.subtitle,
       trailing: Switch.adaptive(
         value: _on,
         activeTrackColor: palette.accent,

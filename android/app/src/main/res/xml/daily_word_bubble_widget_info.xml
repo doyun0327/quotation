@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 오늘의 말 from the home-screen export (내보내기), speech-bubble style. Like the classic one it is
-     hidden from the picker, which lists the iPhone-style sizes instead.
-     300×150dp maps to 4×2; 250dp is read as 3 cells. -->
+<!-- 오늘의 말 · speech bubble (the app home card). Listed in the picker and
+     used by the in-app export. 300dp wide = 4 columns; 110dp tall = 2 rows
+     on Galaxy (150dp read as 3). Resizable; the card is drawn for the cell
+     it is given (onAppWidgetOptionsChanged redraws it). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/widget_description"
     android:initialLayout="@layout/daily_word_widget"
     android:minWidth="300dp"
-    android:minHeight="150dp"
-    android:minResizeWidth="300dp"
-    android:minResizeHeight="150dp"
-    android:maxResizeWidth="300dp"
-    android:maxResizeHeight="300dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="180dp"
+    android:minResizeHeight="110dp"
     android:previewLayout="@layout/daily_word_widget_preview_medium"
-    android:resizeMode="vertical"
+    android:resizeMode="horizontal|vertical"
     android:targetCellHeight="2"
     android:targetCellWidth="4"
     android:updatePeriodMillis="3600000"
-    android:widgetCategory="home_screen"
-    android:widgetFeatures="hide_from_picker" />
+    android:widgetCategory="home_screen" />

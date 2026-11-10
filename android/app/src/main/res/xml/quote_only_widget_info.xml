@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 오늘의 문구 · small (iOS systemSmall, 2×2, fixed like iPhone) -->
+<!-- 오늘의 문구 · small (iOS systemSmall). 110dp is 2 cells each way on
+     Galaxy (150dp tall was read as 3 rows). Resizable; the dashed card is
+     drawn for the cell it is given. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/widget_quote_description_small"
     android:initialLayout="@layout/daily_word_widget"
-    android:minWidth="150dp"
-    android:minHeight="150dp"
-    android:minResizeWidth="150dp"
-    android:minResizeHeight="150dp"
-    android:maxResizeWidth="150dp"
-    android:maxResizeHeight="150dp"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="110dp"
     android:previewLayout="@layout/quote_only_widget_preview"
-    android:resizeMode="none"
+    android:resizeMode="horizontal|vertical"
     android:targetCellHeight="2"
     android:targetCellWidth="2"
     android:updatePeriodMillis="3600000"
