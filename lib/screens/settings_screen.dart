@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:quotation/widgets/subscribe_flow.dart';
 import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
@@ -43,10 +44,8 @@ class SettingsScreen extends StatelessWidget {
   Future<void> _subscribe(BuildContext context) async {
     // Price and renewal terms first, then sign-in and the store sheet.
     if (!await confirmSubscription(context) || !context.mounted) return;
-    if (!await suggestSignInBeforePurchase(context)) return;
-    final code = await billingController.buyMonthly();
-    if (!context.mounted || code == null) return;
-    _toast(context, AppStrings.current.billingError(code));
+    if (!await suggestSignInBeforePurchase(context) || !context.mounted) return;
+    await runMonthlySubscription(context);
   }
 
   Future<void> _restore(BuildContext context) async {

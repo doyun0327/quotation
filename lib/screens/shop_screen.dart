@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:quotation/widgets/subscribe_flow.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
 import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/character_controller.dart';
@@ -186,12 +187,8 @@ class _ShopScreenState extends State<ShopScreen> {
     );
     if (subscribe != true || !mounted) return;
     if (!await suggestSignInBeforePurchase(context) || !mounted) return;
-    final code = await billingController.buyMonthly();
-    if (!mounted) return;
-    if (code != null) {
-      _toast(t.billingError(code));
-      return;
-    }
+    final premium = await runMonthlySubscription(context);
+    if (!mounted || !premium) return;
     if (characterController.isUsable(character)) {
       await _select(character);
     }

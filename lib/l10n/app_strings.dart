@@ -568,6 +568,37 @@ class AppStrings {
   String get premiumSubtitle =>
       _t('광고 없이 모든 기능을 이용하세요', 'Enjoy all features without ads', '広告なしですべての機能を利用できます');
   String get viewPremium => _t('구독하기', 'Subscribe', '登録する');
+  String get subscribeProcessing => _t(
+        '구독을 확인하고 있어요…',
+        'Confirming your subscription…',
+        '購読を確認しています…',
+      );
+  String get subscribeProcessingNote => _t(
+        '몇 초 정도 걸려요. 창을 닫지 말아 주세요.',
+        'This takes a few seconds. Please keep the app open.',
+        '数秒かかります。アプリを閉じないでください。',
+      );
+  String get subscribeDoneTitle =>
+      _t('프리미엄이 열렸어요! 🎉', 'Premium is on! 🎉', 'プレミアムが開放されました！🎉');
+  String get subscribeDoneBody => _t(
+        '모든 명언 카테고리, 위젯 꾸미기, 기본 캐릭터가 열렸고 배너 광고가 사라져요.',
+        'Every quote category, widget decorating and the standard characters are open, and banner ads are gone.',
+        'すべての名言カテゴリー、ウィジェット装飾、基本キャラクターが開放され、バナー広告が消えます。',
+      );
+  String get subscribeLaterTitle =>
+      _t('결제가 완료됐어요', 'Payment complete', '決済が完了しました');
+  String get subscribeLaterBody => _t(
+        '구독 확인에 조금 더 걸리고 있어요. 확인이 끝나면 자동으로 열리고 알려 드릴게요.',
+        'Confirming the subscription is taking a little longer. It opens automatically and we will let you know.',
+        '購読の確認に少し時間がかかっています。確認が終わると自動で開放し、お知らせします。',
+      );
+  String get subscribePendingTitle =>
+      _t('결제 승인을 기다리고 있어요', 'Waiting for payment approval', '決済の承認を待っています');
+  String get subscribePendingBody => _t(
+        '결제 수단의 승인이 끝나면 자동으로 프리미엄이 열려요.',
+        'Premium opens automatically once your payment method approves it.',
+        'お支払い方法の承認が終わると、自動でプレミアムが開放されます。',
+      );
   String billingError(String code) {
     switch (code) {
       case 'missing_key':

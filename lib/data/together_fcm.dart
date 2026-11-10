@@ -384,7 +384,8 @@ abstract final class TogetherFcm {
   }
 
   static Future<void> openRoomFromNotice(String? roomId) async {
-    final id = roomId?.trim() ?? '';
+    // A widget or notice from before the room was re-keyed has the old id.
+    final id = ddayController.currentRoomId(roomId?.trim() ?? '');
     if (id.isEmpty) return;
     final now = DateTime.now();
     if (_lastOpenedRoom == id &&

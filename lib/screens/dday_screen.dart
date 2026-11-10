@@ -112,7 +112,8 @@ class _DdayScreenState extends State<DdayScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 12, 4),
+                  // Same top inset as the archive and settings tabs.
+                  padding: const EdgeInsets.fromLTRB(20, 8, 12, 4),
                   child: Row(
                     children: [
                       Icon(
@@ -139,6 +140,8 @@ class _DdayScreenState extends State<DdayScreen> {
                             ),
                           );
                         },
+                        // Compact, so the button does not push the title down.
+                        visualDensity: VisualDensity.compact,
                         style: IconButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           foregroundColor: palette.accent,

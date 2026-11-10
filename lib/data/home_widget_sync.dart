@@ -377,6 +377,56 @@ abstract final class HomeWidgetSync {
   /// Redraws the Together widgets. Calls that arrive while one is running
   /// are merged into a single follow-up run (the iOS card render is heavy),
   /// and every caller's future completes after a run that includes it.
+  /// A room got a new id (first invite uploads it to the cloud). Home
+  /// widgets keep pointing at it; without this, "홈에 적용" no longer found
+  /// the room's widget and pinned a second one.
+  static Future<void> moveRoom(String oldId, String newId) async {
+    if (!_supportsWidgets || oldId.isEmpty || oldId == newId) return;
+    try {
+      if (_isIOS) await HomeWidget.setAppGroupId(appGroupId);
+      // The Android provider also keeps a flutter.* copy of the bindings.
+      for (final key in [
+        keyDdayWidgetBindings,
+        'flutter.$keyDdayWidgetBindings',
+      ]) {
+        final raw = await HomeWidget.getWidgetData<String>(key) ?? '';
+        if (raw.isEmpty) continue;
+        final decoded = jsonDecode(raw);
+        if (decoded is! Map || !decoded.containsValue(oldId)) continue;
+        await HomeWidget.saveWidgetData<String>(
+          key,
+          jsonEncode({
+            for (final entry in decoded.entries)
+              '${entry.key}': entry.value == oldId ? newId : entry.value,
+          }),
+        );
+      }
+      for (final key in [
+        keyDdayRoomId,
+        keyDdayPendingRoomId,
+        keyDdayLegacyRoomId,
+      ]) {
+        if (await HomeWidget.getWidgetData<String>(key) == oldId) {
+          await HomeWidget.saveWidgetData<String>(key, newId);
+        }
+      }
+      final hosts = await HomeWidget.getWidgetData<String>(keyDdayHostByRoom);
+      if (hosts != null && hosts.isNotEmpty) {
+        final decoded = jsonDecode(hosts);
+        if (decoded is Map && decoded.containsKey(oldId)) {
+          decoded[newId] = decoded.remove(oldId);
+          await HomeWidget.saveWidgetData<String>(
+            keyDdayHostByRoom,
+            jsonEncode(decoded),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('move widget room: $e');
+    }
+    await syncDday();
+  }
+
   static Future<void> syncDday({bool reloadFromPrefs = true}) {
     if (!_supportsWidgets) return Future.value();
     _ddayDirty = true;

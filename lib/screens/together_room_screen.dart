@@ -45,7 +45,10 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
 
   DdayItem? get _room {
     final matches =
-        ddayController.items.where((e) => e.id == widget.roomId);
+        // Inviting re-keys a new room while this screen is open.
+        ddayController.items.where(
+          (e) => e.id == ddayController.currentRoomId(widget.roomId),
+        );
     return matches.isEmpty ? null : matches.first;
   }
 

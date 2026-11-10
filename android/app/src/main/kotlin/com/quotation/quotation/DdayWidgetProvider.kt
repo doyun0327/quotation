@@ -60,12 +60,14 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
   override fun onDeleted(context: Context, appWidgetIds: IntArray) {
     super.onDeleted(context, appWidgetIds)
     val prefs = HomeWidgetPlugin.getData(context)
-    val bindings = readJson(prefs, "ddayWidgetBindings")
+    // Both copies: the flutter.* one is merged back in on every read, so
+    // clearing only the plain key let a removed widget keep its room.
+    val bindings = mergedBindings(prefs)
     for (id in appWidgetIds) {
       bindings.remove(id.toString())
       deleteTogetherImages(context, id)
     }
-    prefs.edit().putString("ddayWidgetBindings", bindings.toString()).apply()
+    writeBindings(prefs, bindings).apply()
   }
 
   private fun updateOne(

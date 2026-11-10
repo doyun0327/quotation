@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:quotation/widgets/subscribe_flow.dart';
 import 'package:quotation/data/archive_controller.dart';
-import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
 import 'package:quotation/data/quote_repository.dart';
@@ -380,13 +380,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                 if (!await suggestSignInBeforePurchase(context) || !mounted) {
                   return;
                 }
-                final code = await billingController.buyMonthly();
-                if (!mounted || code == null) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppStrings.current.billingError(code)),
-                  ),
-                );
+                await runMonthlySubscription(context);
               },
               child: Text(
                 t.premiumLockedCta,

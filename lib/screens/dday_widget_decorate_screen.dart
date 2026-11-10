@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:quotation/widgets/subscribe_flow.dart';
 import 'package:quotation/data/auth_controller.dart';
-import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
@@ -1268,13 +1268,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                 if (!await suggestSignInBeforePurchase(context) || !mounted) {
                   return;
                 }
-                final code = await billingController.buyMonthly();
-                if (!mounted || code == null) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppStrings.current.billingError(code)),
-                  ),
-                );
+                await runMonthlySubscription(context);
               },
               child: Text(
                 t.premiumLockedCta,

@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
+import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_bubble.dart';
@@ -471,6 +472,22 @@ class DdayController extends ChangeNotifier {
   static const _legacyOffsetsPrefsKey = 'dday_duo_offsets_v2';
   static const _meCharPrefsKey = 'dday_me_character_v1';
   static const _leftPrefsKey = 'dday_left_rooms_v1';
+  static const _movedPrefsKey = 'dday_moved_room_ids_v1';
+
+  /// Old room id → new id, from [rekeyRoom]. Screens and links opened with
+  /// the old id still find the room.
+  final Map<String, String> _movedRooms = {};
+
+  /// The id [roomId] goes by now (itself unless the room was re-keyed).
+  String currentRoomId(String roomId) {
+    var id = roomId;
+    for (var hops = 0; hops < 8; hops++) {
+      final next = _movedRooms[id];
+      if (next == null || next == id) break;
+      id = next;
+    }
+    return id;
+  }
 
   /// Rooms I left on this phone. The cloud copy can outlive the leave (a
   /// failed write, or the room listener firing right after), and pulling it
@@ -598,6 +615,16 @@ class DdayController extends ChangeNotifier {
   Future<void> load() async {
     await WidgetAlbumBackground.load();
     final prefs = await SharedPreferences.getInstance();
+    try {
+      final moved = jsonDecode(prefs.getString(_movedPrefsKey) ?? '{}');
+      if (moved is Map) {
+        _movedRooms
+          ..clear()
+          ..addAll({
+            for (final entry in moved.entries) '${entry.key}': '${entry.value}',
+          });
+      }
+    } catch (_) {}
     final raw = prefs.getString(_prefsKey);
     _items.clear();
     if (raw != null && raw.isNotEmpty) {
@@ -989,10 +1016,15 @@ class DdayController extends ChangeNotifier {
     final meChar = _meCharByRoom.remove(oldId);
     if (meChar != null) _meCharByRoom[newId] = meChar;
     if (_localCheerIds.remove(oldId)) _localCheerIds.add(newId);
+    _movedRooms[oldId] = newId;
     await _persist();
     await _persistRoomOffsets();
     await _persistMeCharacters();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_movedPrefsKey, jsonEncode(_movedRooms));
     notifyListeners();
+    // Home widgets placed for this room follow it to the new id.
+    await HomeWidgetSync.moveRoom(oldId, newId);
   }
 
   Future<void> update(DdayItem item) async {

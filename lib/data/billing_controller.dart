@@ -14,6 +14,24 @@ const kPremiumMonthlyProductId = 'premium_monthly';
 /// RevenueCat entitlement identifier. Must match the dashboard exactly.
 const kPremiumEntitlementId = 'premium';
 
+/// What a monthly purchase came to, for what the screen shows next.
+enum SubscribeOutcome {
+  /// Premium is on.
+  done,
+
+  /// Paid, but the store or RevenueCat has not confirmed it yet.
+  verifying,
+
+  /// The store is waiting for the payment (e.g. a slow card approval).
+  pending,
+
+  /// Closed without buying.
+  canceled,
+
+  /// Did not go through; see the code.
+  failed,
+}
+
 class BillingController extends ChangeNotifier {
   StreamSubscription<User?>? _authSub;
   Future<String?>? _configuring;
@@ -32,8 +50,63 @@ class BillingController extends ChangeNotifier {
     }
   }
 
+  /// How long to wait after a purchase for the plan to show up as active.
+  static const _verifyTimeout = Duration(seconds: 10);
+
+  /// Monthly purchase with what happened, for the subscribe screens.
+  /// A purchase that is paid but not active yet within [_verifyTimeout] is
+  /// [SubscribeOutcome.verifying], never a failure: the customer-info
+  /// listener turns premium on when RevenueCat confirms it.
+  Future<({SubscribeOutcome outcome, String? code})> subscribeMonthly() async {
+    _lastPurchaseState = null;
+    final code = await buyMonthly();
+    final state = _lastPurchaseState;
+    if (state == 'canceled') return (outcome: SubscribeOutcome.canceled, code: null);
+    if (state == 'pending') return (outcome: SubscribeOutcome.pending, code: null);
+    if (code == 'verifying') {
+      return (outcome: SubscribeOutcome.verifying, code: null);
+    }
+    if (code != null) return (outcome: SubscribeOutcome.failed, code: code);
+    if (!membershipController.isPremium) {
+      return (outcome: SubscribeOutcome.canceled, code: null);
+    }
+    return (outcome: SubscribeOutcome.done, code: null);
+  }
+
+  /// Set by [buyMonthly] for [subscribeMonthly]: 'canceled' or 'pending'.
+  String? _lastPurchaseState;
+
+  /// Waits up to [_verifyTimeout] for premium, checking RevenueCat again in
+  /// case the update listener is slow.
+  Future<bool> _waitForPremium() async {
+    if (membershipController.isPremium) return true;
+    final done = Completer<void>();
+    void listener() {
+      if (membershipController.isPremium && !done.isCompleted) done.complete();
+    }
+
+    membershipController.addListener(listener);
+    try {
+      final deadline = DateTime.now().add(_verifyTimeout);
+      while (!done.isCompleted && DateTime.now().isBefore(deadline)) {
+        await Future.any([
+          done.future,
+          Future<void>.delayed(const Duration(seconds: 2)),
+        ]);
+        if (done.isCompleted) break;
+        try {
+          _apply(await Purchases.getCustomerInfo());
+        } catch (_) {}
+      }
+    } finally {
+      membershipController.removeListener(listener);
+    }
+    return membershipController.isPremium;
+  }
+
   /// Opens the monthly subscription sheet through RevenueCat.
-  /// Returns an error code, or null when the sheet opened or the user cancelled.
+  /// Returns an error code, `verifying` when it was paid but is not active
+  /// yet, or null when it is active or the user cancelled.
   Future<String?> buyMonthly() async {
     if (_busy) return null;
     _busy = true;
@@ -72,14 +145,15 @@ class BillingController extends ChangeNotifier {
         );
       }
       _apply(result.customerInfo);
-      if (!membershipController.isPremium) {
-        lastError = 'failed';
-        return lastError;
-      }
+      // The store took the payment; RevenueCat can need a few more seconds.
+      if (!await _waitForPremium()) return 'verifying';
       return null;
     } on PlatformException catch (error) {
       final code = _purchaseErrorCode(error);
-      if (code == 'canceled' || code == 'pending') return null;
+      if (code == 'canceled' || code == 'pending') {
+        _lastPurchaseState = code;
+        return null;
+      }
       if (code == 'already') {
         membershipController.setPremium(true);
         return null;
