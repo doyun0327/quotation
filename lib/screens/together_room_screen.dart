@@ -291,20 +291,25 @@ class _FriendsCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Wrap(
-                  spacing: 12,
-                  runSpacing: 10,
-                  children: [
-                    _CharBubble(asset: me.assetPath, label: _meName(t)),
-                    for (final f in friends)
-                      if (!blockedUsersController.isBlocked(f.uid))
-                      _CharBubble(
-                        asset: AppCharacter.byId(f.characterId).assetPath,
-                        label: _friendLabel(f),
-                      ),
-                  ],
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
+                    children: [
+                      _CharBubble(asset: me.assetPath, label: _meName(t)),
+                      for (final f in friends)
+                        if (!blockedUsersController.isBlocked(f.uid)) ...[
+                          const SizedBox(width: 12),
+                          _CharBubble(
+                            asset: AppCharacter.byId(f.characterId).assetPath,
+                            label: _friendLabel(f),
+                          ),
+                        ],
+                    ],
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Material(
                 color: palette.accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(20),

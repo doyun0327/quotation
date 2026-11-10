@@ -23,65 +23,74 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color settingsLine;
   final Color settingsSoft;
 
-  static const sky = AppPalette(
-    id: 'sky',
-    name: '하늘',
-    accent: Color(0xFF5B8DEF),
-    accentSoft: Color(0xFFD7E6FF),
-    border: Color(0xFFB8C0CE),
-    windowBar: Color(0xFFBFD4F5),
-    settingsLine: Color(0xFF7EB3E8),
-    settingsSoft: Color(0xFFE8F2FC),
+  /// Clean black-and-white — ink on white, no warm tint.
+  static const black = AppPalette(
+    id: 'black',
+    name: '검정',
+    accent: Color(0xFF1A1A1A),
+    accentSoft: Color(0xFFF2F2F2),
+    border: Color(0xFFC8C8C8),
+    windowBar: Color(0xFFE6E6E6),
+    settingsLine: Color(0xFF2A2A2A),
+    settingsSoft: Color(0xFFF7F7F7),
   );
 
-  static const mint = AppPalette(
-    id: 'mint',
-    name: '민트',
-    accent: Color(0xFF3CB8A0),
-    accentSoft: Color(0xFFD5F3EC),
-    border: Color(0xFFA9C7BF),
-    windowBar: Color(0xFFB7E5DA),
-    settingsLine: Color(0xFF5EBDA8),
-    settingsSoft: Color(0xFFE4F7F2),
+  static const green = AppPalette(
+    id: 'green',
+    name: '연두',
+    accent: Color(0xFFB8D9A8),
+    accentSoft: Color(0xFFF2F8EC),
+    border: Color(0xFFD8E8D0),
+    windowBar: Color(0xFFE4F0D8),
+    settingsLine: Color(0xFFC0DCB0),
+    settingsSoft: Color(0xFFF6FAF2),
   );
 
-  static const lavender = AppPalette(
-    id: 'lavender',
-    name: '라벤더',
-    accent: Color(0xFF8B7BD8),
-    accentSoft: Color(0xFFE7E2FA),
-    border: Color(0xFFB8B0D4),
-    windowBar: Color(0xFFD2CBF3),
-    settingsLine: Color(0xFF9B8DE0),
-    settingsSoft: Color(0xFFF1EDFC),
+  /// Previous rose / pink set (before the 6-color swap).
+  static const pink = AppPalette(
+    id: 'pink',
+    name: '분홍',
+    accent: Color(0xFFE8A0C0),
+    accentSoft: Color(0xFFFCEEF4),
+    border: Color(0xFFE8CCD8),
+    windowBar: Color(0xFFF5D8E4),
+    settingsLine: Color(0xFFE8A8C4),
+    settingsSoft: Color(0xFFFDF4F8),
   );
 
-  static const peach = AppPalette(
-    id: 'peach',
-    name: '피치',
-    accent: Color(0xFFE8916A),
-    accentSoft: Color(0xFFFFE4D8),
-    border: Color(0xFFD4B3A4),
-    windowBar: Color(0xFFF5CDBA),
-    settingsLine: Color(0xFFE89A76),
-    settingsSoft: Color(0xFFFFF0E9),
+  static const yellow = AppPalette(
+    id: 'yellow',
+    name: '노랑',
+    accent: Color(0xFFE8D48A),
+    accentSoft: Color(0xFFFFF8E4),
+    border: Color(0xFFE8DCB8),
+    windowBar: Color(0xFFF5EAC0),
+    settingsLine: Color(0xFFE8D890),
+    settingsSoft: Color(0xFFFFFBF0),
   );
 
-  static const rose = AppPalette(
-    id: 'rose',
-    name: '로즈',
-    accent: Color(0xFFD676A0),
-    accentSoft: Color(0xFFF9DEE8),
-    border: Color(0xFFD0A8B8),
-    windowBar: Color(0xFFF0C4D4),
-    settingsLine: Color(0xFFD88AAB),
-    settingsSoft: Color(0xFFFCECF2),
-  );
-
-  static const all = <AppPalette>[sky, mint, lavender, peach, rose];
+  static const all = <AppPalette>[
+    black,
+    green,
+    pink,
+    yellow,
+  ];
 
   static AppPalette byId(String id) {
-    return all.firstWhere((p) => p.id == id, orElse: () => sky);
+    switch (id) {
+      case 'sky':
+      case 'navy':
+      case 'lavender':
+        return black;
+      case 'mint':
+        return green;
+      case 'rose':
+        return pink;
+      case 'peach':
+      case 'ivory':
+        return yellow;
+    }
+    return all.firstWhere((p) => p.id == id, orElse: () => pink);
   }
 
   @override
@@ -125,5 +134,5 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
 extension AppPaletteContext on BuildContext {
   AppPalette get palette =>
-      Theme.of(this).extension<AppPalette>() ?? AppPalette.sky;
+      Theme.of(this).extension<AppPalette>() ?? AppPalette.pink;
 }

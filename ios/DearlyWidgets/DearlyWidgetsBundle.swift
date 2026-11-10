@@ -4,9 +4,9 @@ import WidgetKit
 @main
 struct DearlyWidgetsBundle: WidgetBundle {
   var body: some Widget {
-    // Gallery order: character card first, quote-only second, then Together.
+    // Gallery order: Together first, then character card, then quote-only.
+    TogetherWidget()
     DailyWordWidget()
     QuoteOnlyWidget()
-    TogetherWidget()
   }
 }

@@ -572,7 +572,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                                         .id,
                                   ),
                                 ),
-                                label: '',
+                                label: t.favorite,
                                 color: AppColors.heart,
                                 onTap: () {
                                   final quote = quotes[

@@ -4,14 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Premium access. RevenueCat entitlement `premium` sets this and keeps it.
-/// New installs also get a one-week content trial (quotes + widget decorate).
+/// New installs also get a 3-day content trial (quotes + widget decorate).
 class MembershipController extends ChangeNotifier {
   static const _prefsKey = 'premium_active';
   static const _firstOpenKey = 'membership_first_open_ms';
   static const _trialNoticeKey = 'membership_trial_notice_shown';
 
   /// Length of the post-install content trial.
-  static const trialDays = 7;
+  static const trialDays = 3;
 
   bool _isPremium = false;
   DateTime? _firstOpenAt;
@@ -21,7 +21,7 @@ class MembershipController extends ChangeNotifier {
   /// Paid / restored subscription only (not the free trial).
   bool get isPremium => _isPremium;
 
-  /// Quotes + decorate unlock: paid premium or still inside the free week.
+  /// Quotes + decorate unlock: paid premium or still inside the free trial.
   bool get hasPremiumContent => _isPremium || isInFreeTrial;
 
   bool get isInFreeTrial {
@@ -64,7 +64,7 @@ class MembershipController extends ChangeNotifier {
     if (changed) notifyListeners();
   }
 
-  /// The free week can end while the app is open; tell listeners so premium
+  /// The free trial can end while the app is open; tell listeners so premium
   /// looks (backgrounds, fonts) switch back right away.
   void _scheduleTrialEnd() {
     _trialEndTimer?.cancel();

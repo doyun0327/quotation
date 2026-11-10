@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:quotation/theme/app_palette.dart';
 
 class ThemeController extends ChangeNotifier {
-  ThemeController({AppPalette? initial}) : _palette = initial ?? AppPalette.sky;
+  ThemeController({AppPalette? initial})
+      : _palette = initial ?? AppPalette.pink;
 
   AppPalette _palette;
 

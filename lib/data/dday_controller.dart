@@ -740,7 +740,7 @@ class DdayController extends ChangeNotifier {
   int textScaleForRoom(String roomId) => _offsetsForRoom(roomId).textScale;
   int bgColorForRoom(String roomId) => _offsetsForRoom(roomId).bgColor;
   int bgOpacityForRoom(String roomId) => _offsetsForRoom(roomId).bgOpacity;
-  /// Premium looks show when this phone is subscribed (or in the free week),
+  /// Premium looks show when this phone is subscribed (or in the free trial),
   /// or when a paying subscriber in the room picked them. Otherwise they fall
   /// back to the free look; the saved pick is kept.
   bool _showsPaidLook(String roomId, String look) =>
@@ -928,7 +928,7 @@ class DdayController extends ChangeNotifier {
   }
 
   /// A paying subscriber who saves vouches for every look in the room, picks
-  /// from their own free week included. Anyone else (the free week does not
+  /// from their own free trial included. Anyone else (the free trial does not
   /// carry over to friends) clears the mark on looks they change. Moving a
   /// bubble keeps its mark; new words or a new tail do not.
   Set<String> _markPaidLooks(_RoomOffsets cur, _RoomOffsets next) {

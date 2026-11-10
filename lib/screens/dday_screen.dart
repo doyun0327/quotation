@@ -15,6 +15,7 @@ import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
+import 'package:quotation/widgets/share_event.dart';
 
 class DdayScreen extends StatefulWidget {
   const DdayScreen({super.key});
@@ -142,7 +143,7 @@ class _DdayScreenState extends State<DdayScreen> {
                         ),
                       ),
                       const Spacer(),
-                      IconButton(
+                      TextButton(
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
@@ -151,19 +152,23 @@ class _DdayScreenState extends State<DdayScreen> {
                             ),
                           );
                         },
-                        // Compact, so the button does not push the title down.
-                        visualDensity: VisualDensity.compact,
-                        style: IconButton.styleFrom(
-                          backgroundColor: Colors.transparent,
+                        style: TextButton.styleFrom(
                           foregroundColor: palette.accent,
-                          overlayColor: palette.accent.withValues(alpha: 0.08),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        icon: AppPixelIcon(
-                          AppGlyph.qr,
-                          size: 22,
-                          color: palette.accent,
+                        child: Text(
+                          t.ddayInviteEnterWithCode,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: palette.accent,
+                          ),
                         ),
-                        tooltip: t.ddayInviteEnterCodeMenu,
                       ),
                     ],
                   ),
@@ -178,6 +183,7 @@ class _DdayScreenState extends State<DdayScreen> {
                     ),
                   ),
                 ),
+                const ShareEventCard(),
                 Expanded(
                   child: items.isEmpty
                       ? Center(

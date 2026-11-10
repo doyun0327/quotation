@@ -213,6 +213,8 @@ class AppStrings {
       _t('코드는 6자리예요', 'Code must be 6 characters', 'コードは6桁です');
   String get ddayInviteEnterCodeMenu =>
       _t('초대 코드로 참여', 'Join with invite code', '招待コードで参加');
+  String get ddayInviteEnterWithCode =>
+      _t('코드로 입장', 'Enter with code', 'コードで入室');
 
   String get togetherOpenRoom => _t('방 열기', 'Open room', 'ルームを開く');
   String get togetherCheerTitle => _t('응원 문구', 'Cheer', '応援メッセージ');
@@ -370,7 +372,11 @@ class AppStrings {
   String get iosWidgetGuideTitle => _t('홈 화면에 위젯 추가하기', 'Add the widget to your Home Screen', 'ホーム画面にウィジェットを追加');
   String get iosWidgetGuideSubtitle => _t('홈 화면에서 직접 추가해야 해요. 한 번만 하면 이후엔 자동으로 바뀌어요.', 'On iPhone you add it from the Home Screen once. After that it updates by itself.', 'iPhoneはホーム画面から一度追加すれば、その後は自動で更新されます。');
   String get iosWidgetGuideStep1 => _t('홈 화면 빈 곳을 앱이 흔들릴 때까지 꾹 눌러요', 'Touch and hold an empty spot on the Home Screen until the apps jiggle', 'ホーム画面の空いている所を、アプリが揺れるまで長押しします');
-  String get iosWidgetGuideStep2 => _t('왼쪽 위 [편집] → [위젯 추가]를 눌러요', 'Tap Edit at the top left, then Add Widget', '左上の［編集］→［ウィジェットを追加］をタップします');
+  String get iosWidgetGuideStep2 => _t(
+        '왼쪽 상단 [편집] → [위젯 추가]를 눌러요',
+        'Tap Edit at the top left, then Add Widget',
+        '左上の［編集］→［ウィジェットを追加］をタップします',
+      );
   String iosWidgetGuideStep3(String name) => _t("'Dearly'를 검색해 '$name' 위젯을 고르고 [위젯 추가]를 눌러요", "Search for Dearly, choose the '$name' widget, then tap Add Widget", "「Dearly」を検索して「$name」ウィジェットを選び、［ウィジェットを追加］をタップします");
   String get iosWidgetGuideOk => _t('알겠어요', 'Got it', 'わかりました');
   String get characterWidgetHintClosed => _t('홈 화면을 길게 눌러 위젯을 추가할 수 있어요!', 'Long-press the home screen to add the widget!', 'ホーム画面を長押ししてウィジェットを追加できます！');
@@ -387,11 +393,6 @@ class AppStrings {
         '방을 만들고 친구를 3명 초대하면 캐릭터가 열려요!',
         'Make a room and invite 3 friends to unlock this character!',
         'ルームを作って友だちを3人招待するとキャラクターが開放されます！',
-      );
-  String get shareEventBody => _t(
-        '어느 방이든 합쳐서 세요',
-        'Invites from any room count',
-        'どのルームの招待も合算されます',
       );
   String get shareEventLocked => _t(
         '같이 탭에서 방을 만들고 초대코드를 3번 보내면 열려요.',
@@ -686,9 +687,9 @@ class AppStrings {
       _t('설치 환영 선물', 'A welcome gift', 'インストール記念プレゼント');
   // Not a store free trial: no subscription starts and nothing is charged.
   String get trialWelcomeBody => _t(
-        '설치 후 7일 동안 모든 명언과 위젯 꾸미기가 무료로 열려요!',
-        'All quotes and widget decorating are free for 7 days after install!',
-        'インストール後7日間、すべての名言とウィジェット装飾が無料で開放されます！',
+        '설치 후 3일 동안 모든 명언과 위젯 꾸미기가 무료로 열려요!',
+        'All quotes and widget decorating are free for 3 days after install!',
+        'インストール後3日間、すべての名言とウィジェット装飾が無料で開放されます！',
       );
   String get trialWelcomeConfirm => _t('확인', 'Got it', 'OK');
 
@@ -815,6 +816,7 @@ class AppStrings {
   String get archiveRemove => _t('보관 해제', 'Remove from archive', '保存を解除');
   String get removedFromArchive =>
       _t('보관함에서 뺐어요', 'Removed from archive', '保存から外しました');
+  String get favorite => _t('찜하기', 'Favorite', 'お気に入り');
   String get share => _t('공유하기', 'Share', '共有する');
   String get swipeHint =>
       _t('위·아래로 넘겨 보세요', 'Swipe up or down', '上下にスワイプしてみてください');
@@ -835,16 +837,23 @@ class AppStrings {
 
   String themeName(String id) {
     switch (id) {
-      case 'sky':
-        return _t('하늘', 'Sky', '空');
+      case 'black':
+        return _t('검정', 'Black', 'ブラック');
+      case 'green':
       case 'mint':
-        return _t('민트', 'Mint', 'ミント');
-      case 'lavender':
-        return _t('라벤더', 'Lavender', 'ラベンダー');
-      case 'peach':
-        return _t('피치', 'Peach', 'ピーチ');
+        return _t('연한 연두', 'Soft green', '薄い黄緑');
+      case 'pink':
       case 'rose':
-        return _t('로즈', 'Rose', 'ローズ');
+        return _t('파스텔 분홍', 'Pastel pink', 'パステルピンク');
+      case 'yellow':
+      case 'peach':
+      case 'ivory':
+        return _t('파스텔 노랑', 'Pastel yellow', 'パステルイエロー');
+      // Legacy ids.
+      case 'sky':
+      case 'navy':
+      case 'lavender':
+        return themeName('black');
       default:
         return id;
     }

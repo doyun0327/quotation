@@ -107,7 +107,6 @@ class CharacterArtInsets {
     'character (6).png': CharacterArtInsets(1.0210, 0.252, 0.264, 0.080, 0.056),
     'character (60).png': CharacterArtInsets(1.0218, 0.293, 0.295, 0.070, 0.017),
     'character (61).png': CharacterArtInsets(1.0218, 0.285, 0.262, 0.059, 0.019),
-    'character (62).png': CharacterArtInsets(1.0218, 0.276, 0.221, 0.047, 0.021),
     'character (63).png': CharacterArtInsets(1.0218, 0.289, 0.273, 0.075, 0.021),
     'character (64).png': CharacterArtInsets(0.9795, 0.258, 0.262, 0.109, 0.047),
     'character (7).png': CharacterArtInsets(1.0210, 0.232, 0.229, 0.106, 0.038),

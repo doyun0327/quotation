@@ -83,78 +83,69 @@ class ShareEventCard extends StatelessWidget {
     return ListenableBuilder(
       listenable: characterController,
       builder: (context, _) {
-        if (characterController.shareEventDone) return const SizedBox.shrink();
+        // After 3 invites the reward opens — hide on Galaxy and iPhone.
+        if (characterController.shareEventDone) {
+          return const SizedBox.shrink();
+        }
         final t = AppStrings.current;
         final accent = context.palette.accent;
         final sent = characterController.inviteSends;
         const goal = CharacterController.shareEventGoal;
-        // One headline, one quiet line, and a step per invite to send.
-        return Container(
-          padding: const EdgeInsets.fromLTRB(8, 8, 14, 8),
-          decoration: BoxDecoration(
-            color: AppColors.card,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: accent.withValues(alpha: 0.3)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+        // One headline and a step per invite to send.
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(8, 8, 14, 8),
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: accent.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const _EventArt(size: 60),
                 ),
-                child: const _EventArt(size: 60),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    t.shareEventTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTheme.body.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // ● ● ○ : invites sent out of the goal.
+                Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      t.shareEventTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.ink,
+                    for (var i = 0; i < goal; i++)
+                      Container(
+                        width: 10,
+                        height: 10,
+                        margin: const EdgeInsets.only(left: 4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: i < sent
+                              ? accent
+                              : accent.withValues(alpha: 0.15),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      t.shareEventBody,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 11.5,
-                        color: AppColors.muted,
-                      ),
-                    ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              // ● ● ○ : invites sent out of the goal.
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (var i = 0; i < goal; i++)
-                    Container(
-                      width: 10,
-                      height: 10,
-                      margin: const EdgeInsets.only(left: 4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: i < sent
-                            ? accent
-                            : accent.withValues(alpha: 0.15),
-                      ),
-                    ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

@@ -12,15 +12,22 @@ enum CharacterGroup { female, male, special }
 class CharacterPack {
   const CharacterPack({
     required this.id,
-    required this.productId,
+    required this._productId,
+    this._appStoreProductId,
     required this.characterIds,
   });
 
   final String id;
-
-  /// App Store / Play non-consumable product id (also imported to RevenueCat).
-  final String productId;
+  final String _productId;
+  final String? _appStoreProductId;
   final List<String> characterIds;
+
+  /// Non-consumable product id on this device's store (also imported to
+  /// RevenueCat). [appStoreProductId] overrides it on iOS when the two
+  /// stores' ids differ.
+  String get productId => defaultTargetPlatform == TargetPlatform.iOS
+      ? (_appStoreProductId ?? _productId)
+      : _productId;
 
   static const nyang = CharacterPack(
     id: 'nyang',
@@ -29,9 +36,13 @@ class CharacterPack {
   );
 
   /// `assets/images/character/christmas/01.png` … `08.png`.
+  /// App Store uses `_v2`: `pack_christmas` was first made there as a
+  /// consumable and deleted, and App Store Connect never lets a deleted
+  /// product id be used again. Google Play keeps `pack_christmas`.
   static const christmas = CharacterPack(
     id: 'christmas',
     productId: 'pack_christmas',
+    appStoreProductId: 'pack_christmas_v2',
     characterIds: ['x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8'],
   );
 
@@ -85,15 +96,17 @@ class AppCharacter {
 
   static final List<AppCharacter> shop = [
     basic,
+    // character (62).png was removed; a saved c62 pick falls back in [byId].
     for (var i = 1; i <= 64; i++)
-      AppCharacter(
-        id: 'c$i',
-        assetPath: 'assets/images/character/woman/character ($i).png',
-        // Pack characters keep their ids so existing picks still resolve.
-        group: CharacterPack.forCharacter('c$i') == null
-            ? CharacterGroup.female
-            : CharacterGroup.special,
-      ),
+      if (i != 62)
+        AppCharacter(
+          id: 'c$i',
+          assetPath: 'assets/images/character/woman/character ($i).png',
+          // Pack characters keep their ids so existing picks still resolve.
+          group: CharacterPack.forCharacter('c$i') == null
+              ? CharacterGroup.female
+              : CharacterGroup.special,
+        ),
     const AppCharacter(
       id: 'c65',
       assetPath: 'assets/images/character/woman/character(65).png',
@@ -179,6 +192,7 @@ class CharacterController extends ChangeNotifier {
   static const _ownedPacksKey = 'character_owned_packs';
   static const _seenPacksKey = 'character_seen_packs';
   static const _inviteSendsKey = 'share_event_invite_sends';
+  static const _inviteDoneKey = 'share_event_completed';
 
   /// Invite codes to send (any room, any number of rooms) for the event
   /// character.
@@ -194,20 +208,27 @@ class CharacterController extends ChangeNotifier {
   final Set<String> _ownedPacks = {};
   final Set<String> _seenPacks = {};
   int _inviteSends = 0;
+  bool _inviteEventCompleted = false;
 
   /// Invite codes sent so far, capped at [shareEventGoal].
   int get inviteSends => _inviteSends.clamp(0, shareEventGoal);
-  bool get shareEventDone => _inviteSends >= shareEventGoal;
+
+  /// True after 3 invites (or a prior completion flag) — Together banner stays hidden.
+  bool get shareEventDone =>
+      _inviteEventCompleted || _inviteSends >= shareEventGoal;
 
   /// Counts one sent invite code. True when this send opened the event
   /// character.
   Future<bool> recordInviteSent() async {
     if (shareEventDone) return false;
     _inviteSends++;
+    final opened = _inviteSends >= shareEventGoal;
+    if (opened) _inviteEventCompleted = true;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_inviteSendsKey, _inviteSends);
-    return shareEventDone;
+    if (opened) await prefs.setBool(_inviteDoneKey, true);
+    return opened;
   }
 
   AppCharacter get character => _character;
@@ -269,6 +290,12 @@ class CharacterController extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _hasPicked = prefs.getBool(_pickedKey) ?? false;
     _inviteSends = prefs.getInt(_inviteSendsKey) ?? 0;
+    _inviteEventCompleted = prefs.getBool(_inviteDoneKey) ?? false;
+    // Older installs only had the send count — treat goal reached as done.
+    if (!_inviteEventCompleted && _inviteSends >= shareEventGoal) {
+      _inviteEventCompleted = true;
+      await prefs.setBool(_inviteDoneKey, true);
+    }
     _adUnlocked
       ..clear()
       ..addAll(_readIdList(prefs.getString(_adUnlocksKey)));
