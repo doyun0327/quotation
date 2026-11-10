@@ -120,6 +120,9 @@ class AppStrings {
   String get ddayDecorateBubbleLabel => _t('말풍선', 'Speech bubbles', '吹き出し');
   String get ddayDecorateBubbleDefault => _t('안녕!', 'Hi!', 'やあ!');
   String get ddayDecorateBubbleTextHint => _t('말풍선에 쓸 말', 'Bubble text', '吹き出しの言葉');
+  String get ddayDecorateBubbleEdit => _t('글 수정', 'Edit', '編集');
+  String get ddayDecorateBubbleSmaller => _t('작게', 'Smaller', '小さく');
+  String get ddayDecorateBubbleLarger => _t('크게', 'Larger', '大きく');
   String get ddayDecorateBubbleDirection => _t('방향', 'Direction', '向き');
   String get ddayDecorateBubbleLeft => _t('왼쪽', 'Left', '左');
   String get ddayDecorateBubbleRight => _t('오른쪽', 'Right', '右');
@@ -242,12 +245,21 @@ class AppStrings {
       _t('응원을 남겨 보세요', 'Leave a cheer', '応援を残してみてください');
   String get safetyReport => _t('신고', 'Report', '通報');
   String get safetyReportTitle =>
-      _t('응원 문구 신고', 'Report this cheer', '応援メッセージを通報');
+      _t('신고하기', 'Report', '通報する');
   String get safetyReportBody => _t(
-        '불쾌한 문구를 운영자에게 알립니다. 확인한 뒤 문구를 지우거나 이용을 제한합니다.',
-        'This tells the operator. They review the cheer and can remove it or limit the account.',
-        '不快なメッセージを運営に知らせます。確認のうえ、文章の削除や利用制限を行います。',
+        '불쾌한 내용을 골라 운영자에게 알립니다. 확인한 뒤 내용을 지우거나 이용을 제한합니다.',
+        'Pick what to report. The operator reviews it and can remove it or limit the account.',
+        '不快な内容を選んで運営に知らせます。確認のうえ、削除や利用制限を行います。',
       );
+  String get safetyNothingToReport => _t(
+        '이 방에 신고할 수 있는 다른 사람의 글이 없어요.',
+        'There is nothing written by someone else to report here.',
+        'この部屋に通報できる他の人の内容はありません。',
+      );
+  String get safetyKindCheer => _t('응원 문구', 'Cheer', '応援メッセージ');
+  String get safetyKindBubble => _t('말풍선', 'Speech bubble', '吹き出し');
+  String get safetyKindNickname => _t('닉네임', 'Nickname', 'ニックネーム');
+  String get safetyKindRoom => _t('방 이름', 'Room name', '部屋の名前');
   String get safetyReasonHarassment =>
       _t('괴롭힘', 'Harassment', '嫌がらせ');
   String get safetyReasonSexual =>
@@ -263,9 +275,9 @@ class AppStrings {
       _t('이 사용자 차단', 'Block this person', 'このユーザーをブロック');
   String get safetyBlock => _t('차단', 'Block', 'ブロック');
   String get safetyBlockHint => _t(
-        '차단하면 이 기기에서 그 사람의 문구와 캐릭터가 보이지 않습니다.',
-        'Blocking hides their cheer and character on this device.',
-        'ブロックすると、この端末ではその人のメッセージとキャラクターが非表示になります。',
+        '차단하면 이 기기에서 그 사람의 문구, 말풍선, 캐릭터가 보이지 않습니다.',
+        'Blocking hides their cheer, speech bubbles and character on this device.',
+        'ブロックすると、この端末ではその人のメッセージ、吹き出し、キャラクターが非表示になります。',
       );
   String get safetySubmit => _t('신고하기', 'Submit report', '通報する');
   String get safetySent => _t(
@@ -337,6 +349,22 @@ class AppStrings {
   String get archivePawHint =>
       _t('🐾 누르면 보관함에 담겨요!', '🐾 Tap to save to Archive!', '🐾 タップすると保存に入ります！');
   String get characterWidgetHint => _t('캐릭터와 말풍선을 위젯으로 내보낼 수 있어요!', 'You can send your character and speech bubble to a widget!', 'キャラクターと吹き出しをウィジェットに書き出せます！');
+  String get characterWidgetStyleTitle =>
+      _t('어떤 모양으로 내보낼까요?', 'Which style?', 'どの形で書き出しますか？');
+  String get characterWidgetStyleBubble =>
+      _t('말풍선', 'Speech bubble', '吹き出し');
+  String get characterWidgetStyleBubbleNote => _t(
+        '캐릭터 옆 말풍선에 문구가 들어가요',
+        'The quote sits in a bubble beside the character',
+        'キャラクターの横の吹き出しに言葉が入ります',
+      );
+  String get characterWidgetStyleClassic =>
+      _t('기본 칸', 'Classic box', '基本の枠');
+  String get characterWidgetStyleClassicNote => _t(
+        '지금까지의 네모 칸 모양이에요',
+        'The square box used until now',
+        'これまでの四角い枠です',
+      );
   String get characterWidgetHintExport => _t('내보내기', 'Export', '書き出す');
   String get characterWidgetHintClose => _t('닫기', 'Close', '閉じる');
   String get iosWidgetGuideTitle => _t('홈 화면에 위젯 추가하기', 'Add the widget to your Home Screen', 'ホーム画面にウィジェットを追加');
@@ -355,8 +383,30 @@ class AppStrings {
   String get shopGroupFemale => _t('여', 'Women', '女');
   String get shopGroupMale => _t('남', 'Men', '男');
   String get shopGroupSpecial => _t('스페셜', 'Special', 'スペシャル');
+  String get shareEventTitle =>
+      _t('초대코드 공유 이벤트', 'Invite share event', '招待コード共有イベント');
+  String get shareEventBody => _t(
+        '방을 만들고 초대코드를 3번 보내면 이 캐릭터가 열려요! 방은 여러 개 만들어도 돼요.',
+        'Make a room and send its invite code 3 times to unlock this character. Any number of rooms counts.',
+        '部屋を作って招待コードを3回送ると、このキャラクターが開放されます！部屋はいくつ作ってもOKです。',
+      );
+  String get shareEventLocked => _t(
+        '같이 탭에서 방을 만들고 초대코드를 3번 보내면 열려요.',
+        'Opens after you send an invite code 3 times from a Together room.',
+        '一緒タブで部屋を作り、招待コードを3回送ると開放されます。',
+      );
+  String get shareEventOpenedTitle =>
+      _t('새 캐릭터가 열렸어요!', 'New character unlocked!', '新しいキャラクターが開放されました！');
+  String get shareEventOpenedBody => _t(
+        '초대해 줘서 고마워요. 캐릭터 상점의 스페셜 탭에서 고를 수 있어요.',
+        'Thanks for inviting. Pick it in the Special tab of the character shop.',
+        '招待してくれてありがとう。キャラクターショップのスペシャルタブで選べます。',
+      );
+  String get shareEventSection => _t('이벤트', 'Event', 'イベント');
   String characterPackName(String packId) {
     switch (packId) {
+      case 'christmas':
+        return _t('크리스마스', 'Christmas', 'クリスマス');
       case 'nyang':
         return _t('냥이ver', 'Kitty ver', 'ニャンver');
       default:
@@ -590,12 +640,31 @@ class AppStrings {
       _t('설치 환영 선물', 'A welcome gift', 'インストール記念プレゼント');
   // Not a store free trial: no subscription starts and nothing is charged.
   String get trialWelcomeBody => _t(
-        '설치 후 7일 동안 모든 명언 카테고리와 위젯 꾸미기를 열어 드려요.\n구독이 시작되지 않고 결제도 되지 않아요. 7일이 지나면 자동으로 원래대로 돌아가요.',
-        'For 7 days after installing, every quote category and widget decorating are open to you.\nNo subscription starts and you are not charged. Everything returns to normal after 7 days.',
-        'インストール後7日間、すべての名言カテゴリーとウィジェット装飾を開放します。\n購読は始まらず、料金もかかりません。7日が過ぎると自動で元に戻ります。',
+        '설치 후 7일 동안 모든 명언과 위젯 꾸미기가 무료로 열려요!',
+        'All quotes and widget decorating are free for 7 days after install!',
+        'インストール後7日間、すべての名言とウィジェット装飾が無料で開放されます！',
       );
   String get trialWelcomeConfirm => _t('확인', 'Got it', 'OK');
 
+  String get termsConsentTitle =>
+      _t('이용약관 동의', 'Agree to the terms', '利用規約への同意');
+  String get termsConsentBody => _t(
+        'Dearly를 쓰려면 이용약관과 개인정보처리방침에 동의해 주세요.\n\n'
+            '닉네임, 응원 문구, 말풍선, 방 이름에 괴롭힘, 혐오, 성적인 내용, 위협, 스팸 등 부적절한 내용을 쓰면 안 돼요. 이런 내용은 허용하지 않으며, 신고되면 내용을 지우거나 이용을 제한합니다. 불쾌한 내용과 사용자는 같이 방에서 신고하고 차단할 수 있어요.',
+        'To use Dearly, please agree to the Terms and Privacy Policy.\n\n'
+            'Do not put harassment, hate, sexual content, threats, spam or other objectionable content in nicknames, cheers, speech bubbles or room names. We do not tolerate it: reported content can be removed and accounts limited. You can report and block content and people from a Together room.',
+        'Dearlyを使うには、利用規約とプライバシーポリシーに同意してください。\n\n'
+            'ニックネーム、応援メッセージ、吹き出し、部屋の名前に、嫌がらせ、差別、性的な内容、脅迫、スパムなどの不適切な内容を書かないでください。こうした内容は認めておらず、通報されると削除や利用制限を行います。不快な内容や利用者は一緒ルームから通報・ブロックできます。',
+      );
+  String get termsConsentAccept =>
+      _t('동의하고 시작', 'Agree and continue', '同意して始める');
+  String get adPrivacyTitle =>
+      _t('광고 개인정보 설정', 'Ad privacy settings', '広告のプライバシー設定');
+  String get adPrivacySubtitle => _t(
+        '광고 동의 선택을 바꿀 수 있어요',
+        'Change your ad consent choice',
+        '広告の同意内容を変更できます',
+      );
   String get otherSection => _t('기타 설정', 'Other', 'その他');
   String get eveningDebugTitle =>
       _t('저녁 알림 테스트', 'Test evening alert', '夜の通知テスト');

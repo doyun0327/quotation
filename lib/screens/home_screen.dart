@@ -18,7 +18,7 @@ import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/theme_controller.dart';
-import 'package:quotation/widgets/dashed_border.dart';
+import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/character_widget_hint.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:quotation/widgets/category_browse_section.dart';
@@ -109,71 +109,75 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: ListenableBuilder(
-        listenable: Listenable.merge([
-          archiveController,
-          selectionController,
-          localeController,
-          membershipController,
-          characterController,
-          themeController,
-        ]),
-        builder: (context, _) {
-          final bubble = selectionController.bubbleQuote;
-          final bubbleText = bubble?.text ?? AppStrings.current.homeGreeting;
-          final bubbleId = bubble?.id ?? 'greeting_today';
+    return ColoredBox(
+      color: Colors.white,
+      child: SafeArea(
+        child: ListenableBuilder(
+          listenable: Listenable.merge([
+            archiveController,
+            selectionController,
+            localeController,
+            membershipController,
+            characterController,
+            themeController,
+          ]),
+          builder: (context, _) {
+            final bubble = selectionController.bubbleQuote;
+            final bubbleText = bubble?.text ?? AppStrings.current.homeGreeting;
+            final bubbleId = bubble?.id ?? 'greeting_today';
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const _BrandHeader(),
-                    const SizedBox(height: 20),
-                    _HomeQuoteCard(
-                      date: _today,
-                      message: bubbleText,
-                      isSaved: archiveController.contains(bubbleId),
-                      onDateTap: selectionController.reshuffle,
-                      onCharacterTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const ShopScreen(asSettings: true),
-                          ),
-                        );
-                      },
-                      onHeartTap: () {
-                        if (bubble != null) {
-                          _toggleQuote(context, bubble);
-                        }
-                      },
-                      onMessageTap: () {
-                        if (bubble != null) {
-                          _openBubbleDetail(context, bubble);
-                        }
-                      },
-                    ),
-                    const CharacterWidgetHintBanner(),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                  child: CategoryBrowseSection(
-                    onSubcategoryTap: (category, sub) =>
-                        _openSubcategory(context, category, sub),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const _BrandHeader(),
+                      const SizedBox(height: 22),
+                      _HomeQuoteCard(
+                        date: _today,
+                        message: bubbleText,
+                        isSaved: archiveController.contains(bubbleId),
+                        onDateTap: selectionController.reshuffle,
+                        onCharacterTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  const ShopScreen(asSettings: true),
+                            ),
+                          );
+                        },
+                        onHeartTap: () {
+                          if (bubble != null) {
+                            _toggleQuote(context, bubble);
+                          }
+                        },
+                        onMessageTap: () {
+                          if (bubble != null) {
+                            _openBubbleDetail(context, bubble);
+                          }
+                        },
+                      ),
+                      const CharacterWidgetHintBanner(),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+                const SizedBox(height: 20),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    child: CategoryBrowseSection(
+                      onSubcategoryTap: (category, sub) =>
+                          _openSubcategory(context, category, sub),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -259,9 +263,6 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
 
   /// Character plus name tag height as a share of the quote box height.
   static const _groupShare = 0.75;
-
-  /// How far the body always reaches into the box, in logical pixels.
-  static const _overlap = 22.0;
 
   /// Bounds of the default character, used until an image is measured.
   static const _fallbackInk = (
@@ -370,8 +371,8 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
     );
   }
 
-  /// Character stands on the left, in front of the quote box, overlapping
-  /// its left edge. The box is five quote lines tall and the body is three
+  /// Character stands on the left, beside a speech bubble whose tail points
+  /// at it. The bubble is five quote lines tall and the body is three
   /// quarters of that for every character.
   Widget _quoteCard(BuildContext context, Color frame, double width) {
     final date = widget.date;
@@ -386,7 +387,6 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
     const dateGap = 6.0;
     final textHeight = _CappedQuoteText.heightFor(context);
     final boxHeight = padTop + dateRow + dateGap + textHeight + padBottom;
-    final boxLeft = width * 0.21;
 
     const tagHeight = 26.0;
     const tagGap = 2.0;
@@ -395,21 +395,28 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
     final drawnH = bodyHeight / (ink.bottom - ink.top);
     final drawnW = drawnH / ink.aspect;
     final bodyWidth = drawnW * (ink.right - ink.left);
-    // Right side always reaches [_overlap] into the box; wide bodies start
-    // at the left edge instead.
-    final bodyLeft =
-        (boxLeft + _overlap - bodyWidth).clamp(0.0, width).toDouble();
-    final bodyRight = bodyLeft + bodyWidth;
+    // The column is at least as wide as a short name tag.
+    final groupWidth = bodyWidth < 56.0 ? 56.0 : bodyWidth;
+    const groupLeft = 2.0;
+    final bodyLeft = groupLeft + (groupWidth - bodyWidth) / 2;
+
+    // Bubble body starts just past the character and its tail.
+    final boxLeft = (groupLeft + groupWidth + 4 + _HomeFrame.tailWidth)
+        .clamp(width * 0.2, width * 0.34)
+        .toDouble();
 
     final groupHeight = bodyHeight + tagGap + tagHeight;
-    // Name tag bottom sits on the box's bottom line.
-    final bodyTop = (boxHeight - groupHeight).clamp(0.0, boxHeight);
+    // Character and name tag sit a little below the bubble's middle.
+    final bodyTop = ((boxHeight - groupHeight) * 0.6).clamp(0.0, boxHeight);
+    // Tail points at the character's face.
+    final tailY = bodyTop + bodyHeight * 0.4;
 
-    final textInset = (bodyRight - boxLeft + 8).clamp(12.0, width).toDouble();
+    const textInset = 14.0;
     final textWidth = width - boxLeft - textInset - 8;
 
     final box = _HomeFrame(
       color: frame,
+      tailY: tailY,
       child: SizedBox(
         height: boxHeight,
         child: Padding(
@@ -476,9 +483,9 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
 
     final accent = context.palette.accent;
     final tagCenter = bodyLeft + bodyWidth / 2;
-    // Centered under the body; never past its right side, so a long name
-    // cannot reach the quote text.
-    final tagMax = ((bodyRight + 4 - tagCenter) * 2).clamp(56.0, width);
+    // Centered under the body; never reaches the bubble's tail.
+    final tagMax =
+        ((boxLeft - _HomeFrame.tailWidth - 2 - tagCenter) * 2).clamp(56.0, width);
 
     return SizedBox(
       height: boxHeight,
@@ -486,7 +493,7 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            left: boxLeft,
+            left: boxLeft - _HomeFrame.tailWidth,
             right: 0,
             top: 0,
             bottom: 0,
@@ -494,7 +501,10 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
           ),
           if (_showDateHint)
             Positioned(
-              left: boxLeft + textInset - 4,
+              // Not further left than this, or it covers the brand line.
+              left: (boxLeft + textInset - 4)
+                  .clamp(width * 0.3, width)
+                  .toDouble(),
               top: -34,
               child: GestureDetector(
                 onTap: _onDateTap,
@@ -667,26 +677,103 @@ class _CappedQuoteTextState extends State<_CappedQuoteText> {
   }
 }
 
+/// Dashed speech bubble around the home quote. Its tail sticks out on the
+/// left at [tailY], toward the character.
 class _HomeFrame extends StatelessWidget {
-  const _HomeFrame({required this.child, required this.color});
+  const _HomeFrame({
+    required this.child,
+    required this.color,
+    required this.tailY,
+  });
+
+  /// How far the tail reaches left of the bubble body.
+  static const tailWidth = 10.0;
 
   final Widget child;
   final Color color;
+  final double tailY;
 
   @override
   Widget build(BuildContext context) {
-    return DashedBorder(
-      color: color,
-      strokeWidth: 1.4,
-      dashLength: 5,
-      gapLength: 3.5,
-      radius: 14,
-      padding: EdgeInsets.zero,
-      backgroundColor: AppColors.card,
-      alwaysDashed: true,
-      child: child,
+    return CustomPaint(
+      painter: _HomeBubblePainter(
+        color: color,
+        fill: AppColors.card,
+        tailY: tailY,
+        radius: visualStyleController.isClean ? 22 : 18,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: tailWidth),
+        child: child,
+      ),
     );
   }
+}
+
+class _HomeBubblePainter extends CustomPainter {
+  const _HomeBubblePainter({
+    required this.color,
+    required this.fill,
+    required this.tailY,
+    required this.radius,
+  });
+
+  static const _stroke = 1.4;
+  static const _dash = 5.0;
+  static const _gap = 3.5;
+  static const _tailHalf = 7.0;
+
+  final Color color;
+  final Color fill;
+  final double tailY;
+  final double radius;
+
+  Path _outline(Size size) {
+    const s = _stroke / 2;
+    const left = _HomeFrame.tailWidth + s;
+    final body = RRect.fromRectAndRadius(
+      Rect.fromLTRB(left, s, size.width - s, size.height - s),
+      Radius.circular(radius),
+    );
+    // Keep the tail on the straight part of the left edge.
+    final y = tailY
+        .clamp(radius + _tailHalf, size.height - radius - _tailHalf)
+        .toDouble();
+    final tail = Path()
+      ..moveTo(left + 1, y - _tailHalf)
+      ..lineTo(s, y + 3)
+      ..lineTo(left + 1, y + _tailHalf)
+      ..close();
+    return Path.combine(PathOperation.union, Path()..addRRect(body), tail);
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (size.isEmpty) return;
+    final path = _outline(size);
+    canvas.drawPath(path, Paint()..color = fill);
+    final line = Paint()
+      ..color = color
+      ..strokeWidth = _stroke
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.square
+      ..isAntiAlias = false;
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        final end = (distance + _dash).clamp(0.0, metric.length);
+        canvas.drawPath(metric.extractPath(distance, end), line);
+        distance += _dash + _gap;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _HomeBubblePainter old) =>
+      old.color != color ||
+      old.fill != fill ||
+      old.tailY != tailY ||
+      old.radius != radius;
 }
 
 enum _HomeTapHintKind { character, date }

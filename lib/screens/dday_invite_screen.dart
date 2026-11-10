@@ -11,6 +11,7 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/widgets/share_event.dart';
 
 /// Host screen: create an invite code and link for a D-Day.
 class DdayInviteScreen extends StatefulWidget {
@@ -116,7 +117,7 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
     if (code == null || code.isEmpty) return;
     final room = _room;
     final t = AppStrings.current;
-    await SharePlus.instance.share(
+    final result = await SharePlus.instance.share(
       ShareParams(
         text: t.ddayInviteShareText(
           room.title,
@@ -125,6 +126,10 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
         ),
       ),
     );
+    // Android often cannot tell whether it was sent ("unavailable"); only a
+    // sheet closed without picking an app is left out.
+    if (result.status == ShareResultStatus.dismissed || !mounted) return;
+    await ShareEvent.onInviteSent(context);
   }
 
   Future<void> _copy(BuildContext context, String value, String message) async {
@@ -133,6 +138,8 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
+    // A copied code is usually pasted into a chat, so it counts as a send.
+    await ShareEvent.onInviteSent(context);
   }
 
   @override

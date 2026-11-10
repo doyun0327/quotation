@@ -30,7 +30,8 @@ class MainActivity : FlutterActivity() {
                   ?: "s42"
           result.success(pinTogetherWidget(size))
         }
-        "pinCharacterWidget" -> result.success(pinCharacterWidget())
+        "pinCharacterWidget" ->
+            result.success(pinCharacterWidget(bubble = call.argument<String>("style") == "bubble"))
         "refreshCharacterWidget" -> {
           val appContext = applicationContext
           offMain(result) { DailyWordWidgetProvider.refreshQuoteFamily(appContext) }
@@ -90,16 +91,20 @@ class MainActivity : FlutterActivity() {
     return manager.requestPinAppWidget(provider, extras, null)
   }
 
-  private fun pinCharacterWidget(): Boolean {
+  private fun pinCharacterWidget(bubble: Boolean): Boolean {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
     val manager = AppWidgetManager.getInstance(applicationContext)
     if (!manager.isRequestPinAppWidgetSupported) return false
-    val provider = ComponentName(applicationContext, DailyWordWidgetProvider::class.java)
+    val providerClass =
+        if (bubble) DailyWordBubbleWidgetProvider::class.java
+        else DailyWordWidgetProvider::class.java
+    val provider = ComponentName(applicationContext, providerClass)
     val prefs = es.antonborri.home_widget.HomeWidgetPlugin.getData(applicationContext)
     val bitmap =
         DailyWordWidgetProvider.buildPinBitmap(
             context = applicationContext,
             widgetData = prefs,
+            bubble = bubble,
         )
     val views =
         DdayWidgetProvider().wrapPinPreview(

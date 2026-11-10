@@ -480,22 +480,6 @@
     "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
   },
   {
-    "id": 61,
-    "author": "Bob Dylan",
-    "quote": "The only constant is change.",
-    "category": "Musician",
-    "source": "밥 딜런의 정확한 발언으로 확인되지 않은 표현",
-    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
-  },
-  {
-    "id": 62,
-    "author": "David Bowie",
-    "quote": "I know who I am, and I change every day.",
-    "category": "Musician",
-    "source": "보위에게 귀속되는 문구; 출처 확인 필요",
-    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
-  },
-  {
     "id": 63,
     "author": "Oprah Winfrey",
     "quote": "Passion is energy. Feel the power that comes from focusing on what excites you.",
@@ -720,35 +704,11 @@
     "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
   },
   {
-    "id": 91,
-    "author": "Park Wan-suh",
-    "quote": "Life is not merely something to endure; it is something to live through.",
-    "category": "Writer",
-    "source": "박완서에게 귀속되는 문구; 정확한 출처 확인 필요",
-    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
-  },
-  {
     "id": 92,
     "author": "Kim Young-ha",
     "quote": "Stories help us understand who we are.",
     "category": "Writer",
     "source": "김영하의 강연·저술 취지 요약",
-    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
-  },
-  {
-    "id": 93,
-    "author": "Na Tae-joo",
-    "quote": "It is beautiful when you look closely; it is lovely when you look for a long time. You are like that, too.",
-    "category": "Poet",
-    "source": "시 《풀꽃》",
-    "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
-  },
-  {
-    "id": 94,
-    "author": "Jung Ho-seung",
-    "quote": "Do not cry. To be lonely is to be human.",
-    "category": "Poet",
-    "source": "시 《수선화에게》의 일부",
     "note": "Some wording is translated, paraphrased, or attribution is uncertain; verify the source before presenting as a verbatim quote."
   },
   {

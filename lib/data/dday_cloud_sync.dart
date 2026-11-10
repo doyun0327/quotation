@@ -588,7 +588,12 @@ class DdayCloudSync {
         : crowdKey;
     // Absent on layouts pushed by older app versions: keep what we have.
     final bubbles = data.containsKey('layoutBubbles')
-        ? TogetherBubble.listFromJson(data['layoutBubbles'], ax: ax, ay: ay)
+        ? TogetherBubble.listFromJson(
+            data['layoutBubbles'],
+            ax: ax,
+            ay: ay,
+            fallbackAuthor: data['layoutUpdatedBy']?.toString() ?? '',
+          )
         : null;
     final paidLooks = PaidLook.parse(data['layoutPaidLooks']);
     if (iAmHost) {

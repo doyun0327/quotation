@@ -20,9 +20,12 @@ class CharacterArtInsets {
   static const none = CharacterArtInsets(1, 0, 0, 0, 0);
 
   static CharacterArtInsets forAsset(String assetPath) {
-    final file = assetPath.split('/').last;
-    // Male files reuse some female filenames, so they are keyed 'man/<file>'.
-    if (assetPath.contains('/man/')) return _byFile['man/$file'] ?? none;
+    final parts = assetPath.split('/');
+    final file = parts.last;
+    final folder = parts.length > 1 ? parts[parts.length - 2] : '';
+    // Only woman/ files are keyed by bare name; other folders reuse names
+    // (man/, christmas/01.png, shareEvent/01.png), so they carry the folder.
+    if (folder != 'woman') return _byFile['$folder/$file'] ?? none;
     return _byFile[file] ?? none;
   }
 
@@ -111,8 +114,11 @@ class CharacterArtInsets {
     'character (8).png': CharacterArtInsets(1.0210, 0.251, 0.255, 0.129, 0.030),
     'character (9).png': CharacterArtInsets(1.0218, 0.224, 0.224, 0.082, 0.035),
     'character(65).png': CharacterArtInsets(1.0000, 0.245, 0.255, 0.208, 0.132),
-    'character(66).png': CharacterArtInsets(1.0000, 0.213, 0.214, 0.054, 0.056),
+    'character(66).png': CharacterArtInsets(1.0000, 0.213, 0.215, 0.054, 0.057),
     'character(67).png': CharacterArtInsets(1.0000, 0.197, 0.206, 0.153, 0.059),
+    'character(68).png': CharacterArtInsets(1.0000, 0.273, 0.271, 0.073, 0.051),
+    'character(69).png': CharacterArtInsets(1.0000, 0.274, 0.274, 0.072, 0.053),
+    'character(70).png': CharacterArtInsets(1.0000, 0.253, 0.219, 0.054, 0.032),
     'character.png': CharacterArtInsets(1.0000, 0.242, 0.255, 0.203, 0.125),
     // man/ (looked up as 'man/<file>'; some names repeat woman files)
     'man/character (1).png': CharacterArtInsets(1.0218, 0.263, 0.256, 0.089, 0.037),
@@ -130,19 +136,32 @@ class CharacterArtInsets {
     'man/character (7).png': CharacterArtInsets(1.0185, 0.262, 0.271, 0.129, 0.031),
     'man/character (8).png': CharacterArtInsets(1.0234, 0.259, 0.268, 0.118, 0.031),
     'man/character (9).png': CharacterArtInsets(1.0185, 0.246, 0.280, 0.115, 0.053),
-    'man/character(2).png': CharacterArtInsets(1.0218, 0.263, 0.256, 0.089, 0.037),
     'man/character(16).png': CharacterArtInsets(1.0000, 0.264, 0.269, 0.108, 0.060),
-    'man/character(17).png': CharacterArtInsets(1.0000, 0.000, 0.000, 0.000, 0.000),
-    'man/character(18).png': CharacterArtInsets(1.0000, 0.000, 0.000, 0.000, 0.000),
+    'man/character(17).png': CharacterArtInsets(1.0000, 0.265, 0.264, 0.111, 0.057),
+    'man/character(18).png': CharacterArtInsets(1.0000, 0.266, 0.262, 0.112, 0.049),
     'man/character(19).png': CharacterArtInsets(1.0218, 0.267, 0.260, 0.114, 0.035),
-    'man/character(20).png': CharacterArtInsets(1.0000, 0.267, 0.263, 0.112, 0.053),
-    'man/character(21).png': CharacterArtInsets(1.0218, 0.268, 0.261, 0.114, 0.034),
-    'man/character(22).png': CharacterArtInsets(1.0000, 0.268, 0.264, 0.112, 0.061),
-    'man/character(23).png': CharacterArtInsets(1.0000, 0.268, 0.264, 0.110, 0.059),
-    'man/character(24).png': CharacterArtInsets(1.0000, 0.267, 0.264, 0.111, 0.053),
-    'man/character(25).png': CharacterArtInsets(1.0000, 0.268, 0.265, 0.112, 0.059),
-    'man/character(26).png': CharacterArtInsets(1.0000, 0.268, 0.242, 0.107, 0.061),
-    'man/character(27).png': CharacterArtInsets(1.0000, 0.221, 0.231, 0.135, 0.060),
+    'man/character(2).png': CharacterArtInsets(1.0218, 0.263, 0.256, 0.089, 0.037),
+    'man/character(20).png': CharacterArtInsets(1.0000, 0.268, 0.263, 0.112, 0.054),
+    'man/character(21).png': CharacterArtInsets(1.0218, 0.269, 0.261, 0.114, 0.035),
+    'man/character(22).png': CharacterArtInsets(1.0000, 0.269, 0.264, 0.112, 0.061),
+    'man/character(23).png': CharacterArtInsets(1.0000, 0.269, 0.265, 0.110, 0.061),
+    'man/character(24).png': CharacterArtInsets(1.0000, 0.268, 0.265, 0.111, 0.054),
+    'man/character(25).png': CharacterArtInsets(1.0000, 0.268, 0.265, 0.112, 0.061),
+    'man/character(27).png': CharacterArtInsets(1.0000, 0.222, 0.231, 0.135, 0.060),
+    'man/character(28).png': CharacterArtInsets(1.0000, 0.274, 0.279, 0.128, 0.053),
+    'man/character(29).png': CharacterArtInsets(1.0000, 0.274, 0.278, 0.128, 0.048),
+    'man/character(30).png': CharacterArtInsets(1.0000, 0.245, 0.268, 0.064, 0.034),
     'man/charcter(1).png': CharacterArtInsets(1.0185, 0.264, 0.278, 0.125, 0.029),
+    // christmas/ pack (looked up as 'christmas/<file>')
+    'christmas/01.png': CharacterArtInsets(0.8248, 0.246, 0.246, 0.125, 0.085),
+    'christmas/02.png': CharacterArtInsets(0.8248, 0.246, 0.246, 0.122, 0.085),
+    'christmas/03.png': CharacterArtInsets(0.8248, 0.241, 0.241, 0.164, 0.079),
+    'christmas/04.png': CharacterArtInsets(0.9873, 0.206, 0.205, 0.028, 0.045),
+    'christmas/05.png': CharacterArtInsets(0.9787, 0.230, 0.185, 0.035, 0.027),
+    'christmas/06.png': CharacterArtInsets(1.0000, 0.273, 0.272, 0.073, 0.051),
+    'christmas/07.png': CharacterArtInsets(1.0000, 0.274, 0.278, 0.132, 0.058),
+    'christmas/08.png': CharacterArtInsets(1.0000, 0.268, 0.242, 0.108, 0.061),
+    // shareEvent/ reward (looked up as 'shareEvent/<file>')
+    'shareEvent/01.png': CharacterArtInsets(1.0000, 0.300, 0.303, 0.122, 0.054),
   };
 }

@@ -1,31 +1,42 @@
 #!/usr/bin/env python3
 """Regenerate the _byFile table in lib/data/character_art_insets.dart.
 
-Usage (from the repo root):
-  swiftc -O tool/character_art/alpha_bounds.swift -o /tmp/alpha_bounds
+Usage (from the repo root, any OS, needs Pillow):
   python3 tool/character_art/gen_insets.py
+
+Same rule as alpha_bounds.swift: a pixel counts as art when alpha > 24.
 """
-import re
-import subprocess
+import os
+
+from PIL import Image
 
 DART = 'lib/data/character_art_insets.dart'
 ROOT = 'assets/images/character'
 
 
+def bounds(path):
+    img = Image.open(path).convert('RGBA')
+    w, h = img.size
+    box = img.getchannel('A').point(lambda a: 255 if a > 24 else 0).getbbox()
+    if box is None:
+        return w, h, 0.0, 0.0, 0.0, 0.0
+    min_x, min_y, max_x, max_y = box[0], box[1], box[2] - 1, box[3] - 1
+    return (w, h, min_x / w, (w - 1 - max_x) / w,
+            min_y / h, (h - 1 - max_y) / h)
+
+
 def rows(folder, prefix):
-    out = subprocess.run(['/tmp/alpha_bounds', f'{ROOT}/{folder}'],
-                         capture_output=True, text=True, check=True).stdout
     lines = []
-    for line in out.splitlines():
-        name, size, rest = line.split('\t')
-        w, h = map(int, size.split('x'))
-        left, right, top, bottom = [float(v) for v in re.findall(r'[\d.]+', rest)]
+    for name in sorted(os.listdir(f'{ROOT}/{folder}')):
+        if not name.lower().endswith('.png'):
+            continue
+        w, h, left, right, top, bottom = bounds(f'{ROOT}/{folder}/{name}')
         lines.append(f"    '{prefix}{name}': CharacterArtInsets("
                      f"{w / h:.4f}, {left:.3f}, {right:.3f}, {top:.3f}, {bottom:.3f}),")
     return lines
 
 
-src = open(DART).read()
+src = open(DART, encoding='utf-8').read()
 start = src.index('  static const Map<String, CharacterArtInsets> _byFile = {')
 end = src.index('  };', start) + len('  };')
 table = (['  static const Map<String, CharacterArtInsets> _byFile = {',
@@ -33,6 +44,10 @@ table = (['  static const Map<String, CharacterArtInsets> _byFile = {',
          + rows('woman', '')
          + ["    // man/ (looked up as 'man/<file>'; some names repeat woman files)"]
          + rows('man', 'man/')
+         + ["    // christmas/ pack (looked up as 'christmas/<file>')"]
+         + rows('christmas', 'christmas/')
+         + ["    // shareEvent/ reward (looked up as 'shareEvent/<file>')"]
+         + rows('shareEvent', 'shareEvent/')
          + ['  };'])
-open(DART, 'w').write(src[:start] + '\n'.join(table) + src[end:])
+open(DART, 'w', encoding='utf-8', newline='').write(src[:start] + '\n'.join(table) + src[end:])
 print('updated', DART)

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/encouragement_notification_scheduler.dart';
@@ -381,35 +382,45 @@ class SettingsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 18),
-                      SettingsSection(
-                        title: t.otherSection,
-                        children: [
-                          SettingsItem(
-                            icon: Icons.description_outlined,
-                            title: t.termsTitle,
-                            subtitle: t.termsSubtitle,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => const LegalScreen(),
+                      ValueListenableBuilder<bool>(
+                        valueListenable: AdConsent.privacyOptionsRequired,
+                        builder: (context, showAdPrivacy, _) => SettingsSection(
+                          title: t.otherSection,
+                          children: [
+                            SettingsItem(
+                              icon: Icons.description_outlined,
+                              title: t.termsTitle,
+                              subtitle: t.termsSubtitle,
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => const LegalScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            if (showAdPrivacy)
+                              SettingsItem(
+                                icon: Icons.privacy_tip_outlined,
+                                title: t.adPrivacyTitle,
+                                subtitle: t.adPrivacySubtitle,
+                                onTap: AdConsent.showPrivacyOptions,
+                              ),
+                            SettingsItem(
+                              icon: Icons.info_outline_rounded,
+                              title: t.appInfoTitle,
+                              subtitle: '',
+                              trailing: Text(
+                                'v1.0.0',
+                                style: AppTheme.body.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.muted,
                                 ),
-                              );
-                            },
-                          ),
-                          SettingsItem(
-                            icon: Icons.info_outline_rounded,
-                            title: t.appInfoTitle,
-                            subtitle: '',
-                            trailing: Text(
-                              'v1.0.0',
-                              style: AppTheme.body.copyWith(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.muted,
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),

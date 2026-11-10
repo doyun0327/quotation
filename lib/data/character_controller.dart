@@ -25,11 +25,18 @@ class CharacterPack {
   static const nyang = CharacterPack(
     id: 'nyang',
     productId: 'pack_nyang',
-    characterIds: ['c20', 'c22', 'c23', 'c25', 'c26', 'c27', 'c28'],
+    characterIds: ['c20', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28'],
+  );
+
+  /// `assets/images/character/christmas/01.png` … `08.png`.
+  static const christmas = CharacterPack(
+    id: 'christmas',
+    productId: 'pack_christmas',
+    characterIds: ['x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8'],
   );
 
   /// Newest first. A new season goes at the top (name in AppStrings).
-  static const List<CharacterPack> all = [nyang];
+  static const List<CharacterPack> all = [christmas, nyang];
 
   static CharacterPack? forCharacter(String id) {
     for (final pack in all) {
@@ -60,6 +67,14 @@ class AppCharacter {
     id: 'basic',
     assetPath: 'assets/images/character/woman/character.png',
     isDefault: true,
+  );
+
+  /// Share event reward: opens after sending an invite code
+  /// [CharacterController.shareEventGoal] times. Not sold, not ad-unlocked.
+  static const shareEvent = AppCharacter(
+    id: 'e1',
+    assetPath: 'assets/images/character/shareEvent/01.png',
+    group: CharacterGroup.special,
   );
 
   /// Test-room friend sprite. Same art as the first shop character.
@@ -94,6 +109,12 @@ class AppCharacter {
       assetPath: 'assets/images/character/woman/character(67).png',
       group: CharacterGroup.female,
     ),
+    for (var i = 68; i <= 70; i++)
+      AppCharacter(
+        id: 'c$i',
+        assetPath: 'assets/images/character/woman/character($i).png',
+        group: CharacterGroup.female,
+      ),
     for (var i = 1; i <= 15; i++)
       AppCharacter(
         id: 'm$i',
@@ -110,12 +131,22 @@ class AppCharacter {
       assetPath: 'assets/images/character/man/character(2).png',
       group: CharacterGroup.male,
     ),
-    for (var i = 16; i <= 27; i++)
+    // character(26).png was removed, so m28 is gone; a saved m28 pick falls
+    // back to the default character in [byId].
+    for (var i = 16; i <= 30; i++)
+      if (i != 26)
+        AppCharacter(
+          id: 'm${i + 2}',
+          assetPath: 'assets/images/character/man/character($i).png',
+          group: CharacterGroup.male,
+        ),
+    for (var i = 1; i <= 8; i++)
       AppCharacter(
-        id: 'm${i + 2}',
-        assetPath: 'assets/images/character/man/character($i).png',
-        group: CharacterGroup.male,
+        id: 'x$i',
+        assetPath: 'assets/images/character/christmas/0$i.png',
+        group: CharacterGroup.special,
       ),
+    shareEvent,
   ];
 
   static List<AppCharacter> inGroup(CharacterGroup group) {
@@ -147,6 +178,11 @@ class CharacterController extends ChangeNotifier {
   static const _favoritesKey = 'character_favorites';
   static const _ownedPacksKey = 'character_owned_packs';
   static const _seenPacksKey = 'character_seen_packs';
+  static const _inviteSendsKey = 'share_event_invite_sends';
+
+  /// Invite codes to send (any room, any number of rooms) for the event
+  /// character.
+  static const shareEventGoal = 3;
   /// Characters one person can open with ads (lock tiles).
   static const adUnlockLimit = 2;
 
@@ -157,6 +193,22 @@ class CharacterController extends ChangeNotifier {
   final Set<String> _favorites = {};
   final Set<String> _ownedPacks = {};
   final Set<String> _seenPacks = {};
+  int _inviteSends = 0;
+
+  /// Invite codes sent so far, capped at [shareEventGoal].
+  int get inviteSends => _inviteSends.clamp(0, shareEventGoal);
+  bool get shareEventDone => _inviteSends >= shareEventGoal;
+
+  /// Counts one sent invite code. True when this send opened the event
+  /// character.
+  Future<bool> recordInviteSent() async {
+    if (shareEventDone) return false;
+    _inviteSends++;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_inviteSendsKey, _inviteSends);
+    return shareEventDone;
+  }
 
   AppCharacter get character => _character;
   bool get hasPicked => _hasPicked;
@@ -168,6 +220,8 @@ class CharacterController extends ChangeNotifier {
 
   bool isUsable(AppCharacter character) {
     if (character.isDefault || character.id == AppCharacter.bul.id) return true;
+    // The event character opens only through the share event.
+    if (character.id == AppCharacter.shareEvent.id) return shareEventDone;
     // Pack characters open only by buying the pack (not premium / ads).
     final pack = character.pack;
     if (pack != null) return ownsPack(pack);
@@ -176,7 +230,10 @@ class CharacterController extends ChangeNotifier {
   }
 
   bool canUnlockWithAd(AppCharacter character) =>
-      character.pack == null && !isUsable(character) && adUnlocksLeft > 0;
+      character.pack == null &&
+      character.id != AppCharacter.shareEvent.id &&
+      !isUsable(character) &&
+      adUnlocksLeft > 0;
 
   bool ownsPack(CharacterPack pack) => _ownedPacks.contains(pack.id);
 
@@ -211,6 +268,7 @@ class CharacterController extends ChangeNotifier {
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     _hasPicked = prefs.getBool(_pickedKey) ?? false;
+    _inviteSends = prefs.getInt(_inviteSendsKey) ?? 0;
     _adUnlocked
       ..clear()
       ..addAll(_readIdList(prefs.getString(_adUnlocksKey)));

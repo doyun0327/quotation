@@ -133,12 +133,14 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
     fun buildPinBitmap(
         context: Context,
         widgetData: SharedPreferences,
+        bubble: Boolean = false,
     ): Bitmap {
       return buildHomeCard(
           context = context,
           widgetData = widgetData,
           widthDp = 300,
           heightDp = 168,
+          bubble = bubble,
       )
     }
 
@@ -155,6 +157,7 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
         widgetData: SharedPreferences,
         widthDp: Int,
         heightDp: Int,
+        bubble: Boolean = false,
     ): Bitmap {
       val metricsDensity =
           context.resources.displayMetrics.density.coerceAtLeast(1f)
@@ -182,23 +185,16 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       val characterId = prefString(widgetData, "characterId").ifEmpty { "basic" }
       val nickname = prefString(widgetData, "nickname")
 
-      // Quote box. Character sits in front of its left part.
+      // Quote box. The character sits in front of its left part, or with
+      // [bubble], stands beside a speech bubble whose tail points at it.
       val stroke = dp(1.4f)
-      val boxLeft = width * 0.21f
-      val box = RectF(boxLeft, stroke, width - stroke, height - stroke)
-      val fill =
-          Paint().apply {
-            color = 0xFFFFFFFF.toInt()
-            style = Paint.Style.FILL
-            isAntiAlias = true
-          }
-      canvas.drawRoundRect(box, dp(14f), dp(14f), fill)
-      drawDashedRoundRect(canvas, box, dp(14f), frame, stroke, dp(5f), dp(3.5f))
+      val boxTop = stroke
+      val boxBottom = height - stroke
 
       // Character + name tag take three quarters of the box height.
       val tagHeight = dp(22f)
       val tagGap = dp(2f)
-      val groupHeight = box.height() * 0.75f
+      val groupHeight = (boxBottom - boxTop) * 0.75f
       val bodyHeight = (groupHeight - tagGap - tagHeight).coerceAtLeast(dp(24f))
       val art =
           DdayWidgetVisuals.characterBitmap(
@@ -211,10 +207,44 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       val ink = inkBounds(art)
       val bodyScale = bodyHeight / ink.height().coerceAtLeast(1)
       val bodyWidth = ink.width() * bodyScale
-      // Right side always reaches into the box; wide bodies start at the edge.
-      val bodyLeft = (boxLeft + dp(22f) - bodyWidth).coerceAtLeast(0f)
+      val tailWidth = dp(10f)
+      val boxLeft: Float
+      val bodyLeft: Float
+      val bodyTop: Float
+      if (bubble) {
+        // Same layout as the app home: the column is at least as wide as a
+        // short name tag, and the bubble starts past the character and tail.
+        val groupWidth = max(bodyWidth, dp(56f))
+        bodyLeft = dp(2f) + (groupWidth - bodyWidth) / 2f
+        boxLeft =
+            (dp(2f) + groupWidth + dp(4f) + tailWidth)
+                .coerceIn(width * 0.2f, width * 0.34f)
+        bodyTop = boxTop + (boxBottom - boxTop - groupHeight) * 0.6f
+      } else {
+        boxLeft = width * 0.21f
+        // Right side always reaches into the box; wide bodies start at the edge.
+        bodyLeft = (boxLeft + dp(22f) - bodyWidth).coerceAtLeast(0f)
+        bodyTop = boxBottom - groupHeight
+      }
       val bodyRight = bodyLeft + bodyWidth
-      val bodyTop = box.bottom - groupHeight
+      val box = RectF(boxLeft, boxTop, width - stroke, boxBottom)
+      val fill =
+          Paint().apply {
+            color = 0xFFFFFFFF.toInt()
+            style = Paint.Style.FILL
+            isAntiAlias = true
+          }
+      if (bubble) {
+        val radius = dp(if (pixel) 18f else 22f)
+        // Tail points at the character's face.
+        val outline =
+            bubblePath(box, radius, tailWidth, bodyTop + bodyHeight * 0.4f, dp(7f), stroke)
+        canvas.drawPath(outline, fill)
+        drawDashedPath(canvas, outline, frame, stroke, dp(5f), dp(3.5f))
+      } else {
+        canvas.drawRoundRect(box, dp(14f), dp(14f), fill)
+        drawDashedRoundRect(canvas, box, dp(14f), frame, stroke, dp(5f), dp(3.5f))
+      }
       canvas.drawBitmap(
           art,
           ink,
@@ -236,18 +266,21 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
             }
         val padX = dp(8f)
         val center = bodyLeft + bodyWidth / 2f
-        // Never past the body's right side, so it cannot reach the quote.
-        val maxTag = ((bodyRight + dp(4f) - center) * 2f).coerceAtLeast(dp(48f))
+        // Never past the body's right side (or the bubble's tail), so it
+        // cannot reach the quote.
+        val tagEdge = if (bubble) boxLeft - tailWidth - dp(2f) else bodyRight + dp(4f)
+        val maxTag = ((tagEdge - center) * 2f).coerceAtLeast(dp(48f))
         val label =
             TextUtils.ellipsize(nickname, tagPaint, maxTag - padX * 2f, TextUtils.TruncateAt.END)
                 .toString()
         val tagWidth = tagPaint.measureText(label) + padX * 2f
+        val tagTop = bodyTop + bodyHeight + tagGap
         val tagRect =
             RectF(
                 center - tagWidth / 2f,
-                box.bottom - tagHeight,
+                tagTop,
                 center + tagWidth / 2f,
-                box.bottom,
+                tagTop + tagHeight,
             )
         canvas.drawRoundRect(tagRect, dp(10f), dp(10f), fill)
         canvas.drawRoundRect(
@@ -266,7 +299,12 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       }
 
       // Date on the top line of the box, clear of the character.
-      val textLeft = box.left + (bodyRight - boxLeft + dp(8f)).coerceAtLeast(dp(12f))
+      val textLeft =
+          if (bubble) {
+            box.left + dp(14f)
+          } else {
+            box.left + (bodyRight - boxLeft + dp(8f)).coerceAtLeast(dp(12f))
+          }
       val textRight = box.right - dp(10f)
       val datePaint =
           Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -627,16 +665,71 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
           Path().apply {
             addRoundRect(inner, radius, radius, Path.Direction.CW)
           }
+      dashAlong(canvas, path, paint, dash, gap)
+    }
+
+    private fun dashAlong(canvas: Canvas, path: Path, paint: Paint, dash: Float, gap: Float) {
       val measure = PathMeasure(path, false)
       val segment = Path()
-      var distance = 0f
-      while (distance < measure.length) {
-        segment.reset()
-        val end = min(distance + dash, measure.length)
-        measure.getSegment(distance, end, segment, true)
-        canvas.drawPath(segment, paint)
-        distance += dash + gap
-      }
+      do {
+        var distance = 0f
+        while (distance < measure.length) {
+          segment.reset()
+          val end = min(distance + dash, measure.length)
+          measure.getSegment(distance, end, segment, true)
+          canvas.drawPath(segment, paint)
+          distance += dash + gap
+        }
+      } while (measure.nextContour())
+    }
+
+    private fun drawDashedPath(
+        canvas: Canvas,
+        path: Path,
+        color: Int,
+        strokeWidth: Float,
+        dash: Float,
+        gap: Float,
+    ) {
+      val paint =
+          Paint().apply {
+            this.color = color
+            style = Paint.Style.STROKE
+            this.strokeWidth = strokeWidth
+            strokeCap = Paint.Cap.BUTT
+            isAntiAlias = false
+          }
+      dashAlong(canvas, path, paint, dash, gap)
+    }
+
+    /**
+     * Rounded [box] plus a tail on its left edge at [tailY], reaching
+     * [tailWidth] to the left. Mirrors the app's home quote bubble.
+     */
+    private fun bubblePath(
+        box: RectF,
+        radius: Float,
+        tailWidth: Float,
+        tailY: Float,
+        tailHalf: Float,
+        stroke: Float,
+    ): Path {
+      val inset = stroke / 2f
+      val body = RectF(box.left + inset, box.top + inset, box.right - inset, box.bottom - inset)
+      val low = body.top + radius + tailHalf
+      val high = body.bottom - radius - tailHalf
+      // Keep the tail on the straight part of the left edge.
+      val y = if (low <= high) tailY.coerceIn(low, high) else body.centerY()
+      val path = Path().apply { addRoundRect(body, radius, radius, Path.Direction.CW) }
+      val tail =
+          Path().apply {
+            moveTo(body.left + 1f, y - tailHalf)
+            lineTo(box.left - tailWidth + inset, y + tailHalf * 3f / 7f)
+            lineTo(body.left + 1f, y + tailHalf)
+            close()
+          }
+      path.op(tail, Path.Op.UNION)
+      return path
     }
 
     private fun prefString(prefs: SharedPreferences, key: String): String {
@@ -724,6 +817,7 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
     fun quoteFamilyClasses(): List<Class<out android.appwidget.AppWidgetProvider>> =
         listOf(
             DailyWordWidgetProvider::class.java,
+            DailyWordBubbleWidgetProvider::class.java,
             DailyWordWidgetProviderMedium::class.java,
             DailyWordWidgetProviderLarge::class.java,
             QuoteOnlyWidgetProvider::class.java,
@@ -841,6 +935,23 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       )
     }
   }
+}
+
+/** 오늘의 말 export with the quote in a speech bubble, like the app home. */
+class DailyWordBubbleWidgetProvider : DailyWordWidgetProvider() {
+  override fun cardFor(
+      context: Context,
+      widgetData: SharedPreferences,
+      widthDp: Int,
+      heightDp: Int,
+  ): Bitmap =
+      DailyWordWidgetProvider.buildHomeCard(
+          context,
+          widgetData,
+          widthDp,
+          heightDp,
+          bubble = true,
+      )
 }
 
 /** iOS systemMedium for 오늘의 말, as listed in the widget picker. */

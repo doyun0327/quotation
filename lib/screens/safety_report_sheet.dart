@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
+import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/home_widget_sync.dart';
@@ -38,6 +40,7 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
   String _reason = SafetyReportReason.harassment;
   bool _block = true;
   bool _busy = false;
+  String? _targetKey;
   final _note = TextEditingController();
 
   @override
@@ -84,8 +87,65 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
     return true;
   }
 
-  Future<void> _submit(_CheerTarget target) async {
-    if (_busy || !_canReport(target)) return;
+  /// Everything in this room that other people wrote, cheer first.
+  List<_ReportTarget> _reportTargets(
+    AppStrings t,
+    DdayItem room,
+    _CheerTarget cheer,
+    List<DdayFriendMember> friends,
+  ) {
+    bool mine(String? uid) =>
+        uid != null && uid.isNotEmpty && authController.myIds.contains(uid);
+    String? nameOf(String uid) =>
+        friends.where((f) => f.uid == uid).firstOrNull?.displayName?.trim();
+    return [
+      if (_canReport(cheer))
+        _ReportTarget(
+          key: 'cheer',
+          type: 'cheer',
+          label: t.safetyKindCheer,
+          text: cheer.text,
+          authorUid: cheer.authorUid,
+          authorName: cheer.authorName,
+        ),
+      for (final bubble in blockedUsersController.visibleBubbles(
+        room.id,
+        ddayController.bubblesForRoom(room.id),
+      ))
+        if (bubble.text.isNotEmpty && !mine(bubble.authorUid))
+          _ReportTarget(
+            key: 'bubble:${bubble.id}',
+            type: 'bubble',
+            label: t.safetyKindBubble,
+            text: bubble.text,
+            authorUid: bubble.authorUid,
+            authorName: nameOf(bubble.authorUid),
+            bubble: bubble,
+          ),
+      for (final friend in friends)
+        if ((friend.displayName?.trim() ?? '').isNotEmpty)
+          _ReportTarget(
+            key: 'nickname:${friend.uid}',
+            type: 'nickname',
+            label: t.safetyKindNickname,
+            text: friend.displayName!.trim(),
+            authorUid: friend.uid,
+            authorName: friend.displayName!.trim(),
+          ),
+      if (room.title.trim().isNotEmpty && !mine(room.cloudOwnerUid))
+        _ReportTarget(
+          key: 'room',
+          type: 'room_title',
+          label: t.safetyKindRoom,
+          text: room.title.trim(),
+          authorUid: room.cloudOwnerUid,
+          authorName: nameOf(room.cloudOwnerUid ?? ''),
+        ),
+    ];
+  }
+
+  Future<void> _submit(_ReportTarget target, _CheerTarget cheer) async {
+    if (_busy) return;
     final room = _room;
     if (room == null) return;
     setState(() => _busy = true);
@@ -93,6 +153,7 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
     final result = await SafetyReportRepository.submit(
       roomId: room.id,
       reason: _reason,
+      targetType: target.type,
       targetUid: target.authorUid,
       targetName: target.authorName,
       contentText: target.text,
@@ -109,13 +170,20 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
     }
     final author = target.authorUid;
     if (_block && author != null && author.isNotEmpty) {
-      await _blockUid(author, target, hideCurrentCheer: true);
-    } else {
+      await _blockUid(
+        author,
+        cheer,
+        hideCurrentCheer: author == cheer.authorUid,
+      );
+    } else if (target.type == 'cheer') {
       await blockedUsersController.hideCheer(
         roomId: room.id,
         text: target.text,
       );
       await ddayController.setRoomCheer(room.id, '');
+      await HomeWidgetSync.syncDday();
+    } else if (target.bubble != null) {
+      await blockedUsersController.hideBubble(room.id, target.bubble!);
       await HomeWidgetSync.syncDday();
     }
     if (!mounted) return;
@@ -140,10 +208,9 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
       text: target.text,
       authorUid: uid == author ? author : null,
     );
-    if (hidden) {
-      await ddayController.setRoomCheer(widget.roomId, '');
-      await HomeWidgetSync.syncDday();
-    }
+    if (hidden) await ddayController.setRoomCheer(widget.roomId, '');
+    // Redraws even with no cheer: the person's bubbles leave the widget too.
+    await HomeWidgetSync.syncDday();
   }
 
   void _snack(String message) {
@@ -174,12 +241,17 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
           builder: (context, _) {
             final room = _room;
             if (room == null) return const SizedBox.shrink();
-            final target = _targetOf(room, snap.data);
-            final canReport = _canReport(target);
+            final cheer = _targetOf(room, snap.data);
             final me = _myUid;
             final friends = room.friends.where((friend) {
               return friend.uid.isNotEmpty && friend.uid != me;
             }).toList();
+            final targets = _reportTargets(t, room, cheer, friends);
+            final canReport = targets.isNotEmpty;
+            final target = !canReport
+                ? null
+                : targets.where((e) => e.key == _targetKey).firstOrNull ??
+                    targets.first;
             return Padding(
               padding: EdgeInsets.fromLTRB(20, 12, 20, 20 + bottom),
               child: SingleChildScrollView(
@@ -208,32 +280,32 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      canReport
-                          ? t.safetyReportBody
-                          : (target.text.isEmpty
-                              ? t.safetyNoCheer
-                              : t.safetyOwnCheer),
+                      canReport ? t.safetyReportBody : t.safetyNothingToReport,
                       style: AppTheme.body.copyWith(
                         fontSize: 13,
                         height: 1.45,
                         color: AppColors.muted,
                       ),
                     ),
-                    if (canReport) ...[
+                    if (target != null) ...[
                       const SizedBox(height: 12),
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF7F9FC),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      // Material, not a DecoratedBox: the tiles paint their
+                      // ink on it.
+                      Material(
+                        color: const Color(0xFFF7F9FC),
+                        borderRadius: BorderRadius.circular(12),
                         child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            target.text,
-                            style: AppTheme.body.copyWith(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.ink,
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: RadioGroup<String>(
+                            groupValue: target.key,
+                            onChanged: (next) {
+                              if (_busy || next == null) return;
+                              setState(() => _targetKey = next);
+                            },
+                            child: Column(
+                              children: [
+                                for (final item in targets) _targetTile(item),
+                              ],
                             ),
                           ),
                         ),
@@ -305,14 +377,14 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
                       ),
                       const SizedBox(height: 8),
                       FilledButton(
-                        onPressed: _busy ? null : () => _submit(target),
+                        onPressed: _busy ? null : () => _submit(target, cheer),
                         child: Text(t.safetySubmit),
                       ),
                     ],
                     if (friends.isNotEmpty) ...[
                       const SizedBox(height: 18),
                       for (final friend in friends)
-                        _friendRow(t, friend, target),
+                        _friendRow(t, friend, cheer),
                     ],
                   ],
                 ),
@@ -321,6 +393,28 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
           },
         );
       },
+    );
+  }
+
+  Widget _targetTile(_ReportTarget item) {
+    return RadioListTile<String>(
+      contentPadding: EdgeInsets.zero,
+      dense: true,
+      value: item.key,
+      title: Text(
+        item.text,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: AppTheme.body.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: AppColors.ink,
+        ),
+      ),
+      subtitle: Text(
+        item.label,
+        style: AppTheme.body.copyWith(fontSize: 12, color: AppColors.muted),
+      ),
     );
   }
 
@@ -355,6 +449,7 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
                 setState(() => _busy = true);
                 if (blocked) {
                   await blockedUsersController.unblock(friend.uid);
+                  await HomeWidgetSync.syncDday();
                 } else {
                   await _blockUid(
                     friend.uid,
@@ -369,6 +464,27 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
       ),
     );
   }
+}
+
+/// One thing in the room that can be reported.
+class _ReportTarget {
+  const _ReportTarget({
+    required this.key,
+    required this.type,
+    required this.label,
+    required this.text,
+    this.authorUid,
+    this.authorName,
+    this.bubble,
+  });
+
+  final String key;
+  final String type;
+  final String label;
+  final String text;
+  final String? authorUid;
+  final String? authorName;
+  final TogetherBubble? bubble;
 }
 
 class _CheerTarget {

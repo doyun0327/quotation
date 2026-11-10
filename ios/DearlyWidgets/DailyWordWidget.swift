@@ -244,7 +244,8 @@ struct DailyWordWidgetView: View {
 
   private var launchURL: URL? {
     var components = URLComponents(string: "dearly://quote")
-    var items: [URLQueryItem] = []
+    // home_widget only reports taps on URLs carrying a `homeWidget` query item.
+    var items = [URLQueryItem(name: "homeWidget", value: nil)]
     if !entry.quoteId.isEmpty { items.append(URLQueryItem(name: "id", value: entry.quoteId)) }
     if !entry.categoryId.isEmpty {
       items.append(URLQueryItem(name: "category", value: entry.categoryId))
@@ -252,7 +253,7 @@ struct DailyWordWidgetView: View {
     if !entry.subCategoryId.isEmpty {
       items.append(URLQueryItem(name: "sub", value: entry.subCategoryId))
     }
-    components?.queryItems = items.isEmpty ? nil : items
+    components?.queryItems = items
     return components?.url
   }
 }

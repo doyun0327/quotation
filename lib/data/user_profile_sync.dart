@@ -264,11 +264,15 @@ class UserProfileSync {
     if (uid.isEmpty) return;
     final db = _db;
 
+    // Every step runs, but a failure stops the sign-in being deleted: that
+    // would leave this data with no account left to retry the deletion from.
+    Object? failure;
     Future<void> step(String name, Future<void> Function() action) async {
       try {
         await action();
       } catch (e) {
         debugPrint('deleteRemoteAccount $name: $e');
+        failure ??= e;
       }
     }
 
@@ -307,14 +311,44 @@ class UserProfileSync {
             .map((e) => Map<String, dynamic>.from(e as Map))
             .where((member) => member['uid'] != uid)
             .toList();
+        // Words stay for the room (see the privacy policy); who wrote them
+        // does not.
+        bool removeIfMine(String field) => data[field] == uid;
         await doc.reference.set(
           {
             'guestUids': guests,
             'members': members,
+            if (data['layoutCrowd'] is List)
+              'layoutCrowd': [
+                for (final entry in data['layoutCrowd'] as List<dynamic>)
+                  if (entry is! Map || entry['uid'] != uid) entry,
+              ],
+            if (data['layoutBubbles'] is List)
+              'layoutBubbles': [
+                for (final entry in data['layoutBubbles'] as List<dynamic>)
+                  if (entry is Map && entry['by'] == uid)
+                    ({...entry}..remove('by'))
+                  else
+                    entry,
+              ],
+            if (removeIfMine('latestCheerAuthorUid')) ...{
+              'latestCheerAuthorUid': FieldValue.delete(),
+              'latestCheerAuthorName': FieldValue.delete(),
+            },
+            if (removeIfMine('layoutUpdatedBy')) ...{
+              'layoutUpdatedBy': FieldValue.delete(),
+              'layoutUpdatedByName': FieldValue.delete(),
+            },
+            if (removeIfMine('updatedBy')) 'updatedBy': FieldValue.delete(),
             'updatedAt': FieldValue.serverTimestamp(),
           },
           SetOptions(merge: true),
         );
+        // A dotted path only means a nested field in update(), not in set().
+        final editing = data['editing'];
+        if (editing is Map && editing.containsKey(uid)) {
+          await doc.reference.update({'editing.$uid': FieldValue.delete()});
+        }
       }
     });
 
@@ -331,5 +365,8 @@ class UserProfileSync {
     await step('profile', () async {
       await db.collection('users').doc(uid).delete();
     });
+
+    final error = failure;
+    if (error != null) throw error;
   }
 }

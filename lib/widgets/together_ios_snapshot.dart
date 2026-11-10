@@ -121,39 +121,41 @@ class TogetherIosSnapshot extends StatelessWidget {
                 ),
               ),
             for (final bubble in bubbles)
-              if (bubble.text.isNotEmpty)
-                Positioned(
-                  left: TogetherBubbleLayout.topLeft(
-                    bubble,
-                    TogetherBubbleLayout.size(
-                      bubble.text,
-                      isPixel: isPixel,
-                      font: textFont,
-                    ),
-                    width,
-                    height,
-                  ).dx,
-                  top: TogetherBubbleLayout.topLeft(
-                    bubble,
-                    TogetherBubbleLayout.size(
-                      bubble.text,
-                      isPixel: isPixel,
-                      font: textFont,
-                    ),
-                    width,
-                    height,
-                  ).dy,
-                  child: Transform.rotate(
-                    angle: bubble.rotation * math.pi / 180,
-                    child: TogetherBubbleView(
-                      text: bubble.text,
-                      tail: bubble.tail,
-                      isPixel: isPixel,
-                      font: textFont,
-                      textColor: Color(textColor),
-                    ),
+              Positioned(
+                left: TogetherBubbleLayout.topLeft(
+                  bubble,
+                  TogetherBubbleLayout.size(
+                    bubble.text,
+                    isPixel: isPixel,
+                    font: textFont,
+                    scale: bubble.scale,
+                  ),
+                  width,
+                  height,
+                ).dx,
+                top: TogetherBubbleLayout.topLeft(
+                  bubble,
+                  TogetherBubbleLayout.size(
+                    bubble.text,
+                    isPixel: isPixel,
+                    font: textFont,
+                    scale: bubble.scale,
+                  ),
+                  width,
+                  height,
+                ).dy,
+                child: Transform.rotate(
+                  angle: bubble.rotation * math.pi / 180,
+                  child: TogetherBubbleView(
+                    text: bubble.text,
+                    tail: bubble.tail,
+                    isPixel: isPixel,
+                    font: textFont,
+                    textColor: Color(textColor),
+                    scale: bubble.scale,
                   ),
                 ),
+              ),
           ],
         ),
       ),

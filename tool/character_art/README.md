@@ -1,13 +1,20 @@
 # Character art tools
 
-Run from the repo root on macOS (Swift comes with Xcode).
+Run from the repo root. The Python tools work on any OS and need only
+Pillow; the Swift originals need macOS.
 
 **Margin table** — after adding or changing images in
-`assets/images/character/{woman,man}`:
+`assets/images/character/{woman,man,christmas}`:
 
 ```sh
-swiftc -O tool/character_art/alpha_bounds.swift -o /tmp/alpha_bounds
 python3 tool/character_art/gen_insets.py
+```
+
+**Background removal on Windows/Linux** — same options as the Swift tool below:
+
+```sh
+python3 tool/character_art/remove_background.py in.png out.png 30 1 8   # fake checkerboard
+python3 tool/character_art/remove_background.py in.png out.png 18 0     # solid black
 ```
 
 **Fake/solid background → transparent** (flood-fills from the image border,

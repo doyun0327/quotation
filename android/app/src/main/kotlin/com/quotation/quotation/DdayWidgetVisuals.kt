@@ -54,6 +54,14 @@ object DdayWidgetVisuals {
         return "assets/images/character/woman/character($n).png"
       }
     }
+    // Christmas pack: x1 … x8 are christmas/01.png … 08.png.
+    if (characterId.startsWith("x")) {
+      val n = characterId.removePrefix("x").toIntOrNull()
+      if (n != null && n in 1..99) {
+        return "assets/images/character/christmas/%02d.png".format(n)
+      }
+    }
+    if (characterId == "e1") return "assets/images/character/shareEvent/01.png"
     if (characterId == "bul") return "assets/images/character/woman/character (1).png"
     return "assets/images/character/woman/character.png"
   }
@@ -448,8 +456,8 @@ object DdayWidgetVisuals {
     for (i in 0 until bubbles.length()) {
       val obj = bubbles.optJSONObject(i) ?: continue
       val text = obj.optString("t").trim()
-      if (text.isEmpty()) continue
-      val boxW = textPaint.measureText(text) + BUBBLE_PAD_X_DP * 2f * density
+      // A blank bubble is sized from one space, like TogetherBubbleLayout.size.
+      val boxW = textPaint.measureText(text.ifEmpty { " " }) + BUBBLE_PAD_X_DP * 2f * density
       val boxH = lineH + (BUBBLE_PAD_Y_DP * 2f + BUBBLE_TAIL_H_DP) * density
       val left = widthPx / 2f + obj.optInt("x", 0) * density - boxW / 2f
       val top = heightPx / 2f - obj.optInt("y", 0) * density - boxH / 2f
@@ -459,6 +467,9 @@ object DdayWidgetVisuals {
       if (degrees != 0) {
         canvas.rotate(degrees.toFloat(), left + boxW / 2f, top + boxH / 2f)
       }
+      // Grows from the center, the point x/y describe.
+      val scale = obj.optInt("s", 100).coerceIn(50, 300) / 100f
+      canvas.scale(scale, scale, left + boxW / 2f, top + boxH / 2f)
       // Stroke stays inside the box so the tail tip is not cut.
       canvas.translate(left + stroke / 2f, top + stroke / 2f)
       val path = bubblePath(boxW - stroke, boxH - stroke, tailLeft, density)

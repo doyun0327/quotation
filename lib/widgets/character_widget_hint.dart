@@ -40,7 +40,13 @@ class CharacterWidgetHint {
   /// Pins the character + speech-bubble widget. If the phone cannot open
   /// the add sheet, tell the user how to add it from the home screen.
   static Future<void> export(BuildContext context) async {
-    final pinned = await HomeWidgetSync.pinCharacterWidget();
+    var bubble = false;
+    if (!IosWidgetGuide.isIOS) {
+      final picked = await _pickStyle(context);
+      if (picked == null || !context.mounted) return;
+      bubble = picked;
+    }
+    final pinned = await HomeWidgetSync.pinCharacterWidget(bubble: bubble);
     if (!context.mounted || pinned) return;
     if (IosWidgetGuide.isIOS) {
       // iPhone has no add sheet for apps: show the step-by-step guide.
@@ -51,6 +57,76 @@ class CharacterWidgetHint {
       return;
     }
     showClosedMessage(context);
+  }
+
+  /// True for the speech-bubble style, false for the classic box, null when
+  /// dismissed.
+  static Future<bool?> _pickStyle(BuildContext context) {
+    final t = AppStrings.current;
+    final accent = context.palette.accent;
+    Widget option(BuildContext sheet, String title, String note, bool value) {
+      return ListTile(
+        leading: Icon(
+          value ? Icons.chat_bubble_outline_rounded : Icons.crop_square_rounded,
+          color: accent,
+        ),
+        title: Text(
+          title,
+          style: AppTheme.body.copyWith(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            color: AppColors.ink,
+          ),
+        ),
+        subtitle: Text(
+          note,
+          style: AppTheme.body.copyWith(fontSize: 12, color: AppColors.muted),
+        ),
+        onTap: () => Navigator.of(sheet).pop(value),
+      );
+    }
+
+    return showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheet) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Text(
+                  t.characterWidgetStyleTitle,
+                  style: AppTheme.body.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ),
+              option(
+                sheet,
+                t.characterWidgetStyleBubble,
+                t.characterWidgetStyleBubbleNote,
+                true,
+              ),
+              option(
+                sheet,
+                t.characterWidgetStyleClassic,
+                t.characterWidgetStyleClassicNote,
+                false,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

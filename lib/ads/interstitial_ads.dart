@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/ads/ad_units.dart';
 
 /// Rewarded ad used to unlock a shop character.
@@ -9,9 +10,13 @@ class InterstitialAds {
   static RewardedAd? _ready;
   static bool _loading = false;
 
-  static void preload() {
+  static Future<void> preload() async {
     if (_ready != null || _loading) return;
     _loading = true;
+    if (!await AdConsent.canShowAds()) {
+      _loading = false;
+      return;
+    }
     RewardedAd.load(
       adUnitId: AdUnits.rewardedUnitId,
       request: const AdRequest(),

@@ -15,6 +15,7 @@ class TogetherBubbleView extends StatelessWidget {
     required this.isPixel,
     this.font = WidgetFont.basic,
     this.textColor = TogetherBubbleLayout.ink,
+    this.scale = 100,
   });
 
   final String text;
@@ -24,9 +25,12 @@ class TogetherBubbleView extends StatelessWidget {
   final WidgetFont font;
   final Color textColor;
 
+  /// Percent of the normal bubble, see [TogetherBubble.scale].
+  final int scale;
+
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
+    final bubble = CustomPaint(
       painter: _BubblePainter(tail: tail),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -47,6 +51,16 @@ class TogetherBubbleView extends StatelessWidget {
           ),
         ),
       ),
+    );
+    if (scale == 100) return bubble;
+    return SizedBox.fromSize(
+      size: TogetherBubbleLayout.size(
+        text,
+        isPixel: isPixel,
+        font: font,
+        scale: scale,
+      ),
+      child: FittedBox(fit: BoxFit.fill, child: bubble),
     );
   }
 }

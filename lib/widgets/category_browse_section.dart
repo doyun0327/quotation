@@ -101,29 +101,41 @@ class CategoryBrowseSection extends StatelessWidget {
       builder: (context, _) {
         final t = AppStrings.current;
         final palette = context.palette;
-        final tiles = <Widget>[];
+        final open = <Widget>[];
+        final locked = <Widget>[];
         for (final category in QuoteRepository.categories) {
-          final locked = !membershipController.canAccess(category.id);
+          final isLocked = !membershipController.canAccess(category.id);
           for (final sub in category.subCategories) {
-            if (tiles.isNotEmpty) tiles.add(const SizedBox(height: 10));
-            tiles.add(
-              _SubcategoryRow(
-                title: t.subCategoryTitle(sub.id),
-                subtitle: t.subCategorySubtitle(sub.id),
-                categoryId: sub.id,
-                palette: palette,
-                locked: locked,
-                onTap: () {
-                  if (locked) {
-                    _showPremiumLockDialog(context);
-                    return;
-                  }
-                  onSubcategoryTap?.call(category, sub);
-                },
-              ),
+            final tile = _SubcategoryRow(
+              title: t.subCategoryTitle(sub.id),
+              subtitle: t.subCategorySubtitle(sub.id),
+              categoryId: sub.id,
+              palette: palette,
+              locked: isLocked,
+              onTap: () {
+                if (isLocked) {
+                  _showPremiumLockDialog(context);
+                  return;
+                }
+                onSubcategoryTap?.call(category, sub);
+              },
             );
+            (isLocked ? locked : open).add(tile);
           }
         }
+
+        final tiles = <Widget>[
+          for (var i = 0; i < open.length; i++) ...[
+            if (i > 0) const SizedBox(height: 10),
+            open[i],
+          ],
+          // Locked rows stay below the free ones so the home matches the
+          // open-category mock (gratitude + love first).
+          for (final tile in locked) ...[
+            const SizedBox(height: 10),
+            tile,
+          ],
+        ];
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -151,8 +163,8 @@ class _SubcategoryRow extends StatelessWidget {
   final bool locked;
   final VoidCallback? onTap;
 
-  static const _ink = Color(0xFF3A3834);
-  static const _caption = Color(0xFF8E877E);
+  static const _ink = Color(0xFF2C3340);
+  static const _caption = Color(0xFF8EA0B5);
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +190,7 @@ class _SubcategoryRow extends StatelessWidget {
               Text(
                 title,
                 style: AppTheme.body.copyWith(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.2,
                   color: _ink,
@@ -188,7 +200,7 @@ class _SubcategoryRow extends StatelessWidget {
               Text(
                 subtitle,
                 style: AppTheme.body.copyWith(
-                  fontSize: 11.5,
+                  fontSize: 12,
                   height: 1.3,
                   color: _caption,
                 ),
@@ -212,7 +224,7 @@ class _SubcategoryRow extends StatelessWidget {
         dashLength: 4,
         gapLength: 3.5,
         radius: 16,
-        padding: const EdgeInsets.fromLTRB(12, 11, 12, 11),
+        padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
         backgroundColor: tone.card,
         alwaysDashed: true,
         child: row,

@@ -9,6 +9,7 @@ import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/widget_album_background.dart';
 import 'package:quotation/data/widget_fonts.dart';
@@ -146,7 +147,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _cheerCtrl.addListener(_onCheerEdited);
     // Typing cheer clears character / bubble selection on the preview.
     _cheerFocus.addListener(_onCheerFocusChanged);
-    // Tapping anywhere else drops the keyboard focus; that ends typing too.
+    // Losing the keyboard focus some other way ends typing too.
     _bubbleFocus.addListener(() {
       if (!_bubbleFocus.hasFocus) _finishBubbleEdit();
     });
@@ -838,7 +839,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
   List<TogetherPreviewBubble> _bubbleSprites() => [
-        for (final b in _bubbles)
+        for (final b in blockedUsersController.visibleBubbles(
+          widget.roomId,
+          _bubbles,
+        ))
           TogetherPreviewBubble(
             bubble: b,
             highlight: _focus == _DecorateFocus.bubble && _bubbleId == b.id,
@@ -853,10 +857,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       b.id,
                       (bubble) => bubble.copyWith(rotation: degrees.round()),
                     ),
-            // While typing, the bar under the preview owns the bubble.
-            onTextEdit: _editingBubble ? null : () => _startBubbleEdit(b.id),
-            onFlipTail: _editingBubble ? null : () => _flipBubbleTail(b.id),
-            onDelete: _editingBubble ? null : () => _deleteBubble(b.id),
           ),
       ];
 
@@ -914,6 +914,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final n = _bubbles.length;
     final bubble = TogetherBubble(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
+      authorUid: authController.viewerUid,
       text: t.ddayDecorateBubbleDefault,
       x: -60.0 + 30 * n,
       y: 30.0 - 10 * n,
@@ -958,23 +959,21 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     if (id == null) return;
     final text = TogetherBubble.clean(raw);
     // setState too: the letter count in the bar follows the text.
-    setState(() => _updateBubble(id, (b) => b.copyWith(text: text)));
+    setState(() {
+      _updateBubble(
+        id,
+        (b) => b.copyWith(text: text, authorUid: authController.viewerUid),
+      );
+    });
   }
 
-  /// Ends typing. An emptied bubble would draw as a blank box, so it goes.
+  /// Ends typing. An emptied bubble stays as a blank bubble.
   void _finishBubbleEdit() {
     if (!_editingBubble || !mounted) return;
-    final id = _bubbleId;
     // Cleared first: unfocus calls back in here through the focus listener.
     _editingBubble = false;
     _bubbleFocus.unfocus();
-    setState(() {
-      if (id != null && _bubbles.any((b) => b.id == id && b.text.isEmpty)) {
-        _bubbles = [for (final b in _bubbles) if (b.id != id) b];
-        _bubbleId = null;
-        _focus = _DecorateFocus.none;
-      }
-    });
+    setState(() {});
     _dragTick.value++;
     unawaited(_persist());
   }
@@ -992,6 +991,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     });
     unawaited(_persist());
   }
+
+  void _stepBubbleScale(String id, int delta) {
+    setState(() {
+      _updateBubble(id, (b) => b.copyWith(scale: b.scale + delta));
+    });
+    unawaited(_persist());
+  }
+
+  TogetherBubble? get _selectedBubble => _focus == _DecorateFocus.bubble
+      ? _bubbles.where((b) => b.id == _bubbleId).firstOrNull
+      : null;
 
   void _deleteBubble(String id) {
     setState(() {
@@ -1072,6 +1082,133 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// Actions for the selected bubble, fixed under the preview so they never
+  /// cover the card. Taps on its gaps must not count as blank-space taps.
+  Widget _bubbleToolsBar(TogetherBubble bubble) {
+    final t = AppStrings.current;
+    const ink = Color(0xFF2C3340);
+    const faded = Color(0xFFB8C2D3);
+    final numberStyle = AppTheme.body.copyWith(
+      fontFamily: 'Galmuri',
+      fontSize: 12,
+      fontWeight: FontWeight.w800,
+      color: ink,
+    );
+
+    Widget action(IconData icon, String label, VoidCallback onTap, Color color) {
+      return Expanded(
+        child: Material(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              height: _bubbleBarHeight,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 20, color: color),
+                  const SizedBox(height: 2),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      style: numberStyle.copyWith(fontSize: 11, color: color),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Widget step(IconData icon, String tooltip, VoidCallback? onTap) {
+      return IconButton(
+        onPressed: onTap,
+        tooltip: tooltip,
+        constraints: const BoxConstraints.tightFor(
+          width: 40,
+          height: _bubbleBarHeight,
+        ),
+        padding: EdgeInsets.zero,
+        icon: Icon(icon, size: 20, color: onTap == null ? faded : ink),
+      );
+    }
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            action(
+              Icons.edit_rounded,
+              t.ddayDecorateBubbleEdit,
+              () => _startBubbleEdit(bubble.id),
+              ink,
+            ),
+            const SizedBox(width: 6),
+            action(
+              Icons.swap_horiz_rounded,
+              t.ddayDecorateBubbleDirection,
+              () => _flipBubbleTail(bubble.id),
+              ink,
+            ),
+            const SizedBox(width: 6),
+            action(
+              Icons.delete_outline_rounded,
+              t.ddayDecorateBubbleDelete,
+              () => _deleteBubble(bubble.id),
+              const Color(0xFFE53935),
+            ),
+            const SizedBox(width: 6),
+            Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  step(
+                    Icons.remove_rounded,
+                    t.ddayDecorateBubbleSmaller,
+                    bubble.scale <= TogetherBubble.scaleMin
+                        ? null
+                        : () => _stepBubbleScale(
+                              bubble.id,
+                              -TogetherBubble.scaleStep,
+                            ),
+                  ),
+                  SizedBox(
+                    width: 42,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text('${bubble.scale}%', style: numberStyle),
+                    ),
+                  ),
+                  step(
+                    Icons.add_rounded,
+                    t.ddayDecorateBubbleLarger,
+                    bubble.scale >= TogetherBubble.scaleMax
+                        ? null
+                        : () => _stepBubbleScale(
+                              bubble.id,
+                              TogetherBubble.scaleStep,
+                            ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1183,8 +1320,21 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     );
   }
 
+  /// Only blank space reaches this: buttons, the preview and fields win the tap.
+  void _onBlankScreenTap() {
+    if (_focus == _DecorateFocus.bubble || _editingBubble) _clearSelection();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _onBlankScreenTap,
+      child: _buildScreen(context),
+    );
+  }
+
+  Widget _buildScreen(BuildContext context) {
     final t = AppStrings.current;
     final palette = context.palette;
 
@@ -1323,18 +1473,27 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    if (_editingBubble)
-                      _bubbleEditBar(palette.accent)
-                    else
-                      Text(
-                        t.ddayDuoDecorateDragHint,
-                        textAlign: TextAlign.center,
-                        style: AppTheme.body.copyWith(
-                          fontFamily: 'Galmuri',
-                          fontSize: 12,
-                          color: AppColors.muted,
-                        ),
+                    // Same height either way, so the list below never jumps.
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minHeight: _bubbleBarHeight,
                       ),
+                      child: Center(
+                        child: _editingBubble
+                            ? _bubbleEditBar(palette.accent)
+                            : _selectedBubble != null
+                                ? _bubbleToolsBar(_selectedBubble!)
+                                : Text(
+                                    t.ddayDuoDecorateDragHint,
+                                    textAlign: TextAlign.center,
+                                    style: AppTheme.body.copyWith(
+                                      fontFamily: 'Galmuri',
+                                      fontSize: 12,
+                                      color: AppColors.muted,
+                                    ),
+                                  ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1794,6 +1953,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
 }
+
+/// Tap height of the selected-bubble bar under the preview.
+const double _bubbleBarHeight = 48;
 
 enum _DecorateFocus { none, me, friend, text, bubble }
 

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/auth_controller.dart';
 
-/// Reasons a reviewer or member can choose when reporting a Together cheer.
+/// Reasons a reviewer or member can choose when reporting Together content.
 abstract final class SafetyReportReason {
   static const harassment = 'harassment';
   static const sexual = 'sexual';
@@ -27,6 +27,7 @@ abstract final class SafetyReportRepository {
   static Future<SafetyReportResult> submit({
     required String roomId,
     required String reason,
+    String targetType = 'cheer',
     String? targetUid,
     String? targetName,
     String? contentText,
@@ -49,6 +50,7 @@ abstract final class SafetyReportRepository {
         'reporterUid': user.uid,
         'roomId': roomId,
         'reason': reason,
+        'targetType': targetType,
         'targetUid': (targetUid ?? '').trim(),
         'targetName': (targetName ?? '').trim(),
         'contentText': text.length > 500 ? text.substring(0, 500) : text,

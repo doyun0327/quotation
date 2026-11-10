@@ -27,12 +27,22 @@ import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/together_ios_snapshot.dart';
 
 /// Mirrors the home-screen character, date, and quote onto home-screen widgets.
+typedef _IosRoomCard = ({
+  DdayItem item,
+  String meId,
+  Size box,
+  String label,
+  int textScale,
+  List<TogetherPlaced> placed,
+});
+
 abstract final class HomeWidgetSync {
   static const appGroupId = 'group.com.dearly.quoteswidget';
   static const iosDailyWordName = 'DailyWordWidget';
   static const iosQuoteOnlyName = 'QuoteOnlyWidget';
   static const iosTogetherName = 'TogetherWidget';
   static const androidProviderName = 'DailyWordWidgetProvider';
+  static const androidBubbleProviderName = 'DailyWordBubbleWidgetProvider';
   static const androidProviderQualified =
       'com.quotation.quotation.DailyWordWidgetProvider';
   static const androidDdayProviderQualified =
@@ -42,6 +52,9 @@ abstract final class HomeWidgetSync {
   static const keyTogetherBgImage = 'togetherBgImage';
   /// Full Together card PNG (decorate-sized) for the iOS home widget.
   static const keyTogetherCardImage = 'togetherCardImage';
+  /// iOS room picker data: `[{id, title, imageKey}]`, one card PNG per room.
+  static const keyDdayRoomIndex = 'ddayRoomIndex';
+  static const keyDdayRoomCardSignatures = 'ddayRoomCardSignatures';
 
   /// Chip id → Android provider (3×3 / 4×2 / 4×3 / 3×2).
   static const _ddayProviders = <({String key, String name, String qualified})>[
@@ -604,12 +617,17 @@ abstract final class HomeWidgetSync {
   /// Opens the system sheet to place the home character and speech bubble.
   /// On iPhone there is no pin API — syncs data and returns false so the UI
   /// can tell the user to add the widget from the home screen.
-  static Future<bool> pinCharacterWidget() async {
+  /// [bubble] places the speech-bubble style (Android only); otherwise the
+  /// classic box.
+  static Future<bool> pinCharacterWidget({bool bubble = false}) async {
     if (!_supportsWidgets) return false;
     await syncFromHome();
     if (!_isAndroid) return false;
     try {
-      final ok = await _pinChannel.invokeMethod<bool>('pinCharacterWidget');
+      final ok = await _pinChannel.invokeMethod<bool>(
+        'pinCharacterWidget',
+        <String, dynamic>{'style': bubble ? 'bubble' : 'classic'},
+      );
       if (ok == true) return true;
     } catch (e) {
       debugPrint('pinCharacterWidget channel: $e');
@@ -618,10 +636,12 @@ abstract final class HomeWidgetSync {
       final supported =
           await HomeWidget.isRequestPinWidgetSupported() ?? false;
       if (!supported) return false;
+      final name =
+          bubble ? androidBubbleProviderName : androidProviderName;
       await HomeWidget.requestPinWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-        qualifiedAndroidName: 'com.quotation.quotation.$androidProviderName',
+        name: name,
+        androidName: name,
+        qualifiedAndroidName: 'com.quotation.quotation.$name',
       );
       return true;
     } catch (e) {
@@ -658,9 +678,16 @@ abstract final class HomeWidgetSync {
     }
   }
 
+  static List<TogetherBubble> _shownBubbles(String roomId) =>
+      blockedUsersController.visibleBubbles(
+        roomId,
+        ddayController.bubblesForRoom(roomId),
+      );
+
   static Future<void> _saveAllRooms() async {
     final hosts = await _readHostByRoom();
     final rooms = <String, Map<String, Object>>{};
+    final iosCards = <_IosRoomCard>[];
     for (final item in ddayController.items) {
       // My character is chosen per room (main-screen pick is the default).
       final meId = ddayController.meCharacterIdForRoom(item.id);
@@ -727,15 +754,149 @@ abstract final class HomeWidgetSync {
         // Android loads this from flutter_assets. Empty keeps the style font.
         'textFont': ddayController.textFontForRoom(item.id).asset ?? '',
         'chars': TogetherCrowdLayout.widgetChars(placed),
-        'bubbles': TogetherBubble.widgetJson(
-          ddayController.bubblesForRoom(item.id),
-        ),
+        'bubbles': TogetherBubble.widgetJson(_shownBubbles(item.id)),
       };
+      iosCards.add((
+        item: item,
+        meId: meId,
+        box: box,
+        label: label,
+        textScale: textScale,
+        placed: placed,
+      ));
     }
     await HomeWidget.saveWidgetData<String>(
       keyDdayRoomsJson,
       jsonEncode(rooms),
     );
+    if (_isIOS) {
+      try {
+        await _saveIosRoomCards(iosCards, rooms);
+      } catch (e) {
+        debugPrint('save iOS room cards: $e');
+      }
+    }
+  }
+
+  /// Draws one card per room so each iPhone widget can show the room picked
+  /// in its Edit Widget screen. Unchanged rooms keep their existing PNG.
+  static Future<void> _saveIosRoomCards(
+    List<_IosRoomCard> cards,
+    Map<String, Map<String, Object>> rooms,
+  ) async {
+    final previous = await _readIosRoomImageKeys();
+    final savedSignatures = await _readIosCardSignatures();
+    final index = <Map<String, String>>[];
+    final signatures = <String, String>{};
+    for (final card in cards) {
+      final item = card.item;
+      final bgAsset = rooms[item.id]?['bgAsset'] as String? ?? '';
+      final imageKey =
+          'togetherCard_${base64Url.encode(utf8.encode(item.id)).replaceAll('=', '')}';
+      final signature = _iosCardSignature(card, rooms[item.id], bgAsset);
+      var ready = savedSignatures[item.id] == signature &&
+          await _widgetFileExists(imageKey);
+      if (!ready) {
+        ready = await _renderIosTogetherCard(
+          imageKey: imageKey,
+          box: card.box,
+          corner: TogetherWidgetSize.defaultCornerDp,
+          label: card.label,
+          meId: card.meId,
+          textColor: ddayController.textColorForRoom(item.id),
+          textScale: card.textScale,
+          textX: ddayController.textOffsetXForRoom(item.id).toDouble(),
+          textY: ddayController.textOffsetYForRoom(item.id).toDouble(),
+          textRotation: ddayController.textRotationForRoom(item.id).toDouble(),
+          textFont: ddayController.textFontForRoom(item.id),
+          bgAsset: bgAsset,
+          placed: card.placed,
+          bubbles: _shownBubbles(item.id),
+        );
+      }
+      if (ready) signatures[item.id] = signature;
+      index.add({'id': item.id, 'title': item.title, 'imageKey': imageKey});
+    }
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayRoomIndex,
+      jsonEncode(index),
+    );
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayRoomCardSignatures,
+      jsonEncode(signatures),
+    );
+    final current = {for (final card in cards) card.item.id};
+    for (final entry in previous.entries) {
+      if (!current.contains(entry.key)) await _deleteWidgetFile(entry.value);
+    }
+  }
+
+  /// Covers every input of [_renderIosTogetherCard]; [room] holds the rest.
+  static String _iosCardSignature(
+    _IosRoomCard card,
+    Map<String, Object>? room,
+    String bgAsset,
+  ) {
+    var bgModified = '';
+    if (bgAsset.isNotEmpty && !bgAsset.startsWith('assets/')) {
+      try {
+        bgModified = File(bgAsset).lastModifiedSync().toIso8601String();
+      } catch (_) {}
+    }
+    return jsonEncode({
+      'room': room,
+      'w': card.box.width,
+      'h': card.box.height,
+      'pixel': visualStyleController.isPixel,
+      'bgModified': bgModified,
+    });
+  }
+
+  static Future<Map<String, String>> _readIosRoomImageKeys() async {
+    final raw = await HomeWidget.getWidgetData<String>(keyDdayRoomIndex) ?? '';
+    if (raw.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return {};
+      return {
+        for (final room in decoded.whereType<Map>())
+          '${room['id']}': '${room['imageKey']}',
+      };
+    } catch (_) {
+      return {};
+    }
+  }
+
+  static Future<Map<String, String>> _readIosCardSignatures() async {
+    final raw =
+        await HomeWidget.getWidgetData<String>(keyDdayRoomCardSignatures) ?? '';
+    if (raw.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return {};
+      return decoded.map(
+        (key, value) => MapEntry(key.toString(), value.toString()),
+      );
+    } catch (_) {
+      return {};
+    }
+  }
+
+  static Future<bool> _widgetFileExists(String key) async {
+    final path = await HomeWidget.getWidgetData<String>(key) ?? '';
+    return path.isNotEmpty && File(path).existsSync();
+  }
+
+  static Future<void> _deleteWidgetFile(String key) async {
+    try {
+      final path = await HomeWidget.getWidgetData<String>(key) ?? '';
+      if (path.isNotEmpty && File(path).existsSync()) {
+        await File(path).delete();
+      }
+      await HomeWidget.saveWidgetData<String>(key, null);
+    } catch (e) {
+      debugPrint('delete widget file $key: $e');
+    }
   }
 
   static Future<void> _saveDday() async {
@@ -924,13 +1085,14 @@ abstract final class HomeWidgetSync {
         textFont: ddayController.textFontForRoom(item.id),
         bgAsset: bgAsset,
         placed: placed,
-        bubbles: ddayController.bubblesForRoom(item.id),
+        bubbles: _shownBubbles(item.id),
       );
     }
   }
 
   /// Renders the decorate preview at its real size into a transparent PNG.
-  static Future<void> _renderIosTogetherCard({
+  static Future<bool> _renderIosTogetherCard({
+    String imageKey = keyTogetherCardImage,
     required Size box,
     required double corner,
     required String label,
@@ -945,7 +1107,7 @@ abstract final class HomeWidgetSync {
     required List<TogetherPlaced> placed,
     List<TogetherBubble> bubbles = const [],
   }) async {
-    if (!_isIOS) return;
+    if (!_isIOS) return false;
     final decoded = <String, ui.Image>{};
     ui.Image? bgImage;
     try {
@@ -992,12 +1154,14 @@ abstract final class HomeWidgetSync {
             ),
           ),
         ),
-        key: keyTogetherCardImage,
+        key: imageKey,
         logicalSize: Size(box.width, box.height),
         pixelRatio: 3,
       );
+      return true;
     } catch (e) {
       debugPrint('render iOS together card: $e');
+      return false;
     } finally {
       bgImage?.dispose();
       for (final image in decoded.values) {

@@ -113,6 +113,10 @@ class _ShopScreenState extends State<ShopScreen> {
       await _select(character);
       return;
     }
+    if (character.id == AppCharacter.shareEvent.id) {
+      _toast(AppStrings.current.shareEventLocked);
+      return;
+    }
     final pack = character.pack;
     if (pack != null) {
       await _buyPack(pack);
@@ -224,9 +228,47 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget _buildPacks(BuildContext context, String selected) {
     final t = AppStrings.current;
     final accent = context.palette.accent;
+    final event = AppCharacter.shareEvent;
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       children: [
+        // Share event reward, ahead of the packs.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 4, 0, 10),
+          child: Row(
+            children: [
+              Text(
+                t.shareEventSection,
+                style: AppTheme.body.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: accent,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                characterController.shareEventDone
+                    ? t.shopPackOwned
+                    : '${characterController.inviteSends}'
+                        '/${CharacterController.shareEventGoal}',
+                style: AppTheme.body.copyWith(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.muted,
+                ),
+              ),
+            ],
+          ),
+        ),
+        GridView.count(
+          crossAxisCount: 3,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [_tile(event, selected, accent)],
+        ),
+        const SizedBox(height: 24),
         for (final (index, pack) in CharacterPack.all.indexed) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 4, 0, 10),

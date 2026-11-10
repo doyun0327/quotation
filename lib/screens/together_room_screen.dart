@@ -523,7 +523,10 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
                 ),
             ],
             bubbles: [
-              for (final bubble in ddayController.bubblesForRoom(room.id))
+              for (final bubble in blockedUsersController.visibleBubbles(
+                room.id,
+                ddayController.bubblesForRoom(room.id),
+              ))
                 TogetherPreviewBubble(bubble: bubble),
             ],
             textX: textX,

@@ -1,7 +1,7 @@
 name: quotation
 description: "Quotation app"
 publish_to: 'none'
-version: 1.0.13+45
+version: 1.0.13+47
 
 environment:
   sdk: ^3.12.2
@@ -57,6 +57,8 @@ flutter:
     - assets/images/background/pixel/noeul.png
     - assets/images/character/man/
     - assets/images/character/woman/
+    - assets/images/character/christmas/
+    - assets/images/character/shareEvent/
     - assets/images/like/
     - assets/images/widgetbackground/
     - assets/quotes/ko/

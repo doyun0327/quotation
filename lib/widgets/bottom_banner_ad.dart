@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:quotation/ads/ad_units.dart';
+import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/theme/app_colors.dart';
 
 /// Anchored banner below the bottom navigation for free users, held apart
@@ -23,6 +24,7 @@ class _BottomBannerAdState extends State<BottomBannerAd> {
   }
 
   Future<void> _load() async {
+    if (!await AdConsent.canShowAds() || !mounted) return;
     final ad = BannerAd(
       adUnitId: AdUnits.bannerUnitId,
       size: AdSize.banner,

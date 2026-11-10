@@ -28,31 +28,9 @@ class CategoryPixelIcon extends StatelessWidget {
   }
 }
 
-/// White plus the active theme color, alternating down the category list.
+/// White card + soft theme plate for home subcategory tiles.
 abstract final class CategorySky {
   static const white = Color(0xFFFFFFFF);
-
-  static const order = [
-    'gratitude',
-    'love',
-    'tired',
-    'self',
-    'courage',
-    'anxiety',
-    'lonely',
-    'growth',
-    'relation',
-    'dream',
-    'buddhism',
-    'christian',
-    'quotes',
-    'writers',
-  ];
-
-  static bool inverted(String id) {
-    final index = order.indexOf(id);
-    return (index < 0 ? 0 : index).isOdd;
-  }
 
   static Color ink(AppPalette palette) =>
       Color.lerp(palette.accent, const Color(0xFF2C3340), 0.22)!;
@@ -60,28 +38,19 @@ abstract final class CategorySky {
   static Color border(AppPalette palette) =>
       Color.lerp(palette.accent, white, 0.42)!;
 
+  /// Home tiles: white card + soft icon plate (matches the main-screen mock).
   static SkyTone of(String id, AppPalette palette) {
     final accent = palette.accent;
     final soft = palette.accentSoft;
     final line = border(palette);
     final deep = ink(palette);
-    if (!inverted(id)) {
-      return SkyTone(
-        icon: accent,
-        shine: white,
-        detail: deep,
-        plate: white,
-        plateLine: line,
-        card: white,
-      );
-    }
     return SkyTone(
       icon: accent,
       shine: white,
       detail: deep,
       plate: soft,
-      plateLine: Color.lerp(accent, white, 0.62)!,
-      card: Color.lerp(soft, white, 0.72)!,
+      plateLine: Color.lerp(accent, white, 0.55)!,
+      card: white,
     );
   }
 }

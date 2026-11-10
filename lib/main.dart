@@ -6,7 +6,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
+import 'package:quotation/data/terms_consent.dart';
+import 'package:quotation/widgets/terms_consent_dialog.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
@@ -26,6 +29,7 @@ import 'package:quotation/firebase_options.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/main_shell.dart';
+import 'package:quotation/screens/together_room_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/font_scale_controller.dart';
@@ -35,6 +39,14 @@ import 'package:quotation/widgets/bottom_banner_ad.dart';
 import 'package:quotation/widgets/nickname_dialog.dart';
 
 final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
+
+/// Used once: the Navigator is rebuilt when the character or style changes.
+String? _widgetLaunchRoom;
+
+Route<void> _mainShellRoute() => MaterialPageRoute<void>(
+      settings: const RouteSettings(name: Navigator.defaultRouteName),
+      builder: (_) => const MainShell(),
+    );
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,6 +81,7 @@ Future<void> main() async {
   await ddayController.load();
   await blockedUsersController.load();
   await CloudConsent.load();
+  await TermsConsent.load();
   await selectionController.syncAfterQuotesReady();
   selectionController.addListener(HomeWidgetSync.syncFromHome);
   themeController.addListener(HomeWidgetSync.syncThemeOnly);
@@ -81,9 +94,14 @@ Future<void> main() async {
     unawaited(HomeWidgetSync.syncFromHome());
   });
 
+  _widgetLaunchRoom = await TogetherFcm.widgetLaunchRoom();
+  if (_widgetLaunchRoom != null) mainShellTab.value = 1;
+
   runApp(const QuotationApp());
 
-  unawaited(MobileAds.instance.initialize().then((_) {
+  unawaited(AdConsent.canShowAds().then((allowed) async {
+    if (!allowed) return;
+    await MobileAds.instance.initialize();
     InterstitialAds.preload();
   }));
   unawaited(billingController.initialize());
@@ -102,6 +120,7 @@ class QuotationApp extends StatefulWidget {
 }
 
 class _QuotationAppState extends State<QuotationApp> {
+  bool _askingTerms = false;
   bool _askingNickname = false;
   bool _showingTrialNotice = false;
 
@@ -178,8 +197,28 @@ class _QuotationAppState extends State<QuotationApp> {
     _showingTrialNotice = false;
   }
 
+  /// Comes before sign-in finishes, so nothing can be written unaccepted.
+  Future<bool> _ensureTermsAccepted() async {
+    if (TermsConsent.accepted) return true;
+    if (_askingTerms) return false;
+    final navContext = appNavigatorKey.currentContext;
+    if (navContext == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _onAuthReady();
+      });
+      return false;
+    }
+    _askingTerms = true;
+    await showTermsConsentDialog(navContext);
+    _askingTerms = false;
+    if (!mounted) return false;
+    // A widget tap can pop the dialog while opening a room: ask again.
+    return _ensureTermsAccepted();
+  }
+
   Future<void> _onAuthReady() async {
-    if (!mounted || !authController.isReady || _askingNickname) {
+    if (!mounted || !await _ensureTermsAccepted() || !mounted) return;
+    if (!authController.isReady || _askingNickname) {
       return;
     }
     if (authController.nickname == null) {
@@ -268,7 +307,19 @@ class _QuotationAppState extends State<QuotationApp> {
               ),
             );
           },
-          home: const MainShell(),
+          onGenerateRoute: (settings) =>
+              settings.name == Navigator.defaultRouteName
+                  ? _mainShellRoute()
+                  : null,
+          // A widget tap starts on its room, with the main screen behind it.
+          onGenerateInitialRoutes: (_) {
+            final room = _widgetLaunchRoom;
+            _widgetLaunchRoom = null;
+            return [
+              _mainShellRoute(),
+              if (room != null) TogetherRoomScreen.route(room),
+            ];
+          },
         );
       },
     );

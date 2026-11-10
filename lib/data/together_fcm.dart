@@ -394,17 +394,16 @@ abstract final class TogetherFcm {
     }
     _lastOpenedRoom = id;
     _lastOpenedAt = now;
-    try {
-      await authController.ensureFirebaseSession();
-      await ddayController.load();
-      await DdayCloudSync.pullMemberships();
-      await HomeWidgetSync.syncDday();
-    } catch (e) {
-      debugPrint('openRoomFromNotice: $e');
+    // A room already on this device opens at once and refreshes behind the
+    // screen. Only a room we have never seen has to wait for the network.
+    if (ddayController.items.any((e) => e.id == id)) {
+      unawaited(_refreshRoomData(delay: _routeTransition));
+    } else {
+      await _refreshRoomData();
     }
     final rooms = ddayController.items.where((e) => e.id == id);
     final roomTitle = rooms.isEmpty ? '' : rooms.first.title;
-    await _clearRoomNotices(id, roomTitle: roomTitle);
+    unawaited(_clearRoomNotices(id, roomTitle: roomTitle));
     mainShellTab.value = 1;
     for (var attempt = 0; attempt < 8; attempt++) {
       final nav = navigatorKey?.currentState;
@@ -427,6 +426,38 @@ abstract final class TogetherFcm {
         return;
       }
       await Future<void>.delayed(const Duration(milliseconds: 250));
+    }
+  }
+
+  /// Widget re-render is heavy; waiting out the push keeps the slide smooth.
+  static const _routeTransition = Duration(milliseconds: 450);
+
+  static Future<void> _refreshRoomData({Duration delay = Duration.zero}) async {
+    if (delay > Duration.zero) await Future<void>.delayed(delay);
+    try {
+      await authController.ensureFirebaseSession();
+      await ddayController.load();
+      await DdayCloudSync.pullMemberships();
+      await HomeWidgetSync.syncDday();
+    } catch (e) {
+      debugPrint('refresh opened room: $e');
+    }
+  }
+
+  /// The room a widget tap cold-started the app for, if it is on this device,
+  /// so it can be the first screen instead of appearing after the main one.
+  static Future<String?> widgetLaunchRoom() async {
+    if (kIsWeb) return null;
+    try {
+      final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
+      if (uri == null || uri.scheme != 'dearly' || uri.host != 'together') {
+        return null;
+      }
+      final room = uri.queryParameters['room']?.trim() ?? '';
+      return ddayController.items.any((e) => e.id == room) ? room : null;
+    } catch (e) {
+      debugPrint('widget launch room: $e');
+      return null;
     }
   }
 

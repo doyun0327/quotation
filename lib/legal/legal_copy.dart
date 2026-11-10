@@ -37,13 +37,13 @@ class LegalCopy {
 }
 
 const _korean = LegalCopy(
-  updated: '최종 업데이트: 2026년 10월 31일 · 앱 이름: Dearly',
+  updated: '최종 업데이트: 2026년 11월 10일 · 앱 이름: Dearly',
   termsHeading: '이용약관',
   privacyHeading: '개인정보처리방침',
   terms: [
     LegalBlock(
       '1. 약관의 적용',
-      'Dearly(이하 “서비스”)를 설치하거나 이용하면 이 약관과 개인정보처리방침에 동의한 것으로 봅니다. 동의하지 않으면 서비스를 이용하지 말아 주세요.',
+      'Dearly(이하 “서비스”)는 처음 시작할 때 동의 화면에서 이 약관과 개인정보처리방침에 동의해야 이용할 수 있습니다.',
     ),
     LegalBlock(
       '2. 서비스 내용',
@@ -51,7 +51,7 @@ const _korean = LegalCopy(
     ),
     LegalBlock(
       '3. 계정',
-      '문구, 보관함, 캐릭터, 위젯, 기기 안 알림은 로그인 없이 이용할 수 있습니다. 같이 방과 친구에게 보이는 닉네임에는 Google 로그인이 필요합니다. 본인 소유의 Google 계정만 사용해야 하며, 계정을 통해 이루어진 활동에 대한 책임은 이용자에게 있습니다.',
+      '문구, 보관함, 캐릭터, 위젯, 기기 안 알림은 로그인 없이 이용할 수 있습니다. 같이 방과 친구에게 보이는 닉네임은 자동으로 만들어지는 익명 계정 또는 Google 로그인으로 이용합니다. 본인 소유의 Google 계정만 사용해야 하며, 계정을 통해 이루어진 활동에 대한 책임은 이용자에게 있습니다.',
     ),
     LegalBlock(
       '4. 구독',
@@ -70,7 +70,7 @@ const _korean = LegalCopy(
     ),
     LegalBlock(
       '6. 이용자가 올리는 내용',
-      '같이 방에 적는 방 이름과 응원 문구는 그 방의 참여자에게 보입니다. 법령을 위반하거나, 타인을 괴롭히거나, 미성년자에게 성적인 내용을 보내거나, 위협하거나, 다른 사람의 권리를 침해하는 내용을 올리지 마세요. 이런 내용을 알게 되면 문구를 지우거나 방 이용을 제한할 수 있습니다. 방은 앱에서 나갈 수 있습니다.',
+      '같이 방에 적는 방 이름, 닉네임, 응원 문구, 말풍선 글은 그 방의 참여자에게 보입니다. 법령을 위반하거나, 타인을 괴롭히거나 혐오를 조장하거나, 성적이거나 폭력적이거나, 위협이나 스팸이거나, 다른 사람의 권리를 침해하는 내용은 허용하지 않습니다. 앱의 같이 방에서 내용을 신고하고 해당 사용자를 차단할 수 있습니다. 운영자는 신고를 확인해 내용을 지우거나 계정과 방 이용을 제한합니다. 방은 앱에서 나갈 수 있습니다.',
     ),
     LegalBlock(
       '7. 금지 행위',
@@ -104,7 +104,7 @@ const _korean = LegalCopy(
     ),
     LegalBlock(
       '2. 수집하는 정보',
-      '로그인하지 않아도 문구, 보관함, 캐릭터, 위젯, 기기 안 알림을 쓸 수 있습니다. 그 선택은 기기에 저장됩니다.\n\n'
+      '로그인하지 않아도 문구, 보관함, 캐릭터, 위젯, 기기 안 알림을 쓸 수 있습니다. 그 선택은 기기에 저장됩니다. 같이 방과 동기화를 위해 로그인 없이도 Firebase 익명 계정 식별자를 만듭니다.\n\n'
           'Google로 로그인하면 다음을 받아 저장할 수 있습니다.\n'
           '• 이메일 주소\n'
           '• Google이 제공하는 이름\n'
@@ -112,10 +112,10 @@ const _korean = LegalCopy(
           '• Google 계정 식별자\n'
           '• 이용자가 입력한 닉네임\n'
           '• 선택한 캐릭터\n\n'
-          '같이 방을 쓰면 방 이름, 초대 코드, 참여 정보, 참여자가 적은 응원 문구, 방에 표시되는 캐릭터를 저장합니다.\n\n'
+          '같이 방을 쓰면 방 이름, 초대 코드, 참여 정보, 참여자가 적은 응원 문구와 말풍선 글, 방에 표시되는 캐릭터를 저장합니다. 신고를 보내면 신고 사유, 신고한 내용, 신고자와 신고 대상의 계정 식별자를 저장합니다.\n\n'
           '같이 방 알림을 허용하면 알림을 보내기 위한 Firebase Cloud Messaging 토큰을 저장합니다.\n\n'
           '구독하면 Google Play 또는 App Store와 구독 처리 파트너인 RevenueCat이 결제를 처리합니다. 운영자는 구독이 유효한지와 구매를 복원하는 데 쓰는 스토어 이용자 식별자를 받습니다. 카드 번호 전체는 받지 않습니다.\n\n'
-          '광고가 표시되면 Google AdMob이 광고 식별자, IP 주소, 기기 정보를 광고 제공과 측정에 사용할 수 있습니다. 보상형 광고 시청은 선택입니다.\n\n'
+          '광고가 표시되면 Google AdMob이 광고 식별자, IP 주소, 기기 정보를 광고 제공과 측정에 사용할 수 있습니다. 보상형 광고 시청은 선택입니다. 유럽경제지역, 영국, 스위스에서는 광고 동의를 먼저 받으며, 설정에서 바꿀 수 있습니다.\n\n'
           '전화번호, 정확한 위치, 연락처, 건강 정보는 요구하지 않습니다.',
     ),
     LegalBlock(
@@ -124,7 +124,7 @@ const _korean = LegalCopy(
     ),
     LegalBlock(
       '4. 보유 기간',
-      '계정과 방 정보는 계정 또는 방이 유지되는 동안 보관합니다. 삭제를 요청하면 법령, 분쟁, 보안상 보관이 필요한 항목을 제외하고 프로필, 참여 표시 이름, 알림 토큰을 삭제하거나 식별할 수 없게 합니다. 이용자가 적은 방 문구는 방이 지워지기 전까지 남을 수 있으며, 요청하면 이름 표시는 제거합니다. 결제 기록은 세금과 스토어 정책이 요구하는 기간 동안 보관될 수 있습니다. 기기에만 있는 보관함, 위젯, 언어 설정은 앱 데이터를 지우거나 앱을 삭제할 때까지 기기에 남습니다.',
+      '계정과 방 정보는 계정 또는 방이 유지되는 동안 보관합니다. 삭제를 요청하면 법령, 분쟁, 보안상 보관이 필요한 항목을 제외하고 프로필, 참여 표시 이름, 알림 토큰을 삭제하거나 식별할 수 없게 합니다. 이용자가 적은 방 문구는 방이 지워지기 전까지 남을 수 있으며, 앱에서 계정을 삭제하면 그 문구에 표시되던 이름과 작성자 식별자는 제거합니다. 결제 기록은 세금과 스토어 정책이 요구하는 기간 동안 보관될 수 있습니다. 기기에만 있는 보관함, 위젯, 언어 설정은 앱 데이터를 지우거나 앱을 삭제할 때까지 기기에 남습니다.',
     ),
     LegalBlock(
       '5. 제공과 처리 위탁',
@@ -166,13 +166,13 @@ const _korean = LegalCopy(
 );
 
 const _english = LegalCopy(
-  updated: 'Last updated: October 31, 2026 · App: Dearly',
+  updated: 'Last updated: November 10, 2026 · App: Dearly',
   termsHeading: 'Terms of Use',
   privacyHeading: 'Privacy Policy',
   terms: [
     LegalBlock(
       '1. Agreement',
-      'By installing or using Dearly (the “Service”), you agree to these terms and the privacy policy. If you do not agree, do not use the Service.',
+      'You must agree to these terms and the privacy policy on the consent screen when you first start Dearly (the “Service”) before you can use it.',
     ),
     LegalBlock(
       '2. The Service',
@@ -180,7 +180,7 @@ const _english = LegalCopy(
     ),
     LegalBlock(
       '3. Accounts',
-      'Quotes, the archive, characters, widgets, and on-device reminders work without an account. Google sign-in is required for Together rooms and for a nickname friends can see. Use only a Google account that belongs to you. You are responsible for activity under that account.',
+      'Quotes, the archive, characters, widgets, and on-device reminders work without an account. Together rooms and the nickname friends can see use an automatically created anonymous account or Google sign-in. Use only a Google account that belongs to you. You are responsible for activity under that account.',
     ),
     LegalBlock(
       '4. Subscriptions',
@@ -199,7 +199,7 @@ const _english = LegalCopy(
     ),
     LegalBlock(
       '6. Content you submit',
-      'Room names and cheers in a Together room are visible to members of that room. Do not post anything illegal, harassing, sexual involving a minor, threatening, or infringing someone else’s rights. We may remove that content or limit the room if we learn of it. You can leave a room in the app.',
+      'Room names, nicknames, cheers, and speech bubbles in a Together room are visible to members of that room. We do not tolerate anything illegal, harassing, hateful, sexual, violent, threatening, spam, or infringing someone else’s rights. You can report content and block people from a Together room. We review reports and may remove the content or limit the account or room. You can leave a room in the app.',
     ),
     LegalBlock(
       '7. Prohibited use',
@@ -233,7 +233,7 @@ const _english = LegalCopy(
     ),
     LegalBlock(
       '2. Information we process',
-      'You can use quotes, the archive, characters, widgets, and on-device reminders without an account. Those choices stay on your device.\n\n'
+      'You can use quotes, the archive, characters, widgets, and on-device reminders without an account. Those choices stay on your device. Even without signing in, an anonymous Firebase account identifier is created for Together rooms and sync.\n\n'
           'If you sign in with Google, we may receive and store:\n'
           '• email address\n'
           '• the name Google shares\n'
@@ -241,10 +241,10 @@ const _english = LegalCopy(
           '• Google account identifier\n'
           '• the nickname you enter\n'
           '• the character you select\n\n'
-          'If you use Together, we store the room name, invite code, membership, cheers members write, and the character shown in the room.\n\n'
+          'If you use Together, we store the room name, invite code, membership, cheers and speech bubbles members write, and the character shown in the room. If you send a report, we store the reason, the reported content, and the account identifiers of the reporter and the reported person.\n\n'
           'If you allow Together notifications, we store a Firebase Cloud Messaging token so the notice can be delivered.\n\n'
           'If you subscribe, Google Play or the App Store and our subscription partner RevenueCat process the payment. We receive whether the plan is active and a store user id used to restore the purchase. We do not receive your full card number.\n\n'
-          'When an ad is shown, Google AdMob may use an advertising identifier, IP address, and device information to provide and measure ads. Watching a rewarded ad is optional.\n\n'
+          'When an ad is shown, Google AdMob may use an advertising identifier, IP address, and device information to provide and measure ads. Watching a rewarded ad is optional. In the EEA, the UK, and Switzerland we ask for ad consent first, and you can change it in Settings.\n\n'
           'We do not ask for your phone number, precise location, contacts, or health information.',
     ),
     LegalBlock(
@@ -253,7 +253,7 @@ const _english = LegalCopy(
     ),
     LegalBlock(
       '4. How long we keep it',
-      'Account and room information is kept while the account or room exists. If you ask us to delete the account, we delete or de-identify the profile, membership display name, and messaging token, except for records we must keep for law, disputes, or security. Cheers you wrote may remain until the room is deleted. If you ask, we remove your name from them. Purchase records may be kept as required by tax rules and the store. Archive, widget, and language settings stored only on the device remain until you clear app data or uninstall.',
+      'Account and room information is kept while the account or room exists. If you ask us to delete the account, we delete or de-identify the profile, membership display name, and messaging token, except for records we must keep for law, disputes, or security. Cheers you wrote may remain until the room is deleted. Deleting the account in the app removes your name and account identifier from them. Purchase records may be kept as required by tax rules and the store. Archive, widget, and language settings stored only on the device remain until you clear app data or uninstall.',
     ),
     LegalBlock(
       '5. Sharing',
@@ -295,13 +295,13 @@ const _english = LegalCopy(
 );
 
 const _japanese = LegalCopy(
-  updated: '最終更新: 2026年10月31日 · アプリ名: Dearly',
+  updated: '最終更新: 2026年11月10日 · アプリ名: Dearly',
   termsHeading: '利用規約',
   privacyHeading: 'プライバシーポリシー',
   terms: [
     LegalBlock(
       '1. 適用',
-      'Dearly（以下「本サービス」）をインストールまたは利用すると、本規約とプライバシーポリシーに同意したものとみなします。同意しない場合は利用しないでください。',
+      'Dearly（以下「本サービス」）は、最初の起動時に同意画面で本規約とプライバシーポリシーに同意すると利用できます。',
     ),
     LegalBlock(
       '2. サービス内容',
@@ -309,7 +309,7 @@ const _japanese = LegalCopy(
     ),
     LegalBlock(
       '3. アカウント',
-      '文章、保存庫、キャラクター、ウィジェット、端末内の通知はログインなしで利用できます。一緒ルームと、友だちに表示するニックネームにはGoogleログインが必要です。本人のGoogleアカウントだけを使い、そのアカウントでの行為について責任を負います。',
+      '文章、保存庫、キャラクター、ウィジェット、端末内の通知はログインなしで利用できます。一緒ルームと、友だちに表示するニックネームは、自動で作成される匿名アカウントまたはGoogleログインで利用します。本人のGoogleアカウントだけを使い、そのアカウントでの行為について責任を負います。',
     ),
     LegalBlock(
       '4. 定期購入',
@@ -328,7 +328,7 @@ const _japanese = LegalCopy(
     ),
     LegalBlock(
       '6. 利用者が投稿する内容',
-      '一緒ルームの部屋名と応援メッセージは、その部屋の参加者に表示されます。法令に違反する内容、嫌がらせ、未成年者に関する性的な内容、脅迫、他人の権利を侵害する内容は投稿しないでください。そのような内容を知った場合、文章を削除し、または部屋の利用を制限することがあります。部屋はアプリ内で退出できます。',
+      '一緒ルームの部屋名、ニックネーム、応援メッセージ、吹き出しは、その部屋の参加者に表示されます。法令に違反する内容、嫌がらせ、差別、性的または暴力的な内容、脅迫、スパム、他人の権利を侵害する内容は認めません。一緒ルームから内容を通報し、利用者をブロックできます。運営者は通報を確認し、内容の削除やアカウント・部屋の利用制限を行います。部屋はアプリ内で退出できます。',
     ),
     LegalBlock(
       '7. 禁止事項',
@@ -362,7 +362,7 @@ const _japanese = LegalCopy(
     ),
     LegalBlock(
       '2. 取り扱う情報',
-      'ログインしなくても、文章、保存庫、キャラクター、ウィジェット、端末内の通知を利用できます。その選択は端末に保存されます。\n\n'
+      'ログインしなくても、文章、保存庫、キャラクター、ウィジェット、端末内の通知を利用できます。その選択は端末に保存されます。一緒ルームと同期のため、ログインしなくてもFirebaseの匿名アカウント識別子を作成します。\n\n'
           'Googleでログインすると、次の情報を受け取り保存することがあります。\n'
           '• メールアドレス\n'
           '• Googleが共有する名前\n'
@@ -370,10 +370,10 @@ const _japanese = LegalCopy(
           '• Googleアカウント識別子\n'
           '• 入力したニックネーム\n'
           '• 選択したキャラクター\n\n'
-          '一緒ルームを使うと、部屋名、招待コード、参加情報、参加者が書いた応援、部屋に表示するキャラクターを保存します。\n\n'
+          '一緒ルームを使うと、部屋名、招待コード、参加情報、参加者が書いた応援と吹き出し、部屋に表示するキャラクターを保存します。通報を送ると、通報の理由、通報した内容、通報者と通報相手のアカウント識別子を保存します。\n\n'
           '一緒ルームの通知を許可すると、通知を届けるためのFirebase Cloud Messagingトークンを保存します。\n\n'
           '定期購入ではGoogle PlayまたはApp Storeと、購入処理の提携先であるRevenueCatが決済を処理します。運営者はプランが有効かどうかと、購入の復元に使うストア利用者識別子を受け取ります。カード番号の全体は受け取りません。\n\n'
-          '広告が表示されるとき、Google AdMobは広告識別子、IPアドレス、端末情報を、広告の配信と測定に使うことがあります。リワード広告の視聴は任意です。\n\n'
+          '広告が表示されるとき、Google AdMobは広告識別子、IPアドレス、端末情報を、広告の配信と測定に使うことがあります。リワード広告の視聴は任意です。欧州経済領域、英国、スイスでは先に広告の同意を求め、設定で変更できます。\n\n'
           '電話番号、正確な位置情報、連絡先、健康情報は求めません。',
     ),
     LegalBlock(
@@ -382,7 +382,7 @@ const _japanese = LegalCopy(
     ),
     LegalBlock(
       '4. 保管期間',
-      'アカウントと部屋の情報は、アカウントまたは部屋がある間保管します。削除を求められた場合、法令・紛争・安全のために残す必要があるものを除き、プロフィール、参加時の表示名、通知トークンを削除するか、識別できないようにします。利用者が書いた応援は部屋が削除されるまで残ることがあります。求めがあれば名前の表示は外します。購入記録は、税務とストアの規則が求める期間保管されることがあります。端末だけにある保存庫、ウィジェット、言語設定は、アプリデータを消すかアプリを削除するまで端末に残ります。',
+      'アカウントと部屋の情報は、アカウントまたは部屋がある間保管します。削除を求められた場合、法令・紛争・安全のために残す必要があるものを除き、プロフィール、参加時の表示名、通知トークンを削除するか、識別できないようにします。利用者が書いた応援は部屋が削除されるまで残ることがあります。アプリでアカウントを削除すると、名前の表示と作成者の識別子は外します。購入記録は、税務とストアの規則が求める期間保管されることがあります。端末だけにある保存庫、ウィジェット、言語設定は、アプリデータを消すかアプリを削除するまで端末に残ります。',
     ),
     LegalBlock(
       '5. 提供と委託',

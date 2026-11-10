@@ -23,10 +23,15 @@ class TogetherBubble {
     this.y = 0,
     this.tail = TogetherBubbleTail.left,
     this.rotation = 0,
+    this.scale = 100,
+    this.authorUid = '',
   });
 
   static const maxCount = 5;
   static const maxLength = 16;
+  static const scaleMin = 70;
+  static const scaleMax = 200;
+  static const scaleStep = 10;
 
   final String id;
   final String text;
@@ -37,12 +42,20 @@ class TogetherBubble {
   /// Clockwise degrees around the bubble center, 0–359.
   final int rotation;
 
+  /// Percent of the normal bubble, [scaleMin]–[scaleMax].
+  final int scale;
+
+  /// Who wrote the words, so reports and blocks reach the right person.
+  final String authorUid;
+
   TogetherBubble copyWith({
     String? text,
     double? x,
     double? y,
     TogetherBubbleTail? tail,
     int? rotation,
+    int? scale,
+    String? authorUid,
   }) {
     return TogetherBubble(
       id: id,
@@ -51,8 +64,12 @@ class TogetherBubble {
       y: y ?? this.y,
       tail: tail ?? this.tail,
       rotation: rotation == null ? this.rotation : normDegrees(rotation),
+      scale: scale == null ? this.scale : clampScale(scale),
+      authorUid: authorUid ?? this.authorUid,
     );
   }
+
+  static int clampScale(int value) => value.clamp(scaleMin, scaleMax);
 
   static int normDegrees(int value) {
     final n = value % 360;
@@ -66,6 +83,8 @@ class TogetherBubble {
         'y': y.round(),
         'tail': tail.name,
         if (rotation != 0) 'rotation': rotation,
+        if (scale != 100) 'scale': scale,
+        if (authorUid.isNotEmpty) 'by': authorUid,
       };
 
   /// Single line, capped — the home widget draws it without wrapping.
@@ -74,11 +93,13 @@ class TogetherBubble {
     return line.length <= maxLength ? line : line.substring(0, maxLength);
   }
 
-  /// [ax]/[ay] map another phone's canvas dp onto this one.
+  /// [ax]/[ay] map another phone's canvas dp onto this one. [fallbackAuthor]
+  /// covers bubbles saved before each one recorded its writer.
   static List<TogetherBubble> listFromJson(
     Object? raw, {
     int Function(int)? ax,
     int Function(int)? ay,
+    String fallbackAuthor = '',
   }) {
     if (raw is! List) return const [];
     final out = <TogetherBubble>[];
@@ -96,6 +117,8 @@ class TogetherBubble {
           y: (ay == null ? y : ay(y)).toDouble(),
           tail: TogetherBubbleTail.byId(entry['tail']),
           rotation: normDegrees((entry['rotation'] as num?)?.toInt() ?? 0),
+          scale: clampScale((entry['scale'] as num?)?.toInt() ?? 100),
+          authorUid: entry['by']?.toString() ?? fallbackAuthor,
         ),
       );
       if (out.length >= maxCount) break;
@@ -113,20 +136,22 @@ class TogetherBubble {
           l.x.round() != r.x.round() ||
           l.y.round() != r.y.round() ||
           l.tail != r.tail ||
-          l.rotation != r.rotation) {
+          l.rotation != r.rotation ||
+          l.scale != r.scale) {
         return false;
       }
     }
     return true;
   }
 
-  /// Same bubbles with the same words and tails; positions may differ.
+  /// Same bubbles with the same words, tails and sizes; positions may differ.
   static bool sameContent(List<TogetherBubble> a, List<TogetherBubble> b) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; i++) {
       if (a[i].id != b[i].id ||
           a[i].text != b[i].text ||
-          a[i].tail != b[i].tail) {
+          a[i].tail != b[i].tail ||
+          a[i].scale != b[i].scale) {
         return false;
       }
     }
@@ -136,14 +161,14 @@ class TogetherBubble {
   /// Compact form the Android widget renderer reads.
   static List<Map<String, Object>> widgetJson(List<TogetherBubble> bubbles) => [
         for (final b in bubbles)
-          if (b.text.isNotEmpty)
-            {
-              't': b.text,
-              'x': b.x.round(),
-              'y': b.y.round(),
-              'd': b.tail == TogetherBubbleTail.right ? 'r' : 'l',
-              'r': b.rotation,
-            },
+          {
+            't': b.text,
+            'x': b.x.round(),
+            'y': b.y.round(),
+            'd': b.tail == TogetherBubbleTail.right ? 'r' : 'l',
+            'r': b.rotation,
+            's': b.scale,
+          },
       ];
 }
 
@@ -190,6 +215,7 @@ abstract final class TogetherBubbleLayout {
     String text, {
     required bool isPixel,
     WidgetFont font = WidgetFont.basic,
+    int scale = 100,
   }) {
     final painter = TextPainter(
       text: TextSpan(
@@ -203,8 +229,8 @@ abstract final class TogetherBubbleLayout {
     final textSize = painter.size;
     painter.dispose();
     return Size(
-      textSize.width + padX * 2,
-      textSize.height + padY * 2 + tailH,
+      (textSize.width + padX * 2) * scale / 100,
+      (textSize.height + padY * 2 + tailH) * scale / 100,
     );
   }
 
