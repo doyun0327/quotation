@@ -88,65 +88,71 @@ class ShareEventCard extends StatelessWidget {
         final accent = context.palette.accent;
         final sent = characterController.inviteSends;
         const goal = CharacterController.shareEventGoal;
+        // One headline, one quiet line, and a step per invite to send.
         return Container(
-          padding: const EdgeInsets.fromLTRB(10, 10, 14, 10),
+          padding: const EdgeInsets.fromLTRB(8, 8, 14, 8),
           decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.08),
+            color: AppColors.card,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: accent.withValues(alpha: 0.28)),
+            border: Border.all(color: accent.withValues(alpha: 0.3)),
           ),
           child: Row(
             children: [
-              const _EventArt(size: 72),
-              const SizedBox(width: 10),
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const _EventArt(size: 60),
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       t.shareEventTitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTheme.body.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
                         color: AppColors.ink,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       t.shareEventBody,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTheme.body.copyWith(
-                        fontSize: 12,
-                        height: 1.4,
+                        fontSize: 11.5,
                         color: AppColors.muted,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: sent / goal,
-                              minHeight: 6,
-                              color: accent,
-                              backgroundColor: accent.withValues(alpha: 0.15),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '$sent/$goal',
-                          style: AppTheme.body.copyWith(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                            color: accent,
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 8),
+              // ● ● ○ : invites sent out of the goal.
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var i = 0; i < goal; i++)
+                    Container(
+                      width: 10,
+                      height: 10,
+                      margin: const EdgeInsets.only(left: 4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: i < sent
+                            ? accent
+                            : accent.withValues(alpha: 0.15),
+                      ),
+                    ),
+                ],
               ),
             ],
           ),

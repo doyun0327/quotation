@@ -383,12 +383,15 @@ class AppStrings {
   String get shopGroupFemale => _t('여', 'Women', '女');
   String get shopGroupMale => _t('남', 'Men', '男');
   String get shopGroupSpecial => _t('스페셜', 'Special', 'スペシャル');
-  String get shareEventTitle =>
-      _t('초대코드 공유 이벤트', 'Invite share event', '招待コード共有イベント');
+  String get shareEventTitle => _t(
+        '방을 만들고 친구를 3명 초대하면 캐릭터가 열려요!',
+        'Make a room and invite 3 friends to unlock this character!',
+        'ルームを作って友だちを3人招待するとキャラクターが開放されます！',
+      );
   String get shareEventBody => _t(
-        '방을 만들고 초대코드를 3번 보내면 이 캐릭터가 열려요! 방은 여러 개 만들어도 돼요.',
-        'Make a room and send its invite code 3 times to unlock this character. Any number of rooms counts.',
-        '部屋を作って招待コードを3回送ると、このキャラクターが開放されます！部屋はいくつ作ってもOKです。',
+        '어느 방이든 합쳐서 세요',
+        'Invites from any room count',
+        'どのルームの招待も合算されます',
       );
   String get shareEventLocked => _t(
         '같이 탭에서 방을 만들고 초대코드를 3번 보내면 열려요.',
@@ -554,6 +557,13 @@ class AppStrings {
   String appleLoginFailedDetail(String detail) => _t('Apple 로그인 실패: $detail', 'Apple sign-in failed: $detail', 'Appleログイン失敗: $detail');
 
   String get notificationSection => _t('알림', 'Notifications', '通知');
+  String get morningFortuneTitle =>
+      _t('아침 오늘의 운세', 'Morning fortune', '朝の今日の運勢');
+  String get morningFortuneSubtitle => _t(
+        '매일 아침 8시에 오늘의 운세를 보내드려요',
+        'Today\'s fortune every day at 8 AM',
+        '毎朝8時に今日の運勢をお届けします',
+      );
   String get eveningCheerTitle => _t('저녁 응원 문구', 'Evening cheer', '夜の応援メッセージ');
   String get eveningCheerSubtitle => _t('매일 저녁에 응원 문구를 보내드려요', 'A cheer message every day at 7 PM', '毎日19時に応援メッセージをお届けします');
   String get languageSection => _t('앱 언어', 'App language', 'アプリの言語');
@@ -568,6 +578,7 @@ class AppStrings {
   String get premiumSubtitle =>
       _t('광고 없이 모든 기능을 이용하세요', 'Enjoy all features without ads', '広告なしですべての機能を利用できます');
   String get viewPremium => _t('구독하기', 'Subscribe', '登録する');
+  String get premiumSubscribed => _t('구독 중', 'Subscribed', '登録中');
   String get subscribeProcessing => _t(
         '구독을 확인하고 있어요…',
         'Confirming your subscription…',

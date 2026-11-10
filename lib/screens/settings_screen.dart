@@ -209,12 +209,14 @@ class SettingsScreen extends StatelessWidget {
                             title: t.premiumTitle,
                             subtitle: t.premiumSubtitle,
                             trailing: SettingsOutlineButton(
-                              label: t.viewPremium,
-                              onPressed: billingController.isBusy
+                              label: isPremium
+                                  ? t.premiumSubscribed
+                                  : t.viewPremium,
+                              onPressed: isPremium || billingController.isBusy
                                   ? null
                                   : () => _subscribe(context),
                             ),
-                            onTap: billingController.isBusy
+                            onTap: isPremium || billingController.isBusy
                                 ? null
                                 : () => _subscribe(context),
                           ),
@@ -261,7 +263,10 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(height: 18),
                       SettingsSection(
                         title: t.notificationSection,
-                        children: const [_EveningCheerToggle()],
+                        children: const [
+                          _EveningCheerToggle(morning: true),
+                          _EveningCheerToggle(),
+                        ],
                       ),
                       const SizedBox(height: 18),
                       SettingsSection(
@@ -434,8 +439,11 @@ class SettingsScreen extends StatelessWidget {
 }
 
 /// Evening (19:00) cheer notification on/off. Morning fortune stays as is.
+/// Morning fortune (08:00) or evening cheer (19:00) on/off.
 class _EveningCheerToggle extends StatefulWidget {
-  const _EveningCheerToggle();
+  const _EveningCheerToggle({this.morning = false});
+
+  final bool morning;
 
   @override
   State<_EveningCheerToggle> createState() => _EveningCheerToggleState();
@@ -447,14 +455,21 @@ class _EveningCheerToggleState extends State<_EveningCheerToggle> {
   @override
   void initState() {
     super.initState();
-    EncouragementNotificationScheduler.isEveningEnabled().then((on) {
+    (widget.morning
+            ? EncouragementNotificationScheduler.isMorningEnabled()
+            : EncouragementNotificationScheduler.isEveningEnabled())
+        .then((on) {
       if (mounted) setState(() => _on = on);
     });
   }
 
   void _set(bool value) {
     setState(() => _on = value);
-    EncouragementNotificationScheduler.setEveningEnabled(value);
+    if (widget.morning) {
+      EncouragementNotificationScheduler.setMorningEnabled(value);
+    } else {
+      EncouragementNotificationScheduler.setEveningEnabled(value);
+    }
   }
 
   @override
@@ -462,9 +477,12 @@ class _EveningCheerToggleState extends State<_EveningCheerToggle> {
     final t = AppStrings.current;
     final palette = context.palette;
     return SettingsItem(
-      icon: Icons.notifications_active_rounded,
-      title: t.eveningCheerTitle,
-      subtitle: t.eveningCheerSubtitle,
+      icon: widget.morning
+          ? Icons.wb_sunny_rounded
+          : Icons.notifications_active_rounded,
+      title: widget.morning ? t.morningFortuneTitle : t.eveningCheerTitle,
+      subtitle:
+          widget.morning ? t.morningFortuneSubtitle : t.eveningCheerSubtitle,
       trailing: Switch.adaptive(
         value: _on,
         activeTrackColor: palette.accent,

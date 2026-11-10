@@ -160,8 +160,8 @@ class _SubcategoryRow extends StatelessWidget {
   final bool locked;
   final VoidCallback? onTap;
 
-  static const _ink = Color(0xFF2C3340);
-  static const _caption = Color(0xFF8EA0B5);
+  static const _ink = Color(0xFF3A3834);
+  static const _caption = Color(0xFF8E877E);
 
   @override
   Widget build(BuildContext context) {

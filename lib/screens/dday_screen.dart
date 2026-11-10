@@ -47,6 +47,18 @@ class _DdayScreenState extends State<DdayScreen> {
     );
   }
 
+  /// Paw on a room card: toggle favorite, confirm when it was added.
+  Future<void> _toggleFavorite(DdayItem item) async {
+    final adding = !item.favorite;
+    await ddayController.toggleFavorite(item.id);
+    if (!adding || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(content: Text(AppStrings.current.characterFavoriteAdded)),
+    );
+  }
+
   Future<void> _openRoom(DdayItem item) async {
     await Navigator.of(context).push<void>(
       TogetherRoomScreen.route(item.id),
@@ -253,8 +265,7 @@ class _DdayScreenState extends State<DdayScreen> {
                               item: item,
                               onOpen: () => _openRoom(item),
                               onDelete: () => _confirmLeave(item),
-                              onToggleFavorite: () =>
-                                  ddayController.toggleFavorite(item.id),
+                              onToggleFavorite: () => _toggleFavorite(item),
                             );
                           },
                         ),

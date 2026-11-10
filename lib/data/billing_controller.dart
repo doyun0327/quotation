@@ -155,7 +155,17 @@ class BillingController extends ChangeNotifier {
         return null;
       }
       if (code == 'already') {
-        membershipController.setPremium(true);
+        // The store account owns it: attach it to this user so it stays on
+        // after the next launch, instead of only flipping premium here.
+        try {
+          await Purchases.syncPurchasesForResult();
+          _apply(await Purchases.getCustomerInfo());
+        } catch (e) {
+          debugPrint('buyMonthly already: $e');
+        }
+        if (!membershipController.isPremium) {
+          membershipController.setPremium(true);
+        }
         return null;
       }
       lastError = code;
@@ -293,9 +303,29 @@ class BillingController extends ChangeNotifier {
         lastError = setup;
         return lastError;
       }
-      _apply(await Purchases.restorePurchases());
-      final anyPack = CharacterPack.all.any(characterController.ownsPack);
-      if (!membershipController.isPremium && !anyPack) {
+      final info = await Purchases.restorePurchases();
+      // Restoring already read the store's purchases for this user, so the
+      // result is final: apply it as is instead of starting another check.
+      _syncedUsers.add(info.originalAppUserId);
+      _apply(info);
+      final premium = _hasPremium(info);
+      final bought = {
+        ...info.allPurchasedProductIdentifiers,
+        for (final tx in info.nonSubscriptionTransactions) tx.productIdentifier,
+      };
+      final anyPack = CharacterPack.all.any(
+        (pack) =>
+            characterController.ownsPack(pack) ||
+            bought.contains(pack.productId) ||
+            info.entitlements.active.containsKey('pack_${pack.id}'),
+      );
+      if (!premium && !anyPack) {
+        debugPrint(
+          'restore_none: user=${info.originalAppUserId} '
+          'subs=${info.activeSubscriptions} '
+          'entitlements=${info.entitlements.active.keys.toList()} '
+          'all=${info.allPurchasedProductIdentifiers}',
+        );
         lastError = 'restore_none';
         return lastError;
       }
@@ -395,19 +425,61 @@ class BillingController extends ChangeNotifier {
         id.startsWith('$kPremiumMonthlyProductId:');
   }
 
-  void _apply(CustomerInfo info) {
-    final entitled =
-        info.entitlements.active.containsKey(kPremiumEntitlementId);
-    final subscribed =
-        info.activeSubscriptions.contains(kPremiumMonthlyProductId);
-    var productMatch = false;
-    for (final entitlement in info.entitlements.active.values) {
-      if (entitlement.productIdentifier == kPremiumMonthlyProductId) {
-        productMatch = true;
-        break;
-      }
+  /// App user ids already checked against the store's own purchases.
+  final Set<String> _syncedUsers = {};
+  bool _syncing = false;
+
+  bool _hasPremium(CustomerInfo info) {
+    if (info.entitlements.active.containsKey(kPremiumEntitlementId)) {
+      return true;
     }
-    membershipController.setPremium(entitled || subscribed || productMatch);
+    // Android reports subscriptions as "premium_monthly:<base plan>".
+    if (info.activeSubscriptions.any(_isMonthlyProduct)) return true;
+    return info.entitlements.active.values
+        .any((e) => _isMonthlyProduct(e.productIdentifier));
+  }
+
+  /// The Play account can own the plan while RevenueCat looks at a user id
+  /// it was not bought under (anonymous start, a new Firebase sign-in).
+  /// Before locking premium, ask RevenueCat to read the store's purchases
+  /// for this id once. Android only: on iPhone this may ask for a password.
+  bool _needsStoreSync(CustomerInfo info) {
+    if (defaultTargetPlatform != TargetPlatform.android) return false;
+    return !_syncedUsers.contains(info.originalAppUserId);
+  }
+
+  Future<void> _syncStorePurchases(String userId) async {
+    _syncedUsers.add(userId);
+    _syncing = true;
+    CustomerInfo? info;
+    try {
+      await Purchases.syncPurchasesForResult();
+      info = await Purchases.getCustomerInfo();
+    } catch (error) {
+      debugPrint('syncPurchases: $error');
+    } finally {
+      _syncing = false;
+    }
+    if (info != null) {
+      _apply(info);
+    } else {
+      membershipController.setPremium(false);
+    }
+  }
+
+  void _apply(CustomerInfo info) {
+    final premium = _hasPremium(info);
+    if (premium) {
+      membershipController.setPremium(true);
+    } else if (_syncing) {
+      // Updates during the store check do not lock; its result decides.
+    } else if (!_needsStoreSync(info)) {
+      membershipController.setPremium(false);
+    } else {
+      // Keep the current state until the store has been checked, so a paid
+      // plan does not flash locked.
+      unawaited(_syncStorePurchases(info.originalAppUserId));
+    }
     // Bought packs (non-consumables) stay in the purchase history forever.
     final bought = {
       ...info.allPurchasedProductIdentifiers,

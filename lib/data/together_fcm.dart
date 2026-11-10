@@ -387,6 +387,9 @@ abstract final class TogetherFcm {
     // A widget or notice from before the room was re-keyed has the old id.
     final id = ddayController.currentRoomId(roomId?.trim() ?? '');
     if (id.isEmpty) return;
+    // The morning fortune and evening cheer share this notification plugin;
+    // their payloads ("fortune:…", "evening:…") are not rooms. Just the app.
+    if (id.contains(':')) return;
     final now = DateTime.now();
     if (_lastOpenedRoom == id &&
         _lastOpenedAt != null &&

@@ -14,6 +14,7 @@ import 'package:timezone/timezone.dart' as tz;
 abstract final class EncouragementNotificationScheduler {
   static const _prefsEnabledKey = 'encouragement_notifications_enabled';
   static const _prefsEveningKey = 'evening_encouragement_enabled';
+  static const _prefsMorningKey = 'morning_fortune_enabled';
   static const _channelId = 'daily_encouragement';
   static const _channelName = 'Daily encouragement';
   static const _scheduleDays = 14;
@@ -123,6 +124,19 @@ abstract final class EncouragementNotificationScheduler {
     await reschedule();
   }
 
+  /// Morning fortune (08:00) on/off from Settings. On by default. Android
+  /// rings it from MorningFortuneAlarm; iPhone from a local notification.
+  static Future<bool> isMorningEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_prefsMorningKey) ?? true;
+  }
+
+  static Future<void> setMorningEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefsMorningKey, enabled);
+    await reschedule();
+  }
+
   static Future<void> setEnabled(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefsEnabledKey, enabled);
@@ -184,16 +198,31 @@ abstract final class EncouragementNotificationScheduler {
     final mornings = <Map<String, Object>>[];
     final wallNow = DateTime.now();
     final eveningOn = await isEveningEnabled();
+    final morningOn = await isMorningEnabled();
 
     for (var i = 0; i < _scheduleDays; i++) {
       final day = DateTime(now.year, now.month, now.day).add(Duration(days: i));
       final morningAt = DateTime(day.year, day.month, day.day, _fortuneHour);
-      if (morningAt.isAfter(wallNow)) {
-        mornings.add({
-          'at': morningAt.millisecondsSinceEpoch,
-          'title': fortuneTitle,
-          'body': _fortuneBody(day, fortunes, fortuneFallback),
-        });
+      if (morningOn && morningAt.isAfter(wallNow)) {
+        final body = _fortuneBody(day, fortunes, fortuneFallback);
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          // Android rings it from MorningFortuneAlarm (exact, boot-safe).
+          mornings.add({
+            'at': morningAt.millisecondsSinceEpoch,
+            'title': fortuneTitle,
+            'body': body,
+          });
+        } else {
+          await _scheduleAt(
+            id: _fortuneBase + i,
+            day: day,
+            hour: _fortuneHour,
+            now: now,
+            title: fortuneTitle,
+            body: body,
+            payload: 'fortune:${day.year}-${day.month}-${day.day}',
+          );
+        }
       }
       if (!eveningOn) continue;
       await _scheduleCheer(
@@ -206,7 +235,7 @@ abstract final class EncouragementNotificationScheduler {
       );
     }
 
-    if (!kIsWeb) {
+    if (defaultTargetPlatform == TargetPlatform.android) {
       try {
         await _morningChannel.invokeMethod('scheduleMorningFortunes', {
           'items': mornings,
