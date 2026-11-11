@@ -452,7 +452,6 @@ class SettingsScreen extends StatelessWidget {
 /// Morning fortune (08:00) or evening cheer (19:00) on/off.
 class _EveningCheerToggle extends StatefulWidget {
   const _EveningCheerToggle({
-    super.key,
     this.morning = false,
     required this.title,
     required this.subtitle,

@@ -1797,15 +1797,18 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               label: t.ddayDecorateMoreColors,
                               onTap: () async {
                                 _clearSelection();
-                                final picked = await showColorPaletteSheet(
+                                await showColorPaletteSheet(
                                   context,
                                   initialArgb: _textColor,
                                   allowTransparent: false,
                                   title: t.ddayDecorateTextColorLabel,
+                                  // Applied on each tap, like the quick dots.
+                                  onChanged: (picked) {
+                                    if (!mounted) return;
+                                    setState(() => _textColor = picked);
+                                    _persist();
+                                  },
                                 );
-                                if (picked == null || !mounted) return;
-                                setState(() => _textColor = picked);
-                                _persist();
                               },
                             );
                           }

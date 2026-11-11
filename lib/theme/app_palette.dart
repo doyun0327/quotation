@@ -27,12 +27,23 @@ class AppPalette extends ThemeExtension<AppPalette> {
   static const black = AppPalette(
     id: 'black',
     name: '검정',
-    accent: Color(0xFF1A1A1A),
+    accent: Color(0xFF000000),
     accentSoft: Color(0xFFF2F2F2),
     border: Color(0xFFC8C8C8),
     windowBar: Color(0xFFE6E6E6),
     settingsLine: Color(0xFF2A2A2A),
     settingsSoft: Color(0xFFF7F7F7),
+  );
+
+  static const blue = AppPalette(
+    id: 'blue',
+    name: '하늘',
+    accent: Color(0xFFA8C8EC),
+    accentSoft: Color(0xFFEEF5FC),
+    border: Color(0xFFCCDDF0),
+    windowBar: Color(0xFFD8E6F6),
+    settingsLine: Color(0xFFB0CCEC),
+    settingsSoft: Color(0xFFF4F8FD),
   );
 
   static const green = AppPalette(
@@ -69,11 +80,24 @@ class AppPalette extends ThemeExtension<AppPalette> {
     settingsSoft: Color(0xFFFFFBF0),
   );
 
+  static const ivory = AppPalette(
+    id: 'ivory',
+    name: '아이보리',
+    accent: Color(0xFFE9DFC6),
+    accentSoft: Color(0xFFFFFCF4),
+    border: Color(0xFFE8E0CC),
+    windowBar: Color(0xFFF4EEDD),
+    settingsLine: Color(0xFFDCD0B4),
+    settingsSoft: Color(0xFFFFFDF8),
+  );
+
   static const all = <AppPalette>[
     black,
     green,
     pink,
     yellow,
+    blue,
+    ivory,
   ];
 
   static AppPalette byId(String id) {
@@ -87,7 +111,6 @@ class AppPalette extends ThemeExtension<AppPalette> {
       case 'rose':
         return pink;
       case 'peach':
-      case 'ivory':
         return yellow;
     }
     return all.firstWhere((p) => p.id == id, orElse: () => pink);

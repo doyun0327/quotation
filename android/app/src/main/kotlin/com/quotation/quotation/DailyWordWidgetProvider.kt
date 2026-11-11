@@ -888,15 +888,26 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
         bitmap: Bitmap,
         widthDp: Int,
         heightDp: Int,
-    ): RemoteViews =
-        // Same as 함께: shrunk to fit the picker cell so the whole card shows.
-        // Drawn at full widget size it was cut off at the edges.
-        DdayWidgetProvider().wrapPinPreview(
-            context = context,
-            bitmap = bitmap,
-            widthDp = widthDp.toFloat(),
-            heightDp = heightDp.toFloat(),
-        )
+    ): RemoteViews {
+      // Same as 함께: shrunk to fit the picker cell so the whole card shows.
+      // The launcher also rounds the preview's corners, which cut the
+      // bubble's border where it meets the edge; a clear margin keeps it in.
+      val margin = (min(bitmap.width, bitmap.height) * 0.08f).roundToInt()
+      val padded =
+          Bitmap.createBitmap(
+              bitmap.width + margin * 2,
+              bitmap.height + margin * 2,
+              Bitmap.Config.ARGB_8888,
+          )
+      Canvas(padded).drawBitmap(bitmap, margin.toFloat(), margin.toFloat(), null)
+      val grow = padded.width.toFloat() / bitmap.width
+      return DdayWidgetProvider().wrapPinPreview(
+          context = context,
+          bitmap = padded,
+          widthDp = widthDp * grow,
+          heightDp = heightDp * padded.height.toFloat() / bitmap.height,
+      )
+    }
 
     fun scheduleHourlyRefresh(context: Context) {
       val alarmManager = context.getSystemService(AlarmManager::class.java) ?: return

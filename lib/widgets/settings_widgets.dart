@@ -363,19 +363,6 @@ class ThemeSwatchRow extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      AppStrings.current.themeName(palette.id),
-                      style: AppTheme.body.copyWith(
-                        fontSize: 10,
-                        fontWeight: selectedId == palette.id
-                            ? FontWeight.w800
-                            : FontWeight.w600,
-                        color: selectedId == palette.id
-                            ? AppColors.ink
-                            : AppColors.muted,
-                      ),
-                    ),
                   ],
                 ),
               ),

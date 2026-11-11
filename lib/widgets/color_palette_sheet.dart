@@ -4,9 +4,12 @@ import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/widgets/pixel_color_tile.dart';
 
 /// Bottom sheet: pick a color from a palette board (+ optional transparent).
+/// Each tap is applied right away through [onChanged]; the sheet stays open
+/// to try other colors and is closed by dragging it down or tapping outside.
 Future<int?> showColorPaletteSheet(
   BuildContext context, {
   required int initialArgb,
+  required ValueChanged<int> onChanged,
   bool allowTransparent = false,
   String? title,
   bool pixelStyle = false,
@@ -22,6 +25,7 @@ Future<int?> showColorPaletteSheet(
     ),
     builder: (ctx) => _ColorPaletteSheet(
       initialArgb: initialArgb,
+      onChanged: onChanged,
       allowTransparent: allowTransparent,
       title: title,
       pixelStyle: pixelStyle,
@@ -32,12 +36,14 @@ Future<int?> showColorPaletteSheet(
 class _ColorPaletteSheet extends StatefulWidget {
   const _ColorPaletteSheet({
     required this.initialArgb,
+    required this.onChanged,
     required this.allowTransparent,
     this.title,
     this.pixelStyle = false,
   });
 
   final int initialArgb;
+  final ValueChanged<int> onChanged;
   final bool allowTransparent;
   final String? title;
   final bool pixelStyle;
@@ -243,6 +249,12 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
     _selected = widget.initialArgb;
   }
 
+  void _pick(int argb, {required bool transparent}) {
+    final value = transparent ? 0x00000000 : argb;
+    setState(() => _selected = value);
+    widget.onChanged(value);
+  }
+
   Widget _swatch(int argb, {required bool transparent}) {
     final selected = transparent
         ? (_selected & 0xFF000000) == 0
@@ -254,12 +266,11 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
         argb: argb,
         selected: selected,
         transparent: transparent,
-        onTap: () =>
-            setState(() => _selected = transparent ? 0x00000000 : argb),
+        onTap: () => _pick(argb, transparent: transparent),
       );
     }
     return GestureDetector(
-      onTap: () => setState(() => _selected = transparent ? 0x00000000 : argb),
+      onTap: () => _pick(argb, transparent: transparent),
       child: Container(
         width: 36,
         height: 36,
@@ -345,31 +356,6 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
                     const SizedBox(height: 8),
                   ],
                 ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 48,
-            child: FilledButton(
-              onPressed: () => Navigator.of(context).pop(_selected),
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFF26B8A),
-                shape: widget.pixelStyle
-                    ? const RoundedRectangleBorder()
-                    : const StadiumBorder(),
-                side: widget.pixelStyle
-                    ? const BorderSide(color: Color(0xFF1A1A22), width: 2)
-                    : null,
-              ),
-              child: Text(
-                t.ddayDecoratePickColorDone,
-                style: AppTheme.body.copyWith(
-                  fontFamily: widget.pixelStyle ? 'Galmuri' : null,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
               ),
             ),
           ),

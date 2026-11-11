@@ -6,12 +6,27 @@ import 'package:quotation/theme/visual_style_controller.dart';
 abstract final class AppTheme {
   static ThemeData light(AppPalette palette) {
     final clean = visualStyleController.isClean;
+    var scheme = ColorScheme.fromSeed(
+      seedColor: palette.accent,
+      brightness: Brightness.light,
+    );
+    // A black seed comes out as grey tones; keep it true black on white.
+    if (palette.accent.computeLuminance() < 0.05) {
+      scheme = scheme.copyWith(
+        primary: palette.accent,
+        onPrimary: Colors.white,
+        primaryContainer: Colors.black,
+        onPrimaryContainer: Colors.white,
+        secondary: Colors.black,
+        onSecondary: Colors.white,
+        secondaryContainer: const Color(0xFFEFEFEF),
+        onSecondaryContainer: Colors.black,
+        surfaceTint: Colors.transparent,
+      );
+    }
     final base = ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: palette.accent,
-        brightness: Brightness.light,
-      ),
+      colorScheme: scheme,
       scaffoldBackgroundColor:
           clean ? const Color(0xFFF5F6F8) : AppColors.background,
     );

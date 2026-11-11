@@ -17,6 +17,7 @@ import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// A friend's home-widget apply that has already been written on this phone.
 class TogetherLayoutNotice {
@@ -61,6 +62,7 @@ class DdayCloudSync {
     await pushOwnedDdays();
     await pullMemberships();
     _bindRoomWatches();
+    unawaited(retryPendingLeaves());
   }
 
   static void _onRoomsChanged() {
@@ -817,12 +819,19 @@ class DdayCloudSync {
 
   /// Drop me from the shared membership so friends' widgets lose my character.
   /// Host with remaining guests hands the room to the first guest.
+  static const _pendingLeavesKey = 'dday_pending_leaves_v1';
+
+  /// Leaves the shared room: off the roster, out of the widget crowd, and
+  /// the words this person wrote (bubbles, latest cheer) go with them.
+  /// Friends' widgets redraw quietly; leaving is not "edited the widget".
+  /// A leave that fails (offline) is retried by [retryPendingLeaves].
   static Future<void> leaveRoom(String roomId) async {
     if (!CloudConsent.accepted) return;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null || roomId.isEmpty) return;
     if (roomId == TogetherTestRoom.roomId) return;
 
+    await _setPendingLeave(roomId, pending: true);
     final ref = _db.collection('dday_memberships').doc(roomId);
     try {
       await _db.runTransaction((tx) async {
@@ -837,6 +846,23 @@ class DdayCloudSync {
             .map((e) => Map<String, dynamic>.from(e as Map))
             .where((m) => (m['uid'] as String? ?? '') != uid)
             .toList();
+        final mine = <String, dynamic>{
+          if (data['layoutBubbles'] is List)
+            'layoutBubbles': [
+              for (final b in data['layoutBubbles'] as List<dynamic>)
+                if (b is! Map || b['by'] != uid) b,
+            ],
+          if (data['latestCheerAuthorUid'] == uid) ...{
+            'latestCheer': '',
+            'latestCheerAuthorUid': FieldValue.delete(),
+            'latestCheerAuthorName': FieldValue.delete(),
+          },
+          'layoutCrowd': crowd,
+          'updatedBy': uid,
+          'updatedAt': FieldValue.serverTimestamp(),
+          // Silent redraw for friends (no "edited the widget" alert).
+          'widgetRefreshAt': FieldValue.serverTimestamp(),
+        };
 
         if (hostUid == uid) {
           if (members.isEmpty) {
@@ -844,19 +870,21 @@ class DdayCloudSync {
             return;
           }
           final next = members.removeAt(0);
-          tx.set(ref, {
-            'hostUid': next['uid'],
-            'hostCharacterId': next['characterId'] ?? 'basic',
-            'hostDisplayName': next['displayName'],
-            'members': members,
-            'guestUids': [
-              for (final m in members) m['uid'] as String? ?? '',
-            ]..removeWhere((id) => id.isEmpty),
-            'layoutCrowd': crowd,
-            'updatedBy': uid,
-            'updatedAt': FieldValue.serverTimestamp(),
-            'layoutNotifyAt': FieldValue.serverTimestamp(),
-          });
+          // merge: the room's look, cheer and invite settings stay.
+          tx.set(
+            ref,
+            {
+              ...mine,
+              'hostUid': next['uid'],
+              'hostCharacterId': next['characterId'] ?? 'basic',
+              'hostDisplayName': next['displayName'],
+              'members': members,
+              'guestUids': [
+                for (final m in members) m['uid'] as String? ?? '',
+              ]..removeWhere((id) => id.isEmpty),
+            },
+            SetOptions(merge: true),
+          );
           return;
         }
 
@@ -870,21 +898,39 @@ class DdayCloudSync {
         tx.set(
           ref,
           {
+            ...mine,
             'members': members,
             'guestUids': [
               for (final m in members) m['uid'] as String? ?? '',
             ]..removeWhere((id) => id.isEmpty),
-            'layoutCrowd': crowd,
-            'updatedBy': uid,
-            'updatedAt': FieldValue.serverTimestamp(),
-            'layoutNotifyAt': FieldValue.serverTimestamp(),
           },
           SetOptions(merge: true),
         );
       });
+      await _setPendingLeave(roomId, pending: false);
     } catch (e) {
       debugPrint('leaveRoom $roomId: $e');
     }
+  }
+
+  /// Leaves that could not reach the server (offline) are finished here, so
+  /// the room stops notifying and drawing this person.
+  static Future<void> retryPendingLeaves() async {
+    final prefs = await SharedPreferences.getInstance();
+    final pending = prefs.getStringList(_pendingLeavesKey) ?? const [];
+    for (final roomId in pending) {
+      await leaveRoom(roomId);
+    }
+  }
+
+  static Future<void> cancelPendingLeave(String roomId) =>
+      _setPendingLeave(roomId, pending: false);
+
+  static Future<void> _setPendingLeave(String roomId, {required bool pending}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = {...prefs.getStringList(_pendingLeavesKey) ?? const <String>[]};
+    final changed = pending ? list.add(roomId) : list.remove(roomId);
+    if (changed) await prefs.setStringList(_pendingLeavesKey, list.toList());
   }
 
   static bool get isStarted => _started;

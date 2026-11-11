@@ -63,6 +63,8 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
 
       final roomId =
           await DdayInviteRepository.acceptInviteByCode(_codeCtrl.text);
+      // Joining again cancels an earlier leave still waiting to be retried.
+      await DdayCloudSync.cancelPendingLeave(roomId);
       await DdayCloudSync.pullMemberships();
       await ddayController.pinForWidget(roomId);
       await HomeWidgetSync.syncDday();

@@ -847,8 +847,11 @@ class AppStrings {
         return _t('파스텔 분홍', 'Pastel pink', 'パステルピンク');
       case 'yellow':
       case 'peach':
-      case 'ivory':
         return _t('파스텔 노랑', 'Pastel yellow', 'パステルイエロー');
+      case 'blue':
+        return _t('파스텔 하늘', 'Pastel blue', 'パステルブルー');
+      case 'ivory':
+        return _t('아이보리', 'Ivory', 'アイボリー');
       // Legacy ids.
       case 'sky':
       case 'navy':
