@@ -3,7 +3,7 @@ import 'package:quotation/theme/app_palette.dart';
 
 class ThemeController extends ChangeNotifier {
   ThemeController({AppPalette? initial})
-      : _palette = initial ?? AppPalette.pink;
+      : _palette = initial ?? AppPalette.sky;
 
   AppPalette _palette;
 

@@ -346,14 +346,7 @@ class SettingsScreen extends StatelessWidget {
                             icon: Icons.palette_outlined,
                             title: t.themeTitle,
                             subtitle: t.themeSubtitle,
-                            trailing: Text(
-                              t.themeName(palette.id),
-                              style: AppTheme.body.copyWith(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w700,
-                                color: palette.settingsLine,
-                              ),
-                            ),
+                            trailing: const SizedBox.shrink(),
                           ),
                           ThemeSwatchRow(
                             selectedId: palette.id,

@@ -115,7 +115,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       case 'peach':
         return yellow;
     }
-    return all.firstWhere((p) => p.id == id, orElse: () => pink);
+    return all.firstWhere((p) => p.id == id, orElse: () => sky);
   }
 
   @override
@@ -159,5 +159,5 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
 extension AppPaletteContext on BuildContext {
   AppPalette get palette =>
-      Theme.of(this).extension<AppPalette>() ?? AppPalette.pink;
+      Theme.of(this).extension<AppPalette>() ?? AppPalette.sky;
 }
