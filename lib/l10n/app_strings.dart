@@ -127,6 +127,7 @@ class AppStrings {
   String get ddayDecorateBubbleLeft => _t('왼쪽', 'Left', '左');
   String get ddayDecorateBubbleRight => _t('오른쪽', 'Right', '右');
   String get ddayDecorateBubbleDelete => _t('삭제', 'Delete', '削除');
+  String get ddayDecorateBubbleColor => _t('색', 'Color', '色');
   String get ddayDecorateBubbleDone => _t('완료', 'Done', '完了');
   String get ddayDecorateBubbleLimit => _t('말풍선은 ${TogetherBubble.maxCount}개까지 넣을 수 있어요', 'You can add up to ${TogetherBubble.maxCount} bubbles', '吹き出しは${TogetherBubble.maxCount}個まで追加できます');
   String get ddayDecorateCharScaleLabel => _t('캐릭터 크기', 'Character size', 'キャラクターサイズ');
@@ -848,12 +849,12 @@ class AppStrings {
       case 'yellow':
       case 'peach':
         return _t('파스텔 노랑', 'Pastel yellow', 'パステルイエロー');
+      case 'sky':
       case 'blue':
-        return _t('파스텔 하늘', 'Pastel blue', 'パステルブルー');
+        return _t('하늘', 'Sky', 'スカイ');
       case 'ivory':
         return _t('아이보리', 'Ivory', 'アイボリー');
       // Legacy ids.
-      case 'sky':
       case 'navy':
       case 'lavender':
         return themeName('black');

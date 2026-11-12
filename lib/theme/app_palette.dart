@@ -35,15 +35,16 @@ class AppPalette extends ThemeExtension<AppPalette> {
     settingsSoft: Color(0xFFF7F7F7),
   );
 
-  static const blue = AppPalette(
-    id: 'blue',
+  /// The original sky blue (as of 2026-11-10 17:00, commit f8737b2).
+  static const sky = AppPalette(
+    id: 'sky',
     name: '하늘',
-    accent: Color(0xFFA8C8EC),
-    accentSoft: Color(0xFFEEF5FC),
-    border: Color(0xFFCCDDF0),
-    windowBar: Color(0xFFD8E6F6),
-    settingsLine: Color(0xFFB0CCEC),
-    settingsSoft: Color(0xFFF4F8FD),
+    accent: Color(0xFF5B8DEF),
+    accentSoft: Color(0xFFD7E6FF),
+    border: Color(0xFFB8C0CE),
+    windowBar: Color(0xFFBFD4F5),
+    settingsLine: Color(0xFF7EB3E8),
+    settingsSoft: Color(0xFFE8F2FC),
   );
 
   static const green = AppPalette(
@@ -96,13 +97,14 @@ class AppPalette extends ThemeExtension<AppPalette> {
     green,
     pink,
     yellow,
-    blue,
+    sky,
     ivory,
   ];
 
   static AppPalette byId(String id) {
     switch (id) {
-      case 'sky':
+      case 'blue':
+        return sky;
       case 'navy':
       case 'lavender':
         return black;

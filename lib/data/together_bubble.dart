@@ -25,6 +25,7 @@ class TogetherBubble {
     this.rotation = 0,
     this.scale = 100,
     this.authorUid = '',
+    this.color = 0,
   });
 
   static const maxCount = 5;
@@ -48,6 +49,20 @@ class TogetherBubble {
   /// Who wrote the words, so reports and blocks reach the right person.
   final String authorUid;
 
+  /// This bubble's text color (ARGB). 0 = follow the room text color.
+  final int color;
+
+  /// Text color to draw with. A bubble without its own color follows the
+  /// room text color, unless that would vanish on the white bubble.
+  Color textColorOn(int roomTextColor) {
+    if (color != 0) return Color(color);
+    final room = Color(roomTextColor);
+    if (roomTextColor == 0 || room.a < 0.5 || room.computeLuminance() > 0.75) {
+      return TogetherBubbleLayout.ink;
+    }
+    return room;
+  }
+
   TogetherBubble copyWith({
     String? text,
     double? x,
@@ -56,6 +71,7 @@ class TogetherBubble {
     int? rotation,
     int? scale,
     String? authorUid,
+    int? color,
   }) {
     return TogetherBubble(
       id: id,
@@ -66,6 +82,7 @@ class TogetherBubble {
       rotation: rotation == null ? this.rotation : normDegrees(rotation),
       scale: scale == null ? this.scale : clampScale(scale),
       authorUid: authorUid ?? this.authorUid,
+      color: color ?? this.color,
     );
   }
 
@@ -85,6 +102,7 @@ class TogetherBubble {
         if (rotation != 0) 'rotation': rotation,
         if (scale != 100) 'scale': scale,
         if (authorUid.isNotEmpty) 'by': authorUid,
+        if (color != 0) 'color': color,
       };
 
   /// Single line, capped — the home widget draws it without wrapping.
@@ -119,6 +137,7 @@ class TogetherBubble {
           rotation: normDegrees((entry['rotation'] as num?)?.toInt() ?? 0),
           scale: clampScale((entry['scale'] as num?)?.toInt() ?? 100),
           authorUid: entry['by']?.toString() ?? fallbackAuthor,
+          color: (entry['color'] as num?)?.toInt() ?? 0,
         ),
       );
       if (out.length >= maxCount) break;
@@ -137,7 +156,8 @@ class TogetherBubble {
           l.y.round() != r.y.round() ||
           l.tail != r.tail ||
           l.rotation != r.rotation ||
-          l.scale != r.scale) {
+          l.scale != r.scale ||
+          l.color != r.color) {
         return false;
       }
     }
@@ -151,15 +171,21 @@ class TogetherBubble {
       if (a[i].id != b[i].id ||
           a[i].text != b[i].text ||
           a[i].tail != b[i].tail ||
-          a[i].scale != b[i].scale) {
+          a[i].scale != b[i].scale ||
+          a[i].color != b[i].color) {
         return false;
       }
     }
     return true;
   }
 
-  /// Compact form the Android widget renderer reads.
-  static List<Map<String, Object>> widgetJson(List<TogetherBubble> bubbles) => [
+  /// Compact form the Android widget renderer reads. 'c' is the resolved
+  /// text color as #AARRGGBB, so Android need not know the fallback rule.
+  static List<Map<String, Object>> widgetJson(
+    List<TogetherBubble> bubbles, {
+    required int roomTextColor,
+  }) =>
+      [
         for (final b in bubbles)
           {
             't': b.text,
@@ -168,6 +194,7 @@ class TogetherBubble {
             'd': b.tail == TogetherBubbleTail.right ? 'r' : 'l',
             'r': b.rotation,
             's': b.scale,
+            'c': '#${b.textColorOn(roomTextColor).toARGB32().toRadixString(16).padLeft(8, '0')}',
           },
       ];
 }
@@ -189,7 +216,8 @@ abstract final class TogetherBubbleLayout {
   static const ink = Color(0xFF2C3340);
 
   /// [font] is the room's decorate font, shared with the cheer text.
-  /// [color] follows the room text-color picker (defaults to [ink]).
+  /// [color] is the bubble's own color or the room's, see
+  /// [TogetherBubble.textColorOn] (defaults to [ink]).
   static TextStyle style({
     required bool isPixel,
     WidgetFont font = WidgetFont.basic,

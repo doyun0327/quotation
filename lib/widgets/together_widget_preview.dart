@@ -659,7 +659,8 @@ class TogetherWidgetPreview extends StatelessWidget {
                             tail: bubbles[i].bubble.tail,
                             isPixel: isPixel,
                             font: textFont,
-                            textColor: Color(textColor),
+                            textColor:
+                                bubbles[i].bubble.textColorOn(textColor),
                             scale: bubbles[i].bubble.scale,
                           ),
                         ),

@@ -5,6 +5,7 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/font_scale_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
+import 'package:quotation/widgets/category_pixel_icon.dart';
 import 'package:quotation/widgets/dashed_border.dart';
 
 class SettingsSection extends StatelessWidget {
@@ -355,7 +356,10 @@ class ThemeSwatchRow extends StatelessWidget {
                         ),
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: palette.accent,
+                            // Blue swatch matches the home quote dashed frame.
+                            color: palette.id == AppPalette.sky.id
+                                ? CategorySky.border(palette)
+                                : palette.accent,
                             borderRadius: BorderRadius.circular(
                               selectedId == palette.id ? 7 : 9,
                             ),

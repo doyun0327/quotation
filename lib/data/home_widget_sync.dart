@@ -804,7 +804,10 @@ abstract final class HomeWidgetSync {
         // Android loads this from flutter_assets. Empty keeps the style font.
         'textFont': ddayController.textFontForRoom(item.id).asset ?? '',
         'chars': TogetherCrowdLayout.widgetChars(placed),
-        'bubbles': TogetherBubble.widgetJson(_shownBubbles(item.id)),
+        'bubbles': TogetherBubble.widgetJson(
+          _shownBubbles(item.id),
+          roomTextColor: ddayController.textColorForRoom(item.id),
+        ),
       };
       iosCards.add((
         item: item,

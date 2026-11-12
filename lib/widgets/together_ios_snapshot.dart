@@ -151,7 +151,7 @@ class TogetherIosSnapshot extends StatelessWidget {
                     tail: bubble.tail,
                     isPixel: isPixel,
                     font: textFont,
-                    textColor: Color(textColor),
+                    textColor: bubble.textColorOn(textColor),
                     scale: bubble.scale,
                   ),
                 ),

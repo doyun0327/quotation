@@ -357,13 +357,7 @@ class SettingsScreen extends StatelessWidget {
                           ),
                           ThemeSwatchRow(
                             selectedId: palette.id,
-                            onSelected: (selected) {
-                              themeController.setPalette(selected);
-                              _toast(
-                                context,
-                                t.themeChanged(t.themeName(selected.id)),
-                              );
-                            },
+                            onSelected: themeController.setPalette,
                           ),
                         ],
                       ),

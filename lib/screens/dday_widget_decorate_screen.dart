@@ -999,6 +999,24 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     unawaited(_persist());
   }
 
+  Future<void> _pickBubbleColor(TogetherBubble bubble) async {
+    final t = AppStrings.current;
+    await showColorPaletteSheet(
+      context,
+      initialArgb: bubble.textColorOn(_textColor).toARGB32(),
+      allowTransparent: false,
+      title: t.ddayDecorateBubbleColor,
+      // Applied on each tap, like the room text color.
+      onChanged: (picked) {
+        if (!mounted) return;
+        setState(() {
+          _updateBubble(bubble.id, (b) => b.copyWith(color: picked));
+        });
+        unawaited(_persist());
+      },
+    );
+  }
+
   TogetherBubble? get _selectedBubble => _focus == _DecorateFocus.bubble
       ? _bubbles.where((b) => b.id == _bubbleId).firstOrNull
       : null;
@@ -1130,18 +1148,107 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       );
     }
 
+    // Small −/+ tap areas inside the size cell; the cell keeps the same
+    // width as the other actions.
     Widget step(IconData icon, String tooltip, VoidCallback? onTap) {
-      return IconButton(
-        onPressed: onTap,
-        tooltip: tooltip,
-        constraints: const BoxConstraints.tightFor(
-          width: 40,
-          height: _bubbleBarHeight,
+      return Expanded(
+        child: Tooltip(
+          message: tooltip,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(8),
+            child: SizedBox(
+              height: 26,
+              child: Icon(icon, size: 18, color: onTap == null ? faded : ink),
+            ),
+          ),
         ),
-        padding: EdgeInsets.zero,
-        icon: Icon(icon, size: 20, color: onTap == null ? faded : ink),
       );
     }
+
+    final sizeCell = Expanded(
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          height: _bubbleBarHeight,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  step(
+                    Icons.remove_rounded,
+                    t.ddayDecorateBubbleSmaller,
+                    bubble.scale <= TogetherBubble.scaleMin
+                        ? null
+                        : () => _stepBubbleScale(
+                              bubble.id,
+                              -TogetherBubble.scaleStep,
+                            ),
+                  ),
+                  step(
+                    Icons.add_rounded,
+                    t.ddayDecorateBubbleLarger,
+                    bubble.scale >= TogetherBubble.scaleMax
+                        ? null
+                        : () => _stepBubbleScale(
+                              bubble.id,
+                              TogetherBubble.scaleStep,
+                            ),
+                  ),
+                ],
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  '${bubble.scale}%',
+                  maxLines: 1,
+                  style: numberStyle.copyWith(fontSize: 11),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final colorCell = Expanded(
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: () => _pickBubbleColor(bubble),
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            height: _bubbleBarHeight,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    color: bubble.textColorOn(_textColor),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: faded),
+                  ),
+                ),
+                const SizedBox(height: 3),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    t.ddayDecorateBubbleColor,
+                    maxLines: 1,
+                    style: numberStyle.copyWith(fontSize: 11),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -1171,42 +1278,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
               const Color(0xFFE53935),
             ),
             const SizedBox(width: 6),
-            Material(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  step(
-                    Icons.remove_rounded,
-                    t.ddayDecorateBubbleSmaller,
-                    bubble.scale <= TogetherBubble.scaleMin
-                        ? null
-                        : () => _stepBubbleScale(
-                              bubble.id,
-                              -TogetherBubble.scaleStep,
-                            ),
-                  ),
-                  SizedBox(
-                    width: 42,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text('${bubble.scale}%', style: numberStyle),
-                    ),
-                  ),
-                  step(
-                    Icons.add_rounded,
-                    t.ddayDecorateBubbleLarger,
-                    bubble.scale >= TogetherBubble.scaleMax
-                        ? null
-                        : () => _stepBubbleScale(
-                              bubble.id,
-                              TogetherBubble.scaleStep,
-                            ),
-                  ),
-                ],
-              ),
-            ),
+            sizeCell,
+            const SizedBox(width: 6),
+            colorCell,
           ],
         ),
       ),

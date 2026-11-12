@@ -456,6 +456,11 @@ object DdayWidgetVisuals {
     for (i in 0 until bubbles.length()) {
       val obj = bubbles.optJSONObject(i) ?: continue
       val text = obj.optString("t").trim()
+      // Each bubble's own text color (resolved in Dart); older data has none.
+      textPaint.color =
+          obj.optString("c").takeIf { it.isNotBlank() }?.let {
+            runCatching { Color.parseColor(it) }.getOrNull()
+          } ?: glyphColor
       // A blank bubble is sized from one space, like TogetherBubbleLayout.size.
       val boxW = textPaint.measureText(text.ifEmpty { " " }) + BUBBLE_PAD_X_DP * 2f * density
       val boxH = lineH + (BUBBLE_PAD_Y_DP * 2f + BUBBLE_TAIL_H_DP) * density
