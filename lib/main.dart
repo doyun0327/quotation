@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quotation/data/app_check.dart';
 import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
 import 'package:quotation/data/terms_consent.dart';
@@ -64,6 +65,7 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    await activateAppCheck();
     FirebaseMessaging.onBackgroundMessage(togetherFcmBackground);
   } catch (e) {
     debugPrint('Firebase.initializeApp: $e');
@@ -92,6 +94,13 @@ Future<void> main() async {
   visualStyleController.addListener(() {
     unawaited(HomeWidgetSync.syncDday());
     unawaited(HomeWidgetSync.syncFromHome());
+  });
+  // Server-sent notices (iPhone) are written in this language.
+  var noticeLanguage = localeController.language;
+  localeController.addListener(() {
+    if (localeController.language == noticeLanguage) return;
+    noticeLanguage = localeController.language;
+    unawaited(UserProfileSync.syncLocale());
   });
 
   _widgetLaunchRoom = await TogetherFcm.widgetLaunchRoom();

@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +19,8 @@ class BlockedUsersController extends ChangeNotifier {
   bool _ready = false;
 
   bool get ready => _ready;
+
+  List<String> get blockedUids => _uids.toList();
 
   bool isBlocked(String? uid) {
     if (uid == null || uid.isEmpty) return false;
@@ -135,6 +140,23 @@ class BlockedUsersController extends ChangeNotifier {
     await prefs.setStringList(_uidKey, _uids.toList());
     await prefs.setStringList(_bubbleKeyName, _hiddenBubbles.toList());
     await prefs.setString(_cheerKey, jsonEncode(_hiddenCheers));
+    await syncToCloud();
+  }
+
+  /// Copies the blocked uids to my private `users/{uid}` doc, so the push
+  /// function stops sending me notices about them (iPhone alerts are built
+  /// on the server, where this device's list is not visible).
+  Future<void> syncToCloud() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || !CloudConsent.accepted) return;
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).set(
+        {'blockedUids': _uids.toList()},
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('BlockedUsersController.syncToCloud: $e');
+    }
   }
 }
 

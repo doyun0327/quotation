@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 함께 · medium (iOS systemMedium). Placed 4×1: one Galaxy row already
-     fits the 2.14:1 card at full width, so the long-press frame hugs the
-     card. Resizable both ways; the card stays 2.14:1 and fits the cell
-     (fitCenter), redrawn on every resize (onAppWidgetOptionsChanged).
-     Cells: 70 × n − 30 dp, so 1 row = 40dp, 2 columns = 110dp. -->
+<!-- 함께 · medium (iOS systemMedium). Placed 4×2 so the 2.14:1 card fills
+     the full width; a 4×1 row is too short on many grids, which shrank the
+     card to fit the height. Resizable both ways; the card stays 2.14:1 and
+     fits the cell (fitCenter), redrawn on every resize
+     (onAppWidgetOptionsChanged).
+     Cells: 70 × n − 30 dp, so 1 row = 40dp, 2 rows = 110dp. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/dday_widget_description"
     android:initialLayout="@layout/dday_widget"
     android:minWidth="300dp"
-    android:minHeight="40dp"
+    android:minHeight="110dp"
     android:minResizeWidth="110dp"
     android:minResizeHeight="40dp"
     android:previewLayout="@layout/dday_widget_preview"
     android:resizeMode="horizontal|vertical"
-    android:targetCellHeight="1"
+    android:targetCellHeight="2"
     android:targetCellWidth="4"
     android:updatePeriodMillis="3600000"
     android:widgetCategory="home_screen" />

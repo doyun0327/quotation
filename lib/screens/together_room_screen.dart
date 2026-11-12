@@ -5,6 +5,7 @@ import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
+import 'package:quotation/data/together_editing.dart';
 import 'package:quotation/data/together_guide.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/widget_album_background.dart';
@@ -80,13 +81,51 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
     await _loadGuide();
   }
 
+  bool _openingDecorate = false;
+
+  /// One person decorates at a time: take the room's edit lock first, or
+  /// say who has it. A room with no friends yet needs no lock.
   Future<void> _openDecorate(String roomId) async {
+    if (_openingDecorate) return;
+    final room = _room;
+    if (room != null && room.friends.isNotEmpty) {
+      final known = togetherEditing.lockHolder(roomId);
+      if (known != null) {
+        _showLocked(_holderName(known.name));
+        return;
+      }
+      _openingDecorate = true;
+      final claim = await TogetherEditingPresence.claimLock(
+        roomId,
+        myName: authController.nickname?.trim() ?? '',
+      );
+      _openingDecorate = false;
+      if (!mounted) return;
+      if (!claim.ok) {
+        _showLocked(_holderName(claim.holderName));
+        return;
+      }
+    }
+    if (!mounted) return;
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
         builder: (_) => DdayWidgetDecorateScreen(roomId: roomId),
       ),
     );
     await _loadGuide();
+  }
+
+  String _holderName(String name) {
+    final trimmed = name.trim();
+    return trimmed.isEmpty ? AppStrings.current.togetherFriendFallbackName : trimmed;
+  }
+
+  void _showLocked(String name) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(AppStrings.current.decorateLockedBy(name))),
+      );
   }
 
   @override
@@ -519,6 +558,8 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             friendY: friendY,
             crowd: [
               for (final slot in placed)
+                // Blocked friends are not drawn on my widget.
+                if (!blockedUsersController.isBlocked(slot.uid))
                 TogetherPreviewSprite(
                   keyId: slot.uid,
                   assetPath: slot.uid == authController.viewerUid

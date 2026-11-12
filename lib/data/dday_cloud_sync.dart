@@ -42,6 +42,10 @@ class DdayCloudSync {
   static final Map<String, StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>>
       _roomSubs = {};
   static final Map<String, String> _seenLayoutNotify = {};
+
+  /// Last widget-edit notice per `room|friend`, for the one-per-minute limit.
+  static final Map<String, DateTime> _lastNoticeAt = {};
+  static const _noticeGap = Duration(minutes: 1);
   static bool _started = false;
   static bool _roomsHooked = false;
 
@@ -90,9 +94,9 @@ class DdayCloudSync {
           final data = snap.data();
           if (data == null || !_started) return;
           togetherEditing.applyDoc(snap.id, data);
-          // Someone opening/closing the decorator only touches `editing`.
+          // Someone opening/closing the decorator only touches `editLock`.
           // Skip the layout apply and the (heavy) widget redraw for that.
-          final sig = (Map.of(data)..remove('editing')).toString();
+          final sig = (Map.of(data)..remove('editLock')).toString();
           if (!first && sig == _layoutSig[id]) return;
           _layoutSig[id] = sig;
           final notify = !first;
@@ -119,7 +123,7 @@ class DdayCloudSync {
     }
   }
 
-  /// Last membership doc per room without `editing`, to spot presence-only
+  /// Last membership doc per room without `editLock`, to spot presence-only
   /// snapshots.
   static final Map<String, String> _layoutSig = {};
 
@@ -427,7 +431,10 @@ class DdayCloudSync {
         (data['updatedBy'] ?? data['layoutUpdatedBy'])?.toString() ?? '';
     // Our own write is already in local dp. Applying it again would scale it
     // a second time when this phone's canvas differs from the saved one.
-    if (actor.isEmpty || actor != myUid) {
+    // A blocked friend's edit is not applied here either; the room keeps it
+    // and it reaches this phone only through someone else's later save.
+    final blockedActor = blockedUsersController.isBlocked(actor);
+    if ((actor.isEmpty || actor != myUid) && !blockedActor) {
       await _applySharedLayout(ddayId, data, myUid == hostUid);
     }
     await _rememberCrowd(ddayId, myUid);
@@ -435,9 +442,22 @@ class DdayCloudSync {
     final stamp = _layoutStamp(data['layoutNotifyAt']);
     final unseen = stamp.isNotEmpty && _seenLayoutNotify[ddayId] != stamp;
     if (stamp.isNotEmpty) _seenLayoutNotify[ddayId] = stamp;
-    if (!notifyRemote || !unseen || actor.isEmpty || actor == myUid) {
+    if (!notifyRemote ||
+        !unseen ||
+        actor.isEmpty ||
+        actor == myUid ||
+        blockedActor) {
       return null;
     }
+    // Same limit as the push function: one notice per friend per room per
+    // minute. The layout above is still applied, so the widget keeps up.
+    final throttleKey = '$ddayId|$actor';
+    final now = DateTime.now();
+    final lastNotice = _lastNoticeAt[throttleKey];
+    if (lastNotice != null && now.difference(lastNotice) < _noticeGap) {
+      return null;
+    }
+    _lastNoticeAt[throttleKey] = now;
     final local = ddayController.items.where((e) => e.id == ddayId);
     final roomTitle = local.isEmpty ? '' : local.first.title;
     var actorName = (data['layoutUpdatedByName'] as String?)?.trim() ?? '';

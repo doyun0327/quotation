@@ -25,7 +25,6 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
-import 'package:quotation/widgets/editing_dots_overlay.dart';
 import 'package:quotation/widgets/ios_widget_guide.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
 import 'package:quotation/widgets/together_bubble_view.dart';
@@ -94,6 +93,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   bool _editingBubble = false;
   Timer? _presenceBeat;
   AppLifecycleListener? _presenceLife;
+
+  /// Last touch or keystroke; the editor closes after [_idleLimit] without
+  /// one so a forgotten screen does not keep friends locked out.
+  DateTime _lastActivity = DateTime.now();
+  Timer? _idleCheck;
+  bool _closing = false;
+  static const _idleLimit = Duration(minutes: 3);
   bool _savingCheer = false;
   final bool _loggingIn = false;
 
@@ -189,7 +195,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _startPresence();
   }
 
-  /// Friends see typing dots over my character while this screen is open.
+  /// Holds the room edit lock while this screen is open.
   /// Only rooms with friends, so a solo room never writes.
   void _startPresence() {
     if (!mounted || (_room?.friends.isEmpty ?? true)) return;
@@ -206,17 +212,67 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   void _beginPresence() {
     _presenceBeat?.cancel();
-    unawaited(TogetherEditingPresence.write(widget.roomId, editing: true));
+    _lastActivity = DateTime.now();
+    unawaited(_holdLock());
     _presenceBeat = Timer.periodic(TogetherEditingPresence.heartbeat, (_) {
-      unawaited(TogetherEditingPresence.write(widget.roomId, editing: true));
+      unawaited(_holdLock());
+    });
+    _idleCheck?.cancel();
+    _idleCheck = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (DateTime.now().difference(_lastActivity) >= _idleLimit) {
+        unawaited(_closeEditor(AppStrings.current.decorateIdleClosed));
+      }
     });
   }
 
+  /// Keeps the room's edit lock alive. If a friend got the lock meanwhile
+  /// (this phone was away longer than its lifetime), this editor closes
+  /// instead of overwriting their work.
+  Future<void> _holdLock() async {
+    final claim = await TogetherEditingPresence.claimLock(
+      widget.roomId,
+      myName: authController.nickname?.trim() ?? '',
+    );
+    if (!mounted || _closing) return;
+    if (!claim.ok) {
+      final name = claim.holderName.trim().isEmpty
+          ? AppStrings.current.togetherFriendFallbackName
+          : claim.holderName.trim();
+      await _closeEditor(AppStrings.current.decorateLockTaken(name));
+    }
+  }
+
   void _endPresence() {
+    _idleCheck?.cancel();
+    _idleCheck = null;
+    // The lock was taken before this screen opened, so free it even when
+    // the screen closes before the presence heartbeat started.
+    if (_room?.friends.isNotEmpty ?? false) {
+      unawaited(TogetherEditingPresence.releaseLock(widget.roomId));
+    }
     if (_presenceBeat == null) return;
     _presenceBeat!.cancel();
     _presenceBeat = null;
-    unawaited(TogetherEditingPresence.write(widget.roomId, editing: false));
+  }
+
+  void _touch() => _lastActivity = DateTime.now();
+
+  /// Leaves the editor with [message]. What was changed is already saved on
+  /// this phone; it reaches friends only when they press Apply.
+  Future<void> _closeEditor(String message) async {
+    if (_closing || !mounted) return;
+    _closing = true;
+    _endPresence();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    try {
+      await _persist();
+    } catch (_) {}
+    if (!mounted) return;
+    await navigator.maybePop();
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _syncFromController() {
@@ -289,6 +345,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   void _onCheerEdited() {
     if (_applyingRemote) return;
+    _touch();
     final text = _cheerCtrl.text;
     if (_cheerDraft.value == text) return;
     _cheerDraft.value = text;
@@ -682,6 +739,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final myUid = authController.viewerUid;
     return [
       for (final person in _placed)
+        // Blocked friends are not drawn; their slot stays in the layout.
+        if (!blockedUsersController.isBlocked(person.uid))
         TogetherPreviewSprite(
           keyId: person.uid,
           assetPath: person.uid == myUid
@@ -1414,7 +1473,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       ),
       child: DefaultTextStyle.merge(
         style: const TextStyle(fontFamily: 'Galmuri'),
-        child: Scaffold(
+        // Any touch counts as activity for the 3-minute idle close.
+        child: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (_) => _touch(),
+          child: Scaffold(
       backgroundColor: const Color(0xFFF3F7FD),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF3F7FD),
@@ -1441,7 +1504,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           localeController,
           authController,
           membershipController,
-          togetherEditing,
         ]),
         builder: (context, _) {
           final isPremium = membershipController.hasPremiumContent;
@@ -1598,12 +1660,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                           myIds: authController.myIds,
                           myCharacterId: _meChar.id,
                         ))
+                          if (!blockedUsersController.isBlocked(friend.uid))
                           _RoomMember(
                             friendUid: friend.uid,
-                            editing: togetherEditing.isEditing(
-                              widget.roomId,
-                              friend.uid,
-                            ),
                             assetPath: AppCharacter.byId(
                               friend.characterId,
                             ).assetPath,
@@ -2018,6 +2077,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           );
         },
       ),
+          ),
         ),
       ),
     );
@@ -2036,14 +2096,10 @@ class _RoomMember {
     required this.nickname,
     this.isMe = false,
     this.friendUid,
-    this.editing = false,
   });
 
   final bool isMe;
   final String? friendUid;
-
-  /// This friend has the decorator open right now.
-  final bool editing;
   final String assetPath;
   final String nickname;
 }
@@ -2151,18 +2207,15 @@ class _MemberChip extends StatelessWidget {
         ),
         child: Column(
           children: [
-            EditingDotsOverlay(
-              editing: member.editing,
-              child: Image.asset(
-                member.assetPath,
-                height: 44,
-                fit: BoxFit.contain,
-                cacheHeight:
-                    (44 * MediaQuery.devicePixelRatioOf(context)).round(),
-                gaplessPlayback: true,
-                filterQuality: FilterQuality.none,
-                isAntiAlias: false,
-              ),
+            Image.asset(
+              member.assetPath,
+              height: 44,
+              fit: BoxFit.contain,
+              cacheHeight:
+                  (44 * MediaQuery.devicePixelRatioOf(context)).round(),
+              gaplessPlayback: true,
+              filterQuality: FilterQuality.none,
+              isAntiAlias: false,
             ),
             const SizedBox(height: 4),
             Text(

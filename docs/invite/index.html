@@ -39,22 +39,24 @@
       background: #f3f7fd;
       border-radius: 12px;
     }
-    a.btn {
-      display: inline-block;
+    /* Every action looks the same: one full-width pill per row. */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       margin-top: 12px;
+    }
+    a.btn {
+      display: block;
       padding: 12px 20px;
       border-radius: 999px;
       background: #5b8def;
       color: #fff;
       text-decoration: none;
       font-weight: 700;
+      font-size: 1rem;
     }
-    a.btn.sub {
-      background: #fff;
-      color: #5b8def;
-      border: 1.5px solid #5b8def;
-      padding: 10px 18px;
-    }
+    a.btn:focus-visible { outline: 3px solid #2c3340; outline-offset: 2px; }
     .hidden { display: none !important; }
     .note { font-size: .82rem; margin-top: 14px; }
   </style>
@@ -124,11 +126,9 @@
       }
 
       // iPhone without the app: no automatic App Store jump (that would lose
-      // the code); one tap on the highlighted button copies it and goes.
+      // the code); one tap on the App Store button copies it and goes.
       function promptStoreIOS() {
-        var store = document.getElementById('store');
         var note = document.getElementById('install-note');
-        if (store) store.className = 'btn';
         if (note) note.classList.remove('hidden');
       }
 
@@ -207,20 +207,22 @@
         copy.addEventListener('click', function (e) { e.preventDefault(); copyCode(copy); });
         if (!code) copy.classList.add('hidden');
 
-        var store = document.getElementById('store');
-        if (isAndroid) {
-          store.href = PLAY_URL;
-          store.textContent = 'Play 스토어에서 받기';
-        } else if (isIOS && APP_STORE_ID) {
-          store.href = APP_STORE_URL;
-          store.textContent = 'App Store에서 받기';
-          store.addEventListener('click', function (e) {
+        // Both stores are always offered; the link someone forwards may be
+        // opened on either kind of phone.
+        var play = document.getElementById('play');
+        play.href = PLAY_URL;
+
+        var appStore = document.getElementById('appstore');
+        if (APP_STORE_ID) {
+          appStore.href = APP_STORE_URL;
+          appStore.addEventListener('click', function (e) {
             e.preventDefault();
+            // iPhone: carry the code across the install via the clipboard.
             copyForInstall();
             location.href = APP_STORE_URL;
           });
         } else {
-          store.classList.add('hidden');
+          appStore.classList.add('hidden');
         }
 
         if (code) setTimeout(function () { openApp(false); }, 400);
@@ -234,9 +236,12 @@
     <p>우리 같이 위젯 꾸밀래? 💙</p>
     <p>앱이 설치되어 있으면 바로 열려요. 코드는 앱의 「초대 코드로 참여」에도 입력할 수 있어요.</p>
     <code id="code">———</code>
-    <div><a class="btn" id="open" href="#">앱에서 열기</a></div>
-    <div><a class="btn sub" id="copy" href="#">코드 복사</a></div>
-    <div><a class="btn sub" id="store" href="#">앱 받기</a></div>
+    <div class="actions">
+      <a class="btn" id="copy" href="#">코드 복사</a>
+      <a class="btn" id="open" href="#">앱에서 열기</a>
+      <a class="btn" id="play" href="#">Play 스토어에서 받기</a>
+      <a class="btn" id="appstore" href="#">App Store에서 받기</a>
+    </div>
     <p class="note hidden" id="install-note">앱이 없네요! 위 버튼으로 설치하면 처음 열 때 초대가 바로 이어져요.</p>
     <p class="note">앱이 없다면 먼저 설치한 뒤, 앱의 「초대 코드로 참여」에 위 코드를 입력해 주세요.</p>
   </div>

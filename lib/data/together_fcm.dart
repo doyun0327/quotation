@@ -10,6 +10,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:quotation/data/app_check.dart';
+import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
@@ -26,6 +28,9 @@ import 'package:quotation/screens/together_room_screen.dart';
 Future<void> togetherFcmBackground(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Separate isolate: without its own App Check token, the room sync below
+  // would be refused once App Check is enforced.
+  await activateAppCheck();
   final applied = await _applyTogetherMessage(message);
   if (!applied || _isSilentRefresh(message)) return;
   // iOS shows the APNs alert itself; a local notice here would duplicate it.
@@ -53,6 +58,9 @@ Future<bool> _applyTogetherMessage(RemoteMessage message) async {
   final type = message.data['type'];
   if (type != 'together_widget' && type != 'together_refresh') return false;
   try {
+    // Background isolate: the block list must be loaded before the room sync
+    // decides whose edits to apply.
+    if (!blockedUsersController.ready) await blockedUsersController.load();
     await ddayController.load();
     await DdayCloudSync.pullMemberships();
     await HomeWidgetSync.syncDday();
@@ -178,6 +186,12 @@ Future<void> _clearRoomNotices(String roomId, {String? roomTitle}) async {
 
 Future<void> _showTogetherNotice(RemoteMessage message) async {
   if (message.data['type'] != 'together_widget') return;
+  // No notice about someone I blocked (the server skips them too once my
+  // block list has synced; this covers the time before that).
+  if (!blockedUsersController.ready) await blockedUsersController.load();
+  if (blockedUsersController.isBlocked(message.data['actorUid']?.toString())) {
+    return;
+  }
   final plugin = FlutterLocalNotificationsPlugin();
   await plugin.initialize(settings: _notificationInit);
   final android = plugin.resolvePlatformSpecificImplementation<

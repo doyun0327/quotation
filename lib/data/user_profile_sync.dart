@@ -3,15 +3,35 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/character_controller.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Mirrors local profile into `users/{uid}` for invite/membership.
+/// Mirrors the local profile to Firestore.
+///
+/// `users/{uid}` is private (email, push tokens): only its owner can read it.
+/// `profiles/{uid}` holds what friends may see (nickname, character), so a
+/// friend's name can be looked up without exposing anyone's email.
 class UserProfileSync {
   UserProfileSync._();
 
   static final _db = FirebaseFirestore.instance;
+
+  /// Public part of my profile. Field names must match firestore.rules.
+  static Future<void> _writePublicProfile(String uid, {String? name}) async {
+    // The rules cap it at 40; a long Google account name must not fail the write.
+    final shown = (name != null && name.length > 40) ? name.substring(0, 40) : name;
+    await _db.collection('profiles').doc(uid).set(
+      {
+        'characterId': characterController.character.id,
+        if (shown != null && shown.isNotEmpty) 'displayName': shown,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+  }
 
   /// Nickname saved in the app. Android Google sign-in often has no account
   /// name, so Firebase displayName stays empty while this value is set.
@@ -39,12 +59,36 @@ class UserProfileSync {
           'email': user.email,
           // Never write null: that wiped a saved nickname on Android.
           if (name != null && name.isNotEmpty) 'displayName': name,
+          // Read by the push function: notice language and whom to skip.
+          'locale': localeController.language.id,
+          if (blockedUsersController.ready)
+            'blockedUids': blockedUsersController.blockedUids,
           'updatedAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
       );
     } catch (e) {
       debugPrint('UserProfileSync.upsert: $e');
+    }
+    try {
+      await _writePublicProfile(user.uid, name: name);
+    } catch (e) {
+      debugPrint('UserProfileSync.upsert profile: $e');
+    }
+  }
+
+  /// App language for push notices sent by the server (iPhone alert text).
+  static Future<void> syncLocale() async {
+    if (!CloudConsent.accepted) return;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      await _db.collection('users').doc(user.uid).set(
+        {'locale': localeController.language.id},
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('UserProfileSync.syncLocale: $e');
     }
   }
 
@@ -172,6 +216,7 @@ class UserProfileSync {
         },
         SetOptions(merge: true),
       );
+      await _writePublicProfile(user.uid);
       // Rooms keep their own character (picked in the widget decorator);
       // the main-screen character is only the default for new rooms.
     } catch (e) {
@@ -253,9 +298,21 @@ class UserProfileSync {
     return changed ? next : null;
   }
 
+  /// Nickname and character of any user (the public `profiles` doc).
+  /// Anyone who has not opened an updated app yet has none: callers fall
+  /// back to the names stored on the room.
+  ///
+  /// Never throws: a profile that cannot be read (rules not deployed yet,
+  /// offline) must not fail invite acceptance, which used to show
+  /// "Could not accept invite" for exactly that.
   static Future<Map<String, dynamic>?> fetchUser(String uid) async {
-    final snap = await _db.collection('users').doc(uid).get();
-    return snap.data();
+    try {
+      final snap = await _db.collection('profiles').doc(uid).get();
+      return snap.data();
+    } catch (e) {
+      debugPrint('UserProfileSync.fetchUser $uid: $e');
+      return null;
+    }
   }
 
   /// Removes this account's profile, hosted rooms, invites, and guest membership.
@@ -364,6 +421,7 @@ class UserProfileSync {
 
     await step('profile', () async {
       await db.collection('users').doc(uid).delete();
+      await db.collection('profiles').doc(uid).delete();
     });
 
     final error = failure;

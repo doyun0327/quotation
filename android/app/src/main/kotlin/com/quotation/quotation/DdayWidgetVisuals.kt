@@ -425,7 +425,9 @@ object DdayWidgetVisuals {
   ) {
     if (bubbles == null || bubbles.length() == 0) return
     // Room font picked in the app, same as the cheer label (buildLabelBitmap).
-    // Bubbles always use a clean face so they do not look pixelated.
+    // "Basic" (no font asset) is Galmuri, as in Flutter TogetherBubbleLayout.style;
+    // Typeface.DEFAULT was the phone's system font and did not match the preview.
+    // Anti-aliased so the glyphs stay smooth rather than pixelated.
     // Glyph color follows the decorate text-color picker.
     val custom = if (fontAsset.isBlank()) null else assetTypeface(context, fontAsset)
     val glyphColor = if (textColorArgb == 0) BUBBLE_INK else textColorArgb
@@ -433,8 +435,7 @@ object DdayWidgetVisuals {
         TextPaint().apply {
           color = glyphColor
           textSize = BUBBLE_FONT_DP * density
-          typeface =
-              custom ?: Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+          typeface = custom ?: pixelTypeface(context)
           isAntiAlias = true
         }
     val metrics = textPaint.fontMetrics

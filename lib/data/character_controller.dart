@@ -145,8 +145,9 @@ class AppCharacter {
       group: CharacterGroup.male,
     ),
     // character(26).png was removed, so m28 is gone; a saved m28 pick falls
-    // back to the default character in [byId].
-    for (var i = 16; i <= 30; i++)
+    // back to the default character in [byId]. character(31)–(36) are
+    // m33–m38 (Android maps m18+ to character(n−2) on its own).
+    for (var i = 16; i <= 36; i++)
       if (i != 26)
         AppCharacter(
           id: 'm${i + 2}',

@@ -5,55 +5,67 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:quotation/data/cloud_consent.dart';
 
-/// Who has a room's widget decorator open right now.
+/// Who holds a room's widget-decorator edit lock right now.
 ///
-/// Kept as `editing.{uid}` timestamps on the room's membership document,
-/// which every member already listens to, so showing it costs no extra
-/// listener or query: one write on open, one on close, and a heartbeat while
-/// the screen stays open. A stamp older than [ttl] counts as gone, which
-/// covers an app that was killed before it could clear its own.
+/// Stored as `editLock` on the room membership document. Members already
+/// listen to that doc, so showing who is locked costs no extra query. A
+/// stamp older than [ttl] counts as gone, which covers an app that was
+/// killed before it could clear its own.
 class TogetherEditingPresence extends ChangeNotifier {
   static const ttl = Duration(seconds: 90);
   static const heartbeat = Duration(seconds: 60);
 
-  final Map<String, Map<String, DateTime>> _byRoom = {};
+  final Map<String, ({String uid, String name, DateTime at})> _locks = {};
   Timer? _expiry;
 
-  /// Never true for me — only friends' editing is shown.
-  bool isEditing(String roomId, String uid) {
-    if (uid == FirebaseAuth.instance.currentUser?.uid) return false;
-    final at = _byRoom[roomId]?[uid];
-    return at != null && _fresh(at);
+  /// Someone else holding [roomId]'s edit lock right now, if anyone.
+  ({String uid, String name})? lockHolder(String roomId) {
+    final lock = _locks[roomId];
+    if (lock == null || !_fresh(lock.at)) return null;
+    if (lock.uid == FirebaseAuth.instance.currentUser?.uid) return null;
+    return (uid: lock.uid, name: lock.name);
   }
 
   static bool _fresh(DateTime at) => DateTime.now().difference(at) < ttl;
 
   /// Called by the room watch with each membership snapshot.
   void applyDoc(String roomId, Map<String, dynamic> data) {
-    final next = <String, DateTime>{};
-    final raw = data['editing'];
-    if (raw is Map) {
-      for (final entry in raw.entries) {
-        final value = entry.value;
-        if (value is Timestamp) next[entry.key.toString()] = value.toDate();
-      }
+    final lock = _parseLock(data['editLock']);
+    final prev = _locks[roomId];
+    final same = prev?.uid == lock?.uid &&
+        prev?.name == lock?.name &&
+        prev?.at == lock?.at;
+    if (same) return;
+    if (lock == null) {
+      _locks.remove(roomId);
+    } else {
+      _locks[roomId] = lock;
     }
-    if (mapEquals(_byRoom[roomId], next)) return;
-    _byRoom[roomId] = next;
     _scheduleExpiry();
     notifyListeners();
   }
 
-  /// Redraw when the oldest live stamp runs out, so stale dots clear.
+  static ({String uid, String name, DateTime at})? _parseLock(Object? raw) {
+    if (raw is! Map) return null;
+    final uid = raw['uid']?.toString() ?? '';
+    if (uid.isEmpty) return null;
+    final at = raw['at'];
+    return (
+      uid: uid,
+      name: raw['name']?.toString().trim() ?? '',
+      // A just-written lock has no server time yet: it is fresh.
+      at: at is Timestamp ? at.toDate() : DateTime.now(),
+    );
+  }
+
+  /// Redraw when the oldest live lock runs out, so stale holders clear.
   void _scheduleExpiry() {
     _expiry?.cancel();
     DateTime? soonest;
-    for (final room in _byRoom.values) {
-      for (final at in room.values) {
-        if (!_fresh(at)) continue;
-        final end = at.add(ttl);
-        if (soonest == null || end.isBefore(soonest)) soonest = end;
-      }
+    for (final lock in _locks.values) {
+      if (!_fresh(lock.at)) continue;
+      final end = lock.at.add(ttl);
+      if (soonest == null || end.isBefore(soonest)) soonest = end;
     }
     if (soonest == null) return;
     _expiry = Timer(
@@ -65,21 +77,60 @@ class TogetherEditingPresence extends ChangeNotifier {
     );
   }
 
-  /// Marks me as editing [roomId] (or clears it). Best effort: a failed
-  /// write only means friends do not see the dots.
-  static Future<void> write(String roomId, {required bool editing}) async {
+  /// Takes (or renews) [roomId]'s edit lock so only one person decorates at
+  /// a time. Returns who holds it instead when someone else's lock is still
+  /// fresh ([ttl]); an expired lock (app killed, phone offline) is taken over.
+  ///
+  /// The read and the write happen in one transaction, so two friends opening
+  /// the decorator together cannot both get it. When the lock cannot be
+  /// checked at all (signed out, offline), editing is allowed rather than
+  /// stranding the user.
+  static Future<({bool ok, String holderName})> claimLock(
+    String roomId, {
+    required String myName,
+  }) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null || !CloudConsent.accepted) return;
+    if (uid == null || !CloudConsent.accepted) return (ok: true, holderName: '');
+    final ref =
+        FirebaseFirestore.instance.collection('dday_memberships').doc(roomId);
     try {
-      await FirebaseFirestore.instance
-          .collection('dday_memberships')
-          .doc(roomId)
-          .update({
-        'editing.$uid':
-            editing ? FieldValue.serverTimestamp() : FieldValue.delete(),
+      return await FirebaseFirestore.instance.runTransaction((tx) async {
+        final snap = await tx.get(ref);
+        if (!snap.exists) return (ok: true, holderName: '');
+        final lock = _parseLock(snap.data()?['editLock']);
+        if (lock != null && lock.uid != uid && _fresh(lock.at)) {
+          return (ok: false, holderName: lock.name);
+        }
+        tx.update(ref, {
+          'editLock': {
+            'uid': uid,
+            'name': myName,
+            'at': FieldValue.serverTimestamp(),
+          },
+        });
+        return (ok: true, holderName: '');
       });
     } catch (e) {
-      debugPrint('TogetherEditingPresence.write: $e');
+      debugPrint('TogetherEditingPresence.claimLock: $e');
+      return (ok: true, holderName: '');
+    }
+  }
+
+  /// Frees [roomId]'s edit lock if it is still mine.
+  static Future<void> releaseLock(String roomId) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || !CloudConsent.accepted) return;
+    final ref =
+        FirebaseFirestore.instance.collection('dday_memberships').doc(roomId);
+    try {
+      await FirebaseFirestore.instance.runTransaction((tx) async {
+        final snap = await tx.get(ref);
+        final lock = _parseLock(snap.data()?['editLock']);
+        if (lock?.uid != uid) return;
+        tx.update(ref, {'editLock': FieldValue.delete()});
+      });
+    } catch (e) {
+      debugPrint('TogetherEditingPresence.releaseLock: $e');
     }
   }
 }

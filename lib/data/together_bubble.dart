@@ -223,14 +223,16 @@ abstract final class TogetherBubbleLayout {
     WidgetFont font = WidgetFont.basic,
     Color color = ink,
   }) {
-    final family = font.family;
+    // "Basic" is always Galmuri in bubbles, named explicitly. Leaving the
+    // family empty let the decorator inherit Galmuri from its DefaultTextStyle
+    // while the Galaxy widget drew the phone's system font, so the two
+    // differed. Android's drawBubbles uses the same Galmuri file.
     // Bundled fonts and Galmuri ship one weight; a heavier one would fake
     // bold here while Android draws the plain face.
-    final plain = family != null || isPixel;
     return TextStyle(
-      fontFamily: family ?? (isPixel ? 'Galmuri' : null),
+      fontFamily: font.family ?? 'Galmuri',
       fontSize: fontSize,
-      fontWeight: plain ? FontWeight.w400 : FontWeight.w700,
+      fontWeight: FontWeight.w400,
       height: lineHeight,
       color: color,
     );
@@ -238,7 +240,8 @@ abstract final class TogetherBubbleLayout {
 
   /// Whole bubble including the tail.
   ///
-  /// Bubbles always use the clean face so decorate, iOS, and Android match.
+  /// Measured with the same face on every renderer (see [style]), so
+  /// decorate, iOS, and Android match.
   static Size size(
     String text, {
     required bool isPixel,

@@ -728,6 +728,13 @@ abstract final class HomeWidgetSync {
     }
   }
 
+  /// Blocked friends are not drawn on my widget. Their slot stays in the
+  /// shared layout, so the room looks the same for everyone else.
+  static List<TogetherPlaced> _withoutBlocked(List<TogetherPlaced> placed) => [
+        for (final slot in placed)
+          if (!blockedUsersController.isBlocked(slot.uid)) slot,
+      ];
+
   static List<TogetherBubble> _shownBubbles(String roomId) =>
       blockedUsersController.visibleBubbles(
         roomId,
@@ -760,7 +767,7 @@ abstract final class HomeWidgetSync {
         debugPrint('cheer wrap: $e');
       }
       final themeId = ddayController.bgThemeForRoom(item.id);
-      final placed = TogetherCrowdLayout.withUserScale(
+      final placed = _withoutBlocked(TogetherCrowdLayout.withUserScale(
         placed: TogetherCrowdLayout.resolve(
           people: TogetherCrowdLayout.roster(
             myUid: authController.viewerUid,
@@ -780,7 +787,7 @@ abstract final class HomeWidgetSync {
         saved: TogetherCrowdLayout.scalesOf(
           ddayController.crowdForRoom(item.id),
         ),
-      );
+      ));
       rooms[item.id] = {
         'label': label,
         'me': meId,
@@ -1104,7 +1111,7 @@ abstract final class HomeWidgetSync {
         keyDdayDesignHeight,
         box.height.toString(),
       );
-      final placed = TogetherCrowdLayout.withUserScale(
+      final placed = _withoutBlocked(TogetherCrowdLayout.withUserScale(
         placed: TogetherCrowdLayout.resolve(
           people: TogetherCrowdLayout.roster(
             myUid: authController.viewerUid,
@@ -1124,7 +1131,7 @@ abstract final class HomeWidgetSync {
         saved: TogetherCrowdLayout.scalesOf(
           ddayController.crowdForRoom(item.id),
         ),
-      );
+      ));
       await _renderIosTogetherCard(
         box: box,
         corner: corner,

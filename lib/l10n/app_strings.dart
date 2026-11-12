@@ -196,6 +196,21 @@ class AppStrings {
       _t('초대를 만들지 못했어요. 잠시 후 다시 시도해 주세요', 'Could not create invite. Try again shortly', '招待を作れませんでした。しばらくしてからもう一度お試しください');
   String get ddayInviteRetry => _t('다시 시도', 'Retry', 'もう一度');
   String get togetherFriendFallbackName => _t('친구', 'Friend', '友だち');
+  String decorateLockedBy(String name) => _t(
+        '$name님이 꾸미는 중이에요!',
+        '$name is decorating!',
+        '$nameさんが編集中です！',
+      );
+  String decorateLockTaken(String name) => _t(
+        '$name님이 꾸미기를 시작해서 위젯 꾸미기를 닫았어요.',
+        '$name started decorating, so this editor was closed.',
+        '$nameさんが編集を始めたため、ウィジェット編集を閉じました。',
+      );
+  String get decorateIdleClosed => _t(
+        '3분 동안 움직임이 없어 위젯 꾸미기를 닫았어요. 적용하지 않은 내용은 내 폰에만 저장돼요.',
+        'Closed the widget editor after 3 minutes without activity. Changes you did not apply stay on this phone only.',
+        '3分間操作がなかったため、ウィジェット編集を閉じました。適用していない内容はこの端末にだけ保存されます。',
+      );
   String togetherWidgetChangedBodyFor(String name) => _t('$name - 위젯을 수정했어요!', '$name updated the widget!', '$nameさんがウィジェットを更新しました！');
   String get ddayInviteAcceptTitle => _t('초대 코드 입력', 'Enter invite code', '招待コードを入力');
   String get ddayInviteAcceptSubtitle => _t('친구가 보낸 6자리 코드를 입력하세요.', 'Enter the 6-digit code from your friend.', '友だちからもらった6桁のコードを入力してください。');
