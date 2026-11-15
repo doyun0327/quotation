@@ -109,6 +109,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   final _bubbleCtrl = TextEditingController();
   final _bubbleFocus = FocusNode();
   final _dragTick = ValueNotifier<int>(0);
+  /// Last cheer pulled from the room. Local drafts stay until this changes
+  /// (a friend save / apply), so bubble edits do not wipe typed home text.
+  String _lastPulledCheer = '';
   bool _applyingRemote = false;
   bool _samsung = false;
   bool _widgetExported = false;
@@ -150,6 +153,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _cheerCtrl.text =
         rooms.isEmpty ? '' : (rooms.first.latestCheer?.trim() ?? '');
     _cheerDraft.value = _cheerCtrl.text;
+    _lastPulledCheer = _cheerCtrl.text.trim();
     _cheerCtrl.addListener(_onCheerEdited);
     // Typing cheer clears character / bubble selection on the preview.
     _cheerFocus.addListener(_onCheerFocusChanged);
@@ -336,6 +340,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     }
     if (_cheerFocus.hasFocus) return;
     final cheer = _room?.latestCheer?.trim() ?? '';
+    // Room cheer unchanged → keep the typed draft (bubble persist notifies).
+    if (cheer == _lastPulledCheer) return;
+    _lastPulledCheer = cheer;
     if (_cheerCtrl.text == cheer) return;
     _applyingRemote = true;
     _cheerCtrl.text = cheer;
@@ -478,6 +485,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       cheerOk = await _saveCheerIfNeeded(quiet: !toast);
       if (cheerOk) {
         await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
+        _lastPulledCheer = _cheerCtrl.text.trim();
       }
     }
     await ddayController.setDuoOffsets(
@@ -1497,7 +1505,16 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         ),
         centerTitle: true,
       ),
-      body: ListenableBuilder(
+      // A drag that ends anywhere (simulator pans can skip onPanEnd)
+      // must unlock the list, not only a pointer-up inside it.
+      body: Listener(
+        onPointerUp: (_) {
+          if (_dragging) _setDragging(false);
+        },
+        onPointerCancel: (_) {
+          if (_dragging) _setDragging(false);
+        },
+        child: ListenableBuilder(
         listenable: Listenable.merge([
           ddayController,
           characterController,
@@ -2076,6 +2093,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
             ],
           );
         },
+      ),
       ),
           ),
         ),

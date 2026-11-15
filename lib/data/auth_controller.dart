@@ -603,15 +603,37 @@ class AuthController extends ChangeNotifier {
         return false;
       }
 
-      final lastSignIn = user.metadata.lastSignInTime;
-      final stale = lastSignIn == null ||
-          DateTime.now().difference(lastSignIn) > const Duration(minutes: 5);
-      if (stale) {
-        await _reauthenticate(user);
+      // Sign in with Apple accounts must also revoke the Apple tokens on
+      // deletion (App Review 5.1.1(v)). That needs a fresh one-time
+      // authorization code, so Apple users always confirm with Apple here.
+      final usesApple =
+          user.providerData.any((info) => info.providerId == 'apple.com');
+      String? appleAuthCode;
+      if (usesApple) {
+        appleAuthCode = await _reauthenticateWithApple(user);
         user = FirebaseAuth.instance.currentUser ?? user;
+      } else {
+        final lastSignIn = user.metadata.lastSignInTime;
+        final stale = lastSignIn == null ||
+            DateTime.now().difference(lastSignIn) >
+                const Duration(minutes: 5);
+        if (stale) {
+          await _reauthenticate(user);
+          user = FirebaseAuth.instance.currentUser ?? user;
+        }
       }
 
       await UserProfileSync.deleteRemoteAccount(user.uid);
+      if (appleAuthCode != null && appleAuthCode.isNotEmpty) {
+        try {
+          await FirebaseAuth.instance
+              .revokeTokenWithAuthorizationCode(appleAuthCode);
+        } catch (e) {
+          // Deleting the account still goes ahead; the Firebase user and
+          // its data are removed either way.
+          debugPrint('deleteAccount: Apple token revoke failed: $e');
+        }
+      }
       await _deleteAuthUser(user);
 
       await _stopRemoteSession();
@@ -657,6 +679,16 @@ class AuthController extends ChangeNotifier {
       if (fresh == null) rethrow;
       await fresh.delete();
     }
+  }
+
+  /// Re-confirms with the Apple sheet and returns the one-time authorization
+  /// code that [FirebaseAuth.revokeTokenWithAuthorizationCode] needs.
+  Future<String?> _reauthenticateWithApple(User user) async {
+    final provider = AppleAuthProvider()
+      ..addScope('email')
+      ..addScope('name');
+    final result = await user.reauthenticateWithProvider(provider);
+    return result.additionalUserInfo?.authorizationCode;
   }
 
   Future<void> _reauthenticate(User user) async {

@@ -573,7 +573,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                                   ),
                                 ),
                                 label: t.favorite,
-                                color: AppColors.heart,
+                                color: AppColors.ink,
                                 onTap: () {
                                   final quote = quotes[
                                       _page.clamp(0, quotes.length - 1)];

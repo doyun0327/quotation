@@ -3,6 +3,7 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/widgets/google_g_logo.dart';
 
 void _toast(BuildContext context, String message) {
   ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -63,9 +64,13 @@ Future<bool> showSignInFlow(BuildContext context) async {
               ),
             ),
             const SizedBox(height: 10),
-            OutlinedButton(
+            // Same size, shape and type as the Apple button above.
+            OutlinedButton.icon(
               onPressed: () => Navigator.of(sheetContext).pop('google'),
+              icon: const GoogleGLogo(size: 19),
+              label: Text(t.googleLoginTitle),
               style: OutlinedButton.styleFrom(
+                backgroundColor: Colors.white,
                 foregroundColor: AppColors.ink,
                 minimumSize: const Size.fromHeight(48),
                 side: const BorderSide(color: AppColors.ink, width: 1.2),
@@ -77,7 +82,6 @@ Future<bool> showSignInFlow(BuildContext context) async {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              child: Text(t.googleLoginTitle),
             ),
           ],
         ),

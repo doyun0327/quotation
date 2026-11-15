@@ -118,6 +118,7 @@ class CharacterArtInsets {
     'character(68).png': CharacterArtInsets(1.0000, 0.273, 0.271, 0.073, 0.051),
     'character(69).png': CharacterArtInsets(1.0000, 0.274, 0.274, 0.072, 0.053),
     'character(70).png': CharacterArtInsets(1.0000, 0.253, 0.219, 0.054, 0.032),
+    'character(71).png': CharacterArtInsets(1.0000, 0.210, 0.211, 0.179, 0.056),
     'character.png': CharacterArtInsets(1.0000, 0.245, 0.258, 0.209, 0.129),
     // man/ (looked up as 'man/<file>'; some names repeat woman files)
     'man/character (1).png': CharacterArtInsets(1.0218, 0.263, 0.256, 0.089, 0.037),
@@ -156,6 +157,7 @@ class CharacterArtInsets {
     'man/character(34).png': CharacterArtInsets(1.0193, 0.277, 0.276, 0.113, 0.066),
     'man/character(35).png': CharacterArtInsets(1.0000, 0.234, 0.234, 0.072, 0.049),
     'man/character(36).png': CharacterArtInsets(1.0000, 0.269, 0.274, 0.105, 0.071),
+    'man/character(37).png': CharacterArtInsets(1.0000, 0.211, 0.212, 0.179, 0.056),
     'man/charcter(1).png': CharacterArtInsets(1.0185, 0.264, 0.278, 0.125, 0.029),
     // christmas/ pack (looked up as 'christmas/<file>')
     'christmas/01.png': CharacterArtInsets(0.8248, 0.246, 0.246, 0.125, 0.085),

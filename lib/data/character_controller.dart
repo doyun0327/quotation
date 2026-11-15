@@ -32,7 +32,7 @@ class CharacterPack {
   static const nyang = CharacterPack(
     id: 'nyang',
     productId: 'pack_nyang',
-    characterIds: ['c20', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28'],
+    characterIds: ['c20', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28'],
   );
 
   /// `assets/images/character/christmas/01.png` … `08.png`.
@@ -122,7 +122,7 @@ class AppCharacter {
       assetPath: 'assets/images/character/woman/character(67).png',
       group: CharacterGroup.female,
     ),
-    for (var i = 68; i <= 70; i++)
+    for (var i = 68; i <= 71; i++)
       AppCharacter(
         id: 'c$i',
         assetPath: 'assets/images/character/woman/character($i).png',
@@ -145,9 +145,9 @@ class AppCharacter {
       group: CharacterGroup.male,
     ),
     // character(26).png was removed, so m28 is gone; a saved m28 pick falls
-    // back to the default character in [byId]. character(31)–(36) are
-    // m33–m38 (Android maps m18+ to character(n−2) on its own).
-    for (var i = 16; i <= 36; i++)
+    // back to the default character in [byId]. character(31)–(37) are
+    // m33–m39 (Android maps m18+ to character(n−2) on its own).
+    for (var i = 16; i <= 37; i++)
       if (i != 26)
         AppCharacter(
           id: 'm${i + 2}',
@@ -163,10 +163,18 @@ class AppCharacter {
     shareEvent,
   ];
 
+  /// Duplicates taken out of the pickers. They stay in [shop] so a saved pick
+  /// (mine or a friend's, on any app version) still draws the same art.
+  /// m8 repeats m7/m9; m16 (`charcter(1).png`) repeats m13; c22 was taken
+  /// out of the kitty pack (hidden so it does not fall into the female tab).
+  static const Set<String> hiddenFromPickers = {'m8', 'm16', 'c22'};
+
   static List<AppCharacter> inGroup(CharacterGroup group) {
     return [
       for (final character in shop)
-        if (character.group == group) character,
+        if (character.group == group &&
+            !hiddenFromPickers.contains(character.id))
+          character,
     ];
   }
 

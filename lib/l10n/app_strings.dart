@@ -657,13 +657,6 @@ class AppStrings {
   String get restorePurchasesDone =>
       _t('구독을 복원했어요', 'Subscription restored', '購読を復元しました');
   String get premiumToast => _t('프리미엄 보기', 'View Premium', 'プレミアムを見る');
-  String get premiumToggleTitle =>
-      _t('프리미엄 (임시)', 'Premium (temp)', 'プレミアム（仮）');
-  String get premiumToggleSubtitle => _t('결제 연동 전 테스트용 스위치예요', 'Temporary switch before billing', '決済連携前のテスト用スイッチです');
-  String get premiumEnabledToast =>
-      _t('프리미엄이 켜졌어요', 'Premium turned on', 'プレミアムをオンにしました');
-  String get premiumDisabledToast =>
-      _t('무료 회원으로 전환했어요', 'Switched to free', '無料会員に切り替えました');
   String get premiumLockedTitle =>
       _t('프리미엄 전용', 'Premium only', 'プレミアム限定');
   String get premiumLockedBody => _t('이 카테고리는 프리미엄 회원만 볼 수 있어요.', 'This category is for premium members.', 'このカテゴリーはプレミアム会員だけが見られます。');
@@ -729,9 +722,6 @@ class AppStrings {
         '広告の同意内容を変更できます',
       );
   String get otherSection => _t('기타 설정', 'Other', 'その他');
-  String get eveningDebugTitle =>
-      _t('저녁 알림 테스트', 'Test evening alert', '夜の通知テスト');
-  String get eveningDebugSubtitle => _t('디버그용으로 저녁 위로를 지금 한 건 보냅니다', 'Send one evening comfort notification now', 'デバッグ用に、夜の慰め通知を今1件送ります');
   String get eveningDebugToast =>
       _t('저녁 알림을 보냈어요', 'Evening notification sent', '夜の通知を送りました');
   String get termsTitle =>

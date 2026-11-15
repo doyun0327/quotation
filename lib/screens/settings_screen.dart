@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quotation/widgets/subscribe_flow.dart';
 import 'package:quotation/ads/ad_consent.dart';
@@ -231,36 +230,6 @@ class SettingsScreen extends StatelessWidget {
                             onTap: billingController.isBusy
                                 ? null
                                 : () => _restore(context),
-                          ),
-                          // Developer-only switch; never shown in store builds.
-                          if (kDebugMode)
-                          SettingsItem(
-                            icon: Icons.workspace_premium_rounded,
-                            title: t.premiumToggleTitle,
-                            subtitle: t.premiumToggleSubtitle,
-                            trailing: Switch.adaptive(
-                              value: isPremium,
-                              activeTrackColor: palette.accent,
-                              onChanged: (value) {
-                                membershipController.setPremium(value);
-                                _toast(
-                                  context,
-                                  value
-                                      ? t.premiumEnabledToast
-                                      : t.premiumDisabledToast,
-                                );
-                              },
-                            ),
-                            onTap: () {
-                              final next = !membershipController.isPremium;
-                              membershipController.setPremium(next);
-                              _toast(
-                                context,
-                                next
-                                    ? t.premiumEnabledToast
-                                    : t.premiumDisabledToast,
-                              );
-                            },
                           ),
                         ],
                       ),
