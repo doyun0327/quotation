@@ -13,14 +13,21 @@ import 'package:flutter/foundation.dart';
 ///
 /// Call after every `Firebase.initializeApp` of the default app, including
 /// the background push isolate.
+/// Optional fixed debug token for debug builds, so several emulators can
+/// share one token already registered in the console:
+/// `flutter run --dart-define=APP_CHECK_DEBUG_TOKEN=<uuid>`. Never set it in
+/// store builds (release builds ignore it anyway).
+const _debugToken = String.fromEnvironment('APP_CHECK_DEBUG_TOKEN');
+
 Future<void> activateAppCheck() async {
   try {
+    final token = _debugToken.isEmpty ? null : _debugToken;
     await FirebaseAppCheck.instance.activate(
       providerAndroid: kDebugMode
-          ? const AndroidDebugProvider()
+          ? AndroidDebugProvider(debugToken: token)
           : const AndroidPlayIntegrityProvider(),
       providerApple: kDebugMode
-          ? const AppleDebugProvider()
+          ? AppleDebugProvider(debugToken: token)
           : const AppleAppAttestWithDeviceCheckFallbackProvider(),
     );
   } catch (e) {

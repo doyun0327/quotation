@@ -381,6 +381,7 @@ class BillingController extends ChangeNotifier {
 
   Future<void> _logIn(String uid) async {
     if (!_configured || _loggedInUid == uid) return;
+    debugPrint('[billing] logIn $_loggedInUid -> $uid');
     _loggedInUid = uid;
     try {
       final result = await Purchases.logIn(uid);
@@ -449,6 +450,7 @@ class BillingController extends ChangeNotifier {
   }
 
   Future<void> _syncStorePurchases(String userId) async {
+    debugPrint('[billing] auto sync for $userId');
     _syncedUsers.add(userId);
     _syncing = true;
     CustomerInfo? info;
@@ -469,6 +471,18 @@ class BillingController extends ChangeNotifier {
 
   void _apply(CustomerInfo info) {
     final premium = _hasPremium(info);
+    final ent = info.entitlements.all[kPremiumEntitlementId];
+    debugPrint(
+      '[billing] apply premium=$premium was=${membershipController.isPremium} '
+      'user=${info.originalAppUserId} firebase=${FirebaseAuth.instance.currentUser?.uid} '
+      'rcLoggedIn=$_loggedInUid syncing=$_syncing '
+      'synced=${_syncedUsers.contains(info.originalAppUserId)} '
+      'subs=${info.activeSubscriptions} '
+      'ent=${ent == null ? 'none' : 'active=${ent.isActive} exp=${ent.expirationDate} '
+          'willRenew=${ent.willRenew} sandbox=${ent.isSandbox} '
+          'unsub=${ent.unsubscribeDetectedAt} billingIssue=${ent.billingIssueDetectedAt}'} '
+      'request=${info.requestDate}',
+    );
     if (premium) {
       membershipController.setPremium(true);
     } else if (_syncing) {
