@@ -150,12 +150,14 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final migrateAlbum = savedTheme == TogetherBgTheme.albumId;
     _textColor = ddayController.textColorForRoom(id);
     _textFont = ddayController.textFontForRoom(id);
-    _link = ddayController.linkForRoom(id);
     _bubbles = ddayController.bubblesForRoom(id);
     _widgetSize = TogetherWidgetSize.s42;
     final rooms = ddayController.items.where((e) => e.id == id);
-    _cheerCtrl.text =
-        rooms.isEmpty ? '' : (rooms.first.latestCheer?.trim() ?? '');
+    final room = rooms.isEmpty ? null : rooms.first;
+    _link = (room?.hasFriend ?? false)
+        ? ddayController.linkForRoom(id)
+        : TogetherLink.none;
+    _cheerCtrl.text = room?.latestCheer?.trim() ?? '';
     _cheerDraft.value = _cheerCtrl.text;
     _lastPulledCheer = _cheerCtrl.text.trim();
     _cheerCtrl.addListener(_onCheerEdited);
@@ -324,7 +326,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final theme = ddayController.bgThemeForRoom(id);
     final color = ddayController.textColorForRoom(id);
     final font = ddayController.textFontForRoom(id);
-    final link = ddayController.linkForRoom(id);
+    // Heart links only make sense with 2+ people; drop a stale solo pick.
+    final link = (_room?.hasFriend ?? false)
+        ? ddayController.linkForRoom(id)
+        : TogetherLink.none;
     // The open edit sheet owns the draft; a reload would drop a new bubble.
     final bubbles =
         _editingBubble ? _bubbles : ddayController.bubblesForRoom(id);
@@ -632,7 +637,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       bgOpacity: 100,
       textColor: _textColor,
       textFont: _textFont,
-      link: _link,
+      link: (_room?.hasFriend ?? false) ? _link : TogetherLink.none,
       shape: _shape,
       widgetSize: _widgetSize,
       bubbles: _bubbles,
@@ -1732,7 +1737,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             ),
                             textColor: _textColor,
                             textFont: _textFont,
-                            link: _link,
+                            link: liveHasFriend ? _link : TogetherLink.none,
                             shape: _shape,
                             cornerRadius: _hostCornerDp,
                             onMePan: (_focus == _DecorateFocus.me ||
@@ -1948,11 +1953,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
-                        // Transparent, the speech-bubble tile, the link
-                        // pictures, then the backgrounds.
+                        // Transparent, the speech-bubble tile, then (only
+                        // with 2+ people) the heart link pictures, then BGs.
                         itemCount: TogetherBgTheme.choices.length +
                             1 +
-                            TogetherLink.styles.length,
+                            (liveHasFriend ? TogetherLink.styles.length : 0),
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
                           if (index == 1) {
@@ -1986,7 +1991,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               ),
                             );
                           }
-                          final linkCount = TogetherLink.styles.length;
+                          final linkCount = liveHasFriend
+                              ? TogetherLink.styles.length
+                              : 0;
                           if (index >= 2 && index < 2 + linkCount) {
                             final style = TogetherLink.styles[index - 2];
                             final locked = !isPremium && style.premium;

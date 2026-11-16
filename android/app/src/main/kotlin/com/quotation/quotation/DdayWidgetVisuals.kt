@@ -337,7 +337,7 @@ object DdayWidgetVisuals {
           boxes.add(RectF(frLeft, frTop, frLeft + friendW, frTop + friendH))
         }
       }
-      drawImageLink(canvas, linkBmp, boxes, isPixel)
+      drawImageLink(canvas, linkBmp, boxes, isPixel, linkAsset)
       linkBmp.recycle()
     }
 
@@ -448,9 +448,18 @@ object DdayWidgetVisuals {
    * The link picture between each character and its right-hand neighbour,
    * with its own proportions: only its size follows the gap.
    */
-  private fun drawImageLink(canvas: Canvas, bmp: Bitmap, boxes: List<RectF>, isPixel: Boolean) {
+  private fun drawImageLink(
+      canvas: Canvas,
+      bmp: Bitmap,
+      boxes: List<RectF>,
+      isPixel: Boolean,
+      linkAsset: String = "",
+  ) {
     if (boxes.size < 2 || bmp.width <= 0 || bmp.height <= 0) return
     val aspect = bmp.width.toFloat() / bmp.height
+    // Same as Flutter TogetherLinkStyle.heightScale for heart_2.
+    val heightScale =
+        if (linkAsset.contains("link_heart_2")) 1.15f else 1f
     val paint =
         Paint().apply {
           isFilterBitmap = !isPixel
@@ -467,11 +476,11 @@ object DdayWidgetVisuals {
       val y =
           ((a.top + a.height() * LINK_ANCHOR_HEIGHT) + (b.top + b.height() * LINK_ANCHOR_HEIGHT)) / 2f
       var width = gap
-      var height = width / aspect
+      var height = width / aspect * heightScale
       val maxHeight = LINK_MAX_HEIGHT_SHARE * (a.height() + b.height()) / 2f
       if (height > maxHeight) {
         height = maxHeight
-        width = height * aspect
+        width = height * aspect / heightScale
       }
       val cx = (start + end) / 2f
       canvas.drawBitmap(

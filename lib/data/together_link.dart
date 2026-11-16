@@ -10,6 +10,10 @@ typedef TogetherLinkStyle = ({
 
   /// Width / height of the picture, so it is drawn without stretching.
   double aspect,
+
+  /// Multiplies drawn height (1 = natural). Keep in step with Android
+  /// [DdayWidgetVisuals.drawImageLink] for the same link id.
+  double heightScale,
   bool premium,
 });
 
@@ -25,18 +29,22 @@ abstract final class TogetherLink {
       id: 'heart_1',
       asset: 'assets/images/link/link_heart_1.png',
       aspect: 1330 / 202,
+      heightScale: 1,
       premium: false,
     ),
     (
       id: 'heart_2',
       asset: 'assets/images/link/link_heart_2.png',
       aspect: 973 / 255,
+      // A touch thicker than the source art.
+      heightScale: 1.15,
       premium: true,
     ),
     (
       id: 'heart_3',
       asset: 'assets/images/link/link_heart_3.png',
       aspect: 1158 / 147,
+      heightScale: 1,
       premium: false,
     ),
   ];
@@ -64,8 +72,13 @@ abstract final class TogetherLink {
 
   /// Where the picture goes between each pair of neighbours (left to right,
   /// so a group gets one chain), in card coordinates.
-  static List<Rect> rects(List<Rect> boxes, double aspect) {
+  static List<Rect> rects(
+    List<Rect> boxes,
+    double aspect, {
+    double heightScale = 1,
+  }) {
     if (boxes.length < 2 || aspect <= 0) return const [];
+    final scale = heightScale <= 0 ? 1.0 : heightScale;
     final sorted = [...boxes]
       ..sort((a, b) => a.center.dx.compareTo(b.center.dx));
     final out = <Rect>[];
@@ -80,11 +93,11 @@ abstract final class TogetherLink {
               (b.top + b.height * anchorHeight)) /
           2;
       var width = gap;
-      var height = width / aspect;
+      var height = width / aspect * scale;
       final maxHeight = maxHeightShare * (a.height + b.height) / 2;
       if (height > maxHeight) {
         height = maxHeight;
-        width = height * aspect;
+        width = height * aspect / scale;
       }
       out.add(Rect.fromCenter(
         center: Offset((start + end) / 2, y),
@@ -138,7 +151,11 @@ class TogetherLinkLayer extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        for (final rect in TogetherLink.rects(boxes, style.aspect))
+        for (final rect in TogetherLink.rects(
+          boxes,
+          style.aspect,
+          heightScale: style.heightScale,
+        ))
           Positioned.fromRect(
             rect: rect,
             child: image != null

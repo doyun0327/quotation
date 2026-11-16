@@ -118,8 +118,8 @@ class BillingController extends ChangeNotifier {
         lastError = setup;
         return lastError;
       }
-      final offerings = await Purchases.getOfferings();
-      final package = _monthlyPackage(offerings);
+      final offerings = await _offeringsOrNull();
+      final package = offerings == null ? null : _monthlyPackage(offerings);
       final PurchaseResult result;
       if (package != null) {
         result = await Purchases.purchase(PurchaseParams.package(package));
@@ -132,8 +132,8 @@ class BillingController extends ChangeNotifier {
           lastError = 'not_found';
           debugPrint(
             'Missing monthly package for $kPremiumMonthlyProductId. '
-            'current=${offerings.current?.identifier} '
-            'offerings=${offerings.all.keys.toList()}',
+            'current=${offerings?.current?.identifier} '
+            'offerings=${offerings?.all.keys.toList()}',
           );
           return lastError;
         }
@@ -198,7 +198,8 @@ class BillingController extends ChangeNotifier {
   Future<void> _fetchMonthlyPrice() async {
     if (await _ensureConfigured() != null) return;
     try {
-      final package = _monthlyPackage(await Purchases.getOfferings());
+      final offerings = await _offeringsOrNull();
+      final package = offerings == null ? null : _monthlyPackage(offerings);
       var price = package?.storeProduct.priceString;
       if (price == null) {
         final product = _monthlyProduct(
@@ -389,6 +390,18 @@ class BillingController extends ChangeNotifier {
     } catch (error) {
       _loggedInUid = null;
       debugPrint('Purchases.logIn: $error');
+    }
+  }
+
+  /// RevenueCat offerings, or null when they cannot be loaded (for example an
+  /// offering still lists a product removed from the store). The caller then
+  /// asks the store for [kPremiumMonthlyProductId] directly.
+  Future<Offerings?> _offeringsOrNull() async {
+    try {
+      return await Purchases.getOfferings();
+    } catch (error) {
+      debugPrint('[billing] offerings unavailable, using the product: $error');
+      return null;
     }
   }
 
