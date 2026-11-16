@@ -95,12 +95,12 @@ class AppCharacter {
   );
 
   /// Female shop display order (stable character ids). Files are renamed to
-  /// `character (1).png` … matching this list; c62 was removed earlier.
+  /// `character (1).png` … matching this list; c62/c11 were removed earlier.
   static const femaleShopOrder = <int>[
-    1, 65, 72, 73, 74, 75, 76, 71, 64, 78, 4, 2, 77, 6, 3, 5, 13, 7, 8, 9, 10, 11,
-    12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-    35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
-    57, 58, 59, 60, 61, 63, 66, 67, 68, 69, 70,
+    76, 71, 72, 73, 74, 75, 1, 77, 65, 78, 3, 64, 6, 5, 4, 2, 13, 7, 8, 9, 10, 12,
+    14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+    36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+    58, 59, 60, 61, 63, 66, 67, 68, 69, 70,
   ];
 
   /// Male art files: `character (n).png` is the n-th id here. Keep this list

@@ -27,16 +27,16 @@ import kotlin.math.roundToInt
 object DdayWidgetVisuals {
   // Same order as Flutter [AppCharacter.femaleShopOrder] → character (n).png.
   private val femaleFileIndex = mapOf(
-    1 to 1, 65 to 2, 72 to 3, 73 to 4, 74 to 5, 75 to 6, 76 to 7, 71 to 8,
-    64 to 9, 78 to 10, 4 to 11, 2 to 12, 77 to 13, 6 to 14, 3 to 15, 5 to 16,
-    13 to 17, 7 to 18, 8 to 19, 9 to 20, 10 to 21, 11 to 22, 12 to 23, 14 to 24,
-    15 to 25, 16 to 26, 17 to 27, 18 to 28, 19 to 29, 20 to 30, 21 to 31, 22 to 32,
-    23 to 33, 24 to 34, 25 to 35, 26 to 36, 27 to 37, 28 to 38, 29 to 39, 30 to 40,
-    31 to 41, 32 to 42, 33 to 43, 34 to 44, 35 to 45, 36 to 46, 37 to 47, 38 to 48,
-    39 to 49, 40 to 50, 41 to 51, 42 to 52, 43 to 53, 44 to 54, 45 to 55, 46 to 56,
-    47 to 57, 48 to 58, 49 to 59, 50 to 60, 51 to 61, 52 to 62, 53 to 63, 54 to 64,
-    55 to 65, 56 to 66, 57 to 67, 58 to 68, 59 to 69, 60 to 70, 61 to 71, 63 to 72,
-    66 to 73, 67 to 74, 68 to 75, 69 to 76, 70 to 77,
+    76 to 1, 71 to 2, 72 to 3, 73 to 4, 74 to 5, 75 to 6, 1 to 7, 77 to 8,
+    65 to 9, 78 to 10, 3 to 11, 64 to 12, 6 to 13, 5 to 14, 4 to 15, 2 to 16,
+    13 to 17, 7 to 18, 8 to 19, 9 to 20, 10 to 21, 12 to 22, 14 to 23, 15 to 24,
+    16 to 25, 17 to 26, 18 to 27, 19 to 28, 20 to 29, 21 to 30, 22 to 31, 23 to 32,
+    24 to 33, 25 to 34, 26 to 35, 27 to 36, 28 to 37, 29 to 38, 30 to 39, 31 to 40,
+    32 to 41, 33 to 42, 34 to 43, 35 to 44, 36 to 45, 37 to 46, 38 to 47, 39 to 48,
+    40 to 49, 41 to 50, 42 to 51, 43 to 52, 44 to 53, 45 to 54, 46 to 55, 47 to 56,
+    48 to 57, 49 to 58, 50 to 59, 51 to 60, 52 to 61, 53 to 62, 54 to 63, 55 to 64,
+    56 to 65, 57 to 66, 58 to 67, 59 to 68, 60 to 69, 61 to 70, 63 to 71, 66 to 72,
+    67 to 73, 68 to 74, 69 to 75, 70 to 76,
   )
 
   // Same as Flutter [AppCharacter._maleFileOrder] → character (n).png.
