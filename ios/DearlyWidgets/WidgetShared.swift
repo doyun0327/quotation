@@ -150,12 +150,17 @@ enum DearlyWidgetStore {
 }
 
 extension View {
-  /// Clear system widget chrome so wallpaper shows in leftover margins.
+  /// Widget chrome. [glass] is for the “투명” theme: clear card pixels sit on
+  /// ultraThinMaterial. Other themes use a clear container (opaque PNG fills).
   @ViewBuilder
-  func dearlyWidgetBackground() -> some View {
+  func dearlyWidgetBackground(glass: Bool = false) -> some View {
     if #available(iOS 17.0, *) {
       containerBackground(for: .widget) {
-        Color.clear
+        if glass {
+          Color.clear.background(.ultraThinMaterial)
+        } else {
+          Color.clear
+        }
       }
     } else {
       background(Color.clear)

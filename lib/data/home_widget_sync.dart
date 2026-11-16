@@ -900,7 +900,14 @@ abstract final class HomeWidgetSync {
         );
       }
       if (ready) signatures[item.id] = signature;
-      index.add({'id': item.id, 'title': item.title, 'imageKey': imageKey});
+      final themeId = ddayController.bgThemeForRoom(item.id);
+      index.add({
+        'id': item.id,
+        'title': item.title,
+        'imageKey': imageKey,
+        // iPhone only: “투명” → widget chrome uses ultraThinMaterial.
+        if (themeId == TogetherBgTheme.none.id || themeId.isEmpty) 'glass': '1',
+      });
     }
     await HomeWidget.saveWidgetData<String>(
       keyDdayRoomIndex,
@@ -934,6 +941,8 @@ abstract final class HomeWidgetSync {
       'h': card.box.height,
       'pixel': visualStyleController.isPixel,
       'bgModified': bgModified,
+      // Bump when iOS transparent switches to material (clear PNG).
+      'iosGlass': 'material',
     });
   }
 

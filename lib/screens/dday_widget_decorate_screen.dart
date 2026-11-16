@@ -7,6 +7,7 @@ import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/ios_fake_wallpaper.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_link.dart';
@@ -458,6 +459,102 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final matches =
         ddayController.items.where((e) => e.id == widget.roomId);
     return matches.isEmpty ? null : matches.first;
+  }
+
+  /// Widgy-style: first ask for an empty-home capture, then pick photo + slot.
+  Future<void> _offerIosFakeWallpaper() async {
+    if (!IosFakeWallpaper.isIOS || !mounted) return;
+    final t = AppStrings.current;
+
+    // Step 1: one clear instruction — capture a blank home screen.
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(
+            t.iosFakeWallpaperCaptureTitle,
+            style: AppTheme.body.copyWith(fontWeight: FontWeight.w900),
+          ),
+          content: Text(
+            t.iosFakeWallpaperCaptureBody,
+            style: AppTheme.body.copyWith(fontSize: 15, height: 1.4),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(t.iosFakeWallpaperCaptureCancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(t.iosFakeWallpaperCaptureOk),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true || !mounted) return;
+
+    // Step 2: choose widget row, then gallery pick.
+    final slot = await showModalBottomSheet<IosFakeWallpaperSlot>(
+      context: context,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  t.iosFakeWallpaperNextTitle,
+                  style: AppTheme.body.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  t.iosFakeWallpaperNextBody,
+                  style: AppTheme.body.copyWith(
+                    fontSize: 13,
+                    height: 1.35,
+                    color: AppColors.muted,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () =>
+                      Navigator.pop(ctx, IosFakeWallpaperSlot.top),
+                  child: Text(t.iosFakeWallpaperTop),
+                ),
+                const SizedBox(height: 8),
+                FilledButton(
+                  onPressed: () =>
+                      Navigator.pop(ctx, IosFakeWallpaperSlot.mid),
+                  child: Text(t.iosFakeWallpaperMid),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (slot == null || !mounted) return;
+    final ok = await IosFakeWallpaper.pickAndSave(slot);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok ? t.iosFakeWallpaperDone : t.iosFakeWallpaperFailed,
+        ),
+      ),
+    );
+    if (ok) await _persist();
   }
 
   Future<bool> _saveCheerIfNeeded({bool quiet = false}) async {
@@ -1928,7 +2025,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             selected: _bgThemeId == theme.id,
                             accent: palette.accent,
                             locked: locked,
-                            onTap: () {
+                            onTap: () async {
                               if (locked) {
                                 _showPremiumLock();
                                 return;
@@ -1936,6 +2033,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               _clearSelection();
                               setState(() => _bgThemeId = theme.id);
                               _persist();
+                              if (theme.isNone && IosFakeWallpaper.isIOS) {
+                                await _offerIosFakeWallpaper();
+                              }
                             },
                             child: theme.isNone
                                 ? Center(

@@ -100,6 +100,28 @@ class AppStrings {
   String get ddayDecorateBgNone => _t('투명', 'Transparent', '透明');
   String get ddayDecorateBgAlbum => _t('앨범', 'Album', 'アルバム');
   String get ddayDecorateBgAlbumFailed => _t('사진을 불러오지 못했어요', 'Could not open that photo', '写真を読み込めませんでした');
+  String get iosFakeWallpaperCaptureTitle =>
+      _t('홈 화면 캡처', 'Capture home screen', 'ホーム画面をキャプチャ');
+  String get iosFakeWallpaperCaptureBody => _t(
+        '아이콘이 없는 빈 홈 화면을 캡처해 주세요!',
+        'Please capture a blank home screen with no icons!',
+        'アイコンのない空のホーム画面をキャプチャしてください！',
+      );
+  String get iosFakeWallpaperCaptureOk => _t('확인', 'OK', 'OK');
+  String get iosFakeWallpaperCaptureCancel => _t('취소', 'Cancel', 'キャンセル');
+  String get iosFakeWallpaperNextTitle =>
+      _t('위젯 위치 선택', 'Choose widget spot', 'ウィジェット位置を選択');
+  String get iosFakeWallpaperNextBody => _t(
+        '캡처한 사진을 올린 뒤, 위젯을 둘 위치를 골라 주세요.',
+        'Upload the screenshot, then pick where the widget sits.',
+        'キャプチャした写真をアップロードし、ウィジェットの位置を選んでください。',
+      );
+  String get iosFakeWallpaperTop => _t('위쪽', 'Top', '上');
+  String get iosFakeWallpaperMid => _t('가운데', 'Middle', '中央');
+  String get iosFakeWallpaperDone =>
+      _t('투명 배경을 적용했어요', 'Transparent background applied', '透明背景を適用しました');
+  String get iosFakeWallpaperFailed =>
+      _t('사진을 적용하지 못했어요', 'Could not apply the photo', '写真を適用できませんでした');
   String get ddayDecorateTextColorLabel => _t('글자색', 'Text color', '文字色');
   String get ddayDecorateFontLabel => _t('글꼴', 'Font', 'フォント');
   String ddayDecorateFontName(WidgetFont font) => switch (font) {

@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quotation/data/together_link.dart';
 import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
+import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/data/widget_fonts.dart';
@@ -250,6 +253,9 @@ class TogetherWidgetPreview extends StatelessWidget {
     final saturation = (hsl.saturation * 1.05).clamp(0.0, 1.0);
     return hsl.withLightness(lightness).withSaturation(saturation).toColor();
   }
+
+  static bool get _iosGlass =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
   @override
   Widget build(BuildContext context) {
@@ -588,13 +594,38 @@ class TogetherWidgetPreview extends StatelessWidget {
       decoration: BoxDecoration(
         color: hasImage
             ? Colors.transparent
-            : (opacity <= 0.01 ? Colors.transparent : color),
+            : (_iosGlass && opacity <= 0.01
+                ? Colors.transparent
+                : (opacity <= 0.01 ? Colors.transparent : color)),
         borderRadius: BorderRadius.circular(radius),
       ),
       clipBehavior: Clip.none,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          // iPhone “투명”: frosted glass. Other themes stay full-strength.
+          if (!hasImage && _iosGlass)
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+                  child: const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          TogetherBgTheme.iosGlassHighlight,
+                          TogetherBgTheme.iosGlassFill,
+                          TogetherBgTheme.iosGlassShade,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           if (hasImage)
             Positioned.fill(
               child: ClipRRect(

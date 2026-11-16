@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
@@ -33,6 +34,9 @@ class TogetherIosSnapshot extends StatelessWidget {
     this.bubbles = const [],
     this.link = TogetherLink.none,
     this.linkImage,
+    /// When false (home widget “투명”), leave clear so SwiftUI
+    /// `ultraThinMaterial` shows through. Decorate preview uses glass paint.
+    this.glassWhenNoBg = false,
   });
 
   final double width;
@@ -60,6 +64,9 @@ class TogetherIosSnapshot extends StatelessWidget {
   /// Decoded [link] picture (assets do not load in time off-screen).
   final ui.Image? linkImage;
 
+  /// When there is no theme image, paint iOS frosted glass instead of clear.
+  final bool glassWhenNoBg;
+
   @override
   Widget build(BuildContext context) {
     final radius = cornerRadius.clamp(0.0, 40.0);
@@ -85,6 +92,20 @@ class TogetherIosSnapshot extends StatelessWidget {
                 fit: bgIsFile ? BoxFit.cover : BoxFit.fill,
                 filterQuality:
                     isPixel ? FilterQuality.none : FilterQuality.medium,
+              )
+            else if (glassWhenNoBg)
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      TogetherBgTheme.iosGlassHighlight,
+                      TogetherBgTheme.iosGlassFill,
+                      TogetherBgTheme.iosGlassShade,
+                    ],
+                  ),
+                ),
               )
             else
               const ColoredBox(color: Color(0x00000000)),

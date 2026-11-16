@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Background themes for the Together home widget (image assets).
 class TogetherBgTheme {
   const TogetherBgTheme({
@@ -12,6 +14,16 @@ class TogetherBgTheme {
 
   bool get isNone => assetPath.isEmpty;
 
+  /// iPhone “투명” stand-in: frosted glass fill baked into the widget PNG
+  /// (wallpaper cannot show through; Color.clear becomes a white plate).
+  static const iosGlassFill = Color(0x72EEF1F5);
+
+  /// Light edge highlight for the glass fill.
+  static const iosGlassHighlight = Color(0x55FFFFFF);
+
+  /// Cool shade so the glass reads as translucent, not paper white.
+  static const iosGlassShade = Color(0x2894A0B0);
+
   /// Photo picked from the device album. The file path is stored separately.
   static const albumId = 'album';
 
@@ -20,6 +32,16 @@ class TogetherBgTheme {
   /// Themes from [assets/images/widgetbackground/].
   static final all = <TogetherBgTheme>[
     none,
+    // Test heart background (pixel pink heart).
+    const TogetherBgTheme(
+      id: 'widget_heart',
+      assetPath: 'assets/images/widgetbackground/widget_heart.png',
+    ),
+    // Glass fog + pastel plane overlay (iPhone transparent test).
+    const TogetherBgTheme(
+      id: 'widget_glass_plane',
+      assetPath: 'assets/images/widgetbackground/widget_glass_plane.png',
+    ),
     // Pastel first, right after the link pictures (see TogetherLink).
     for (var i = 1; i <= 10; i++)
       TogetherBgTheme(
@@ -80,6 +102,8 @@ class TogetherBgTheme {
   /// never locks a background someone already uses.
   static const freeIds = {
     'none',
+    'widget_heart',
+    'widget_glass_plane',
     'widget_background',
     'widget_background2',
     'widget_background6',

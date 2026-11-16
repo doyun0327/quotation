@@ -7,6 +7,8 @@ struct TogetherRoom {
   let id: String
   let title: String
   let imageKey: String
+  /// “투명” theme: card PNG is clear; chrome uses ultraThinMaterial.
+  let useGlass: Bool
 
   static func all() -> [TogetherRoom] {
     guard let data = DearlyWidgetStore.string("ddayRoomIndex").data(using: .utf8),
@@ -20,7 +22,13 @@ struct TogetherRoom {
       else {
         return nil
       }
-      return TogetherRoom(id: id, title: row["title"] as? String ?? "", imageKey: imageKey)
+      let glass = (row["glass"] as? String) == "1" || (row["glass"] as? Bool) == true
+      return TogetherRoom(
+        id: id,
+        title: row["title"] as? String ?? "",
+        imageKey: imageKey,
+        useGlass: glass
+      )
     }
   }
 }
@@ -64,11 +72,12 @@ struct TogetherEntry: TimelineEntry {
   let date: Date
   let card: UIImage?
   let roomId: String
+  let useGlass: Bool
 }
 
 struct TogetherProvider: AppIntentTimelineProvider {
   func placeholder(in context: Context) -> TogetherEntry {
-    TogetherEntry(date: Date(), card: nil, roomId: "")
+    TogetherEntry(date: Date(), card: nil, roomId: "", useGlass: false)
   }
 
   func snapshot(for configuration: SelectTogetherRoomIntent, in context: Context) async -> TogetherEntry {
@@ -88,12 +97,20 @@ struct TogetherProvider: AppIntentTimelineProvider {
       let room = TogetherRoom.all().first(where: { $0.id == selectedId }),
       let card = DearlyWidgetStore.image(forKey: room.imageKey)
     {
-      return TogetherEntry(date: Date(), card: card, roomId: room.id)
+      return TogetherEntry(
+        date: Date(),
+        card: card,
+        roomId: room.id,
+        useGlass: room.useGlass
+      )
     }
+    let theme = DearlyWidgetStore.string("ddayBgTheme")
+    let glass = theme.isEmpty || theme == "none"
     return TogetherEntry(
       date: Date(),
       card: DearlyWidgetStore.image(forKey: "togetherCardImage"),
-      roomId: DearlyWidgetStore.string("ddayRoomId")
+      roomId: DearlyWidgetStore.string("ddayRoomId"),
+      useGlass: glass
     )
   }
 }
@@ -104,8 +121,19 @@ struct TogetherWidgetView: View {
   var entry: TogetherEntry
 
   var body: some View {
+    let wallpaper = entry.useGlass ? Self.fakeWallpaper() : nil
     GeometryReader { geo in
-      Group {
+      ZStack {
+        // Widgy-style: cropped home screenshot + blur under a clear card.
+        if let wallpaper {
+          Image(uiImage: wallpaper)
+            .resizable()
+            .scaledToFill()
+            .frame(width: geo.size.width, height: geo.size.height)
+            .clipped()
+            .blur(radius: 12)
+          Color.white.opacity(0.16)
+        }
         if let card = entry.card {
           Image(uiImage: card)
             .resizable()
@@ -117,10 +145,22 @@ struct TogetherWidgetView: View {
       }
       .frame(width: geo.size.width, height: geo.size.height)
     }
-    .containerBackground(for: .widget) {
-      Color.clear
-    }
+    // Screenshot blur already fills the cell; otherwise soft system glass.
+    .dearlyWidgetBackground(glass: entry.useGlass && wallpaper == nil)
     .widgetURL(launchURL)
+  }
+
+  /// App-registered home screenshot crop (App Group), top or middle slot.
+  private static func fakeWallpaper() -> UIImage? {
+    let slot = DearlyWidgetStore.string("togetherFakeWallpaperSlot")
+    let preferred = slot == "mid"
+      ? "togetherFakeWallpaperMid"
+      : "togetherFakeWallpaperTop"
+    let fallback = preferred == "togetherFakeWallpaperMid"
+      ? "togetherFakeWallpaperTop"
+      : "togetherFakeWallpaperMid"
+    return DearlyWidgetStore.image(forKey: preferred)
+      ?? DearlyWidgetStore.image(forKey: fallback)
   }
 
   private var launchURL: URL? {
