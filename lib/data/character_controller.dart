@@ -94,66 +94,59 @@ class AppCharacter {
     assetPath: 'assets/images/character/woman/character (1).png',
   );
 
+  /// Female shop display order (stable character ids). Files are renamed to
+  /// `character (1).png` … matching this list; c62 was removed earlier.
+  static const femaleShopOrder = <int>[
+    1, 71, 72, 73, 74, 75, 76, 65, 64,
+    2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+    23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+    42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+    61, 63, 66, 67, 68, 69, 70, 77, 78,
+  ];
+
+  /// Male art files: `character (n).png` is the n-th id here. Keep this list
+  /// as is; change the order people see in [maleShopOrder] instead.
+  /// m28 was removed earlier (old file character(26).png); a saved m28 pick
+  /// falls back in [byId].
+  static const _maleFileOrder = <int>[
+    40, 41, 42, 43, 44, 45, 46,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+    18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+    29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+    47,
+  ];
+
+  /// Male character everyone can use from the start, like [basic].
+  static const maleDefaultId = 47;
+
+  /// Male shop display order (stable character ids).
+  static const maleShopOrder = <int>[
+    47, 40, 39, 41, 42, 43, 44, 45, 46,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+    18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+    29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+  ];
+
   static final List<AppCharacter> shop = [
     basic,
-    // character (62).png was removed; a saved c62 pick falls back in [byId].
-    for (var i = 1; i <= 64; i++)
-      if (i != 62)
-        AppCharacter(
-          id: 'c$i',
-          assetPath: 'assets/images/character/woman/character ($i).png',
-          // Pack characters keep their ids so existing picks still resolve.
-          group: CharacterPack.forCharacter('c$i') == null
-              ? CharacterGroup.female
-              : CharacterGroup.special,
-        ),
-    const AppCharacter(
-      id: 'c65',
-      assetPath: 'assets/images/character/woman/character(65).png',
-      group: CharacterGroup.female,
-    ),
-    const AppCharacter(
-      id: 'c66',
-      assetPath: 'assets/images/character/woman/character(66).png',
-      group: CharacterGroup.female,
-    ),
-    const AppCharacter(
-      id: 'c67',
-      assetPath: 'assets/images/character/woman/character(67).png',
-      group: CharacterGroup.female,
-    ),
-    for (var i = 68; i <= 71; i++)
+    for (var i = 0; i < femaleShopOrder.length; i++)
       AppCharacter(
-        id: 'c$i',
-        assetPath: 'assets/images/character/woman/character($i).png',
-        group: CharacterGroup.female,
+        id: 'c${femaleShopOrder[i]}',
+        assetPath:
+            'assets/images/character/woman/character (${i + 1}).png',
+        // Pack characters keep their ids so existing picks still resolve.
+        group: CharacterPack.forCharacter('c${femaleShopOrder[i]}') == null
+            ? CharacterGroup.female
+            : CharacterGroup.special,
       ),
-    for (var i = 1; i <= 15; i++)
+    for (var i = 0; i < maleShopOrder.length; i++)
       AppCharacter(
-        id: 'm$i',
-        assetPath: 'assets/images/character/man/character ($i).png',
+        id: 'm${maleShopOrder[i]}',
+        assetPath: 'assets/images/character/man/character '
+            '(${_maleFileOrder.indexOf(maleShopOrder[i]) + 1}).png',
+        isDefault: maleShopOrder[i] == maleDefaultId,
         group: CharacterGroup.male,
       ),
-    const AppCharacter(
-      id: 'm16',
-      assetPath: 'assets/images/character/man/charcter(1).png',
-      group: CharacterGroup.male,
-    ),
-    const AppCharacter(
-      id: 'm17',
-      assetPath: 'assets/images/character/man/character(2).png',
-      group: CharacterGroup.male,
-    ),
-    // character(26).png was removed, so m28 is gone; a saved m28 pick falls
-    // back to the default character in [byId]. character(31)–(37) are
-    // m33–m39 (Android maps m18+ to character(n−2) on its own).
-    for (var i = 16; i <= 37; i++)
-      if (i != 26)
-        AppCharacter(
-          id: 'm${i + 2}',
-          assetPath: 'assets/images/character/man/character($i).png',
-          group: CharacterGroup.male,
-        ),
     for (var i = 1; i <= 8; i++)
       AppCharacter(
         id: 'x$i',
@@ -165,8 +158,8 @@ class AppCharacter {
 
   /// Duplicates taken out of the pickers. They stay in [shop] so a saved pick
   /// (mine or a friend's, on any app version) still draws the same art.
-  /// m8 repeats m7/m9; m16 (`charcter(1).png`) repeats m13; c22 was taken
-  /// out of the kitty pack (hidden so it does not fall into the female tab).
+  /// m8 repeats m7/m9; m16 repeats m13; c22 was taken out of the kitty pack
+  /// (hidden so it does not fall into the female tab).
   static const Set<String> hiddenFromPickers = {'m8', 'm16', 'c22'};
 
   static List<AppCharacter> inGroup(CharacterGroup group) {

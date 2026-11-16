@@ -43,6 +43,7 @@ class TogetherRoomScreen extends StatefulWidget {
 class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
   Set<String> _invited = {};
   Set<String> _decorated = {};
+  bool _openingDecorate = false;
 
   DdayItem? get _room {
     final matches =
@@ -81,51 +82,41 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
     await _loadGuide();
   }
 
-  bool _openingDecorate = false;
-
-  /// One person decorates at a time: take the room's edit lock first, or
-  /// say who has it. A room with no friends yet needs no lock.
+  /// Opens the decorate screen, unless a friend is decorating this room right
+  /// now: then it stays closed and says who. The room itself stays viewable.
+  /// The decorator takes the lock again on entry, for a friend who got in
+  /// between this check and the push.
   Future<void> _openDecorate(String roomId) async {
     if (_openingDecorate) return;
-    final room = _room;
-    if (room != null && room.friends.isNotEmpty) {
-      final known = togetherEditing.lockHolder(roomId);
-      if (known != null) {
-        _showLocked(_holderName(known.name));
-        return;
+    _openingDecorate = true;
+    try {
+      final hasFriends = _room?.friends.isNotEmpty ?? false;
+      if (hasFriends) {
+        final claim = await TogetherEditingPresence.claimLock(
+          roomId,
+          myName: authController.nickname?.trim() ?? '',
+        );
+        if (!mounted) return;
+        if (!claim.ok) {
+          final t = AppStrings.current;
+          final name = claim.holderName.trim().isEmpty
+              ? t.togetherFriendFallbackName
+              : claim.holderName.trim();
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(t.decorateLockedBy(name))));
+          return;
+        }
       }
-      _openingDecorate = true;
-      final claim = await TogetherEditingPresence.claimLock(
-        roomId,
-        myName: authController.nickname?.trim() ?? '',
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) => DdayWidgetDecorateScreen(roomId: roomId),
+        ),
       );
+    } finally {
       _openingDecorate = false;
-      if (!mounted) return;
-      if (!claim.ok) {
-        _showLocked(_holderName(claim.holderName));
-        return;
-      }
     }
-    if (!mounted) return;
-    await Navigator.of(context).push<void>(
-      MaterialPageRoute(
-        builder: (_) => DdayWidgetDecorateScreen(roomId: roomId),
-      ),
-    );
     await _loadGuide();
-  }
-
-  String _holderName(String name) {
-    final trimmed = name.trim();
-    return trimmed.isEmpty ? AppStrings.current.togetherFriendFallbackName : trimmed;
-  }
-
-  void _showLocked(String name) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text(AppStrings.current.decorateLockedBy(name))),
-      );
   }
 
   @override
@@ -593,6 +584,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             ),
             textColor: ddayController.textColorForRoom(room.id),
             textFont: ddayController.textFontForRoom(room.id),
+            link: ddayController.linkForRoom(room.id),
             shape: TogetherWidgetShape.square,
             cornerRadius: _hostCornerDp,
             ),

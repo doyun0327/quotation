@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
+import 'package:quotation/data/together_link.dart';
 import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/widgets/together_bubble_view.dart';
 
@@ -30,6 +31,8 @@ class TogetherIosSnapshot extends StatelessWidget {
     required this.textFont,
     required this.cornerRadius,
     this.bubbles = const [],
+    this.link = TogetherLink.none,
+    this.linkImage,
   });
 
   final double width;
@@ -52,6 +55,10 @@ class TogetherIosSnapshot extends StatelessWidget {
   final WidgetFont textFont;
   final double cornerRadius;
   final List<TogetherBubble> bubbles;
+  final String link;
+
+  /// Decoded [link] picture (assets do not load in time off-screen).
+  final ui.Image? linkImage;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +108,22 @@ class TogetherIosSnapshot extends StatelessWidget {
                 ),
               ),
             ),
+            if (link != TogetherLink.none && linkImage != null)
+              TogetherLinkLayer(
+                link: link,
+                image: linkImage,
+                pixel: isPixel,
+                boxes: [
+                  for (final slot in placed)
+                    TogetherLink.box(
+                      x: slot.x,
+                      y: slot.y,
+                      width: charW * slot.scale,
+                      height: charH * slot.scale,
+                      cardHeight: height,
+                    ),
+                ],
+              ),
             for (final slot in placed)
               Positioned(
                 left: 4 + slot.x,

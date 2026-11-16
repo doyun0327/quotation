@@ -221,6 +221,7 @@ abstract final class EncouragementNotificationScheduler {
             title: fortuneTitle,
             body: body,
             payload: 'fortune:${day.year}-${day.month}-${day.day}',
+            exact: true,
           );
         }
       }
@@ -286,6 +287,7 @@ abstract final class EncouragementNotificationScheduler {
     required String title,
     required String body,
     required String payload,
+    bool exact = false,
   }) async {
     final when = tz.TZDateTime(
       tz.local,
@@ -301,7 +303,9 @@ abstract final class EncouragementNotificationScheduler {
       title: title,
       body: body,
       notificationDetails: _details(body),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: exact
+          ? AndroidScheduleMode.exactAllowWhileIdle
+          : AndroidScheduleMode.inexactAllowWhileIdle,
       payload: payload,
     );
   }

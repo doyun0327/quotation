@@ -255,6 +255,12 @@ class AppStrings {
       );
   String get togetherCheerPermission => _t('Google 로그인 후 다시 시도해 주세요', 'No permission to cheer. Sign in with Google and try again', 'Googleでログインしてから、もう一度お試しください');
   String get togetherWidgetPinnedToast => _t('홈 화면 추가 창이 열렸어요. 추가를 눌러 주세요', 'Add-to-home sheet opened — tap Add to place the widget', 'ホーム画面への追加が表示されました。追加をタップしてください');
+  String get togetherWidgetOnHomeBody => _t(
+        '위젯에 반영했어요. 홈 화면에 안 보이면 추가를 눌러 주세요.',
+        "Widget updated. Not on your home screen? Tap Add.",
+        'ウィジェットに反映しました。ホーム画面にない場合は追加をタップしてください。',
+      );
+  String get togetherWidgetOnHomeAdd => _t('추가', 'Add', '追加');
   String get togetherWidgetSyncToast => _t('위젯에 수정 내용을 반영했어요!', 'Widget updated!', '変更をウィジェットに反映しました！');
   String get togetherFriendsLabel => _t('같은 방 친구', 'Friends in room', '同じルームの友だち');
   String get togetherSoloFriends =>
@@ -577,9 +583,9 @@ class AppStrings {
   String get morningFortuneTitle =>
       _t('아침 오늘의 운세', 'Morning fortune', '朝の今日の運勢');
   String get morningFortuneSubtitle => _t(
-        '매일 아침 8시에 오늘의 운세를 보내드려요',
-        'Today\'s fortune every day at 8 AM',
-        '毎朝8時に今日の運勢をお届けします',
+        '매일 아침에 오늘의 운세를 보내드려요',
+        'Today\'s fortune every morning',
+        '毎朝、今日の運勢をお届けします',
       );
   String get eveningCheerTitle => _t('저녁 응원 문구', 'Evening cheer', '夜の応援メッセージ');
   String get eveningCheerSubtitle => _t('매일 저녁에 응원 문구를 보내드려요', 'A cheer message every day at 7 PM', '毎日19時に応援メッセージをお届けします');

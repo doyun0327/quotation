@@ -89,10 +89,18 @@ object MorningFortuneAlarm {
       val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
       val pending =
           PendingIntent.getBroadcast(context, REQUEST_BASE + i, intent, flags)
+      // Exact so fortune lands near 08:00 local, not delayed into mid-morning.
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending)
+        val exactOk =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                alarmManager.canScheduleExactAlarms()
+        if (exactOk) {
+          alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending)
+        } else {
+          alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pending)
+        }
       } else {
-        alarmManager.set(AlarmManager.RTC_WAKEUP, at, pending)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, at, pending)
       }
     }
   }

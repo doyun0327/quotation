@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -62,11 +63,37 @@ class DdayCloudSync {
       ddayController.addListener(_onRoomsChanged);
       _roomsHooked = true;
     }
+    // Rooms saved under another account must not be pushed or drawn as
+    // this one's (see DdayController.dropRoomsOutside).
+    if (!await _adoptAccount(uid)) return;
     await UserProfileSync.upsertCurrentUser();
     await pushOwnedDdays();
     await pullMemberships();
     _bindRoomWatches();
     unawaited(retryPendingLeaves());
+  }
+
+  /// Makes the saved rooms belong to [uid]. False when the account changed
+  /// but its rooms could not be read (offline): sync waits for the next
+  /// start rather than pushing the old account's rooms under this one.
+  static Future<bool> _adoptAccount(String uid) async {
+    final previous = await ddayController.roomsOwnerUid();
+    if (previous == null || previous == uid) {
+      if (previous == null) await ddayController.setRoomsOwnerUid(uid);
+      return true;
+    }
+    try {
+      final docs = await DdayInviteRepository.allMembershipsForUser(uid);
+      final dropped =
+          await ddayController.dropRoomsOutside({for (final d in docs) d.id});
+      debugPrint('Account changed: dropped $dropped rooms of the old account');
+      await ddayController.setRoomsOwnerUid(uid);
+      return true;
+    } catch (e) {
+      debugPrint('adopt account $uid: $e');
+      _started = false;
+      return false;
+    }
   }
 
   static void _onRoomsChanged() {
@@ -434,9 +461,22 @@ class DdayCloudSync {
     // A blocked friend's edit is not applied here either; the room keeps it
     // and it reaches this phone only through someone else's later save.
     final blockedActor = blockedUsersController.isBlocked(actor);
-    if ((actor.isEmpty || actor != myUid) && !blockedActor) {
+    // ...unless this phone has no layout for the room at all (a reinstall
+    // or a new phone): then my own last save is the only copy there is.
+    final mineButMissing =
+        actor == myUid && !ddayController.hasSavedLayout(ddayId);
+    // Only a room look that changed since this phone last took it. Pushes
+    // and pulls arrive for other reasons too (a friend's character, the edit
+    // lock); taking the same saved look again would wipe my edits that are
+    // not applied yet, and the home widget would jump back to the old look.
+    final layoutSig = _layoutSignature(data);
+    final layoutChanged = await _layoutSeen(ddayId) != layoutSig;
+    if ((layoutChanged || mineButMissing) &&
+        (actor.isEmpty || actor != myUid || mineButMissing) &&
+        !blockedActor) {
       await _applySharedLayout(ddayId, data, myUid == hostUid);
     }
+    await _rememberLayoutSeen(ddayId, layoutSig);
     await _rememberCrowd(ddayId, myUid);
 
     final stamp = _layoutStamp(data['layoutNotifyAt']);
@@ -477,6 +517,61 @@ class DdayCloudSync {
       actorName: actorName,
       stamp: stamp,
     );
+  }
+
+  static const _layoutSeenKey = 'dday_layout_seen_v1';
+
+  /// Short stable fingerprint of the room's shared look (every `layout*`
+  /// field), so a re-sent copy of the same look is told apart from a new one.
+  static String _layoutSignature(Map<String, dynamic> data) {
+    final keys = data.keys.where((k) => k.startsWith('layout')).toList()..sort();
+    final text = StringBuffer();
+    for (final key in keys) {
+      text
+        ..write(key)
+        ..write('=')
+        ..write(data[key])
+        ..write(';');
+    }
+    // FNV-1a (32-bit): the same on every run, unlike String.hashCode.
+    var hash = 0x811c9dc5;
+    for (final unit in text.toString().codeUnits) {
+      hash ^= unit;
+      hash = (hash * 0x01000193) & 0xffffffff;
+    }
+    return '${keys.length}:${hash.toRadixString(16)}';
+  }
+
+  /// Read fresh each time: the FCM background isolate writes this too.
+  static Future<Map<String, String>> _layoutSeenMap() async {
+    final map = <String, String>{};
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.reload();
+      final raw = prefs.getString(_layoutSeenKey);
+      if (raw != null && raw.isNotEmpty) {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map) {
+          for (final entry in decoded.entries) {
+            map['${entry.key}'] = '${entry.value}';
+          }
+        }
+      }
+    } catch (_) {}
+    return map;
+  }
+
+  static Future<String?> _layoutSeen(String roomId) async =>
+      (await _layoutSeenMap())[roomId];
+
+  static Future<void> _rememberLayoutSeen(String roomId, String sig) async {
+    final map = await _layoutSeenMap();
+    if (map[roomId] == sig) return;
+    map[roomId] = sig;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_layoutSeenKey, jsonEncode(map));
+    } catch (_) {}
   }
 
   static Future<String> _profileName(String uid) async {
@@ -558,6 +653,7 @@ class DdayCloudSync {
         !data.containsKey('layoutBgOpacity') &&
         !data.containsKey('layoutTextColor') &&
         !data.containsKey('layoutTextFont') &&
+        !data.containsKey('layoutLink') &&
         !data.containsKey('layoutTextX') &&
         !data.containsKey('layoutCrowdKey') &&
         !data.containsKey('layoutBubbles')) {
@@ -596,6 +692,7 @@ class DdayCloudSync {
     final textColor = (data['layoutTextColor'] as num?)?.toInt();
     final textFontId = data['layoutTextFont'] as String?;
     final textFont = textFontId == null ? null : WidgetFont.byId(textFontId);
+    final link = data['layoutLink'] as String?;
     final shapeId = data['layoutShape'] as String?;
     final shape =
         shapeId == null ? null : TogetherWidgetShape.byId(shapeId);
@@ -634,6 +731,7 @@ class DdayCloudSync {
         bgTheme: bgTheme,
         textColor: textColor,
         textFont: textFont,
+        link: link,
         shape: shape,
         widgetSize: widgetSize,
         crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
@@ -658,6 +756,7 @@ class DdayCloudSync {
         bgTheme: bgTheme,
         textColor: textColor,
         textFont: textFont,
+        link: link,
         shape: shape,
         widgetSize: widgetSize,
         crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
@@ -749,6 +848,7 @@ class DdayCloudSync {
     final bgTheme = looks.bgTheme;
     final textColor = ddayController.textColorForRoom(item.id);
     final textFont = looks.textFont;
+    final link = ddayController.savedLinkForRoom(item.id);
     const shape = TogetherWidgetShape.square;
     final widgetSize = ddayController.widgetSizeForRoom(item.id);
     final crowdKey = ddayController.crowdKeyForRoom(item.id);
@@ -804,6 +904,7 @@ class DdayCloudSync {
           'layoutBgTheme': bgTheme,
           'layoutTextColor': textColor,
           'layoutTextFont': textFont.id,
+          'layoutLink': link,
           'layoutShape': shape.id,
           'layoutWidgetSize': widgetSize.id,
           if (crowdKey.isNotEmpty) 'layoutCrowdKey': crowdKey,

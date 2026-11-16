@@ -115,6 +115,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val textOffsetY = roomInt(room, "textY", readInt(widgetData, "ddayTextOffsetY", 0))
     val textRotation = roomInt(room, "textRotation", 0)
     val textFontAsset = roomStr(room, "textFont", "")
+    val linkAsset = roomStr(room, "linkAsset", "")
     val charScale = roomInt(room, "charScale", readInt(widgetData, "ddayCharScale", 100)).coerceIn(60, 300)
     val friendScale =
         roomInt(room, "friendScale", readInt(widgetData, "ddayFriendCharScale", charScale))
@@ -156,6 +157,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             chars = chars,
             bubbles = bubbles,
             pixelsPerDp = DdayWidgetVisuals.WIDGET_PIXELS_PER_DP,
+            linkAsset = linkAsset,
         )
 
     val imageUri =
@@ -247,6 +249,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
     val textOffsetY = roomInt(room, "textY", readInt(prefs, "ddayTextOffsetY", 0))
     val textRotation = roomInt(room, "textRotation", 0)
     val textFontAsset = roomStr(room, "textFont", "")
+    val linkAsset = roomStr(room, "linkAsset", "")
     val charScale = roomInt(room, "charScale", readInt(prefs, "ddayCharScale", 100)).coerceIn(60, 300)
     val friendScale =
         roomInt(room, "friendScale", readInt(prefs, "ddayFriendCharScale", charScale))
@@ -287,6 +290,7 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
             sizeCharFactor = DdayWidgetVisuals.charFactor(normalized),
             chars = chars,
             bubbles = bubbles,
+            linkAsset = linkAsset,
         )
     val preview = scaleForPinSheet(bitmap, isPixel)
     return wrapPinPreview(context, preview, canvasW, canvasH)

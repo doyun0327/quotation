@@ -25,33 +25,50 @@ import kotlin.math.roundToInt
 
 /** Shared drawables/bitmaps for the D-Day home widget. */
 object DdayWidgetVisuals {
+  // Same order as Flutter [AppCharacter.femaleShopOrder] → character (n).png.
+  private val femaleFileIndex = mapOf(
+    1 to 1, 71 to 2, 72 to 3, 73 to 4, 74 to 5, 75 to 6, 76 to 7, 65 to 8, 64 to 9,
+    2 to 10, 3 to 11, 4 to 12, 5 to 13, 6 to 14, 7 to 15, 8 to 16, 9 to 17, 10 to 18,
+    11 to 19, 12 to 20, 13 to 21, 14 to 22, 15 to 23, 16 to 24, 17 to 25, 18 to 26,
+    19 to 27, 20 to 28, 21 to 29, 22 to 30, 23 to 31, 24 to 32, 25 to 33, 26 to 34,
+    27 to 35, 28 to 36, 29 to 37, 30 to 38, 31 to 39, 32 to 40, 33 to 41, 34 to 42,
+    35 to 43, 36 to 44, 37 to 45, 38 to 46, 39 to 47, 40 to 48, 41 to 49, 42 to 50,
+    43 to 51, 44 to 52, 45 to 53, 46 to 54, 47 to 55, 48 to 56, 49 to 57, 50 to 58,
+    51 to 59, 52 to 60, 53 to 61, 54 to 62, 55 to 63, 56 to 64, 57 to 65, 58 to 66,
+    59 to 67, 60 to 68, 61 to 69, 63 to 70, 66 to 71, 67 to 72, 68 to 73, 69 to 74,
+    70 to 75, 77 to 76, 78 to 77,
+  )
+
+  // Same as Flutter [AppCharacter._maleFileOrder] → character (n).png.
+  private val maleFileIndex = mapOf(
+    40 to 1, 41 to 2, 42 to 3, 43 to 4, 44 to 5, 45 to 6, 46 to 7,
+    1 to 8, 2 to 9, 3 to 10, 4 to 11, 5 to 12, 6 to 13, 7 to 14, 8 to 15, 9 to 16,
+    10 to 17, 11 to 18, 12 to 19, 13 to 20, 14 to 21, 15 to 22, 16 to 23, 17 to 24,
+    18 to 25, 19 to 26, 20 to 27, 21 to 28, 22 to 29, 23 to 30, 24 to 31, 25 to 32,
+    26 to 33, 27 to 34, 29 to 35, 30 to 36, 31 to 37, 32 to 38, 33 to 39, 34 to 40,
+    35 to 41, 36 to 42, 37 to 43, 38 to 44, 39 to 45,
+    47 to 46,
+  )
+
   fun drawableFor(characterId: String): Int {
     return if (characterId == "bul") R.drawable.character_bul else R.drawable.character
   }
 
   /** Flutter asset for a shop character. Falls back to the default sprite. */
   fun assetFor(characterId: String): String {
-    if (characterId == "m16") return "assets/images/character/man/charcter(1).png"
-    if (characterId == "m17") return "assets/images/character/man/character(2).png"
     if (characterId.startsWith("m")) {
       val n = characterId.removePrefix("m").toIntOrNull()
-      if (n != null && n in 1..15) {
-        return "assets/images/character/man/character ($n).png"
-      }
-      // m18 and up are man/character(16).png, character(17).png, …
-      // Open-ended so a new man character does not fall back to the default.
-      if (n != null && n >= 18) {
-        return "assets/images/character/man/character(${n - 2}).png"
+      val file = maleFileIndex[n]
+      if (file != null) {
+        return "assets/images/character/man/character ($file).png"
       }
     }
     if (characterId.startsWith("c")) {
       val n = characterId.removePrefix("c").toIntOrNull()
-      if (n != null && n in 1..64) {
-        return "assets/images/character/woman/character ($n).png"
-      }
-      // c65 and up drop the space: woman/character(65).png, (66), …
-      if (n != null && n >= 65) {
-        return "assets/images/character/woman/character($n).png"
+      // Display-order file index; ids stay stable with the art.
+      val file = femaleFileIndex[n]
+      if (file != null) {
+        return "assets/images/character/woman/character ($file).png"
       }
     }
     // Christmas pack: x1 … x8 are christmas/01.png … 08.png.
@@ -190,6 +207,7 @@ object DdayWidgetVisuals {
       chars: JSONArray? = null,
       bubbles: JSONArray? = null,
       pixelsPerDp: Float = 0f,
+      linkAsset: String = "",
   ): Bitmap {
     val deviceDensity = context.resources.displayMetrics.density.coerceAtLeast(0.5f)
     val density = if (pixelsPerDp > 0f) pixelsPerDp else deviceDensity
@@ -296,6 +314,33 @@ object DdayWidgetVisuals {
 
     val hasFriend = friendId.isNotBlank()
 
+    val linkBmp = if (linkAsset.isBlank()) null else decodeFlutterAsset(context, linkAsset)
+    if (linkBmp != null) {
+      val boxes = ArrayList<RectF>()
+      if (chars != null && chars.length() > 0) {
+        for (i in 0 until chars.length()) {
+          val obj = chars.optJSONObject(i) ?: continue
+          val spriteScale = (obj.optInt("s", 100) / 100f).coerceIn(0.28f, 4.0f)
+          val bw = (72f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(16) * density
+          val bh = (96f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(20) * density
+          val left = originX + (4f + obj.optInt("x", 0)) * density
+          val top = originY + contentH - obj.optInt("y", 0) * density - bh
+          boxes.add(RectF(left, top, left + bw, top + bh))
+        }
+      } else {
+        val meLeft = originX + (4f + meOffsetX) * density
+        val meTop = originY + contentH - meOffsetY * density - meH
+        boxes.add(RectF(meLeft, meTop, meLeft + meW, meTop + meH))
+        if (hasFriend) {
+          val frLeft = originX + (4f + friendOffsetX) * density
+          val frTop = originY + contentH - friendOffsetY * density - friendH
+          boxes.add(RectF(frLeft, frTop, frLeft + friendW, frTop + friendH))
+        }
+      }
+      drawImageLink(canvas, linkBmp, boxes, isPixel)
+      linkBmp.recycle()
+    }
+
     if (chars != null && chars.length() > 0) {
       for (i in 0 until chars.length()) {
         val obj = chars.optJSONObject(i) ?: continue
@@ -392,6 +437,50 @@ object DdayWidgetVisuals {
     )
     canvas.restore()
     return bitmap
+  }
+
+  // Same rules as Flutter TogetherLink (lib/data/together_link.dart).
+  private const val LINK_INSET = 0.24f
+  private const val LINK_ANCHOR_HEIGHT = 0.66f
+  private const val LINK_MAX_HEIGHT_SHARE = 0.32f
+
+  /**
+   * The link picture between each character and its right-hand neighbour,
+   * with its own proportions: only its size follows the gap.
+   */
+  private fun drawImageLink(canvas: Canvas, bmp: Bitmap, boxes: List<RectF>, isPixel: Boolean) {
+    if (boxes.size < 2 || bmp.width <= 0 || bmp.height <= 0) return
+    val aspect = bmp.width.toFloat() / bmp.height
+    val paint =
+        Paint().apply {
+          isFilterBitmap = !isPixel
+          isAntiAlias = !isPixel
+        }
+    val sorted = boxes.sortedBy { it.centerX() }
+    for (i in 0 until sorted.size - 1) {
+      val a = sorted[i]
+      val b = sorted[i + 1]
+      val start = a.centerX() + a.width() * LINK_INSET
+      val end = b.centerX() - b.width() * LINK_INSET
+      val gap = end - start
+      if (gap <= 0f) continue
+      val y =
+          ((a.top + a.height() * LINK_ANCHOR_HEIGHT) + (b.top + b.height() * LINK_ANCHOR_HEIGHT)) / 2f
+      var width = gap
+      var height = width / aspect
+      val maxHeight = LINK_MAX_HEIGHT_SHARE * (a.height() + b.height()) / 2f
+      if (height > maxHeight) {
+        height = maxHeight
+        width = height * aspect
+      }
+      val cx = (start + end) / 2f
+      canvas.drawBitmap(
+          bmp,
+          null,
+          RectF(cx - width / 2f, y - height / 2f, cx + width / 2f, y + height / 2f),
+          paint,
+      )
+    }
   }
 
   // Same numbers as Flutter TogetherBubbleLayout (lib/data/together_bubble.dart).

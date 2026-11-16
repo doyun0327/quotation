@@ -12,6 +12,7 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
+import 'package:quotation/data/together_link.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
@@ -35,6 +36,18 @@ typedef _IosRoomCard = ({
   int textScale,
   List<TogetherPlaced> placed,
 });
+
+/// What [HomeWidgetSync.syncAndOfferPinTogetherWidget] did.
+enum TogetherPinResult {
+  /// The system add-to-home sheet was shown.
+  sheetShown,
+
+  /// The room already has a widget on the home screen; it was redrawn.
+  alreadyOnHome,
+
+  /// Nothing to show (no room, iPhone, or the launcher refused).
+  notShown,
+}
 
 abstract final class HomeWidgetSync {
   static const appGroupId = 'group.com.dearly.quoteswidget';
@@ -461,15 +474,18 @@ abstract final class HomeWidgetSync {
   /// A room that is not on the home screen yet gets its own widget.
   /// Widgets already on the home screen stay on their room.
   ///
-  /// Returns `true` when the add-to-home sheet was shown.
-  static Future<bool> syncAndOfferPinTogetherWidget({
+  /// [force] shows the add-to-home sheet even when the room looks placed:
+  /// some launchers (One UI) keep the id of a widget the user removed, so
+  /// "placed" can be a widget that is no longer on any screen.
+  static Future<TogetherPinResult> syncAndOfferPinTogetherWidget({
     String? roomId,
     String? previousRoomId,
+    bool force = false,
   }) async {
-    if (!_supportsWidgets) return false;
+    if (!_supportsWidgets) return TogetherPinResult.notShown;
     if (!_isAndroid) {
       await syncDday();
-      return false;
+      return TogetherPinResult.notShown;
     }
     try {
       final id = roomId ?? ddayController.widgetDday?.id ?? '';
@@ -503,19 +519,22 @@ abstract final class HomeWidgetSync {
       final kept = legacyRoom == id ? '' : legacyRoom;
       await HomeWidget.saveWidgetData<String>(keyDdayLegacyRoomId, kept);
       await _saveDday();
-      if (id.isEmpty || _roomAlreadyPlaced(id, installed, bindings)) {
+      final placed = id.isNotEmpty && _roomAlreadyPlaced(id, installed, bindings);
+      if (id.isEmpty || (placed && !force)) {
         await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, '');
         await _pushTogetherWidget();
-        return false;
+        return placed
+            ? TogetherPinResult.alreadyOnHome
+            : TogetherPinResult.notShown;
       }
       await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, id);
       await HomeWidget.saveWidgetData<String>(keyDdayRoomId, id);
       final pinned = await _requestPinTogetherWidgetFast();
       await _pushTogetherWidget();
-      return pinned;
+      return pinned ? TogetherPinResult.sheetShown : TogetherPinResult.notShown;
     } catch (e) {
       debugPrint('syncAndOfferPinTogetherWidget: $e');
-      return false;
+      return TogetherPinResult.notShown;
     }
   }
 
@@ -810,6 +829,11 @@ abstract final class HomeWidgetSync {
         'textColor': _hex(Color(ddayController.textColorForRoom(item.id))),
         // Android loads this from flutter_assets. Empty keeps the style font.
         'textFont': ddayController.textFontForRoom(item.id).asset ?? '',
+        'link': ddayController.linkForRoom(item.id),
+        // Android draws this picture as is (see TogetherLink).
+        'linkAsset':
+            TogetherLink.styleFor(ddayController.linkForRoom(item.id))?.asset ??
+                '',
         'chars': TogetherCrowdLayout.widgetChars(placed),
         'bubbles': TogetherBubble.widgetJson(
           _shownBubbles(item.id),
@@ -872,6 +896,7 @@ abstract final class HomeWidgetSync {
           bgAsset: bgAsset,
           placed: card.placed,
           bubbles: _shownBubbles(item.id),
+          link: ddayController.linkForRoom(item.id),
         );
       }
       if (ready) signatures[item.id] = signature;
@@ -1146,6 +1171,7 @@ abstract final class HomeWidgetSync {
         bgAsset: bgAsset,
         placed: placed,
         bubbles: _shownBubbles(item.id),
+        link: ddayController.linkForRoom(item.id),
       );
     }
   }
@@ -1166,6 +1192,7 @@ abstract final class HomeWidgetSync {
     required String bgAsset,
     required List<TogetherPlaced> placed,
     List<TogetherBubble> bubbles = const [],
+    String link = '',
   }) async {
     if (!_isIOS) return false;
     final decoded = <String, ui.Image>{};
@@ -1176,6 +1203,9 @@ abstract final class HomeWidgetSync {
       if (bgPath.isNotEmpty) {
         bgImage = await _decodeUiImage(bgPath);
       }
+      final linkAsset = TogetherLink.styleFor(link)?.asset;
+      final linkImage =
+          linkAsset == null ? null : await _decodeUiImage(linkAsset);
       for (final slot in placed) {
         final id = slot.characterId;
         if (decoded.containsKey(id)) continue;
@@ -1211,6 +1241,8 @@ abstract final class HomeWidgetSync {
               textFont: textFont,
               cornerRadius: corner,
               bubbles: bubbles,
+              link: link,
+              linkImage: linkImage,
             ),
           ),
         ),

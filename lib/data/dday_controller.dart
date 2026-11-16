@@ -4,6 +4,7 @@ import 'dart:ui' show Size;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:quotation/data/together_link.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/home_widget_sync.dart';
@@ -269,6 +270,7 @@ class _RoomOffsets {
     this.bgTheme = 'widget_background',
     this.textColor = 0xFFF26B8A,
     this.textFont = '',
+    this.link = '',
     this.shape = 'square',
     this.widgetSize = 's42',
     this.crowdKey = '',
@@ -294,6 +296,8 @@ class _RoomOffsets {
   final int textColor;
   /// [WidgetFont.id]. Empty keeps the style default font.
   final String textFont;
+  /// [TogetherLink] id drawn between the characters. Empty = none.
+  final String link;
   final String shape;
   final String widgetSize;
   final String crowdKey;
@@ -320,6 +324,7 @@ class _RoomOffsets {
         'bgTheme': bgTheme,
         'textColor': textColor,
         if (textFont.isNotEmpty) 'textFont': textFont,
+        if (link.isNotEmpty) 'link': link,
         'shape': shape,
         'widgetSize': widgetSize,
         if (crowdKey.isNotEmpty) 'crowdKey': crowdKey,
@@ -365,6 +370,7 @@ class _RoomOffsets {
       bgTheme: json['bgTheme'] as String? ?? 'widget_background',
       textColor: json['textColor'] as int? ?? 0xFFF26B8A,
       textFont: json['textFont'] as String? ?? '',
+      link: json['link'] as String? ?? '',
       shape: 'square',
       widgetSize: json['widgetSize'] as String? ?? 's42',
       crowdKey: json['crowdKey'] as String? ?? '',
@@ -410,6 +416,7 @@ class _RoomOffsets {
     String? bgTheme,
     int? textColor,
     String? textFont,
+    String? link,
     String? shape,
     String? widgetSize,
     String? crowdKey,
@@ -435,6 +442,7 @@ class _RoomOffsets {
       bgTheme: bgTheme ?? this.bgTheme,
       textColor: textColor ?? this.textColor,
       textFont: textFont ?? this.textFont,
+      link: link ?? this.link,
       shape: shape ?? this.shape,
       widgetSize: widgetSize ?? this.widgetSize,
       crowdKey: crowdKey ?? this.crowdKey,
@@ -450,13 +458,15 @@ abstract final class PaidLook {
   static const bg = 'bg';
   static const font = 'font';
   static const bubbles = 'bubbles';
+  static const link = 'link';
 
   /// Null when the field is missing (layout from an older app version).
   static Set<String>? parse(Object? raw) {
     if (raw is! List) return null;
     return {
       for (final key in raw)
-        if (key == bg || key == font || key == bubbles) key as String,
+        if (key == bg || key == font || key == bubbles || key == link)
+          key as String,
     };
   }
 }
@@ -719,6 +729,7 @@ class DdayController extends ChangeNotifier {
       bgTheme: o.bgTheme,
       textColor: o.textColor,
       textFont: WidgetFont.byId(o.textFont).id,
+      link: o.link,
       shape: TogetherWidgetShape.byId(o.shape).id,
       widgetSize: TogetherWidgetSize.byId(o.widgetSize).id,
       crowdKey: o.crowdKey,
@@ -727,6 +738,9 @@ class DdayController extends ChangeNotifier {
       paidLooks: o.paidLooks,
     );
   }
+
+  /// Whether this phone has saved any layout for [roomId].
+  bool hasSavedLayout(String roomId) => _roomOffsets.containsKey(roomId);
 
   int meOffsetXForRoom(String roomId) => _offsetsForRoom(roomId).meX;
   int meOffsetYForRoom(String roomId) => _offsetsForRoom(roomId).meY;
@@ -764,6 +778,20 @@ class DdayController extends ChangeNotifier {
     }
     return WidgetFont.values.first;
   }
+  /// What joins the characters ([TogetherLink]).
+  /// The red string is premium (see [_showsPaidLook]); hearts are free.
+  String linkForRoom(String roomId) {
+    final id = savedLinkForRoom(roomId);
+    if (!TogetherLink.requiresPremium(id) ||
+        _showsPaidLook(roomId, PaidLook.link)) {
+      return id;
+    }
+    return TogetherLink.none;
+  }
+
+  /// Saved pick before the free fallback; this is what the room shares.
+  String savedLinkForRoom(String roomId) =>
+      TogetherLink.normalize(_offsetsForRoom(roomId).link);
   TogetherWidgetShape shapeForRoom(String roomId) =>
       TogetherWidgetShape.byId(_offsetsForRoom(roomId).shape);
   TogetherWidgetSize widgetSizeForRoom(String roomId) => TogetherWidgetSize.s42;
@@ -822,6 +850,7 @@ class DdayController extends ChangeNotifier {
     String? bgTheme,
     int? textColor,
     WidgetFont? textFont,
+    String? link,
     TogetherWidgetShape? shape,
     TogetherWidgetSize? widgetSize,
     bool fromCloud = false,
@@ -841,6 +870,7 @@ class DdayController extends ChangeNotifier {
       // fallback was not touched, so keep the saved (maybe premium) pick.
       if (bgTheme == bgThemeForRoom(targetId)) bgTheme = null;
       if (textFont == textFontForRoom(targetId)) textFont = null;
+      if (link == linkForRoom(targetId)) link = null;
       if (bubbles != null &&
           TogetherBubble.sameList(bubbles, bubblesForRoom(targetId))) {
         bubbles = null;
@@ -864,6 +894,7 @@ class DdayController extends ChangeNotifier {
       bgTheme: bgTheme,
       textColor: textColor,
       textFont: textFont?.id,
+      link: link,
       shape: shape?.id,
       widgetSize: widgetSize?.id,
       crowdKey: crowdKey,
@@ -890,6 +921,7 @@ class DdayController extends ChangeNotifier {
         cur.bgTheme == next.bgTheme &&
         cur.textColor == next.textColor &&
         cur.textFont == next.textFont &&
+        cur.link == next.link &&
         cur.shape == next.shape &&
         cur.widgetSize == next.widgetSize &&
         _sameCrowd(cur, next) &&
@@ -933,7 +965,12 @@ class DdayController extends ChangeNotifier {
   /// bubble keeps its mark; new words or a new tail do not.
   Set<String> _markPaidLooks(_RoomOffsets cur, _RoomOffsets next) {
     if (membershipController.isPremium) {
-      return const {PaidLook.bg, PaidLook.font, PaidLook.bubbles};
+      return const {
+        PaidLook.bg,
+        PaidLook.font,
+        PaidLook.bubbles,
+        PaidLook.link,
+      };
     }
     final paid = {...cur.paidLooks};
     void mark(String look, bool changed) {
@@ -942,6 +979,7 @@ class DdayController extends ChangeNotifier {
 
     mark(PaidLook.bg, cur.bgTheme != next.bgTheme);
     mark(PaidLook.font, cur.textFont != next.textFont);
+    mark(PaidLook.link, cur.link != next.link);
     mark(
       PaidLook.bubbles,
       !TogetherBubble.sameContent(cur.bubbles, next.bubbles),
@@ -1069,6 +1107,46 @@ class DdayController extends ChangeNotifier {
     await _persist();
     notifyListeners();
     return true;
+  }
+
+  static const _roomsOwnerKey = 'dday_rooms_owner_uid';
+
+  /// Firebase uid the saved rooms were synced with. Null on phones that
+  /// never recorded one (before this was added).
+  Future<String?> roomsOwnerUid() async {
+    final prefs = await SharedPreferences.getInstance();
+    final uid = prefs.getString(_roomsOwnerKey)?.trim() ?? '';
+    return uid.isEmpty ? null : uid;
+  }
+
+  Future<void> setRoomsOwnerUid(String uid) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_roomsOwnerKey, uid);
+  }
+
+  /// After the account changed: drops cloud rooms the new account is not in.
+  /// They came from the old account (an Android backup restore, a sign-in
+  /// to someone else) and would draw the old account as a second "me".
+  /// Rooms never synced to the cloud stay. Returns how many were dropped.
+  Future<int> dropRoomsOutside(Set<String> keepIds) async {
+    final drop = [
+      for (final item in _items)
+        if (item.cloudOwnerUid != null && !keepIds.contains(item.id)) item.id,
+    ];
+    if (drop.isEmpty) return 0;
+    for (final id in drop) {
+      _items.removeWhere((e) => e.id == id);
+      _meCharByRoom.remove(id);
+      _roomOffsets.remove(id);
+    }
+    if (_items.isNotEmpty && !_items.any((e) => e.pinnedForWidget)) {
+      _items[0] = _items[0].copyWith(pinnedForWidget: true);
+    }
+    _applyActiveOffsetsFromPinned();
+    await _persistMeCharacters();
+    await _persistRoomOffsets();
+    await _persist();
+    return drop.length;
   }
 
   Future<void> remove(String id) async {

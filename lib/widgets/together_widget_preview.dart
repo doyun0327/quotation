@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:quotation/data/together_link.dart';
 import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
@@ -153,6 +154,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.onBlankTap,
     this.crowd,
     this.bubbles = const [],
+    this.link = TogetherLink.none,
   });
 
   final double width;
@@ -206,6 +208,9 @@ class TogetherWidgetPreview extends StatelessWidget {
 
   /// Drawn above the characters, same as the home widget.
   final List<TogetherPreviewBubble> bubbles;
+
+  /// [TogetherLink] drawn between the characters, behind them.
+  final String link;
 
   /// Same dp as the home widget: measured launcher cell, else One UI span.
   static Size sizeForShape(
@@ -600,6 +605,46 @@ class TogetherWidgetPreview extends StatelessWidget {
                     bgAssetPath!,
                     isPixel,
                     width,
+                  ),
+                ),
+              ),
+            ),
+          if (link != TogetherLink.none)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(radius),
+                  child: TogetherLinkLayer(
+                    link: link,
+                    pixel: isPixel,
+                    boxes: [
+                      if (crowd != null)
+                        for (final person in crowd!)
+                          TogetherLink.box(
+                            x: person.x,
+                            y: person.y,
+                            width: charW * person.scale,
+                            height: charH * person.scale,
+                            cardHeight: height,
+                          )
+                      else ...[
+                        TogetherLink.box(
+                          x: mePos.x,
+                          y: mePos.y,
+                          width: meW,
+                          height: meH,
+                          cardHeight: height,
+                        ),
+                        if (friend != null)
+                          TogetherLink.box(
+                            x: friendPos.x,
+                            y: friendPos.y,
+                            width: friendW,
+                            height: friendH,
+                            cardHeight: height,
+                          ),
+                      ],
+                    ],
                   ),
                 ),
               ),

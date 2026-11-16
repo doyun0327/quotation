@@ -20,6 +20,12 @@ class TogetherBgTheme {
   /// Themes from [assets/images/widgetbackground/].
   static final all = <TogetherBgTheme>[
     none,
+    // Pastel first, right after the link pictures (see TogetherLink).
+    for (var i = 1; i <= 10; i++)
+      TogetherBgTheme(
+        id: 'pastel_$i',
+        assetPath: 'assets/images/widgetbackground/widget_pastel_$i.png',
+      ),
     TogetherBgTheme(
       id: 'widget_background',
       assetPath: 'assets/images/widgetbackground/widget_background.png',
@@ -70,14 +76,17 @@ class TogetherBgTheme {
   /// Picker shows transparent plus every bundled photo.
   static List<TogetherBgTheme> get choices => all;
 
-  /// Free users may pick the first [freeChoiceCount] entries in [choices].
-  static const freeChoiceCount = 4;
+  /// Backgrounds free users may pick. By id, so reordering the picker
+  /// never locks a background someone already uses.
+  static const freeIds = {
+    'none',
+    'widget_background',
+    'widget_background2',
+    'widget_background6',
+  };
 
-  static bool requiresPremium(TogetherBgTheme theme) {
-    final index = choices.indexWhere((t) => t.id == theme.id);
-    if (index < 0) return true;
-    return index >= freeChoiceCount;
-  }
+  static bool requiresPremium(TogetherBgTheme theme) =>
+      !freeIds.contains(theme.id);
 
   static TogetherBgTheme byId(String? id) {
     if (id == null || id.isEmpty) return none;

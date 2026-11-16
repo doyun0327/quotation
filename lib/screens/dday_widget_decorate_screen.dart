@@ -9,6 +9,7 @@ import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
+import 'package:quotation/data/together_link.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/widget_album_background.dart';
@@ -80,6 +81,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   late String _bgThemeId;
   late int _textColor;
   late WidgetFont _textFont;
+  late String _link;
   late TogetherWidgetSize _widgetSize;
   Size? _hostSize;
   TogetherWidgetSize? _hostForSize;
@@ -147,6 +149,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final migrateAlbum = savedTheme == TogetherBgTheme.albumId;
     _textColor = ddayController.textColorForRoom(id);
     _textFont = ddayController.textFontForRoom(id);
+    _link = ddayController.linkForRoom(id);
     _bubbles = ddayController.bubblesForRoom(id);
     _widgetSize = TogetherWidgetSize.s42;
     final rooms = ddayController.items.where((e) => e.id == id);
@@ -163,7 +166,31 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     });
     _adoptCrowd();
     ddayController.addListener(_syncFromController);
-    unawaited(_syncAfterOpen(migrateAlbum: migrateAlbum));
+    unawaited(_enterDecorate(migrateAlbum: migrateAlbum));
+  }
+
+  /// Claim the edit lock as soon as this screen opens (last step). If a
+  /// friend already has it, leave with the busy message — the room screen
+  /// itself never blocks.
+  Future<void> _enterDecorate({required bool migrateAlbum}) async {
+    if (_room?.friends.isNotEmpty ?? false) {
+      final claim = await TogetherEditingPresence.claimLock(
+        widget.roomId,
+        myName: authController.nickname?.trim() ?? '',
+      );
+      if (!mounted) return;
+      if (!claim.ok) {
+        final name = claim.holderName.trim().isEmpty
+            ? AppStrings.current.togetherFriendFallbackName
+            : claim.holderName.trim();
+        final message = AppStrings.current.decorateLockedBy(name);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) unawaited(_closeEditor(message));
+        });
+        return;
+      }
+    }
+    await _syncAfterOpen(migrateAlbum: migrateAlbum);
   }
 
   void _onCheerFocusChanged() {
@@ -217,9 +244,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   void _beginPresence() {
     _presenceBeat?.cancel();
     _lastActivity = DateTime.now();
-    unawaited(_holdLock());
+    // Entry lock was already taken in [_enterDecorate]; heartbeat only renews.
+    unawaited(_renewLock());
     _presenceBeat = Timer.periodic(TogetherEditingPresence.heartbeat, (_) {
-      unawaited(_holdLock());
+      unawaited(_renewLock());
     });
     _idleCheck?.cancel();
     _idleCheck = Timer.periodic(const Duration(seconds: 15), (_) {
@@ -229,10 +257,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     });
   }
 
-  /// Keeps the room's edit lock alive. If a friend got the lock meanwhile
-  /// (this phone was away longer than its lifetime), this editor closes
-  /// instead of overwriting their work.
-  Future<void> _holdLock() async {
+  /// Renews the room's edit lock. If a friend took it meanwhile (this phone
+  /// was away longer than its lifetime), this editor closes instead of
+  /// overwriting their work.
+  Future<void> _renewLock() async {
     final claim = await TogetherEditingPresence.claimLock(
       widget.roomId,
       myName: authController.nickname?.trim() ?? '',
@@ -295,6 +323,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final theme = ddayController.bgThemeForRoom(id);
     final color = ddayController.textColorForRoom(id);
     final font = ddayController.textFontForRoom(id);
+    final link = ddayController.linkForRoom(id);
     // The open edit sheet owns the draft; a reload would drop a new bubble.
     final bubbles =
         _editingBubble ? _bubbles : ddayController.bubblesForRoom(id);
@@ -311,6 +340,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _bgThemeId != theme ||
         _textColor != color ||
         _textFont != font ||
+        _link != link ||
         !TogetherBubble.sameList(_bubbles, bubbles);
     final crowdChanged = _adoptCrowd();
     // Sizes a friend saved for each person. Skipped while my own crowd edit
@@ -333,6 +363,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _bgThemeId = theme;
         _textColor = color;
         _textFont = font;
+        _link = link;
         _bubbles = bubbles;
         if (!_bubbles.any((b) => b.id == _bubbleId)) _bubbleId = null;
         if (_focus == _DecorateFocus.friend) _scaleMe = false;
@@ -504,6 +535,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       bgOpacity: 100,
       textColor: _textColor,
       textFont: _textFont,
+      link: _link,
       shape: _shape,
       widgetSize: _widgetSize,
       bubbles: _bubbles,
@@ -528,7 +560,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     if (applyToHome) {
       final previousRoom = ddayController.widgetDday?.id;
       await ddayController.applyRoomToHomeWidget(widget.roomId);
-      await HomeWidgetSync.syncAndOfferPinTogetherWidget(
+      final pin = await HomeWidgetSync.syncAndOfferPinTogetherWidget(
         roomId: widget.roomId,
         previousRoomId: previousRoom,
       );
@@ -536,9 +568,29 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         await TogetherGuide.markExportedWidget();
         _widgetExported = true;
       }
-      if (toast && cheerOk && mounted) {
+      // The launcher may still list a widget the user already removed, so
+      // "already on home" offers an add button instead of assuming it.
+      final onHome = pin == TogetherPinResult.alreadyOnHome;
+      if (((toast && cheerOk) || onHome) && mounted) {
+        final t = AppStrings.current;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.togetherWidgetSyncToast)),
+          SnackBar(
+            content: Text(
+              onHome ? t.togetherWidgetOnHomeBody : t.togetherWidgetSyncToast,
+            ),
+            duration: Duration(seconds: onHome ? 6 : 4),
+            action: onHome
+                ? SnackBarAction(
+                    label: t.togetherWidgetOnHomeAdd,
+                    onPressed: () => unawaited(
+                      HomeWidgetSync.syncAndOfferPinTogetherWidget(
+                        roomId: widget.roomId,
+                        force: true,
+                      ),
+                    ),
+                  )
+                : null,
+          ),
         );
       }
       return;
@@ -1446,9 +1498,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           ),
         ),
         clipBehavior: Clip.hardEdge,
-        // Premium-only: just dimmed (no lock badge) so it reads as unavailable.
+        // Premium-only: heavily faded (no lock badge) so it reads as unavailable.
         child: Opacity(
-          opacity: locked ? 0.42 : 1,
+          opacity: locked ? 0.22 : 1,
           child: child,
         ),
       ),
@@ -1584,6 +1636,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             ),
                             textColor: _textColor,
                             textFont: _textFont,
+                            link: _link,
                             shape: _shape,
                             cornerRadius: _hostCornerDp,
                             onMePan: (_focus == _DecorateFocus.me ||
@@ -1799,8 +1852,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
-                        // +1: the speech-bubble tile right after Transparent.
-                        itemCount: TogetherBgTheme.choices.length + 1,
+                        // Transparent, the speech-bubble tile, the link
+                        // pictures, then the backgrounds.
+                        itemCount: TogetherBgTheme.choices.length +
+                            1 +
+                            TogetherLink.styles.length,
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
                           if (index == 1) {
@@ -1834,8 +1890,39 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               ),
                             );
                           }
-                          final theme =
-                              TogetherBgTheme.choices[index == 0 ? 0 : index - 1];
+                          final linkCount = TogetherLink.styles.length;
+                          if (index >= 2 && index < 2 + linkCount) {
+                            final style = TogetherLink.styles[index - 2];
+                            final locked = !isPremium && style.premium;
+                            return _bgChoice(
+                              selected: _link == style.id,
+                              accent: palette.accent,
+                              locked: locked,
+                              onTap: () {
+                                if (locked) {
+                                  _showPremiumLock();
+                                  return;
+                                }
+                                _clearSelection();
+                                // Tapping the picked one again takes it off.
+                                setState(() => _link = _link == style.id
+                                    ? TogetherLink.none
+                                    : style.id);
+                                _dragTick.value++;
+                                _persist();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(6),
+                                child: Image.asset(
+                                  style.asset,
+                                  fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.medium,
+                                ),
+                              ),
+                            );
+                          }
+                          final theme = TogetherBgTheme.choices[
+                              index == 0 ? 0 : index - 1 - linkCount];
                           final locked =
                               !isPremium && TogetherBgTheme.requiresPremium(theme);
                           return _bgChoice(
@@ -2317,7 +2404,7 @@ class _FontChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Opacity(
-        opacity: locked ? 0.42 : 1,
+        opacity: locked ? 0.22 : 1,
         child: Container(
           height: 36,
           padding: const EdgeInsets.symmetric(horizontal: 14),

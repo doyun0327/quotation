@@ -223,6 +223,15 @@ class AuthController extends ChangeNotifier {
         final fresh = FirebaseAuth.instance.currentUser ?? existingFb;
         await _setUser(AuthUser.fromFirebase(fresh));
       }
+      // Saved as signed in, but Firebase has no such session: a reinstall
+      // brings app data back from Android backup, never the Firebase login.
+      // Get the Google account back before an anonymous user is made, or
+      // the app shows "signed in" while it runs as a stranger.
+      final fb = FirebaseAuth.instance.currentUser;
+      if (_user != null && (fb == null || fb.isAnonymous)) {
+        final back = restoreGoogle && await _restoreGoogleAccount();
+        if (!back) await _clearUser();
+      }
       await ensureAnonymous();
       if (restoreGoogle && googleEmail == null) {
         await _restoreGoogleAccount();
@@ -802,17 +811,22 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Brings back the Gmail address when Firebase only has an anonymous session.
-  Future<void> _restoreGoogleAccount() async {
-    if (!CloudConsent.accepted) return;
+  /// Brings back the Google account when Firebase only has an anonymous
+  /// session (or none). True once Firebase is signed in as that account.
+  Future<bool> _restoreGoogleAccount() async {
+    if (!CloudConsent.accepted) return false;
     try {
       final account = await _client.signInSilently();
-      if (account == null || account.email.trim().isEmpty) return;
+      if (account == null || account.email.trim().isEmpty) return false;
       await _setUser(AuthUser.fromGoogle(account));
-      unawaited(_linkFirebase(account));
+      if (await _linkFirebase(account)) return true;
     } catch (e) {
       debugPrint('Google silent restore: $e');
     }
+    // Never leave "signed in" on screen without the Firebase account behind it.
+    final fb = FirebaseAuth.instance.currentUser;
+    if (fb == null || fb.isAnonymous) await _clearUser();
+    return false;
   }
 
   Future<void> _clearUser() async {
