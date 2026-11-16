@@ -256,9 +256,9 @@ class AppStrings {
   String get togetherCheerPermission => _t('Google 로그인 후 다시 시도해 주세요', 'No permission to cheer. Sign in with Google and try again', 'Googleでログインしてから、もう一度お試しください');
   String get togetherWidgetPinnedToast => _t('홈 화면 추가 창이 열렸어요. 추가를 눌러 주세요', 'Add-to-home sheet opened — tap Add to place the widget', 'ホーム画面への追加が表示されました。追加をタップしてください');
   String get togetherWidgetOnHomeBody => _t(
-        '위젯에 반영했어요. 홈 화면에 안 보이면 추가를 눌러 주세요.',
-        "Widget updated. Not on your home screen? Tap Add.",
-        'ウィジェットに反映しました。ホーム画面にない場合は追加をタップしてください。',
+        '홈 화면에 반영했어요.\n홈 화면에 안 보이면 추가를 눌러 주세요.',
+        'Applied to the home screen.\nNot showing? Tap Add.',
+        'ホーム画面に反映しました。\nホームにない場合は追加をタップしてください。',
       );
   String get togetherWidgetOnHomeAdd => _t('추가', 'Add', '追加');
   String get togetherWidgetSyncToast => _t('위젯에 수정 내용을 반영했어요!', 'Widget updated!', '変更をウィジェットに反映しました！');

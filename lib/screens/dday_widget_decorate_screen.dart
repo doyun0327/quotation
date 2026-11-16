@@ -575,21 +575,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         final t = AppStrings.current;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              onHome ? t.togetherWidgetOnHomeBody : t.togetherWidgetSyncToast,
+            content: Text(t.togetherWidgetOnHomeBody),
+            duration: const Duration(seconds: 3),
+            action: SnackBarAction(
+              label: t.togetherWidgetOnHomeAdd,
+              onPressed: () => unawaited(
+                HomeWidgetSync.syncAndOfferPinTogetherWidget(
+                  roomId: widget.roomId,
+                  force: true,
+                ),
+              ),
             ),
-            duration: Duration(seconds: onHome ? 6 : 4),
-            action: onHome
-                ? SnackBarAction(
-                    label: t.togetherWidgetOnHomeAdd,
-                    onPressed: () => unawaited(
-                      HomeWidgetSync.syncAndOfferPinTogetherWidget(
-                        roomId: widget.roomId,
-                        force: true,
-                      ),
-                    ),
-                  )
-                : null,
           ),
         );
       }
@@ -598,7 +594,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     await HomeWidgetSync.syncDday();
     if (toast && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppStrings.current.ddayDuoTestUpdatedToast)),
+        SnackBar(
+          content: Text(AppStrings.current.ddayDuoTestUpdatedToast),
+          duration: const Duration(seconds: 3),
+        ),
       );
     }
   }
