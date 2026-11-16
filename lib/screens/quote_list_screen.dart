@@ -210,6 +210,10 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                     itemBuilder: (context, index) {
                       final asset = QuoteBackgrounds.current[index];
                       final selected = asset == currentAsset;
+                      final shown = QuoteBackgrounds.displayAsset(
+                        asset,
+                        palette.id,
+                      );
                       return GestureDetector(
                         onTap: () {
                           QuoteBackgrounds.selected.value = asset;
@@ -226,7 +230,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                           ),
                           clipBehavior: Clip.hardEdge,
                           child: Image.asset(
-                            asset,
+                            shown,
                             fit: BoxFit.cover,
                             filterQuality: visualStyleController.isClean
                                 ? FilterQuality.medium
@@ -435,6 +439,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
         localeController,
         archiveController,
         visualStyleController,
+        themeController,
         QuoteBackgrounds.selected,
       ]),
       builder: (context, _) {
@@ -448,7 +453,11 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
         final quotes = _order;
         final categoryTitle = t.mainCategoryTitle(widget.mainCategory.id);
         final topInset = MediaQuery.paddingOf(context).top;
-        final backgroundAsset = QuoteBackgrounds.assetFor();
+        final pickedBackground = QuoteBackgrounds.assetFor();
+        final backgroundAsset = QuoteBackgrounds.displayAsset(
+          pickedBackground,
+          themeController.palette.id,
+        );
         final clean = visualStyleController.isClean;
 
         return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -613,7 +622,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                     top: false,
                     child: _ReaderMenuButton(
                       label: t.readerMenu,
-                      onTap: () => _openReaderMenu(context, backgroundAsset),
+                      onTap: () => _openReaderMenu(context, pickedBackground),
                     ),
                   ),
                 ),
