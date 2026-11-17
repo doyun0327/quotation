@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ import 'package:quotation/widgets/sign_in_flow.dart';
 import 'package:quotation/widgets/together_bubble_view.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 import 'package:quotation/widgets/subscription_terms.dart';
+import 'package:quotation/widgets/ios_transparent_guide.dart';
 
 /// In-app editor for a Together room home widget.
 class DdayWidgetDecorateScreen extends StatefulWidget {
@@ -193,6 +195,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         return;
       }
     }
+    unawaited(_loadIosWallpaper());
     await _syncAfterOpen(migrateAlbum: migrateAlbum);
   }
 
@@ -466,100 +469,36 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     return matches.isEmpty ? null : matches.first;
   }
 
-  /// Widgy-style: first ask for an empty-home capture, then pick photo + slot.
+  /// iPhone "투명" home photo (null until registered), shown in the preview.
+  String? _iosWallpaperPath;
+
+  Future<void> _loadIosWallpaper() async {
+    if (!IosFakeWallpaper.isIOS) return;
+    final path = await IosFakeWallpaper.currentPath();
+    if (!mounted) return;
+    if (path != null) {
+      // The crop keeps its file name; drop the cached decode of the old one.
+      unawaited(FileImage(File(path)).evict());
+    }
+    setState(() => _iosWallpaperPath = path);
+  }
+
+  /// "투명" picked with no home photo: the intro popup with the example.
   Future<void> _offerIosFakeWallpaper() async {
     if (!IosFakeWallpaper.isIOS || !mounted) return;
-    final t = AppStrings.current;
+    final ok = await IosTransparentGuide.showIntro(context);
+    if (ok) {
+      await _loadIosWallpaper();
+      await _persist();
+    }
+  }
 
-    // Step 1: one clear instruction — capture a blank home screen.
-    final confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        return AlertDialog(
-          title: Text(
-            t.iosFakeWallpaperCaptureTitle,
-            style: AppTheme.body.copyWith(fontWeight: FontWeight.w900),
-          ),
-          content: Text(
-            t.iosFakeWallpaperCaptureBody,
-            style: AppTheme.body.copyWith(fontSize: 15, height: 1.4),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(t.iosFakeWallpaperCaptureCancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(t.iosFakeWallpaperCaptureOk),
-            ),
-          ],
-        );
-      },
-    );
-    if (confirmed != true || !mounted) return;
-
-    // Step 2: choose widget row, then gallery pick.
-    final slot = await showModalBottomSheet<IosFakeWallpaperSlot>(
-      context: context,
-      backgroundColor: AppColors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  t.iosFakeWallpaperNextTitle,
-                  style: AppTheme.body.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  t.iosFakeWallpaperNextBody,
-                  style: AppTheme.body.copyWith(
-                    fontSize: 13,
-                    height: 1.35,
-                    color: AppColors.muted,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () =>
-                      Navigator.pop(ctx, IosFakeWallpaperSlot.top),
-                  child: Text(t.iosFakeWallpaperTop),
-                ),
-                const SizedBox(height: 8),
-                FilledButton(
-                  onPressed: () =>
-                      Navigator.pop(ctx, IosFakeWallpaperSlot.mid),
-                  child: Text(t.iosFakeWallpaperMid),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-    if (slot == null || !mounted) return;
-    final ok = await IosFakeWallpaper.pickAndSave(slot);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          ok ? t.iosFakeWallpaperDone : t.iosFakeWallpaperFailed,
-        ),
-      ),
-    );
-    if (ok) await _persist();
+  /// "변경하기": register a new home photo in place of the old one.
+  Future<void> _changeIosWallpaper() async {
+    final ok = await IosTransparentGuide.pickAndRegister(context);
+    if (!ok) return;
+    await _loadIosWallpaper();
+    await _persist();
   }
 
   Future<bool> _saveCheerIfNeeded({bool quiet = false}) async {
@@ -675,19 +614,38 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       final onHome = pin == TogetherPinResult.alreadyOnHome;
       if (((toast && cheerOk) || onHome) && mounted) {
         final t = AppStrings.current;
+        // Galaxy gets the add button (its launcher can lose the widget);
+        // iPhone and other phones just get the confirmation.
+        final offerAdd = _samsung;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(t.togetherWidgetOnHomeBody),
-            duration: const Duration(seconds: 3),
-            action: SnackBarAction(
-              label: t.togetherWidgetOnHomeAdd,
-              onPressed: () => unawaited(
-                HomeWidgetSync.syncAndOfferPinTogetherWidget(
-                  roomId: widget.roomId,
-                  force: true,
-                ),
+            // Always two lines on any screen width: each line keeps its own
+            // break and shrinks to fit instead of wrapping to a third.
+            content: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                offerAdd
+                    ? t.togetherWidgetOnHomeBody
+                    : t.togetherWidgetOnHomeShort,
+                maxLines: 2,
+                softWrap: false,
               ),
             ),
+            duration: const Duration(seconds: 3),
+            // A snackbar with an action stays until tapped unless told not to.
+            persist: false,
+            action: offerAdd
+                ? SnackBarAction(
+                    label: t.togetherWidgetOnHomeAdd,
+                    onPressed: () => unawaited(
+                      HomeWidgetSync.syncAndOfferPinTogetherWidget(
+                        roomId: widget.roomId,
+                        force: true,
+                      ),
+                    ),
+                  )
+                : null,
           ),
         );
       }
@@ -1120,10 +1078,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   /// Each tap adds one more bubble, a little apart from the last.
   Future<void> _addBubble() async {
     final t = AppStrings.current;
-    if (!membershipController.hasPremiumContent) {
-      await _showPremiumLock();
-      return;
-    }
+    // Speech bubbles are free for everyone.
     if (_bubbles.length >= TogetherBubble.maxCount) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(t.ddayDecorateBubbleLimit)),
@@ -1153,10 +1108,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   /// keys and the preview above it redraws each letter. All text starts
   /// selected, so the first key replaces the old words.
   void _startBubbleEdit(String id) {
-    if (!membershipController.hasPremiumContent) {
-      unawaited(_showPremiumLock());
-      return;
-    }
     final bubble = _bubbles.where((b) => b.id == id).firstOrNull;
     if (bubble == null) return;
     _bubbleCtrl.value = TextEditingValue(
@@ -1735,6 +1686,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               themeId: _bgThemeId,
                               roomId: widget.roomId,
                             ),
+                            iosWallpaperPath: _iosWallpaperPath,
                             textColor: _textColor,
                             textFont: _textFont,
                             link: liveHasFriend ? _link : TogetherLink.none,
@@ -1964,8 +1916,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             return _bgChoice(
                               selected: _focus == _DecorateFocus.bubble,
                               accent: palette.accent,
-                              locked: !isPremium,
-                              onTap: isPremium ? _addBubble : _showPremiumLock,
+                              // Bubbles are free for everyone.
+                              locked: false,
+                              onTap: _addBubble,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -2040,7 +1993,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               _clearSelection();
                               setState(() => _bgThemeId = theme.id);
                               _persist();
-                              if (theme.isNone && IosFakeWallpaper.isIOS) {
+                              // iPhone: no home photo yet → explain and offer to add.
+                              if (theme.isNone &&
+                                  IosFakeWallpaper.isIOS &&
+                                  _iosWallpaperPath == null) {
                                 await _offerIosFakeWallpaper();
                               }
                             },
@@ -2071,6 +2027,15 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         },
                       ),
                     ),
+                    // iPhone, "투명" picked: the home photo + change button.
+                    if (IosFakeWallpaper.isIOS &&
+                        _bgThemeId == TogetherBgTheme.none.id) ...[
+                      const SizedBox(height: 12),
+                      IosTransparentSetting(
+                        photoPath: _iosWallpaperPath,
+                        onChange: () => unawaited(_changeIosWallpaper()),
+                      ),
+                    ],
                     const SizedBox(height: 18),
                     Text(
                       t.ddayDecorateFontLabel,

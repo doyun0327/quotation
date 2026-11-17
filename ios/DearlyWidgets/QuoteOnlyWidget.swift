@@ -62,9 +62,12 @@ struct QuoteOnlyWidget: Widget {
       QuoteOnlyWidgetView(entry: entry)
         .dearlyWidgetBackground()
     }
-    .configurationDisplayName("오늘의 문구")
-    .description("점선 네모 안에 응원 문구만 보여 줍니다.")
-    .supportedFamilies([.systemSmall, .systemMedium])
+    .configurationDisplayName(WidgetText.pick("오늘의 문구", "Today's quote", "今日のフレーズ"))
+    .description(WidgetText.pick(
+      "점선 네모 안에 응원 문구만 보여 줍니다.",
+      "Shows just the cheer in a dashed box.",
+      "点線の枠に応援メッセージだけを表示します。"))
+    .supportedFamilies([.systemSmall])
     .contentMarginsDisabled()
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Vertical placement of the systemMedium cell on a home screenshot.
 enum IosFakeWallpaperSlot { top, mid }
@@ -118,6 +119,42 @@ abstract final class IosFakeWallpaper {
     } finally {
       src.dispose();
     }
+  }
+
+  static const _introShownKey = 'ios_transparent_intro_shown';
+
+  /// Example pictures for the intro popup (made from [blankHomeAsset]).
+  static const exampleCaptureAsset =
+      'assets/images/widgetbackground/ios_capture_example.png';
+  static const exampleBeforeAsset =
+      'assets/images/widgetbackground/ios_transparent_before.png';
+  static const exampleAfterAsset =
+      'assets/images/widgetbackground/ios_transparent_after.png';
+
+  /// First Together visit on iPhone with no photo yet, shown once.
+  static Future<bool> shouldShowIntro() async {
+    if (!isIOS) return false;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_introShownKey) ?? false) return false;
+    return !await hasAny();
+  }
+
+  static Future<void> markIntroShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_introShownKey, true);
+  }
+
+  /// The crop the widget uses now (the chosen row), or null if none.
+  static Future<String?> currentPath() async {
+    if (!isIOS) return null;
+    await HomeWidget.setAppGroupId(HomeWidgetSync.appGroupId);
+    final slot = await HomeWidget.getWidgetData<String>(keySlot) ?? 'top';
+    final order = slot == 'mid' ? [keyMid, keyTop] : [keyTop, keyMid];
+    for (final key in order) {
+      final path = await HomeWidget.getWidgetData<String>(key) ?? '';
+      if (path.isNotEmpty && File(path).existsSync()) return path;
+    }
+    return null;
   }
 
   static Future<bool> hasAny() async {

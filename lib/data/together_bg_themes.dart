@@ -32,18 +32,9 @@ class TogetherBgTheme {
   /// Themes from [assets/images/widgetbackground/].
   static final all = <TogetherBgTheme>[
     none,
-    // Test heart background (pixel pink heart).
-    const TogetherBgTheme(
-      id: 'widget_heart',
-      assetPath: 'assets/images/widgetbackground/widget_heart.png',
-    ),
-    // Glass fog + pastel plane overlay (iPhone transparent test).
-    const TogetherBgTheme(
-      id: 'widget_glass_plane',
-      assetPath: 'assets/images/widgetbackground/widget_glass_plane.png',
-    ),
     // Pastel first, right after the link pictures (see TogetherLink).
-    for (var i = 1; i <= 10; i++)
+    // Airplane (pastel_1) sits right after the four-leaf clover (pastel_7).
+    for (final i in const [2, 3, 4, 5, 6, 7, 1, 8, 9, 10])
       TogetherBgTheme(
         id: 'pastel_$i',
         assetPath: 'assets/images/widgetbackground/widget_pastel_$i.png',
@@ -102,8 +93,10 @@ class TogetherBgTheme {
   /// never locks a background someone already uses.
   static const freeIds = {
     'none',
-    'widget_heart',
-    'widget_glass_plane',
+    // pastel_1 (airplane) and pastel_5 (blue heart) are premium.
+    'pastel_2',
+    'pastel_3',
+    'pastel_4',
     'widget_background',
     'widget_background2',
     'widget_background6',

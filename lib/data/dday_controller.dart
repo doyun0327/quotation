@@ -798,11 +798,9 @@ class DdayController extends ChangeNotifier {
   String crowdKeyForRoom(String roomId) => _offsetsForRoom(roomId).crowdKey;
   List<TogetherCrowdSaved> crowdForRoom(String roomId) =>
       _offsetsForRoom(roomId).crowd;
-  /// Speech bubbles are premium too (see [_showsPaidLook]).
+  /// Speech bubbles are free for everyone.
   List<TogetherBubble> bubblesForRoom(String roomId) =>
-      _showsPaidLook(roomId, PaidLook.bubbles)
-          ? _offsetsForRoom(roomId).bubbles
-          : const [];
+      _offsetsForRoom(roomId).bubbles;
 
   /// Saved looks as picked, before any free fallback. This is what the room
   /// shares, so a free member saving never wipes a subscriber's picks.

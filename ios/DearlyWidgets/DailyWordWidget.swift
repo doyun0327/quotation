@@ -17,7 +17,7 @@ struct DailyWordProvider: TimelineProvider {
   func placeholder(in context: Context) -> DailyWordEntry {
     DailyWordEntry(
       date: Date(),
-      quote: "오늘도 한 걸음.",
+      quote: WidgetText.pick("오늘도 한 걸음.", "One more step today.", "今日も一歩。"),
       nickname: "Dearly",
       accent: Color(red: 0.55, green: 0.70, blue: 0.88),
       character: nil,
@@ -46,7 +46,7 @@ struct DailyWordProvider: TimelineProvider {
 
   private func entry(for date: Date, preview: Bool) -> DailyWordEntry {
     let quote = DearlyWidgetStore.quote(at: date)
-    let fallbackQuote = preview ? "오늘도 한 걸음." : quote
+    let fallbackQuote = preview ? WidgetText.pick("오늘도 한 걸음.", "One more step today.", "今日も一歩。") : quote
     return DailyWordEntry(
       date: date,
       quote: fallbackQuote.isEmpty ? "Dearly" : fallbackQuote,
@@ -266,9 +266,12 @@ struct DailyWordWidget: Widget {
       DailyWordWidgetView(entry: entry)
         .dearlyWidgetBackground()
     }
-    .configurationDisplayName("오늘의 말")
-    .description("캐릭터·날짜·응원 문구를 함께 보여 줍니다.")
-    .supportedFamilies([.systemMedium, .systemLarge])
+    .configurationDisplayName(WidgetText.pick("오늘의 말", "Word of the day", "今日のことば"))
+    .description(WidgetText.pick(
+      "캐릭터·날짜·응원 문구를 함께 보여 줍니다.",
+      "Shows your character, the date and a cheer.",
+      "キャラクター・日付・応援メッセージを表示します。"))
+    .supportedFamilies([.systemMedium])
     .contentMarginsDisabled()
   }
 }

@@ -167,3 +167,22 @@ extension View {
     }
   }
 }
+
+/// Widget labels in the app's language (saved by the app as "appLanguage"),
+/// falling back to the phone's language.
+enum WidgetText {
+  static var language: String {
+    let saved = DearlyWidgetStore.string("appLanguage")
+    if ["ko", "en", "ja"].contains(saved) { return saved }
+    let phone = Locale.preferredLanguages.first?.prefix(2) ?? "ko"
+    return ["ko", "en", "ja"].contains(String(phone)) ? String(phone) : "en"
+  }
+
+  static func pick(_ ko: String, _ en: String, _ ja: String) -> String {
+    switch language {
+    case "en": return en
+    case "ja": return ja
+    default: return ko
+    }
+  }
+}

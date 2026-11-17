@@ -138,6 +138,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.bgColor = 0xFFFFF3E8,
     this.bgOpacity = 100,
     this.bgAssetPath,
+    this.iosWallpaperPath,
     this.textColor = 0xFFF26B8A,
     this.textFont = WidgetFont.basic,
     this.shape = TogetherWidgetShape.square,
@@ -185,6 +186,11 @@ class TogetherWidgetPreview extends StatelessWidget {
   final int bgOpacity;
   /// Image theme path; when set, used instead of solid/mosaic fill.
   final String? bgAssetPath;
+
+  /// iPhone: the registered home screen crop, shown only for "투명". The
+  /// widget also lays it under other themes, but their preview shows the
+  /// theme alone.
+  final String? iosWallpaperPath;
   final int textColor;
   final WidgetFont textFont;
   final TogetherWidgetShape shape;
@@ -252,6 +258,14 @@ class TogetherWidgetPreview extends StatelessWidget {
     final lightness = (hsl.lightness * 0.78).clamp(0.15, 0.92);
     final saturation = (hsl.saturation * 1.05).clamp(0.0, 1.0);
     return hsl.withLightness(lightness).withSaturation(saturation).toColor();
+  }
+
+  static int _modified(String path) {
+    try {
+      return File(path).lastModifiedSync().millisecondsSinceEpoch;
+    } catch (_) {
+      return 0;
+    }
   }
 
   static bool get _iosGlass =>
@@ -603,8 +617,34 @@ class TogetherWidgetPreview extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          // iPhone "투명": the registered home photo. Other themes preview as
+          // the theme alone; the widget still lays the photo under them.
+          if (!hasImage && _iosGlass && iosWallpaperPath != null)
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ImageFiltered(
+                      imageFilter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Image.file(
+                        File(iosWallpaperPath!),
+                        // Same file name after a change: the time reloads it.
+                        key: ValueKey(
+                          '$iosWallpaperPath|${_modified(iosWallpaperPath!)}',
+                        ),
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                      ),
+                    ),
+                    const ColoredBox(color: Color(0x29FFFFFF)),
+                  ],
+                ),
+              ),
+            )
           // iPhone “투명”: frosted glass. Other themes stay full-strength.
-          if (!hasImage && _iosGlass)
+          else if (!hasImage && _iosGlass)
             Positioned.fill(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(radius),

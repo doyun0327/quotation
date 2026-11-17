@@ -101,6 +101,8 @@ Future<void> main() async {
     if (localeController.language == noticeLanguage) return;
     noticeLanguage = localeController.language;
     unawaited(UserProfileSync.syncLocale());
+    // iPhone widget labels follow the app language.
+    unawaited(HomeWidgetSync.syncDday());
   });
 
   _widgetLaunchRoom = await TogetherFcm.widgetLaunchRoom();

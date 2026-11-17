@@ -26,6 +26,8 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/together_ios_snapshot.dart';
+import 'package:quotation/data/together_ios_card_spec.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 
 /// Mirrors the home-screen character, date, and quote onto home-screen widgets.
 typedef _IosRoomCard = ({
@@ -54,6 +56,12 @@ abstract final class HomeWidgetSync {
   static const iosDailyWordName = 'DailyWordWidget';
   static const iosQuoteOnlyName = 'QuoteOnlyWidget';
   static const iosTogetherName = 'TogetherWidget';
+
+  /// App language ('ko' / 'en' / 'ja') for the iOS widget's own labels.
+  static const keyAppLanguage = 'appLanguage';
+
+  /// Gallery pages "방 1"…: 방 1 is [iosTogetherName], then TogetherRoom2…N.
+  static const iosTogetherRoomSlots = 5;
   static const androidProviderName = 'DailyWordWidgetProvider';
   static const androidBubbleProviderName = 'DailyWordBubbleWidgetProvider';
   static const androidProviderQualified =
@@ -353,6 +361,13 @@ abstract final class HomeWidgetSync {
         iOSName: iosTogetherName,
         name: iosTogetherName,
       );
+      if (_isIOS) {
+        // Room-slot widgets (TogetherRoomSlotWidget) show the same cards.
+        // Slot 1 is the original TogetherWidget kind, reloaded above.
+        for (var i = 2; i <= iosTogetherRoomSlots; i++) {
+          await HomeWidget.updateWidget(iOSName: 'TogetherRoom$i');
+        }
+      }
     } catch (e) {
       debugPrint('update together widget: $e');
     }
@@ -878,8 +893,42 @@ abstract final class HomeWidgetSync {
       final imageKey =
           'togetherCard_${base64Url.encode(utf8.encode(item.id)).replaceAll('=', '')}';
       final signature = _iosCardSignature(card, rooms[item.id], bgAsset);
+      // Native draw commands for the widget. Built without the GPU, so a
+      // friend's edit redraws the widget even while the app is in the
+      // background (see TogetherIosCardSpec).
+      final specKey =
+          'togetherSpec_${base64Url.encode(utf8.encode(item.id)).replaceAll('=', '')}';
+      var specSaved = false;
+      try {
+        final spec = await TogetherIosCardSpec.build(
+          box: card.box,
+          corner: TogetherWidgetSize.defaultCornerDp,
+          label: card.label,
+          isPixel: visualStyleController.isPixel,
+          textColor: ddayController.textColorForRoom(item.id),
+          textScale: card.textScale,
+          textX: ddayController.textOffsetXForRoom(item.id).toDouble(),
+          textY: ddayController.textOffsetYForRoom(item.id).toDouble(),
+          textRotation: ddayController.textRotationForRoom(item.id).toDouble(),
+          textFont: ddayController.textFontForRoom(item.id),
+          bgAsset: bgAsset,
+          placed: card.placed,
+          charW: 72 * TogetherWidgetSize.s42.charFactor,
+          charH: 96 * TogetherWidgetSize.s42.charFactor,
+          bubbles: _shownBubbles(item.id),
+          link: ddayController.linkForRoom(item.id),
+        );
+        if (spec != null) {
+          await HomeWidget.saveWidgetData<String>(specKey, spec);
+          specSaved = true;
+        }
+      } catch (e) {
+        debugPrint('iOS card spec: $e');
+      }
       var ready = savedSignatures[item.id] == signature &&
           await _widgetFileExists(imageKey);
+      // The Flutter-drawn PNG is only a fallback now. In the background the
+      // engine would hold the render until the app opens, stalling this sync.
       if (!ready) {
         ready = await _renderIosTogetherCard(
           imageKey: imageKey,
@@ -905,6 +954,7 @@ abstract final class HomeWidgetSync {
         'id': item.id,
         'title': item.title,
         'imageKey': imageKey,
+        if (specSaved) 'specKey': specKey,
         // iPhone only: “투명” → widget chrome uses ultraThinMaterial.
         if (themeId == TogetherBgTheme.none.id || themeId.isEmpty) 'glass': '1',
       });
@@ -994,6 +1044,11 @@ abstract final class HomeWidgetSync {
   }
 
   static Future<void> _saveDday() async {
+    // Widget labels (gallery names, empty-slot hint) follow the app language.
+    await HomeWidget.saveWidgetData<String>(
+      keyAppLanguage,
+      localeController.language.id,
+    );
     final item = ddayController.widgetDday;
     await _saveAllRooms();
     final roomId = item?.id;
@@ -1204,6 +1259,12 @@ abstract final class HomeWidgetSync {
     String link = '',
   }) async {
     if (!_isIOS) return false;
+    // In the background iOS turns the GPU off and Flutter holds the render
+    // until the app is opened, which would stall a push-driven sync. The
+    // widget draws from TogetherIosCardSpec instead.
+    if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      return false;
+    }
     final decoded = <String, ui.Image>{};
     ui.Image? bgImage;
     try {

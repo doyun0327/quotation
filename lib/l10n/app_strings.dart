@@ -100,15 +100,6 @@ class AppStrings {
   String get ddayDecorateBgNone => _t('투명', 'Transparent', '透明');
   String get ddayDecorateBgAlbum => _t('앨범', 'Album', 'アルバム');
   String get ddayDecorateBgAlbumFailed => _t('사진을 불러오지 못했어요', 'Could not open that photo', '写真を読み込めませんでした');
-  String get iosFakeWallpaperCaptureTitle =>
-      _t('홈 화면 캡처', 'Capture home screen', 'ホーム画面をキャプチャ');
-  String get iosFakeWallpaperCaptureBody => _t(
-        '아이콘이 없는 빈 홈 화면을 캡처해 주세요!',
-        'Please capture a blank home screen with no icons!',
-        'アイコンのない空のホーム画面をキャプチャしてください！',
-      );
-  String get iosFakeWallpaperCaptureOk => _t('확인', 'OK', 'OK');
-  String get iosFakeWallpaperCaptureCancel => _t('취소', 'Cancel', 'キャンセル');
   String get iosFakeWallpaperNextTitle =>
       _t('위젯 위치 선택', 'Choose widget spot', 'ウィジェット位置を選択');
   String get iosFakeWallpaperNextBody => _t(
@@ -118,6 +109,27 @@ class AppStrings {
       );
   String get iosFakeWallpaperTop => _t('위쪽', 'Top', '上');
   String get iosFakeWallpaperMid => _t('가운데', 'Middle', '中央');
+  String get iosTransparentIntroTitle =>
+      _t('아이폰 투명 위젯 설정하기', 'Set up a transparent iPhone widget', 'iPhoneの透明ウィジェットを設定');
+  String get iosTransparentIntroBody => _t(
+        '위젯을 투명하게 사용하려면 앱 아이콘이 없는 빈 홈 화면을 캡처해서 등록해 주세요.\n사진을 등록하지 않으면 투명 배경이 흰색으로 표시돼요.',
+        'To make the widget transparent, take a screenshot of an empty home screen page with no app icons and add it here.\nWithout it, the transparent background shows as white.',
+        'ウィジェットを透明にするには、アプリアイコンのない空のホーム画面をキャプチャして登録してください。\n登録しないと透明の背景は白で表示されます。',
+      );
+  String get iosTransparentCaptureHint =>
+      _t('이렇게 캡처해 주세요!', 'Capture it like this!', 'このようにキャプチャしてください！');
+  String get iosTransparentBefore => _t('등록 전', 'Before', '登録前');
+  String get iosTransparentAfter => _t('등록 후', 'After', '登録後');
+  String get iosTransparentRegister => _t('사진 등록하기', 'Add screenshot', '写真を登録');
+  String get iosTransparentLater => _t('나중에', 'Later', 'あとで');
+  String get iosTransparentChange => _t('변경하기', 'Change', '変更する');
+  String get iosTransparentSettingTitle =>
+      _t('투명 배경 사진', 'Transparent background photo', '透明背景の写真');
+  String get iosTransparentNone => _t(
+        '등록된 사진이 없어 흰색으로 보여요',
+        'No photo yet — it shows as white',
+        '写真がないため白で表示されます',
+      );
   String get iosFakeWallpaperDone =>
       _t('투명 배경을 적용했어요', 'Transparent background applied', '透明背景を適用しました');
   String get iosFakeWallpaperFailed =>
@@ -282,6 +294,9 @@ class AppStrings {
         'Applied to the home screen.\nNot showing? Tap Add.',
         'ホーム画面に反映しました。\nホームにない場合は追加をタップしてください。',
       );
+  /// iPhone (and non-Galaxy Android): no add-to-home button to offer.
+  String get togetherWidgetOnHomeShort =>
+      _t('홈 화면에 반영했어요.', 'Applied to the home screen.', 'ホーム画面に反映しました。');
   String get togetherWidgetOnHomeAdd => _t('추가', 'Add', '追加');
   String get togetherWidgetSyncToast => _t('위젯에 수정 내용을 반영했어요!', 'Widget updated!', '変更をウィジェットに反映しました！');
   String get togetherFriendsLabel => _t('같은 방 친구', 'Friends in room', '同じルームの友だち');
