@@ -2563,12 +2563,14 @@ class _MemberPickGrid extends StatelessWidget {
   final Color accent;
   final ValueChanged<_RoomMember> onTap;
 
-  /// The pencil on my card.
+  /// The pencil on my chip: my character for this room only.
   final VoidCallback onEditMe;
   final String editLabel;
 
-  /// Two across for 1-2 people, three across from 3 on (wrapping).
-  static int _perRow(int count) => count <= 2 ? 2 : 3;
+  static int _rowCount(int count) {
+    if (count <= 5) return count;
+    return (count / 2).ceil();
+  }
 
   bool _selected(_RoomMember member) {
     if (member.isMe) return meSelected;
@@ -2579,28 +2581,41 @@ class _MemberPickGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     if (members.isEmpty) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 14),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          const gap = 12.0;
-          final perRow = _perRow(members.length);
-          final cellW = (constraints.maxWidth - gap * (perRow - 1)) / perRow;
-          return Wrap(
-            spacing: gap,
-            runSpacing: gap,
+          const gap = 8.0;
+          final cellW = (constraints.maxWidth - gap * 4) / 5;
+          final perRow = _rowCount(members.length);
+          final rows = <List<_RoomMember>>[];
+          for (var i = 0; i < members.length; i += perRow) {
+            final end = (i + perRow).clamp(0, members.length);
+            rows.add(members.sublist(i, end));
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final member in members)
-                SizedBox(
-                  width: cellW,
-                  child: _MemberChip(
-                    member: member,
-                    selected: _selected(member),
-                    accent: accent,
-                    onTap: () => onTap(member),
-                    onEdit: member.isMe ? onEditMe : null,
-                    editLabel: editLabel,
-                  ),
+              for (var r = 0; r < rows.length; r++) ...[
+                if (r > 0) const SizedBox(height: gap),
+                Row(
+                  children: [
+                    for (var i = 0; i < rows[r].length; i++) ...[
+                      if (i > 0) const SizedBox(width: gap),
+                      SizedBox(
+                        width: cellW,
+                        child: _MemberChip(
+                          member: rows[r][i],
+                          selected: _selected(rows[r][i]),
+                          accent: accent,
+                          onTap: () => onTap(rows[r][i]),
+                          onEdit: rows[r][i].isMe ? onEditMe : null,
+                          editLabel: editLabel,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
+              ],
             ],
           );
         },
@@ -2609,8 +2624,6 @@ class _MemberPickGrid extends StatelessWidget {
   }
 }
 
-/// One person as a tall rounded card: character, then nickname. My card
-/// carries a round pencil button that changes my character for this room.
 class _MemberChip extends StatelessWidget {
   const _MemberChip({
     required this.member,
@@ -2625,101 +2638,83 @@ class _MemberChip extends StatelessWidget {
   final bool selected;
   final Color accent;
   final VoidCallback onTap;
+
+  /// My chip only: a small round pencil in the corner.
   final VoidCallback? onEdit;
   final String editLabel;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final chip = GestureDetector(
       onTap: onTap,
-      child: AspectRatio(
-        aspectRatio: 0.68,
-        child: LayoutBuilder(
-          builder: (context, box) {
-            final charH = box.maxHeight * 0.34;
-            final nameSize = (box.maxWidth * 0.11).clamp(11.0, 18.0);
-            final pen = (box.maxWidth * 0.26).clamp(28.0, 40.0);
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(box.maxWidth * 0.12),
-                border: Border.all(
-                  color: selected ? accent : const Color(0xFFE4ECF7),
-                  width: selected ? 2.5 : 1.5,
-                ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.fromLTRB(2, 6, 2, 6),
+        decoration: BoxDecoration(
+          color: selected ? accent.withValues(alpha: 0.12) : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? accent : const Color(0xFFE4ECF7),
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Image.asset(
+              member.assetPath,
+              height: 44,
+              fit: BoxFit.contain,
+              cacheHeight:
+                  (44 * MediaQuery.devicePixelRatioOf(context)).round(),
+              gaplessPlayback: true,
+              filterQuality: FilterQuality.none,
+              isAntiAlias: false,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              member.nickname,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: AppTheme.body.copyWith(
+                fontFamily: 'Galmuri',
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF2C3340),
               ),
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: box.maxHeight * 0.06),
-                        Image.asset(
-                          member.assetPath,
-                          height: charH,
-                          fit: BoxFit.contain,
-                          cacheHeight: (charH *
-                                  MediaQuery.devicePixelRatioOf(context))
-                              .round(),
-                          gaplessPlayback: true,
-                          filterQuality: FilterQuality.none,
-                          isAntiAlias: false,
-                        ),
-                        SizedBox(height: box.maxHeight * 0.06),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            member.nickname,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: AppTheme.body.copyWith(
-                              fontFamily: 'Galmuri',
-                              fontSize: nameSize,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF2C3340),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (onEdit != null)
-                    Positioned(
-                      top: box.maxWidth * 0.07,
-                      right: box.maxWidth * 0.07,
-                      child: Semantics(
-                        button: true,
-                        label: editLabel,
-                        child: Material(
-                          // Same theme accent as the rest of the decorator
-                          // (selected border, buttons), at full strength.
-                          color: accent,
-                          shape: const CircleBorder(),
-                          child: InkWell(
-                            customBorder: const CircleBorder(),
-                            onTap: onEdit,
-                            child: SizedBox(
-                              width: pen,
-                              height: pen,
-                              child: Icon(
-                                Icons.edit_rounded,
-                                size: pen * 0.5,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            );
-          },
+            ),
+          ],
         ),
       ),
+    );
+    final edit = onEdit;
+    if (edit == null) return chip;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        chip,
+        Positioned(
+          top: 3,
+          right: 3,
+          child: Semantics(
+            button: true,
+            label: editLabel,
+            child: Material(
+              color: accent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: edit,
+                child: const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: Icon(Icons.edit_rounded, size: 12, color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
