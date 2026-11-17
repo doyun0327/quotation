@@ -764,10 +764,21 @@ abstract final class HomeWidgetSync {
 
   /// Blocked friends are not drawn on my widget. Their slot stays in the
   /// shared layout, so the room looks the same for everyone else.
-  static List<TogetherPlaced> _withoutBlocked(List<TogetherPlaced> placed) => [
-        for (final slot in placed)
-          if (!blockedUsersController.isBlocked(slot.uid)) slot,
-      ];
+  /// Without blocked people, and with my character last so every widget
+  /// draws it in front of the others.
+  static List<TogetherPlaced> _withoutBlocked(List<TogetherPlaced> placed) {
+    final mine = authController.myIds;
+    final shown = [
+      for (final slot in placed)
+        if (!blockedUsersController.isBlocked(slot.uid)) slot,
+    ];
+    return [
+      for (final slot in shown)
+        if (!mine.contains(slot.uid)) slot,
+      for (final slot in shown)
+        if (mine.contains(slot.uid)) slot,
+    ];
+  }
 
   static List<TogetherBubble> _shownBubbles(String roomId) =>
       blockedUsersController.visibleBubbles(

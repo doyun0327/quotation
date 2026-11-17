@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:quotation/widgets/subscribe_flow.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/character_art_insets.dart';
@@ -14,6 +15,7 @@ import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/sticker_unlock.dart';
 import 'package:quotation/data/together_sticker.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/widget_album_background.dart';
@@ -33,6 +35,7 @@ import 'package:quotation/widgets/color_palette_sheet.dart';
 import 'package:quotation/widgets/ios_widget_guide.dart';
 import 'package:quotation/widgets/sign_in_flow.dart';
 import 'package:quotation/widgets/together_bubble_view.dart';
+import 'package:quotation/widgets/decorate_coach.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 import 'package:quotation/widgets/subscription_terms.dart';
 import 'package:quotation/widgets/ios_transparent_guide.dart';
@@ -105,6 +108,20 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   /// again on return.
   AppLifecycleListener? _noticeLife;
   ScaffoldMessengerState? _messenger;
+
+  /// "Applied to home" notice from the last 홈에 적용. Shown once this screen
+  /// has closed, so it stays its 3 seconds on the room screen.
+  SnackBar? _homeNotice;
+
+  // First-time tutorial (4 coach marks, then the "홈에 적용" pointer).
+  static const _coachDoneKey = 'decorate_coach_done_v1';
+  int? _coachStep;
+  Timer? _coachTyping;
+  final _coachPreviewKey = GlobalKey();
+  final _coachCharScaleKey = GlobalKey();
+  final _coachCheerKey = GlobalKey();
+  final _coachTextScaleKey = GlobalKey();
+  final _coachApplyKey = GlobalKey();
 
   /// Last touch or keystroke; the editor closes after [_idleLimit] without
   /// one so a forgotten screen does not keep friends locked out.
@@ -238,6 +255,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     // The launcher may report a new cell size after the refresh.
     await _loadHostSize();
     _startPresence();
+    unawaited(_startCoachIfNeeded());
   }
 
   /// Holds the room edit lock while this screen is open.
@@ -398,6 +416,14 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final text = _cheerCtrl.text;
     if (_cheerDraft.value == text) return;
     _cheerDraft.value = text;
+    // Tutorial step 3 moves on once typing pauses.
+    if (_coachStep == 2 && text.trim().isNotEmpty) {
+      _coachTyping?.cancel();
+      _coachTyping = Timer(
+        const Duration(milliseconds: 1200),
+        () => _coachDone(2),
+      );
+    }
   }
 
   Future<void> _loadHostSize() async {
@@ -439,9 +465,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   @override
   void dispose() {
     _noticeLife?.dispose();
-    // Leaving the decorator ends its notice; it must not follow to the
-    // room list.
-    _messenger?.clearSnackBars();
+    _coachTyping?.cancel();
     _presenceLife?.dispose();
     _endPresence();
     ddayController.removeListener(_syncFromController);
@@ -629,10 +653,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         // iPhone and other phones just get the confirmation.
         final offerAdd = _samsung;
         final messenger = ScaffoldMessenger.of(context);
-        // Only the latest notice: pressing "홈에 적용" again must not queue
-        // the same message to play back one after another.
-        messenger.clearSnackBars();
-        messenger.showSnackBar(
+        final roomId = widget.roomId;
+        _homeNotice =
           SnackBar(
             // Always two lines on any screen width: each line keeps its own
             // break and shrinks to fit instead of wrapping to a third.
@@ -658,15 +680,14 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       messenger.hideCurrentSnackBar();
                       unawaited(
                         HomeWidgetSync.syncAndOfferPinTogetherWidget(
-                          roomId: widget.roomId,
+                          roomId: roomId,
                           force: true,
                         ),
                       );
                     },
                   )
                 : null,
-          ),
-        );
+          );
       }
       return;
     }
@@ -881,6 +902,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         if (!blockedUsersController.isBlocked(person.uid))
         TogetherPreviewSprite(
           keyId: person.uid,
+          isMe: person.uid == myUid,
           assetPath: person.uid == myUid
               ? _meChar.assetPath
               : AppCharacter.byId(person.characterId).assetPath,
@@ -990,11 +1012,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
   void _selectMe() {
-    if (_focus == _DecorateFocus.me) return;
-    setState(() {
-      _focus = _DecorateFocus.me;
-      _scaleMe = true;
-    });
+    if (_focus != _DecorateFocus.me) {
+      setState(() {
+        _focus = _DecorateFocus.me;
+        _scaleMe = true;
+      });
+    }
+    _coachDone(0);
   }
 
   void _selectFriend() {
@@ -1680,12 +1704,103 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     if (_focus == _DecorateFocus.bubble || _editingBubble) _clearSelection();
   }
 
+  /// First open after install: walk through the four basics once.
+  Future<void> _startCoachIfNeeded() async {
+    if (!mounted || _closing || _coachStep != null) return;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_coachDoneKey) ?? false) return;
+    if (!mounted || _closing) return;
+    setState(() => _coachStep = 0);
+  }
+
+  GlobalKey? _coachTarget(int? step) => switch (step) {
+        0 => _coachPreviewKey,
+        1 => _coachCharScaleKey,
+        2 => _coachCheerKey,
+        3 => _coachTextScaleKey,
+        4 => _coachApplyKey,
+        _ => null,
+      };
+
+  /// [step] was done for real: show the next one and scroll it into view.
+  void _coachDone(int step) {
+    if (_coachStep != step || !mounted) return;
+    _coachTyping?.cancel();
+    setState(() => _coachStep = step + 1);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final target = _coachTarget(_coachStep)?.currentContext;
+      if (target == null || !mounted) return;
+      unawaited(Scrollable.ensureVisible(
+        target,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOut,
+      ));
+    });
+  }
+
+  Future<void> _finishCoach() async {
+    _coachTyping?.cancel();
+    if (mounted) setState(() => _coachStep = null);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_coachDoneKey, true);
+  }
+
+  Widget _coachLayer() {
+    final t = AppStrings.current;
+    final step = _coachStep ?? 0;
+    final target = _coachTarget(step) ?? _coachPreviewKey;
+    final (title, body) = switch (step) {
+      0 => (t.coachPickTitle, t.coachPickBody),
+      1 => (t.coachSizeTitle, t.coachSizeBody),
+      2 => (t.coachTextTitle, t.coachTextBody),
+      3 => (t.coachTextSizeTitle, t.coachTextSizeBody),
+      _ => (t.coachDoneTitle, t.coachDoneBody),
+    };
+    return DecorateCoach(
+      target: target,
+      step: step.clamp(0, 3),
+      total: 4,
+      title: title,
+      body: body,
+      skipLabel: t.coachSkip,
+      onSkip: _finishCoach,
+      accent: context.palette.accent,
+      doneLabel: step >= 4 ? t.coachDoneButton : null,
+      onDone: step >= 4 ? _finishCoach : null,
+    );
+  }
+
+  /// Leaving with back (the app bar arrow or the system gesture) keeps
+  /// everything on screen at that moment, on this phone only: cheer words,
+  /// bubbles mid-typing, positions, colors. "홈에 적용" is what shares it.
+  Future<void> _saveLocallyOnLeave() async {
+    // Typed letters are already in the bubble; just stop typing.
+    _editingBubble = false;
+    try {
+      await ddayController.setRoomCheer(widget.roomId, _cheerCtrl.text);
+      await _persist();
+    } catch (e) {
+      debugPrint('decorate save on leave: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: _onBlankScreenTap,
-      child: _buildScreen(context),
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) unawaited(_saveLocallyOnLeave());
+      },
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _onBlankScreenTap,
+        child: Stack(
+          children: [
+            _buildScreen(context),
+            if (_coachStep != null) Positioned.fill(child: _coachLayer()),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1774,6 +1889,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         valueListenable: _dragTick,
                         builder: (context, _, _) {
                           return TogetherWidgetPreview(
+                            key: _coachPreviewKey,
                             width: previewSize.width,
                             height: previewSize.height,
                             charW: charW * charBase,
@@ -1878,6 +1994,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     if (_dragging) _setDragging(false);
                   },
                   child: ListView(
+                  scrollCacheExtent: const ScrollCacheExtent.pixels(4000),
                   physics: _dragging
                       ? const NeverScrollableScrollPhysics()
                       : const AlwaysScrollableScrollPhysics(
@@ -1924,35 +2041,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                           _selectFriendMember(member.friendUid!);
                         }
                       },
+                      // Pencil on my card: my character for this room only.
+                      onEditMe: _pickMyCharacter,
+                      editLabel: t.ddayDecorateChangeMyCharacter,
                     ),
-                    // My character for this room only (main pick is default).
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: OutlinedButton.icon(
-                        onPressed: _pickMyCharacter,
-                        icon: Icon(
-                          Icons.swap_horiz_rounded,
-                          size: 18,
-                          color: palette.accent,
-                        ),
-                        label: Text(
-                          t.ddayDecorateChangeMyCharacter,
-                          style: AppTheme.body.copyWith(
-                            fontFamily: 'Galmuri',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: palette.accent,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: palette.accent.withValues(alpha: 0.5)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
                     Text(
                       t.togetherCheerTitle,
                       style: AppTheme.body.copyWith(
@@ -1964,6 +2056,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                     ),
                     const SizedBox(height: 10),
                     TextField(
+                      key: _coachCheerKey,
                       controller: _cheerCtrl,
                       focusNode: _cheerFocus,
                       onTap: _clearSelection,
@@ -2301,6 +2394,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                     Slider(
+                      key: _coachCharScaleKey,
                       value: (_scaleMe || !liveHasFriend
                               ? _meScale
                               : _scaleOf(_pickedFriendUid ?? ''))
@@ -2323,7 +2417,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                           _fitCharacters();
                         });
                       },
-                      onChangeEnd: (_) => _persist(),
+                      onChangeEnd: (_) {
+                        _persist();
+                        if (_scaleMe || !liveHasFriend) _coachDone(1);
+                      },
                     ),
                     Text(
                       t.ddayDecorateTextScaleLabel,
@@ -2335,6 +2432,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       ),
                     ),
                     Slider(
+                      key: _coachTextScaleKey,
                       value: _textScale.toDouble(),
                       min: DdayController.scaleMin.toDouble(),
                       max: DdayController.scaleMax.toDouble(),
@@ -2344,10 +2442,14 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       onChanged: (v) {
                         setState(() => _textScale = v.round());
                       },
-                      onChangeEnd: (_) => _persist(),
+                      onChangeEnd: (_) {
+                        _persist();
+                        _coachDone(3);
+                      },
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
+                      key: _coachApplyKey,
                       height: 52,
                       child: FilledButton(
                         onPressed: (_savingCheer || _loggingIn)
@@ -2372,7 +2474,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                   _widgetExported = true;
                                   if (!context.mounted) return;
                                 }
-                                Navigator.of(context).maybePop();
+                                final notice = _homeNotice;
+                                _homeNotice = null;
+                                final messenger = ScaffoldMessenger.of(context);
+                                await Navigator.of(context).maybePop();
+                                // On the room screen now: only the latest
+                                // notice, never a queue of repeats.
+                                if (notice != null) {
+                                  messenger
+                                    ..clearSnackBars()
+                                    ..showSnackBar(notice);
+                                }
                               },
                         style: FilledButton.styleFrom(
                           backgroundColor: palette.accent,
@@ -2441,6 +2553,8 @@ class _MemberPickGrid extends StatelessWidget {
     required this.selectedFriendUid,
     required this.accent,
     required this.onTap,
+    required this.onEditMe,
+    required this.editLabel,
   });
 
   final List<_RoomMember> members;
@@ -2449,10 +2563,12 @@ class _MemberPickGrid extends StatelessWidget {
   final Color accent;
   final ValueChanged<_RoomMember> onTap;
 
-  static int _rowCount(int count) {
-    if (count <= 5) return count;
-    return (count / 2).ceil();
-  }
+  /// The pencil on my card.
+  final VoidCallback onEditMe;
+  final String editLabel;
+
+  /// Two across for 1-2 people, three across from 3 on (wrapping).
+  static int _perRow(int count) => count <= 2 ? 2 : 3;
 
   bool _selected(_RoomMember member) {
     if (member.isMe) return meSelected;
@@ -2463,39 +2579,28 @@ class _MemberPickGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     if (members.isEmpty) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 16),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          const gap = 8.0;
-          final cellW = (constraints.maxWidth - gap * 4) / 5;
-          final perRow = _rowCount(members.length);
-          final rows = <List<_RoomMember>>[];
-          for (var i = 0; i < members.length; i += perRow) {
-            final end = (i + perRow).clamp(0, members.length);
-            rows.add(members.sublist(i, end));
-          }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const gap = 12.0;
+          final perRow = _perRow(members.length);
+          final cellW = (constraints.maxWidth - gap * (perRow - 1)) / perRow;
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
             children: [
-              for (var r = 0; r < rows.length; r++) ...[
-                if (r > 0) const SizedBox(height: gap),
-                Row(
-                  children: [
-                    for (var i = 0; i < rows[r].length; i++) ...[
-                      if (i > 0) const SizedBox(width: gap),
-                      SizedBox(
-                        width: cellW,
-                        child: _MemberChip(
-                          member: rows[r][i],
-                          selected: _selected(rows[r][i]),
-                          accent: accent,
-                          onTap: () => onTap(rows[r][i]),
-                        ),
-                      ),
-                    ],
-                  ],
+              for (final member in members)
+                SizedBox(
+                  width: cellW,
+                  child: _MemberChip(
+                    member: member,
+                    selected: _selected(member),
+                    accent: accent,
+                    onTap: () => onTap(member),
+                    onEdit: member.isMe ? onEditMe : null,
+                    editLabel: editLabel,
+                  ),
                 ),
-              ],
             ],
           );
         },
@@ -2504,60 +2609,115 @@ class _MemberPickGrid extends StatelessWidget {
   }
 }
 
+/// One person as a tall rounded card: character, then nickname. My card
+/// carries a round pencil button that changes my character for this room.
 class _MemberChip extends StatelessWidget {
   const _MemberChip({
     required this.member,
     required this.selected,
     required this.accent,
     required this.onTap,
+    this.onEdit,
+    this.editLabel = '',
   });
 
   final _RoomMember member;
   final bool selected;
   final Color accent;
   final VoidCallback onTap;
+  final VoidCallback? onEdit;
+  final String editLabel;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.fromLTRB(2, 6, 2, 6),
-        decoration: BoxDecoration(
-          color: selected ? accent.withValues(alpha: 0.12) : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: selected ? accent : const Color(0xFFE4ECF7),
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          children: [
-            Image.asset(
-              member.assetPath,
-              height: 44,
-              fit: BoxFit.contain,
-              cacheHeight:
-                  (44 * MediaQuery.devicePixelRatioOf(context)).round(),
-              gaplessPlayback: true,
-              filterQuality: FilterQuality.none,
-              isAntiAlias: false,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              member.nickname,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: AppTheme.body.copyWith(
-                fontFamily: 'Galmuri',
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF2C3340),
+      child: AspectRatio(
+        aspectRatio: 0.68,
+        child: LayoutBuilder(
+          builder: (context, box) {
+            final charH = box.maxHeight * 0.34;
+            final nameSize = (box.maxWidth * 0.11).clamp(11.0, 18.0);
+            final pen = (box.maxWidth * 0.26).clamp(28.0, 40.0);
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(box.maxWidth * 0.12),
+                border: Border.all(
+                  color: selected ? accent : const Color(0xFFE4ECF7),
+                  width: selected ? 2.5 : 1.5,
+                ),
               ),
-            ),
-          ],
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: box.maxHeight * 0.06),
+                        Image.asset(
+                          member.assetPath,
+                          height: charH,
+                          fit: BoxFit.contain,
+                          cacheHeight: (charH *
+                                  MediaQuery.devicePixelRatioOf(context))
+                              .round(),
+                          gaplessPlayback: true,
+                          filterQuality: FilterQuality.none,
+                          isAntiAlias: false,
+                        ),
+                        SizedBox(height: box.maxHeight * 0.06),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            member.nickname,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: AppTheme.body.copyWith(
+                              fontFamily: 'Galmuri',
+                              fontSize: nameSize,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF2C3340),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (onEdit != null)
+                    Positioned(
+                      top: box.maxWidth * 0.07,
+                      right: box.maxWidth * 0.07,
+                      child: Semantics(
+                        button: true,
+                        label: editLabel,
+                        child: Material(
+                          // Same theme accent as the rest of the decorator
+                          // (selected border, buttons), at full strength.
+                          color: accent,
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: onEdit,
+                            child: SizedBox(
+                              width: pen,
+                              height: pen,
+                              child: Icon(
+                                Icons.edit_rounded,
+                                size: pen * 0.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

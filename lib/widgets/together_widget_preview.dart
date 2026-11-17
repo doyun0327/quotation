@@ -26,12 +26,16 @@ class TogetherPreviewSprite {
     required this.scale,
     this.rotation = 0,
     this.highlight = false,
+    this.isMe = false,
     this.onPan,
     this.onSelect,
     this.onRotate,
   });
 
   final String keyId;
+
+  /// My own character: always drawn in front of everyone else.
+  final bool isMe;
   final String assetPath;
   final double x;
   final double y;
@@ -468,11 +472,16 @@ class TogetherWidgetPreview extends StatelessWidget {
 
     final orderedCrowd = crowd == null
         ? const <TogetherPreviewSprite>[]
-        : (List<TogetherPreviewSprite>.of(crowd!)
-          ..sort((a, b) {
-            if (a.highlight == b.highlight) return 0;
-            return a.highlight ? 1 : -1;
-          }));
+        : [
+            // Others first (a selected friend on top of them), me last, so
+            // my character always stays in front. Order kept otherwise.
+            for (final p in crowd!)
+              if (!p.isMe && !p.highlight) p,
+            for (final p in crowd!)
+              if (!p.isMe && p.highlight) p,
+            for (final p in crowd!)
+              if (p.isMe) p,
+          ];
 
     /// [art]: the drawn characters (clipped to the background, no input).
     /// Otherwise: invisible hit area + selection outline + rotate knob, left
@@ -529,8 +538,8 @@ class TogetherWidgetPreview extends StatelessWidget {
             ),
         ];
       }
-      if (highlightMe && friendSprite != null) return [friendSprite, meSprite];
-      return [meSprite, ?friendSprite];
+      // Me last: my character is always in front.
+      return [?friendSprite, meSprite];
     }
 
     final bubbleBoxes = [

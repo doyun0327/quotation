@@ -165,6 +165,39 @@ class AppStrings {
   String get ddayDecorateBubbleDone => _t('완료', 'Done', '完了');
   String get ddayDecorateBubbleLimit => _t('말풍선은 ${TogetherBubble.maxCount}개까지 넣을 수 있어요', 'You can add up to ${TogetherBubble.maxCount} bubbles', '吹き出しは${TogetherBubble.maxCount}個まで追加できます');
   String get ddayDecorateStickerLimit => _t('스티커는 ${TogetherBubble.maxStickers}개까지 넣을 수 있어요', 'You can add up to ${TogetherBubble.maxStickers} stickers', 'ステッカーは${TogetherBubble.maxStickers}個まで追加できます');
+  // First-time decorator tutorial.
+  String get coachPickTitle => _t('1. 캐릭터 선택', '1. Pick your character', '1. キャラクターを選ぶ');
+  String get coachPickBody => _t(
+        '미리보기에서 내 캐릭터를 눌러 보세요.\n선택하면 끌어서 옮길 수도 있어요.',
+        'Tap your character in the preview.\nOnce picked, you can drag it around.',
+        'プレビューで自分のキャラクターをタップしてみて。\n選ぶとドラッグで動かせます。',
+      );
+  String get coachSizeTitle => _t('2. 크기 조절', '2. Change the size', '2. サイズを変える');
+  String get coachSizeBody => _t(
+        '슬라이더를 밀어서 내 캐릭터 크기를 바꿔 보세요.',
+        'Slide to make your character bigger or smaller.',
+        'スライダーでキャラクターの大きさを変えてみて。',
+      );
+  String get coachTextTitle => _t('3. 글자 넣기', '3. Add words', '3. 文字を入れる');
+  String get coachTextBody => _t(
+        '위젯에 보여줄 말을 적어 보세요.\n적는 대로 미리보기에 바로 나타나요.',
+        'Write what the widget should say.\nIt shows in the preview as you type.',
+        'ウィジェットに表示する言葉を書いてみて。\nすぐプレビューに表示されます。',
+      );
+  String get coachTextSizeTitle => _t('4. 글자 크기', '4. Text size', '4. 文字の大きさ');
+  String get coachTextSizeBody => _t(
+        '슬라이더로 글자 크기를 바꿔 보세요.\n미리보기의 글자를 누르면 옮기거나 돌릴 수도 있어요.',
+        'Slide to change the text size.\nTap the words in the preview to move or turn them.',
+        'スライダーで文字の大きさを変えてみて。\nプレビューの文字をタップすると動かしたり回したりできます。',
+      );
+  String get coachDoneTitle => _t('다 꾸몄어요!', 'All set!', 'できました！');
+  String get coachDoneBody => _t(
+        '마음에 들면 홈에 적용을 눌러 위젯에 반영해 주세요.',
+        'Happy with it? Tap Apply to home to put it on your widget.',
+        '気に入ったら「ホームに適用」を押してウィジェットに反映してください。',
+      );
+  String get coachDoneButton => _t('확인', 'OK', 'OK');
+  String get coachSkip => _t('건너뛰기', 'Skip', 'スキップ');
   String get stickerShareTitle =>
       _t('친구에게 Dearly 공유하기', 'Share Dearly with a friend', '友だちにDearlyを共有');
   String get stickerShareBody => _t(

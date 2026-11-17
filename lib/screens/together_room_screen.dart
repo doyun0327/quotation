@@ -44,6 +44,20 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
   Set<String> _invited = {};
   Set<String> _decorated = {};
   bool _openingDecorate = false;
+  ScaffoldMessengerState? _messenger;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _messenger = ScaffoldMessenger.maybeOf(context);
+  }
+
+  @override
+  void dispose() {
+    // Back to the room list: the "applied to home" notice goes with it.
+    _messenger?.clearSnackBars();
+    super.dispose();
+  }
 
   DdayItem? get _room {
     final matches =
@@ -555,6 +569,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
                 if (!blockedUsersController.isBlocked(slot.uid))
                 TogetherPreviewSprite(
                   keyId: slot.uid,
+                  isMe: slot.uid == authController.viewerUid,
                   assetPath: slot.uid == authController.viewerUid
                       ? ddayController.meCharacterForRoom(room.id).assetPath
                       : AppCharacter.byId(slot.characterId).assetPath,
