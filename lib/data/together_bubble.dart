@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/data/together_sticker.dart';
 import 'package:quotation/data/widget_fonts.dart';
 
 /// Which bottom corner the speech-bubble tail points out of.
@@ -26,9 +27,12 @@ class TogetherBubble {
     this.scale = 100,
     this.authorUid = '',
     this.color = 0,
+    this.sticker = '',
   });
 
+  /// Speech bubbles with words; stickers have their own limit.
   static const maxCount = 5;
+  static const maxStickers = 10;
   static const maxLength = 16;
   static const scaleMin = 70;
   static const scaleMax = 200;
@@ -52,6 +56,11 @@ class TogetherBubble {
   /// This bubble's text color (ARGB). 0 = follow the room text color.
   final int color;
 
+  /// [TogetherSticker] id: a picture instead of words. Empty = speech bubble.
+  final String sticker;
+
+  bool get isSticker => sticker.isNotEmpty;
+
   /// Text color to draw with. A bubble without its own color follows the
   /// room text color, unless that would vanish on the white bubble.
   Color textColorOn(int roomTextColor) {
@@ -74,6 +83,7 @@ class TogetherBubble {
     int? color,
   }) {
     return TogetherBubble(
+      sticker: sticker,
       id: id,
       text: text ?? this.text,
       x: x ?? this.x,
@@ -103,6 +113,7 @@ class TogetherBubble {
         if (scale != 100) 'scale': scale,
         if (authorUid.isNotEmpty) 'by': authorUid,
         if (color != 0) 'color': color,
+        if (sticker.isNotEmpty) 'sticker': sticker,
       };
 
   /// Single line, capped — the home widget draws it without wrapping.
@@ -121,10 +132,24 @@ class TogetherBubble {
   }) {
     if (raw is! List) return const [];
     final out = <TogetherBubble>[];
+    var words = 0;
+    var stickers = 0;
     for (final entry in raw) {
       if (entry is! Map) continue;
       final id = entry['id']?.toString() ?? '';
       if (id.isEmpty) continue;
+      final rawSticker = entry['sticker']?.toString() ?? '';
+      // A sticker this app does not know is skipped, never drawn as words.
+      if (rawSticker.isNotEmpty && TogetherSticker.styleFor(rawSticker) == null) {
+        continue;
+      }
+      final isSticker = rawSticker.isNotEmpty;
+      if (isSticker ? stickers >= maxStickers : words >= maxCount) continue;
+      if (isSticker) {
+        stickers++;
+      } else {
+        words++;
+      }
       final x = (entry['x'] as num?)?.toInt() ?? 0;
       final y = (entry['y'] as num?)?.toInt() ?? 0;
       out.add(
@@ -138,9 +163,9 @@ class TogetherBubble {
           scale: clampScale((entry['scale'] as num?)?.toInt() ?? 100),
           authorUid: entry['by']?.toString() ?? fallbackAuthor,
           color: (entry['color'] as num?)?.toInt() ?? 0,
+          sticker: rawSticker,
         ),
       );
-      if (out.length >= maxCount) break;
     }
     return out;
   }
@@ -157,7 +182,8 @@ class TogetherBubble {
           l.tail != r.tail ||
           l.rotation != r.rotation ||
           l.scale != r.scale ||
-          l.color != r.color) {
+          l.color != r.color ||
+          l.sticker != r.sticker) {
         return false;
       }
     }
@@ -172,7 +198,8 @@ class TogetherBubble {
           a[i].text != b[i].text ||
           a[i].tail != b[i].tail ||
           a[i].scale != b[i].scale ||
-          a[i].color != b[i].color) {
+          a[i].color != b[i].color ||
+          a[i].sticker != b[i].sticker) {
         return false;
       }
     }
@@ -188,6 +215,12 @@ class TogetherBubble {
       [
         for (final b in bubbles)
           {
+            // Sticker: Android draws this picture in a kw x kh dp box.
+            if (TogetherSticker.styleFor(b.sticker) case final style?) ...{
+              'k': style.asset,
+              'kw': TogetherSticker.size(style).width,
+              'kh': TogetherSticker.size(style).height,
+            },
             't': b.text,
             'x': b.x.round(),
             'y': b.y.round(),
@@ -247,7 +280,12 @@ abstract final class TogetherBubbleLayout {
     required bool isPixel,
     WidgetFont font = WidgetFont.basic,
     int scale = 100,
+    String sticker = '',
   }) {
+    final stickerStyle = TogetherSticker.styleFor(sticker);
+    if (stickerStyle != null) {
+      return TogetherSticker.size(stickerStyle, scale: scale);
+    }
     final painter = TextPainter(
       text: TextSpan(
         text: text.isEmpty ? ' ' : text,

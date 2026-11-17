@@ -42,7 +42,7 @@ Future<void> togetherFcmBackground(RemoteMessage message) async {
 /// the FCM token is never saved, so friends' edits never reach the widget.
 /// Permission is asked by FirebaseMessaging.requestPermission instead.
 const _notificationInit = InitializationSettings(
-  android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+  android: AndroidInitializationSettings('@drawable/ic_stat_notify'),
   iOS: DarwinInitializationSettings(
     requestAlertPermission: false,
     requestBadgePermission: false,

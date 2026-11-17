@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
+import 'package:quotation/data/sticker_unlock.dart';
 import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
@@ -67,6 +68,7 @@ class DdayCloudSync {
     // this one's (see DdayController.dropRoomsOutside).
     if (!await _adoptAccount(uid)) return;
     await UserProfileSync.upsertCurrentUser();
+    unawaited(stickerUnlock.syncFromCloud());
     await pushOwnedDdays();
     await pullMemberships();
     _bindRoomWatches();
@@ -653,10 +655,10 @@ class DdayCloudSync {
         !data.containsKey('layoutBgOpacity') &&
         !data.containsKey('layoutTextColor') &&
         !data.containsKey('layoutTextFont') &&
-        !data.containsKey('layoutLink') &&
         !data.containsKey('layoutTextX') &&
         !data.containsKey('layoutCrowdKey') &&
-        !data.containsKey('layoutBubbles')) {
+        !data.containsKey('layoutBubbles') &&
+        !data.containsKey('layoutStickers')) {
       return;
     }
     final local = await _localCanvas(roomId);
@@ -692,7 +694,6 @@ class DdayCloudSync {
     final textColor = (data['layoutTextColor'] as num?)?.toInt();
     final textFontId = data['layoutTextFont'] as String?;
     final textFont = textFontId == null ? null : WidgetFont.byId(textFontId);
-    final link = data['layoutLink'] as String?;
     final shapeId = data['layoutShape'] as String?;
     final shape =
         shapeId == null ? null : TogetherWidgetShape.byId(shapeId);
@@ -706,13 +707,19 @@ class DdayCloudSync {
         ? null
         : crowdKey;
     // Absent on layouts pushed by older app versions: keep what we have.
-    final bubbles = data.containsKey('layoutBubbles')
-        ? TogetherBubble.listFromJson(
-            data['layoutBubbles'],
-            ax: ax,
-            ay: ay,
-            fallbackAuthor: data['layoutUpdatedBy']?.toString() ?? '',
-          )
+    // Stickers are stored apart so older apps never draw them as empty
+    // speech bubbles.
+    final bubbles = data.containsKey('layoutBubbles') ||
+            data.containsKey('layoutStickers')
+        ? [
+            for (final key in const ['layoutBubbles', 'layoutStickers'])
+              ...TogetherBubble.listFromJson(
+                data[key],
+                ax: ax,
+                ay: ay,
+                fallbackAuthor: data['layoutUpdatedBy']?.toString() ?? '',
+              ),
+          ]
         : null;
     final paidLooks = PaidLook.parse(data['layoutPaidLooks']);
     if (iAmHost) {
@@ -731,7 +738,6 @@ class DdayCloudSync {
         bgTheme: bgTheme,
         textColor: textColor,
         textFont: textFont,
-        link: link,
         shape: shape,
         widgetSize: widgetSize,
         crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
@@ -756,7 +762,6 @@ class DdayCloudSync {
         bgTheme: bgTheme,
         textColor: textColor,
         textFont: textFont,
-        link: link,
         shape: shape,
         widgetSize: widgetSize,
         crowdKey: sharedCrowd == null ? null : sharedCrowdKey,
@@ -848,7 +853,6 @@ class DdayCloudSync {
     final bgTheme = looks.bgTheme;
     final textColor = ddayController.textColorForRoom(item.id);
     final textFont = looks.textFont;
-    final link = ddayController.savedLinkForRoom(item.id);
     const shape = TogetherWidgetShape.square;
     final widgetSize = ddayController.widgetSizeForRoom(item.id);
     final crowdKey = ddayController.crowdKeyForRoom(item.id);
@@ -904,7 +908,6 @@ class DdayCloudSync {
           'layoutBgTheme': bgTheme,
           'layoutTextColor': textColor,
           'layoutTextFont': textFont.id,
-          'layoutLink': link,
           'layoutShape': shape.id,
           'layoutWidgetSize': widgetSize.id,
           if (crowdKey.isNotEmpty) 'layoutCrowdKey': crowdKey,
@@ -922,7 +925,14 @@ class DdayCloudSync {
                 },
             ],
           // Always written so a deleted bubble disappears for friends too.
-          'layoutBubbles': [for (final b in bubbles) b.toJson()],
+          'layoutBubbles': [
+            for (final b in bubbles)
+              if (!b.isSticker) b.toJson(),
+          ],
+          'layoutStickers': [
+            for (final b in bubbles)
+              if (b.isSticker) b.toJson(),
+          ],
           'layoutPaidLooks': looks.paidLooks.toList(),
           'layoutUpdatedBy': uid,
           'layoutUpdatedByName':
@@ -968,11 +978,12 @@ class DdayCloudSync {
             .where((m) => (m['uid'] as String? ?? '') != uid)
             .toList();
         final mine = <String, dynamic>{
-          if (data['layoutBubbles'] is List)
-            'layoutBubbles': [
-              for (final b in data['layoutBubbles'] as List<dynamic>)
-                if (b is! Map || b['by'] != uid) b,
-            ],
+          for (final key in const ['layoutBubbles', 'layoutStickers'])
+            if (data[key] is List)
+              key: [
+                for (final b in data[key] as List<dynamic>)
+                  if (b is! Map || b['by'] != uid) b,
+              ],
           if (data['latestCheerAuthorUid'] == uid) ...{
             'latestCheer': '',
             'latestCheerAuthorUid': FieldValue.delete(),

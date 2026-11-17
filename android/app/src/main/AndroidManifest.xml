@@ -10,6 +10,10 @@
         android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Status-bar icon for pushes Firebase shows while the app is closed. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_notify" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4752729386590212~7216288149"/>

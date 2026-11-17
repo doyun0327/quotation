@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quotation/data/sticker_unlock.dart';
 import 'package:quotation/data/app_check.dart';
 import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
@@ -73,6 +74,7 @@ Future<void> main() async {
 
   await visualStyleController.load();
   await characterController.load();
+  await stickerUnlock.load();
   await membershipController.load();
   await localeController.load();
   await QuoteRepository.initialize();

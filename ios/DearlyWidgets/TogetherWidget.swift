@@ -319,19 +319,6 @@ enum TogetherCardRenderer {
         drawLabel(label, cg: cg)
       }
 
-      // Link pictures.
-      if let link = spec["link"] as? [String: Any], let file = link["file"] as? String,
-        let rects = link["rects"] as? [[Any]]
-      {
-        let maxSide = rects.compactMap { r in r.count == 4 ? max(num(r[2]) ?? 0, num(r[3]) ?? 0) : nil }.max() ?? 0
-        if let image = loadImage(file, maxPixel: maxSide * scale) {
-          for r in rects where r.count == 4 {
-            guard let x = num(r[0]), let y = num(r[1]), let w = num(r[2]), let h = num(r[3]) else { continue }
-            drawImage(image, in: CGRect(x: x, y: y, width: w, height: h), mode: .contain, sharp: pixel, cg: cg)
-          }
-        }
-      }
-
       // Characters.
       for char in (spec["chars"] as? [[String: Any]]) ?? [] {
         guard let file = char["file"] as? String,
@@ -341,6 +328,19 @@ enum TogetherCardRenderer {
         let rect = CGRect(x: x, y: y, width: w, height: h)
         withRotation(num(char["rot"]) ?? 0, around: CGPoint(x: rect.midX, y: rect.midY), cg: cg) {
           drawImage(image, in: rect, mode: .contain, sharp: (char["sharp"] as? Bool) ?? false, cg: cg)
+        }
+      }
+
+      // Stickers: pictures kept in their own shape, turned around the center.
+      for sticker in (spec["stickers"] as? [[String: Any]]) ?? [] {
+        guard let file = sticker["file"] as? String,
+          let x = num(sticker["x"]), let y = num(sticker["y"]),
+          let w = num(sticker["w"]), let h = num(sticker["h"]),
+          let image = loadImage(file, maxPixel: max(w, h) * scale)
+        else { continue }
+        let rect = CGRect(x: x, y: y, width: w, height: h)
+        withRotation(num(sticker["rot"]) ?? 0, around: CGPoint(x: rect.midX, y: rect.midY), cg: cg) {
+          drawImage(image, in: rect, mode: .fill, sharp: pixel, cg: cg)
         }
       }
 

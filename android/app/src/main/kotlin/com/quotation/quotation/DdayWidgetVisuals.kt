@@ -207,7 +207,6 @@ object DdayWidgetVisuals {
       chars: JSONArray? = null,
       bubbles: JSONArray? = null,
       pixelsPerDp: Float = 0f,
-      linkAsset: String = "",
   ): Bitmap {
     val deviceDensity = context.resources.displayMetrics.density.coerceAtLeast(0.5f)
     val density = if (pixelsPerDp > 0f) pixelsPerDp else deviceDensity
@@ -314,33 +313,6 @@ object DdayWidgetVisuals {
 
     val hasFriend = friendId.isNotBlank()
 
-    val linkBmp = if (linkAsset.isBlank()) null else decodeFlutterAsset(context, linkAsset)
-    if (linkBmp != null) {
-      val boxes = ArrayList<RectF>()
-      if (chars != null && chars.length() > 0) {
-        for (i in 0 until chars.length()) {
-          val obj = chars.optJSONObject(i) ?: continue
-          val spriteScale = (obj.optInt("s", 100) / 100f).coerceIn(0.28f, 4.0f)
-          val bw = (72f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(16) * density
-          val bh = (96f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(20) * density
-          val left = originX + (4f + obj.optInt("x", 0)) * density
-          val top = originY + contentH - obj.optInt("y", 0) * density - bh
-          boxes.add(RectF(left, top, left + bw, top + bh))
-        }
-      } else {
-        val meLeft = originX + (4f + meOffsetX) * density
-        val meTop = originY + contentH - meOffsetY * density - meH
-        boxes.add(RectF(meLeft, meTop, meLeft + meW, meTop + meH))
-        if (hasFriend) {
-          val frLeft = originX + (4f + friendOffsetX) * density
-          val frTop = originY + contentH - friendOffsetY * density - friendH
-          boxes.add(RectF(frLeft, frTop, frLeft + friendW, frTop + friendH))
-        }
-      }
-      drawImageLink(canvas, linkBmp, boxes, isPixel, linkAsset)
-      linkBmp.recycle()
-    }
-
     if (chars != null && chars.length() > 0) {
       for (i in 0 until chars.length()) {
         val obj = chars.optJSONObject(i) ?: continue
@@ -439,59 +411,6 @@ object DdayWidgetVisuals {
     return bitmap
   }
 
-  // Same rules as Flutter TogetherLink (lib/data/together_link.dart).
-  private const val LINK_INSET = 0.24f
-  private const val LINK_ANCHOR_HEIGHT = 0.66f
-  private const val LINK_MAX_HEIGHT_SHARE = 0.32f
-
-  /**
-   * The link picture between each character and its right-hand neighbour,
-   * with its own proportions: only its size follows the gap.
-   */
-  private fun drawImageLink(
-      canvas: Canvas,
-      bmp: Bitmap,
-      boxes: List<RectF>,
-      isPixel: Boolean,
-      linkAsset: String = "",
-  ) {
-    if (boxes.size < 2 || bmp.width <= 0 || bmp.height <= 0) return
-    val aspect = bmp.width.toFloat() / bmp.height
-    // Same as Flutter TogetherLinkStyle.heightScale for heart_2.
-    val heightScale =
-        if (linkAsset.contains("link_heart_2")) 1.15f else 1f
-    val paint =
-        Paint().apply {
-          isFilterBitmap = !isPixel
-          isAntiAlias = !isPixel
-        }
-    val sorted = boxes.sortedBy { it.centerX() }
-    for (i in 0 until sorted.size - 1) {
-      val a = sorted[i]
-      val b = sorted[i + 1]
-      val start = a.centerX() + a.width() * LINK_INSET
-      val end = b.centerX() - b.width() * LINK_INSET
-      val gap = end - start
-      if (gap <= 0f) continue
-      val y =
-          ((a.top + a.height() * LINK_ANCHOR_HEIGHT) + (b.top + b.height() * LINK_ANCHOR_HEIGHT)) / 2f
-      var width = gap
-      var height = width / aspect * heightScale
-      val maxHeight = LINK_MAX_HEIGHT_SHARE * (a.height() + b.height()) / 2f
-      if (height > maxHeight) {
-        height = maxHeight
-        width = height * aspect / heightScale
-      }
-      val cx = (start + end) / 2f
-      canvas.drawBitmap(
-          bmp,
-          null,
-          RectF(cx - width / 2f, y - height / 2f, cx + width / 2f, y + height / 2f),
-          paint,
-      )
-    }
-  }
-
   // Same numbers as Flutter TogetherBubbleLayout (lib/data/together_bubble.dart).
   private const val BUBBLE_FONT_DP = 12f
   private const val BUBBLE_LINE_HEIGHT = 1.2f
@@ -552,8 +471,35 @@ object DdayWidgetVisuals {
           strokeJoin = Paint.Join.ROUND
           isAntiAlias = true
         }
+    val stickerBitmaps = HashMap<String, Bitmap?>()
     for (i in 0 until bubbles.length()) {
       val obj = bubbles.optJSONObject(i) ?: continue
+      // Sticker (Flutter TogetherSticker): the picture as is in a kw x kh dp
+      // box, centered on x/y, grown by s and turned by r like a bubble.
+      val stickerAsset = obj.optString("k")
+      if (stickerAsset.isNotBlank()) {
+        val bmp =
+            stickerBitmaps.getOrPut(stickerAsset) { decodeFlutterAsset(context, stickerAsset) }
+        val kw = obj.optDouble("kw", 0.0).toFloat() * density
+        val kh = obj.optDouble("kh", 0.0).toFloat() * density
+        if (bmp == null || kw <= 0f || kh <= 0f) continue
+        val cx = widthPx / 2f + obj.optInt("x", 0) * density
+        val cy = heightPx / 2f - obj.optInt("y", 0) * density
+        val degrees = ((obj.optInt("r", 0) % 360) + 360) % 360
+        val grow = obj.optInt("s", 100).coerceIn(50, 300) / 100f
+        canvas.save()
+        if (degrees != 0) canvas.rotate(degrees.toFloat(), cx, cy)
+        canvas.scale(grow, grow, cx, cy)
+        val paint =
+            Paint().apply {
+              isFilterBitmap = !isPixel
+              isAntiAlias = !isPixel
+            }
+        canvas.drawBitmap(
+            bmp, null, RectF(cx - kw / 2f, cy - kh / 2f, cx + kw / 2f, cy + kh / 2f), paint)
+        canvas.restore()
+        continue
+      }
       val text = obj.optString("t").trim()
       // Each bubble's own text color (resolved in Dart); older data has none.
       textPaint.color =

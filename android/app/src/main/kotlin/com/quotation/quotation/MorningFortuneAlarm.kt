@@ -152,7 +152,7 @@ class MorningFortuneReceiver : BroadcastReceiver() {
         )
     val notification =
         NotificationCompat.Builder(context, "daily_encouragement")
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_stat_notify)
             .setContentTitle(title)
             .setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))

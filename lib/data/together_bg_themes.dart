@@ -32,8 +32,10 @@ class TogetherBgTheme {
   /// Themes from [assets/images/widgetbackground/].
   static final all = <TogetherBgTheme>[
     none,
-    // Pastel first, right after the link pictures (see TogetherLink).
+    // Pastel first, right after the sticker tiles (see TogetherSticker).
     // Airplane (pastel_1) sits right after the four-leaf clover (pastel_7).
+    // Picker: 1 transparent, 2 bubble, 3-5 stickers, then pastel_2 (6th)
+    // and pastel_3 (7th); the rest follow.
     for (final i in const [2, 3, 4, 5, 6, 7, 1, 8, 9, 10])
       TogetherBgTheme(
         id: 'pastel_$i',

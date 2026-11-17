@@ -45,7 +45,7 @@ abstract final class EncouragementNotificationScheduler {
     tz_data.initializeTimeZones();
     await _syncLocalTimezone();
 
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidInit = AndroidInitializationSettings('@drawable/ic_stat_notify');
     const iosInit = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,

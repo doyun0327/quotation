@@ -12,7 +12,7 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
-import 'package:quotation/data/together_link.dart';
+import 'package:quotation/data/together_sticker.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/quote_models.dart';
@@ -844,11 +844,6 @@ abstract final class HomeWidgetSync {
         'textColor': _hex(Color(ddayController.textColorForRoom(item.id))),
         // Android loads this from flutter_assets. Empty keeps the style font.
         'textFont': ddayController.textFontForRoom(item.id).asset ?? '',
-        'link': ddayController.linkForRoom(item.id),
-        // Android draws this picture as is (see TogetherLink).
-        'linkAsset':
-            TogetherLink.styleFor(ddayController.linkForRoom(item.id))?.asset ??
-                '',
         'chars': TogetherCrowdLayout.widgetChars(placed),
         'bubbles': TogetherBubble.widgetJson(
           _shownBubbles(item.id),
@@ -916,7 +911,6 @@ abstract final class HomeWidgetSync {
           charW: 72 * TogetherWidgetSize.s42.charFactor,
           charH: 96 * TogetherWidgetSize.s42.charFactor,
           bubbles: _shownBubbles(item.id),
-          link: ddayController.linkForRoom(item.id),
         );
         if (spec != null) {
           await HomeWidget.saveWidgetData<String>(specKey, spec);
@@ -945,7 +939,6 @@ abstract final class HomeWidgetSync {
           bgAsset: bgAsset,
           placed: card.placed,
           bubbles: _shownBubbles(item.id),
-          link: ddayController.linkForRoom(item.id),
         );
       }
       if (ready) signatures[item.id] = signature;
@@ -1235,7 +1228,6 @@ abstract final class HomeWidgetSync {
         bgAsset: bgAsset,
         placed: placed,
         bubbles: _shownBubbles(item.id),
-        link: ddayController.linkForRoom(item.id),
       );
     }
   }
@@ -1256,7 +1248,6 @@ abstract final class HomeWidgetSync {
     required String bgAsset,
     required List<TogetherPlaced> placed,
     List<TogetherBubble> bubbles = const [],
-    String link = '',
   }) async {
     if (!_isIOS) return false;
     // In the background iOS turns the GPU off and Flutter holds the render
@@ -1273,9 +1264,13 @@ abstract final class HomeWidgetSync {
       if (bgPath.isNotEmpty) {
         bgImage = await _decodeUiImage(bgPath);
       }
-      final linkAsset = TogetherLink.styleFor(link)?.asset;
-      final linkImage =
-          linkAsset == null ? null : await _decodeUiImage(linkAsset);
+      final stickerImages = <String, ui.Image>{};
+      for (final b in bubbles) {
+        final asset = TogetherSticker.styleFor(b.sticker)?.asset;
+        if (asset == null || stickerImages.containsKey(asset)) continue;
+        final image = await _decodeUiImage(asset);
+        if (image != null) stickerImages[asset] = image;
+      }
       for (final slot in placed) {
         final id = slot.characterId;
         if (decoded.containsKey(id)) continue;
@@ -1311,8 +1306,7 @@ abstract final class HomeWidgetSync {
               textFont: textFont,
               cornerRadius: corner,
               bubbles: bubbles,
-              link: link,
-              linkImage: linkImage,
+              stickerImages: stickerImages,
             ),
           ),
         ),

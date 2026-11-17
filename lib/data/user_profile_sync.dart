@@ -380,14 +380,15 @@ class UserProfileSync {
                 for (final entry in data['layoutCrowd'] as List<dynamic>)
                   if (entry is! Map || entry['uid'] != uid) entry,
               ],
-            if (data['layoutBubbles'] is List)
-              'layoutBubbles': [
-                for (final entry in data['layoutBubbles'] as List<dynamic>)
-                  if (entry is Map && entry['by'] == uid)
-                    ({...entry}..remove('by'))
-                  else
-                    entry,
-              ],
+            for (final key in const ['layoutBubbles', 'layoutStickers'])
+              if (data[key] is List)
+                key: [
+                  for (final entry in data[key] as List<dynamic>)
+                    if (entry is Map && entry['by'] == uid)
+                      ({...entry}..remove('by'))
+                    else
+                      entry,
+                ],
             if (removeIfMine('latestCheerAuthorUid')) ...{
               'latestCheerAuthorUid': FieldValue.delete(),
               'latestCheerAuthorName': FieldValue.delete(),

@@ -534,6 +534,8 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
         child: Center(
           child: IgnorePointer(
             child: TogetherWidgetPreview(
+              // "투명" stays see-through here on iPhone too, like Galaxy.
+              iosGlass: false,
             width: previewSize.width,
             height: previewSize.height,
             charW: 72 * charBase,
@@ -584,7 +586,6 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             ),
             textColor: ddayController.textColorForRoom(room.id),
             textFont: ddayController.textFontForRoom(room.id),
-            link: ddayController.linkForRoom(room.id),
             shape: TogetherWidgetShape.square,
             cornerRadius: _hostCornerDp,
             ),

@@ -4,7 +4,6 @@ import 'dart:ui' show Size;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:quotation/data/together_link.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/home_widget_sync.dart';
@@ -270,7 +269,6 @@ class _RoomOffsets {
     this.bgTheme = 'widget_background',
     this.textColor = 0xFFF26B8A,
     this.textFont = '',
-    this.link = '',
     this.shape = 'square',
     this.widgetSize = 's42',
     this.crowdKey = '',
@@ -296,8 +294,6 @@ class _RoomOffsets {
   final int textColor;
   /// [WidgetFont.id]. Empty keeps the style default font.
   final String textFont;
-  /// [TogetherLink] id drawn between the characters. Empty = none.
-  final String link;
   final String shape;
   final String widgetSize;
   final String crowdKey;
@@ -324,7 +320,6 @@ class _RoomOffsets {
         'bgTheme': bgTheme,
         'textColor': textColor,
         if (textFont.isNotEmpty) 'textFont': textFont,
-        if (link.isNotEmpty) 'link': link,
         'shape': shape,
         'widgetSize': widgetSize,
         if (crowdKey.isNotEmpty) 'crowdKey': crowdKey,
@@ -370,7 +365,6 @@ class _RoomOffsets {
       bgTheme: json['bgTheme'] as String? ?? 'widget_background',
       textColor: json['textColor'] as int? ?? 0xFFF26B8A,
       textFont: json['textFont'] as String? ?? '',
-      link: json['link'] as String? ?? '',
       shape: 'square',
       widgetSize: json['widgetSize'] as String? ?? 's42',
       crowdKey: json['crowdKey'] as String? ?? '',
@@ -416,7 +410,6 @@ class _RoomOffsets {
     String? bgTheme,
     int? textColor,
     String? textFont,
-    String? link,
     String? shape,
     String? widgetSize,
     String? crowdKey,
@@ -442,7 +435,6 @@ class _RoomOffsets {
       bgTheme: bgTheme ?? this.bgTheme,
       textColor: textColor ?? this.textColor,
       textFont: textFont ?? this.textFont,
-      link: link ?? this.link,
       shape: shape ?? this.shape,
       widgetSize: widgetSize ?? this.widgetSize,
       crowdKey: crowdKey ?? this.crowdKey,
@@ -458,14 +450,13 @@ abstract final class PaidLook {
   static const bg = 'bg';
   static const font = 'font';
   static const bubbles = 'bubbles';
-  static const link = 'link';
 
   /// Null when the field is missing (layout from an older app version).
   static Set<String>? parse(Object? raw) {
     if (raw is! List) return null;
     return {
       for (final key in raw)
-        if (key == bg || key == font || key == bubbles || key == link)
+        if (key == bg || key == font || key == bubbles)
           key as String,
     };
   }
@@ -729,7 +720,6 @@ class DdayController extends ChangeNotifier {
       bgTheme: o.bgTheme,
       textColor: o.textColor,
       textFont: WidgetFont.byId(o.textFont).id,
-      link: o.link,
       shape: TogetherWidgetShape.byId(o.shape).id,
       widgetSize: TogetherWidgetSize.byId(o.widgetSize).id,
       crowdKey: o.crowdKey,
@@ -778,20 +768,6 @@ class DdayController extends ChangeNotifier {
     }
     return WidgetFont.values.first;
   }
-  /// What joins the characters ([TogetherLink]).
-  /// The red string is premium (see [_showsPaidLook]); hearts are free.
-  String linkForRoom(String roomId) {
-    final id = savedLinkForRoom(roomId);
-    if (!TogetherLink.requiresPremium(id) ||
-        _showsPaidLook(roomId, PaidLook.link)) {
-      return id;
-    }
-    return TogetherLink.none;
-  }
-
-  /// Saved pick before the free fallback; this is what the room shares.
-  String savedLinkForRoom(String roomId) =>
-      TogetherLink.normalize(_offsetsForRoom(roomId).link);
   TogetherWidgetShape shapeForRoom(String roomId) =>
       TogetherWidgetShape.byId(_offsetsForRoom(roomId).shape);
   TogetherWidgetSize widgetSizeForRoom(String roomId) => TogetherWidgetSize.s42;
@@ -799,6 +775,8 @@ class DdayController extends ChangeNotifier {
   List<TogetherCrowdSaved> crowdForRoom(String roomId) =>
       _offsetsForRoom(roomId).crowd;
   /// Speech bubbles are free for everyone.
+  /// Speech bubbles and stickers. Placed stickers show to everyone in the
+  /// room; only adding one needs a subscription or the share unlock.
   List<TogetherBubble> bubblesForRoom(String roomId) =>
       _offsetsForRoom(roomId).bubbles;
 
@@ -848,7 +826,6 @@ class DdayController extends ChangeNotifier {
     String? bgTheme,
     int? textColor,
     WidgetFont? textFont,
-    String? link,
     TogetherWidgetShape? shape,
     TogetherWidgetSize? widgetSize,
     bool fromCloud = false,
@@ -868,7 +845,6 @@ class DdayController extends ChangeNotifier {
       // fallback was not touched, so keep the saved (maybe premium) pick.
       if (bgTheme == bgThemeForRoom(targetId)) bgTheme = null;
       if (textFont == textFontForRoom(targetId)) textFont = null;
-      if (link == linkForRoom(targetId)) link = null;
       if (bubbles != null &&
           TogetherBubble.sameList(bubbles, bubblesForRoom(targetId))) {
         bubbles = null;
@@ -892,7 +868,6 @@ class DdayController extends ChangeNotifier {
       bgTheme: bgTheme,
       textColor: textColor,
       textFont: textFont?.id,
-      link: link,
       shape: shape?.id,
       widgetSize: widgetSize?.id,
       crowdKey: crowdKey,
@@ -919,7 +894,6 @@ class DdayController extends ChangeNotifier {
         cur.bgTheme == next.bgTheme &&
         cur.textColor == next.textColor &&
         cur.textFont == next.textFont &&
-        cur.link == next.link &&
         cur.shape == next.shape &&
         cur.widgetSize == next.widgetSize &&
         _sameCrowd(cur, next) &&
@@ -967,7 +941,6 @@ class DdayController extends ChangeNotifier {
         PaidLook.bg,
         PaidLook.font,
         PaidLook.bubbles,
-        PaidLook.link,
       };
     }
     final paid = {...cur.paidLooks};
@@ -977,7 +950,6 @@ class DdayController extends ChangeNotifier {
 
     mark(PaidLook.bg, cur.bgTheme != next.bgTheme);
     mark(PaidLook.font, cur.textFont != next.textFont);
-    mark(PaidLook.link, cur.link != next.link);
     mark(
       PaidLook.bubbles,
       !TogetherBubble.sameContent(cur.bubbles, next.bubbles),

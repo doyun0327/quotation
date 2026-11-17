@@ -11,7 +11,9 @@ import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/ios_fake_wallpaper.dart';
 import 'package:quotation/data/membership_controller.dart';
 import 'package:quotation/data/together_bg_themes.dart';
-import 'package:quotation/data/together_link.dart';
+import 'package:quotation/data/sticker_unlock.dart';
+import 'package:quotation/data/together_sticker.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/widget_album_background.dart';
@@ -84,7 +86,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   late String _bgThemeId;
   late int _textColor;
   late WidgetFont _textFont;
-  late String _link;
   late TogetherWidgetSize _widgetSize;
   Size? _hostSize;
   TogetherWidgetSize? _hostForSize;
@@ -98,6 +99,12 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   bool _editingBubble = false;
   Timer? _presenceBeat;
   AppLifecycleListener? _presenceLife;
+
+  /// The "applied to home" notice goes away when the app leaves the screen
+  /// (the add-widget sheet, the launcher's widget list) and is not shown
+  /// again on return.
+  AppLifecycleListener? _noticeLife;
+  ScaffoldMessengerState? _messenger;
 
   /// Last touch or keystroke; the editor closes after [_idleLimit] without
   /// one so a forgotten screen does not keep friends locked out.
@@ -130,6 +137,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   @override
   void initState() {
     super.initState();
+    _noticeLife = AppLifecycleListener(
+      onHide: () => _messenger?.clearSnackBars(),
+      onPause: () => _messenger?.clearSnackBars(),
+    );
     unawaited(_loadHostSize());
     unawaited(TogetherGuide.markDecorated(widget.roomId));
     unawaited(_loadExportLabel());
@@ -156,9 +167,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _widgetSize = TogetherWidgetSize.s42;
     final rooms = ddayController.items.where((e) => e.id == id);
     final room = rooms.isEmpty ? null : rooms.first;
-    _link = (room?.hasFriend ?? false)
-        ? ddayController.linkForRoom(id)
-        : TogetherLink.none;
     _cheerCtrl.text = room?.latestCheer?.trim() ?? '';
     _cheerDraft.value = _cheerCtrl.text;
     _lastPulledCheer = _cheerCtrl.text.trim();
@@ -329,10 +337,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final theme = ddayController.bgThemeForRoom(id);
     final color = ddayController.textColorForRoom(id);
     final font = ddayController.textFontForRoom(id);
-    // Heart links only make sense with 2+ people; drop a stale solo pick.
-    final link = (_room?.hasFriend ?? false)
-        ? ddayController.linkForRoom(id)
-        : TogetherLink.none;
     // The open edit sheet owns the draft; a reload would drop a new bubble.
     final bubbles =
         _editingBubble ? _bubbles : ddayController.bubblesForRoom(id);
@@ -349,7 +353,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _bgThemeId != theme ||
         _textColor != color ||
         _textFont != font ||
-        _link != link ||
         !TogetherBubble.sameList(_bubbles, bubbles);
     final crowdChanged = _adoptCrowd();
     // Sizes a friend saved for each person. Skipped while my own crowd edit
@@ -372,7 +375,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         _bgThemeId = theme;
         _textColor = color;
         _textFont = font;
-        _link = link;
         _bubbles = bubbles;
         if (!_bubbles.any((b) => b.id == _bubbleId)) _bubbleId = null;
         if (_focus == _DecorateFocus.friend) _scaleMe = false;
@@ -429,7 +431,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _messenger = ScaffoldMessenger.maybeOf(context);
+  }
+
+  @override
   void dispose() {
+    _noticeLife?.dispose();
+    // Leaving the decorator ends its notice; it must not follow to the
+    // room list.
+    _messenger?.clearSnackBars();
     _presenceLife?.dispose();
     _endPresence();
     ddayController.removeListener(_syncFromController);
@@ -576,7 +588,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       bgOpacity: 100,
       textColor: _textColor,
       textFont: _textFont,
-      link: (_room?.hasFriend ?? false) ? _link : TogetherLink.none,
       shape: _shape,
       widgetSize: _widgetSize,
       bubbles: _bubbles,
@@ -617,7 +628,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         // Galaxy gets the add button (its launcher can lose the widget);
         // iPhone and other phones just get the confirmation.
         final offerAdd = _samsung;
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        // Only the latest notice: pressing "홈에 적용" again must not queue
+        // the same message to play back one after another.
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
           SnackBar(
             // Always two lines on any screen width: each line keeps its own
             // break and shrinks to fit instead of wrapping to a third.
@@ -638,12 +653,16 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
             action: offerAdd
                 ? SnackBarAction(
                     label: t.togetherWidgetOnHomeAdd,
-                    onPressed: () => unawaited(
-                      HomeWidgetSync.syncAndOfferPinTogetherWidget(
-                        roomId: widget.roomId,
-                        force: true,
-                      ),
-                    ),
+                    onPressed: () {
+                      // The add-widget sheet takes over; the notice is done.
+                      messenger.hideCurrentSnackBar();
+                      unawaited(
+                        HomeWidgetSync.syncAndOfferPinTogetherWidget(
+                          roomId: widget.roomId,
+                          force: true,
+                        ),
+                      );
+                    },
                   )
                 : null,
           ),
@@ -1016,27 +1035,50 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _dragTick.value++;
   }
 
+  /// Paid subscription or the share unlock. The free trial does not count.
+  bool get _canUseStickers =>
+      membershipController.isPremium || stickerUnlock.unlocked;
+
+  /// A friend's sticker shows here too, but only someone who opened the
+  /// stickers may move, size or remove it.
+  bool _locksBubble(TogetherBubble b) => b.isSticker && !_canUseStickers;
+
   List<TogetherPreviewBubble> _bubbleSprites() => [
         for (final b in blockedUsersController.visibleBubbles(
           widget.roomId,
           _bubbles,
         ))
-          TogetherPreviewBubble(
-            bubble: b,
-            highlight: _focus == _DecorateFocus.bubble && _bubbleId == b.id,
-            onSelect: () => _selectBubble(b.id),
-            onPan: _editingBubble
-                ? null
-                : (dx, dy) => _moveBubble(b.id, dx, dy),
-            onEdit: () => _tapBubble(b.id),
-            onRotate: _editingBubble
-                ? null
-                : (degrees) => _updateBubble(
-                      b.id,
-                      (bubble) => bubble.copyWith(rotation: degrees.round()),
-                    ),
-          ),
+          if (_locksBubble(b))
+            TogetherPreviewBubble(
+              bubble: b,
+              onSelect: _showStickerLocked,
+              onEdit: _showStickerLocked,
+            )
+          else
+            TogetherPreviewBubble(
+              bubble: b,
+              highlight: _focus == _DecorateFocus.bubble && _bubbleId == b.id,
+              onSelect: () => _selectBubble(b.id),
+              onPan: _editingBubble
+                  ? null
+                  : (dx, dy) => _moveBubble(b.id, dx, dy),
+              onEdit: () => _tapBubble(b.id),
+              onRotate: _editingBubble
+                  ? null
+                  : (degrees) => _updateBubble(
+                        b.id,
+                        (bubble) => bubble.copyWith(rotation: degrees.round()),
+                      ),
+            ),
       ];
+
+  void _showStickerLocked() {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(AppStrings.current.stickerLockedEdit)),
+      );
+  }
 
   void _selectBubble(String id) {
     if (_focus == _DecorateFocus.bubble && _bubbleId == id) return;
@@ -1049,7 +1091,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   /// First tap selects (the toolbar shows); a tap on the selected one types.
   void _tapBubble(String id) {
+    final isSticker = _bubbles.any((b) => b.id == id && b.isSticker);
     if (_focus == _DecorateFocus.bubble && _bubbleId == id) {
+      if (isSticker) return;
       if (!_editingBubble) _startBubbleEdit(id);
       return;
     }
@@ -1079,14 +1123,14 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   Future<void> _addBubble() async {
     final t = AppStrings.current;
     // Speech bubbles are free for everyone.
-    if (_bubbles.length >= TogetherBubble.maxCount) {
+    if (_wordBubbleCount >= TogetherBubble.maxCount) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(t.ddayDecorateBubbleLimit)),
       );
       return;
     }
     if (_editingBubble) _finishBubbleEdit();
-    final n = _bubbles.length;
+    final n = _wordBubbleCount;
     final bubble = TogetherBubble(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       authorUid: authController.viewerUid,
@@ -1104,12 +1148,43 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _startBubbleEdit(bubble.id);
   }
 
+  int get _wordBubbleCount => _bubbles.where((b) => !b.isSticker).length;
+
+  /// Each tap on a sticker tile adds one more of it, a little apart from the
+  /// last, and selects it so it can be moved, sized or removed.
+  void _addSticker(TogetherStickerStyle style) {
+    final t = AppStrings.current;
+    final stickers = _bubbles.where((b) => b.isSticker).length;
+    if (stickers >= TogetherBubble.maxStickers) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(t.ddayDecorateStickerLimit)));
+      return;
+    }
+    if (_editingBubble) _finishBubbleEdit();
+    final sticker = TogetherBubble(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      authorUid: authController.viewerUid,
+      text: '',
+      sticker: style.id,
+      x: -40.0 + 20 * (stickers % 5),
+      y: -10.0 + 8 * (stickers % 5),
+    );
+    setState(() {
+      _bubbles = [..._bubbles, sticker];
+      _focus = _DecorateFocus.bubble;
+      _bubbleId = sticker.id;
+    });
+    _dragTick.value++;
+    unawaited(_persist());
+  }
+
   /// Types straight into the bubble: the bar under the preview takes the
   /// keys and the preview above it redraws each letter. All text starts
   /// selected, so the first key replaces the old words.
   void _startBubbleEdit(String id) {
     final bubble = _bubbles.where((b) => b.id == id).firstOrNull;
-    if (bubble == null) return;
+    if (bubble == null || bubble.isSticker) return;
     _bubbleCtrl.value = TextEditingValue(
       text: bubble.text,
       selection: TextSelection(baseOffset: 0, extentOffset: bubble.text.length),
@@ -1428,20 +1503,23 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            action(
-              Icons.edit_rounded,
-              t.ddayDecorateBubbleEdit,
-              () => _startBubbleEdit(bubble.id),
-              ink,
-            ),
-            const SizedBox(width: 6),
-            action(
-              Icons.swap_horiz_rounded,
-              t.ddayDecorateBubbleDirection,
-              () => _flipBubbleTail(bubble.id),
-              ink,
-            ),
-            const SizedBox(width: 6),
+            // A sticker is a picture: no words, tail or text color.
+            if (!bubble.isSticker) ...[
+              action(
+                Icons.edit_rounded,
+                t.ddayDecorateBubbleEdit,
+                () => _startBubbleEdit(bubble.id),
+                ink,
+              ),
+              const SizedBox(width: 6),
+              action(
+                Icons.swap_horiz_rounded,
+                t.ddayDecorateBubbleDirection,
+                () => _flipBubbleTail(bubble.id),
+                ink,
+              ),
+              const SizedBox(width: 6),
+            ],
             action(
               Icons.delete_outline_rounded,
               t.ddayDecorateBubbleDelete,
@@ -1450,8 +1528,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
             ),
             const SizedBox(width: 6),
             sizeCell,
-            const SizedBox(width: 6),
-            colorCell,
+            if (!bubble.isSticker) ...[
+              const SizedBox(width: 6),
+              colorCell,
+            ],
           ],
         ),
       ),
@@ -1461,6 +1541,42 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   void _setDragging(bool value) {
     if (_dragging == value) return;
     setState(() => _dragging = value);
+  }
+
+  /// Free users: share Dearly's store link with a friend to open the
+  /// stickers for good. True once they are open.
+  Future<bool> _offerStickerShare() async {
+    final t = AppStrings.current;
+    final share = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(t.stickerShareTitle),
+        content: Text(t.stickerShareBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(t.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(t.stickerShareAction),
+          ),
+        ],
+      ),
+    );
+    if (share != true || !mounted) return false;
+    final result = await SharePlus.instance.share(
+      ShareParams(text: t.stickerShareText(DearlyStoreLinks.forThisPhone)),
+    );
+    // Android often cannot tell whether it was sent ("unavailable"); only a
+    // sheet closed without picking an app is left out.
+    if (result.status == ShareResultStatus.dismissed) return false;
+    await stickerUnlock.unlock();
+    if (!mounted) return true;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(t.stickerShareUnlocked)));
+    return true;
   }
 
   Future<void> _showPremiumLock() async {
@@ -1625,6 +1741,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
           localeController,
           authController,
           membershipController,
+          stickerUnlock,
         ]),
         builder: (context, _) {
           final isPremium = membershipController.hasPremiumContent;
@@ -1689,7 +1806,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                             iosWallpaperPath: _iosWallpaperPath,
                             textColor: _textColor,
                             textFont: _textFont,
-                            link: liveHasFriend ? _link : TogetherLink.none,
                             shape: _shape,
                             cornerRadius: _hostCornerDp,
                             onMePan: (_focus == _DecorateFocus.me ||
@@ -1734,7 +1850,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       child: Center(
                         child: _editingBubble
                             ? _bubbleEditBar(palette.accent)
-                            : _selectedBubble != null
+                            : _selectedBubble != null &&
+                                    !_locksBubble(_selectedBubble!)
                                 ? _bubbleToolsBar(_selectedBubble!)
                                 : Text(
                                     t.ddayDuoDecorateDragHint,
@@ -1905,16 +2022,17 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
-                        // Transparent, the speech-bubble tile, then (only
-                        // with 2+ people) the heart link pictures, then BGs.
+                        // Transparent, the speech-bubble tile, the stickers,
+                        // then the backgrounds.
                         itemCount: TogetherBgTheme.choices.length +
                             1 +
-                            (liveHasFriend ? TogetherLink.styles.length : 0),
+                            TogetherSticker.styles.length,
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
                           if (index == 1) {
                             return _bgChoice(
-                              selected: _focus == _DecorateFocus.bubble,
+                              selected: _selectedBubble != null &&
+                                  !_selectedBubble!.isSticker,
                               accent: palette.accent,
                               // Bubbles are free for everyone.
                               locked: false,
@@ -1931,7 +2049,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                   const SizedBox(height: 4),
                                   Text(
                                     '${t.ddayDecorateBubbleLabel} '
-                                    '${_bubbles.length}/${TogetherBubble.maxCount}',
+                                    '$_wordBubbleCount/${TogetherBubble.maxCount}',
                                     textAlign: TextAlign.center,
                                     style: AppTheme.body.copyWith(
                                       fontFamily: 'Galmuri',
@@ -1944,36 +2062,69 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                               ),
                             );
                           }
-                          final linkCount = liveHasFriend
-                              ? TogetherLink.styles.length
-                              : 0;
+                          final linkCount = TogetherSticker.styles.length;
                           if (index >= 2 && index < 2 + linkCount) {
-                            final style = TogetherLink.styles[index - 2];
-                            final locked = !isPremium && style.premium;
+                            final style = TogetherSticker.styles[index - 2];
+                            // Paid subscribers right away; everyone else
+                            // (free trial included) once they shared Dearly
+                            // with a friend (kept for good).
+                            final locked = !_canUseStickers;
+                            final placed = _bubbles
+                                .where((b) => b.sticker == style.id)
+                                .length;
                             return _bgChoice(
-                              selected: _link == style.id,
+                              // Every sticker kind on the card stays lit, so
+                              // several can be picked at once.
+                              selected: placed > 0,
                               accent: palette.accent,
                               locked: locked,
-                              onTap: () {
+                              onTap: () async {
                                 if (locked) {
-                                  _showPremiumLock();
+                                  if (await _offerStickerShare() && mounted) {
+                                    _addSticker(style);
+                                  }
                                   return;
                                 }
-                                _clearSelection();
-                                // Tapping the picked one again takes it off.
-                                setState(() => _link = _link == style.id
-                                    ? TogetherLink.none
-                                    : style.id);
-                                _dragTick.value++;
-                                _persist();
+                                _addSticker(style);
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.all(6),
-                                child: Image.asset(
-                                  style.asset,
-                                  fit: BoxFit.contain,
-                                  filterQuality: FilterQuality.medium,
-                                ),
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(6),
+                                      child: Image.asset(
+                                        style.asset,
+                                        fit: BoxFit.contain,
+                                        filterQuality: FilterQuality.medium,
+                                      ),
+                                    ),
+                                  ),
+                                  if (placed > 0)
+                                    Positioned(
+                                      right: 3,
+                                      top: 3,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                          vertical: 1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: palette.accent,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          '$placed',
+                                          style: AppTheme.body.copyWith(
+                                            fontFamily: 'Galmuri',
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             );
                           }

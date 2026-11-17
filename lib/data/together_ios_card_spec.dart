@@ -9,7 +9,7 @@ import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
-import 'package:quotation/data/together_link.dart';
+import 'package:quotation/data/together_sticker.dart';
 import 'package:quotation/data/widget_fonts.dart';
 
 /// Layout of one iPhone Together card as plain draw commands, drawn natively
@@ -44,7 +44,6 @@ abstract final class TogetherIosCardSpec {
     required double charW,
     required double charH,
     List<TogetherBubble> bubbles = const [],
-    String link = '',
   }) async {
     final width = box.width;
     final height = box.height;
@@ -98,35 +97,6 @@ abstract final class TogetherIosCardSpec {
       'rot': textRotation,
     };
 
-    // Link pictures between neighbours.
-    final style = TogetherLink.styleFor(link);
-    if (link != TogetherLink.none && style != null) {
-      final file = await _sharedImage(style.asset);
-      if (file != null) {
-        final boxes = [
-          for (final slot in placed)
-            TogetherLink.box(
-              x: slot.x,
-              y: slot.y,
-              width: charW * slot.scale,
-              height: charH * slot.scale,
-              cardHeight: height,
-            ),
-        ];
-        out['link'] = {
-          'file': file,
-          'rects': [
-            for (final r in TogetherLink.rects(
-              boxes,
-              style.aspect,
-              heightScale: style.heightScale,
-            ))
-              [r.left, r.top, r.width, r.height],
-          ],
-        };
-      }
-    }
-
     // Characters: left = 4 + x, bottom = y, contained and rotated.
     final chars = <Map<String, Object?>>[];
     for (final slot in placed) {
@@ -148,11 +118,32 @@ abstract final class TogetherIosCardSpec {
     }
     out['chars'] = chars;
 
+    // Stickers: pictures drawn as is in their box, turned around the center.
+    final stickers = <Map<String, Object?>>[];
+    for (final bubble in bubbles) {
+      final style = TogetherSticker.styleFor(bubble.sticker);
+      if (style == null) continue;
+      final file = await _sharedImage(style.asset);
+      if (file == null) continue;
+      final box = TogetherSticker.size(style, scale: bubble.scale);
+      final topLeft = TogetherBubbleLayout.topLeft(bubble, box, width, height);
+      stickers.add({
+        'file': file,
+        'x': topLeft.dx,
+        'y': topLeft.dy,
+        'w': box.width,
+        'h': box.height,
+        'rot': bubble.rotation,
+      });
+    }
+    if (stickers.isNotEmpty) out['stickers'] = stickers;
+    final words = [for (final b in bubbles) if (!b.isSticker) b];
+
     // Speech bubbles: drawn at their natural size, then stretched to [w]x[h].
-    if (bubbles.isNotEmpty) {
+    if (words.isNotEmpty) {
       final bubbleFamily = await _fontFor(textFont.asset ?? _galmuriAsset);
       final list = <Map<String, Object?>>[];
-      for (final bubble in bubbles) {
+      for (final bubble in words) {
         final natural = TogetherBubbleLayout.size(
           bubble.text,
           isPixel: isPixel,

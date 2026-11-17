@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:quotation/data/together_link.dart';
+import 'package:quotation/data/together_sticker.dart';
 import 'package:quotation/data/character_art_insets.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
@@ -139,6 +139,7 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.bgOpacity = 100,
     this.bgAssetPath,
     this.iosWallpaperPath,
+    this.iosGlass = true,
     this.textColor = 0xFFF26B8A,
     this.textFont = WidgetFont.basic,
     this.shape = TogetherWidgetShape.square,
@@ -158,7 +159,6 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.onBlankTap,
     this.crowd,
     this.bubbles = const [],
-    this.link = TogetherLink.none,
   });
 
   final double width;
@@ -191,6 +191,10 @@ class TogetherWidgetPreview extends StatelessWidget {
   /// widget also lays it under other themes, but their preview shows the
   /// theme alone.
   final String? iosWallpaperPath;
+
+  /// iPhone "투명": draw the frosted-glass plate (the decorator). False
+  /// leaves it see-through like on Galaxy (the room screen).
+  final bool iosGlass;
   final int textColor;
   final WidgetFont textFont;
   final TogetherWidgetShape shape;
@@ -218,8 +222,6 @@ class TogetherWidgetPreview extends StatelessWidget {
   /// Drawn above the characters, same as the home widget.
   final List<TogetherPreviewBubble> bubbles;
 
-  /// [TogetherLink] drawn between the characters, behind them.
-  final String link;
 
   /// Same dp as the home widget: measured launcher cell, else One UI span.
   static Size sizeForShape(
@@ -268,8 +270,8 @@ class TogetherWidgetPreview extends StatelessWidget {
     }
   }
 
-  static bool get _iosGlass =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  bool get _iosGlass =>
+      iosGlass && !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
   @override
   Widget build(BuildContext context) {
@@ -538,6 +540,7 @@ class TogetherWidgetPreview extends StatelessWidget {
           isPixel: isPixel,
           font: textFont,
           scale: b.bubble.scale,
+          sticker: b.bubble.sticker,
         ),
     ];
     Offset bubbleAt(int i) =>
@@ -680,46 +683,6 @@ class TogetherWidgetPreview extends StatelessWidget {
                 ),
               ),
             ),
-          if (link != TogetherLink.none)
-            Positioned.fill(
-              child: IgnorePointer(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(radius),
-                  child: TogetherLinkLayer(
-                    link: link,
-                    pixel: isPixel,
-                    boxes: [
-                      if (crowd != null)
-                        for (final person in crowd!)
-                          TogetherLink.box(
-                            x: person.x,
-                            y: person.y,
-                            width: charW * person.scale,
-                            height: charH * person.scale,
-                            cardHeight: height,
-                          )
-                      else ...[
-                        TogetherLink.box(
-                          x: mePos.x,
-                          y: mePos.y,
-                          width: meW,
-                          height: meH,
-                          cardHeight: height,
-                        ),
-                        if (friend != null)
-                          TogetherLink.box(
-                            x: friendPos.x,
-                            y: friendPos.y,
-                            width: friendW,
-                            height: friendH,
-                            cardHeight: height,
-                          ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
           // Behind characters / cheer / bubbles so empty taps clear selection.
           if (onBlankTap != null)
             Positioned.fill(
@@ -770,15 +733,31 @@ class TogetherWidgetPreview extends StatelessWidget {
                         top: bubbleAt(i).dy,
                         child: Transform.rotate(
                           angle: bubbles[i].bubble.rotation * math.pi / 180,
-                          child: TogetherBubbleView(
-                            text: bubbles[i].bubble.text,
-                            tail: bubbles[i].bubble.tail,
-                            isPixel: isPixel,
-                            font: textFont,
-                            textColor:
-                                bubbles[i].bubble.textColorOn(textColor),
-                            scale: bubbles[i].bubble.scale,
-                          ),
+                          child: switch (TogetherSticker.styleFor(
+                            bubbles[i].bubble.sticker,
+                          )) {
+                            final style? => SizedBox(
+                                width: bubbleBoxes[i].width,
+                                height: bubbleBoxes[i].height,
+                                child: Image.asset(
+                                  style.asset,
+                                  fit: BoxFit.fill,
+                                  filterQuality: isPixel
+                                      ? FilterQuality.none
+                                      : FilterQuality.medium,
+                                  gaplessPlayback: true,
+                                ),
+                              ),
+                            null => TogetherBubbleView(
+                                text: bubbles[i].bubble.text,
+                                tail: bubbles[i].bubble.tail,
+                                isPixel: isPixel,
+                                font: textFont,
+                                textColor:
+                                    bubbles[i].bubble.textColorOn(textColor),
+                                scale: bubbles[i].bubble.scale,
+                              ),
+                          },
                         ),
                       ),
                   ],

@@ -164,6 +164,27 @@ class AppStrings {
   String get ddayDecorateBubbleColor => _t('색', 'Color', '色');
   String get ddayDecorateBubbleDone => _t('완료', 'Done', '完了');
   String get ddayDecorateBubbleLimit => _t('말풍선은 ${TogetherBubble.maxCount}개까지 넣을 수 있어요', 'You can add up to ${TogetherBubble.maxCount} bubbles', '吹き出しは${TogetherBubble.maxCount}個まで追加できます');
+  String get ddayDecorateStickerLimit => _t('스티커는 ${TogetherBubble.maxStickers}개까지 넣을 수 있어요', 'You can add up to ${TogetherBubble.maxStickers} stickers', 'ステッカーは${TogetherBubble.maxStickers}個まで追加できます');
+  String get stickerShareTitle =>
+      _t('친구에게 Dearly 공유하기', 'Share Dearly with a friend', '友だちにDearlyを共有');
+  String get stickerShareBody => _t(
+        '친구에게 Dearly 다운로드 링크를 공유하면 스티커를 사용할 수 있어요!💌',
+        'Share the Dearly download link with a friend to keep the stickers for good.💌',
+        '友だちにDearlyのダウンロードリンクを共有すると、ステッカーをずっと使えます💌',
+      );
+  String get stickerShareAction => _t('공유하기', 'Share', '共有する');
+  String get stickerLockedEdit => _t(
+        '친구에게 Dearly를 공유하면 스티커를 옮기고 바꿀 수 있어요',
+        'Share Dearly with a friend to move or change stickers',
+        '友だちにDearlyを共有すると、ステッカーを動かしたり変えたりできます',
+      );
+  String stickerShareText(String link) => _t(
+        '같이 Dearly 써요! 매일 위젯으로 마음을 전하는 앱이에요 💌\n$link',
+        "Let's use Dearly together! Send each other little notes on your home screen 💌\n$link",
+        '一緒にDearlyを使おう！ホーム画面のウィジェットで気持ちを伝えるアプリです 💌\n$link',
+      );
+  String get stickerShareUnlocked =>
+      _t('스티커가 열렸어요! 이제 계속 쓸 수 있어요', 'Stickers unlocked for good!', 'ステッカーが使えるようになりました！');
   String get ddayDecorateCharScaleLabel => _t('캐릭터 크기', 'Character size', 'キャラクターサイズ');
   String ddayDecorateCharScaleFor(String name) =>
       _t('$name 크기', '$name size', '$nameのサイズ');

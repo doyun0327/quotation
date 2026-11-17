@@ -6,7 +6,7 @@ import 'package:quotation/data/together_bg_themes.dart';
 import 'package:quotation/data/together_bubble.dart';
 import 'package:quotation/data/together_cheer_layout.dart';
 import 'package:quotation/data/together_crowd_layout.dart';
-import 'package:quotation/data/together_link.dart';
+import 'package:quotation/data/together_sticker.dart';
 import 'package:quotation/data/widget_fonts.dart';
 import 'package:quotation/widgets/together_bubble_view.dart';
 
@@ -32,8 +32,7 @@ class TogetherIosSnapshot extends StatelessWidget {
     required this.textFont,
     required this.cornerRadius,
     this.bubbles = const [],
-    this.link = TogetherLink.none,
-    this.linkImage,
+    this.stickerImages = const {},
     /// When false (home widget “투명”), leave clear so SwiftUI
     /// `ultraThinMaterial` shows through. Decorate preview uses glass paint.
     this.glassWhenNoBg = false,
@@ -59,10 +58,9 @@ class TogetherIosSnapshot extends StatelessWidget {
   final WidgetFont textFont;
   final double cornerRadius;
   final List<TogetherBubble> bubbles;
-  final String link;
-
-  /// Decoded [link] picture (assets do not load in time off-screen).
-  final ui.Image? linkImage;
+  /// Decoded sticker pictures by asset path (assets do not load in time
+  /// off-screen).
+  final Map<String, ui.Image> stickerImages;
 
   /// When there is no theme image, paint iOS frosted glass instead of clear.
   final bool glassWhenNoBg;
@@ -129,22 +127,6 @@ class TogetherIosSnapshot extends StatelessWidget {
                 ),
               ),
             ),
-            if (link != TogetherLink.none && linkImage != null)
-              TogetherLinkLayer(
-                link: link,
-                image: linkImage,
-                pixel: isPixel,
-                boxes: [
-                  for (final slot in placed)
-                    TogetherLink.box(
-                      x: slot.x,
-                      y: slot.y,
-                      width: charW * slot.scale,
-                      height: charH * slot.scale,
-                      cardHeight: height,
-                    ),
-                ],
-              ),
             for (final slot in placed)
               Positioned(
                 left: 4 + slot.x,
@@ -168,36 +150,40 @@ class TogetherIosSnapshot extends StatelessWidget {
               Positioned(
                 left: TogetherBubbleLayout.topLeft(
                   bubble,
-                  TogetherBubbleLayout.size(
-                    bubble.text,
-                    isPixel: isPixel,
-                    font: textFont,
-                    scale: bubble.scale,
-                  ),
+                  _bubbleBox(bubble),
                   width,
                   height,
                 ).dx,
                 top: TogetherBubbleLayout.topLeft(
                   bubble,
-                  TogetherBubbleLayout.size(
-                    bubble.text,
-                    isPixel: isPixel,
-                    font: textFont,
-                    scale: bubble.scale,
-                  ),
+                  _bubbleBox(bubble),
                   width,
                   height,
                 ).dy,
                 child: Transform.rotate(
                   angle: bubble.rotation * math.pi / 180,
-                  child: TogetherBubbleView(
-                    text: bubble.text,
-                    tail: bubble.tail,
-                    isPixel: isPixel,
-                    font: textFont,
-                    textColor: bubble.textColorOn(textColor),
-                    scale: bubble.scale,
-                  ),
+                  child: switch (TogetherSticker.styleFor(bubble.sticker)) {
+                    final style? => SizedBox.fromSize(
+                        size: _bubbleBox(bubble),
+                        child: stickerImages[style.asset] == null
+                            ? const SizedBox.shrink()
+                            : RawImage(
+                                image: stickerImages[style.asset],
+                                fit: BoxFit.fill,
+                                filterQuality: isPixel
+                                    ? FilterQuality.none
+                                    : FilterQuality.medium,
+                              ),
+                      ),
+                    null => TogetherBubbleView(
+                        text: bubble.text,
+                        tail: bubble.tail,
+                        isPixel: isPixel,
+                        font: textFont,
+                        textColor: bubble.textColorOn(textColor),
+                        scale: bubble.scale,
+                      ),
+                  },
                 ),
               ),
           ],
@@ -205,4 +191,12 @@ class TogetherIosSnapshot extends StatelessWidget {
       ),
     );
   }
+
+  Size _bubbleBox(TogetherBubble bubble) => TogetherBubbleLayout.size(
+        bubble.text,
+        isPixel: isPixel,
+        font: textFont,
+        scale: bubble.scale,
+        sticker: bubble.sticker,
+      );
 }
