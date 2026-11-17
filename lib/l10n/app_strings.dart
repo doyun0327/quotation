@@ -491,6 +491,11 @@ class AppStrings {
         '左上の［編集］→［ウィジェットを追加］をタップします',
       );
   String iosWidgetGuideStep3(String name) => _t("'Dearly'를 검색해 '$name' 위젯을 고르고 [위젯 추가]를 눌러요", "Search for Dearly, choose the '$name' widget, then tap Add Widget", "「Dearly」を検索して「$name」ウィジェットを選び、［ウィジェットを追加］をタップします");
+  /// iPhone widget gallery names (keep in step with ios/DearlyWidgets).
+  String get iosGalleryTogetherName =>
+      _t('함께 · 방 1', 'Together · Room 1', '一緒 · ルーム1');
+  String get iosGalleryDailyWordName =>
+      _t('오늘의 말', 'Word of the day', '今日のことば');
   String get iosWidgetGuideOk => _t('알겠어요', 'Got it', 'わかりました');
   String get characterWidgetHintClosed => _t('홈 화면을 길게 눌러 위젯을 추가할 수 있어요!', 'Long-press the home screen to add the widget!', 'ホーム画面を長押ししてウィジェットを追加できます！');
   String get characterSelectConfirm => _t('이 캐릭터로 시작', 'Start with this', 'このキャラクターで始める');
