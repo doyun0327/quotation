@@ -2455,8 +2455,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                         onPressed: (_savingCheer || _loggingIn)
                             ? null
                             : () async {
-                                final iosFirst =
-                                    IosWidgetGuide.isIOS && !_widgetExported;
+                                // iPhone: the add-widget steps on the first
+                                // export, and always during the first-use
+                                // tutorial (it ends with this button).
+                                final inCoach = _coachStep != null;
+                                if (inCoach) unawaited(_finishCoach());
+                                final iosFirst = IosWidgetGuide.isIOS &&
+                                    (!_widgetExported || inCoach);
                                 await _persist(
                                   applyToHome: true,
                                   toast: !iosFirst,
@@ -2649,7 +2654,7 @@ class _MemberChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.fromLTRB(2, 6, 2, 6),
+        padding: const EdgeInsets.fromLTRB(2, 7, 2, 7),
         decoration: BoxDecoration(
           color: selected ? accent.withValues(alpha: 0.12) : Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -2689,26 +2694,45 @@ class _MemberChip extends StatelessWidget {
     );
     final edit = onEdit;
     if (edit == null) return chip;
+    // passthrough: my chip gets the same width as the others, so the pencil
+    // sits inside its corner instead of past a narrower chip's edge.
     return Stack(
-      clipBehavior: Clip.none,
+      fit: StackFit.passthrough,
       children: [
         chip,
+        // Small pencil, bigger tap area: the 28×28 corner around it.
         Positioned(
-          top: 3,
-          right: 3,
+          top: 0,
+          right: 0,
           child: Semantics(
             button: true,
             label: editLabel,
-            child: Material(
-              color: accent,
-              shape: const CircleBorder(),
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: edit,
-                child: const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: Icon(Icons.edit_rounded, size: 12, color: Colors.white),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: edit,
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 3, right: 3),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: accent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: Icon(
+                          Icons.edit_rounded,
+                          size: 9,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

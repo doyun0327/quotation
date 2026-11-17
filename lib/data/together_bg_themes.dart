@@ -95,10 +95,11 @@ class TogetherBgTheme {
   /// never locks a background someone already uses.
   static const freeIds = {
     'none',
-    // pastel_1 (airplane) and pastel_5 (blue heart) are premium.
+    // pastel_1 (airplane) is premium.
     'pastel_2',
     'pastel_3',
     'pastel_4',
+    'pastel_5',
     'widget_background',
     'widget_background2',
     'widget_background6',
