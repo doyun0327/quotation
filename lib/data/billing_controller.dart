@@ -12,7 +12,12 @@ import 'package:quotation/data/membership_controller.dart';
 const kPremiumMonthlyProductId = 'premium_monthly';
 
 /// RevenueCat entitlement identifier. Must match the dashboard exactly.
-const kPremiumEntitlementId = 'premium';
+/// The App Store project attaches premium_monthly to `dearly_pro`; Android
+/// keeps `premium`.
+String get kPremiumEntitlementId =>
+    !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
+        ? 'dearly_pro'
+        : 'premium';
 
 /// What a monthly purchase came to, for what the screen shows next.
 enum SubscribeOutcome {

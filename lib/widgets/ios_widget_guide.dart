@@ -13,8 +13,12 @@ abstract final class IosWidgetGuide {
 
   /// Widget names exactly as the iPhone widget gallery shows them
   /// (`configurationDisplayName` in ios/DearlyWidgets).
-  static const togetherWidgetName = '함께';
-  static const characterWidgetName = '오늘의 말';
+  /// Same text as the gallery (WidgetText in WidgetShared.swift), in the
+  /// app language.
+  static String get togetherWidgetName =>
+      AppStrings.current.iosGalleryTogetherName;
+  static String get characterWidgetName =>
+      AppStrings.current.iosGalleryDailyWordName;
 
   /// Bottom sheet with the add-widget steps for [widgetName].
   static Future<void> show(

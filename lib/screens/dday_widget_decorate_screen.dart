@@ -115,6 +115,12 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   // First-time tutorial (4 coach marks, then the "홈에 적용" pointer).
   static const _coachDoneKey = 'decorate_coach_done_v1';
+
+  /// iPhone: set when the tutorial starts, cleared once the add-widget
+  /// guide was shown on 홈에 적용 — so finishing or skipping the tutorial,
+  /// the first apply after it still explains how to add the widget.
+  static const _applyGuidePendingKey = 'ios_apply_guide_pending_v1';
+  bool _applyGuidePending = false;
   int? _coachStep;
   Timer? _coachTyping;
   final _coachPreviewKey = GlobalKey();
@@ -1708,7 +1714,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   Future<void> _startCoachIfNeeded() async {
     if (!mounted || _closing || _coachStep != null) return;
     final prefs = await SharedPreferences.getInstance();
+    _applyGuidePending = prefs.getBool(_applyGuidePendingKey) ?? false;
     if (prefs.getBool(_coachDoneKey) ?? false) return;
+    if (!mounted || _closing) return;
+    await prefs.setBool(_applyGuidePendingKey, true);
+    _applyGuidePending = true;
     if (!mounted || _closing) return;
     setState(() => _coachStep = 0);
   }
@@ -2461,7 +2471,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                 final inCoach = _coachStep != null;
                                 if (inCoach) unawaited(_finishCoach());
                                 final iosFirst = IosWidgetGuide.isIOS &&
-                                    (!_widgetExported || inCoach);
+                                    (!_widgetExported ||
+                                        inCoach ||
+                                        _applyGuidePending);
                                 await _persist(
                                   applyToHome: true,
                                   toast: !iosFirst,
@@ -2477,6 +2489,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                   );
                                   await TogetherGuide.markExportedWidget();
                                   _widgetExported = true;
+                                  _applyGuidePending = false;
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  await prefs.setBool(
+                                    _applyGuidePendingKey,
+                                    false,
+                                  );
                                   if (!context.mounted) return;
                                 }
                                 final notice = _homeNotice;

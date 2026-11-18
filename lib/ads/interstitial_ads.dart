@@ -34,6 +34,9 @@ class InterstitialAds {
     );
   }
 
+  /// A rewarded ad is loaded and can be shown now.
+  static bool get isReady => _ready != null;
+
   /// Shows one rewarded ad. True only after the reward is granted.
   static Future<bool> show() async {
     final ad = _ready;

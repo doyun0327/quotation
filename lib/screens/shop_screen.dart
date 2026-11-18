@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -146,6 +147,13 @@ class _ShopScreenState extends State<ShopScreen> {
         ),
       );
       if (watch != true || !mounted || _busy) return;
+      // iPhone: no ad to show → offer premium right away instead of a
+      // "could not load" message.
+      if (_isIOS && !InterstitialAds.isReady) {
+        unawaited(InterstitialAds.preload());
+        await _offerPremium(character);
+        return;
+      }
       setState(() => _busy = true);
       final watched = await InterstitialAds.show();
       if (!mounted) return;
@@ -165,6 +173,15 @@ class _ShopScreenState extends State<ShopScreen> {
       return;
     }
 
+    await _offerPremium(character);
+  }
+
+  static bool get _isIOS =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
+  /// The premium dialog, then the monthly purchase if accepted.
+  Future<void> _offerPremium(AppCharacter character) async {
+    final t = AppStrings.current;
     final subscribe = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
