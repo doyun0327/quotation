@@ -1,9 +1,10 @@
 name: quotation
 description: "Quotation app"
 publish_to: 'none'
-version: 1.0.14+71
+version: 1.0.14+75
 
-environment:
+environment: 
+
   sdk: ^3.12.2
 
 dependencies:
