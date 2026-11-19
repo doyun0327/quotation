@@ -18,13 +18,67 @@ class SelectionController extends ChangeNotifier {
     _lifecycle = AppLifecycleListener(onResume: ensureBubbleFresh);
   }
 
-  /// Matches the home-widget hourly rotation — fresh without feeling noisy.
-  static const rotateInterval = Duration(hours: 1);
+  /// Home bubble and home widgets change line every half hour (:00 / :30).
+  static const rotateInterval = Duration(minutes: 30);
+
+  /// Half-hour slot number since the epoch; widgets use the same numbering.
+  static int slotAt(DateTime time) =>
+      time.millisecondsSinceEpoch ~/ rotateInterval.inMilliseconds;
+
+  static DateTime slotStart(int slot) =>
+      DateTime.fromMillisecondsSinceEpoch(slot * rotateInterval.inMilliseconds);
+
+  /// 32-bit integer mix so each slot lands on an unrelated index.
+  static int _mix(int value) {
+    var h = (value * 0x9E3779B1) & 0xFFFFFFFF;
+    h ^= h >> 16;
+    h = (h * 0x45D9F3B) & 0xFFFFFFFF;
+    h ^= h >> 16;
+    h = (h * 0x45D9F3B) & 0xFFFFFFFF;
+    h ^= h >> 16;
+    return h;
+  }
+
+  static int _rawIndex(int slot, int length) => _mix(slot) % length;
+
+  /// Random-looking but fixed line for [slot], never the same as the slot
+  /// before it, so the app and the widgets agree on what is showing.
+  static Quote pickForSlot(int slot, List<Quote> pool) {
+    final n = pool.length;
+    var i = _rawIndex(slot, n);
+    if (n > 1 && i == _rawIndex(slot - 1, n)) i = (i + 1) % n;
+    return pool[i];
+  }
+
+  /// Lines for the next [count] half-hour slots from now, for the widgets,
+  /// each with the category it came from (for the widget tap).
+  ({int startSlot, List<({Quote quote, String mainId, String subId})> lines})
+      upcomingSchedule(int count) {
+    final pool = _bubblePool;
+    final where = <String, ({String mainId, String subId})>{
+      for (final main in QuoteRepository.categories)
+        if (membershipController.canAccess(main.id))
+          for (final sub in main.subCategories)
+            for (final q in QuoteRepository.quotesFor(main.id, sub.id))
+              q.id: (mainId: main.id, subId: sub.id),
+    };
+    final start = slotAt(DateTime.now());
+    return (
+      startSlot: start,
+      lines: [
+        for (var s = start; s < start + count; s++)
+          () {
+            final q = pickForSlot(s, pool);
+            final at = where[q.id];
+            return (quote: q, mainId: at?.mainId ?? '', subId: at?.subId ?? '');
+          }(),
+      ],
+    );
+  }
 
   static const _prefsQuoteId = 'home_bubble_quote_id';
   static const _prefsQuoteAt = 'home_bubble_quote_at_ms';
 
-  final _random = Random();
   String _mainCategoryId = MembershipController.freeCategoryId;
   String? _subCategoryId;
   Quote? _bubbleQuote;
@@ -61,9 +115,6 @@ class SelectionController extends ChangeNotifier {
         ),
       ];
 
-  /// Public pool used by the home widget hourly rotation.
-  List<Quote> get bubblePoolQuotes => _bubblePool;
-
   /// Quotes from every category the user can open (free + premium unlock).
   List<Quote> get _bubblePool {
     final quotes = <Quote>[];
@@ -93,7 +144,7 @@ class SelectionController extends ChangeNotifier {
   bool get _bubbleExpired {
     final at = _bubbleAt;
     if (at == null || _bubbleQuote == null) return true;
-    return DateTime.now().difference(at) >= rotateInterval;
+    return slotAt(at) != slotAt(DateTime.now());
   }
 
   void _onMembershipChanged() {
@@ -165,20 +216,13 @@ class SelectionController extends ChangeNotifier {
     final pool = _bubblePool;
     if (pool.isEmpty) return;
 
-    Quote next = pool[_random.nextInt(pool.length)];
-    // Skip an immediate repeat when the pool has more than one line.
-    if (pool.length > 1 && next.id == _bubbleQuote?.id) {
-      next = pool[_random.nextInt(pool.length)];
-      if (next.id == _bubbleQuote?.id) {
-        final others = [for (final q in pool) if (q.id != next.id) q];
-        if (others.isNotEmpty) {
-          next = others[_random.nextInt(others.length)];
-        }
-      }
-    }
+    // Random across every open category, fixed per half hour (see
+    // [pickForSlot]) so the widgets show the same line.
+    final now = DateTime.now();
+    final next = pickForSlot(slotAt(now), pool);
 
     _bubbleQuote = next;
-    _bubbleAt = DateTime.now();
+    _bubbleAt = now;
     final located = QuoteRepository.locateQuote(next.id);
     if (located != null) {
       _mainCategoryId = located.main.id;
@@ -187,7 +231,7 @@ class SelectionController extends ChangeNotifier {
     unawaited(_persistBubble());
   }
 
-  /// Picks a new line when the hour is up (app open or back from background).
+  /// Picks a new line when the half hour is up (app open or back from background).
   void ensureBubbleFresh() {
     if (!_bubbleExpired) return;
     _refreshBubble(force: true);
@@ -197,8 +241,8 @@ class SelectionController extends ChangeNotifier {
 
   void _scheduleRotate() {
     _rotateTimer?.cancel();
-    final at = _bubbleAt ?? DateTime.now();
-    final left = rotateInterval - DateTime.now().difference(at);
+    final now = DateTime.now();
+    final left = slotStart(slotAt(now) + 1).difference(now);
     final wait = left.isNegative ? Duration.zero : left;
     _rotateTimer = Timer(wait + const Duration(milliseconds: 200), () {
       ensureBubbleFresh();
@@ -214,12 +258,6 @@ class SelectionController extends ChangeNotifier {
     final index = Random(cacheKey.hashCode).nextInt(pool.length);
     _fortuneQuote = pool[index];
     _fortuneDayKey = cacheKey;
-  }
-
-  void reshuffle() {
-    _refreshBubble(force: true);
-    notifyListeners();
-    _scheduleRotate();
   }
 
   /// Call after [QuoteRepository.initialize] so the daily fortune uses loaded quotes.
@@ -242,6 +280,27 @@ class SelectionController extends ChangeNotifier {
     } else {
       _refreshBubble(force: true);
     }
+    notifyListeners();
+    _scheduleRotate();
+  }
+
+  /// Date tap on home: another random line until the next half hour.
+  void reshuffle() {
+    final pool = _bubblePool;
+    if (pool.length < 2) return;
+    final random = Random();
+    var next = pool[random.nextInt(pool.length)];
+    if (next.id == _bubbleQuote?.id) {
+      next = pool[(pool.indexOf(next) + 1) % pool.length];
+    }
+    _bubbleQuote = next;
+    _bubbleAt = DateTime.now();
+    final located = QuoteRepository.locateQuote(next.id);
+    if (located != null) {
+      _mainCategoryId = located.main.id;
+      _subCategoryId = located.sub.id;
+    }
+    unawaited(_persistBubble());
     notifyListeners();
     _scheduleRotate();
   }

@@ -363,6 +363,17 @@ class AppStrings {
   );
   String get ddayInviteRetry => _t('다시 시도', 'Retry', 'もう一度');
   String get togetherFriendFallbackName => _t('친구', 'Friend', '友だち');
+  /// Shown while checking whether a friend is decorating the room.
+  String get decorateCheckingRoom =>
+      _t('방 확인 중…', 'Checking the room…', 'ルームを確認中…');
+
+  /// Under "{name}님이 꾸미는 중이에요!" on the room screen.
+  String get decorateTryLater => _t(
+    '잠시 후 다시 시도해 주세요',
+    'Please try again in a moment',
+    'しばらくしてからもう一度お試しください',
+  );
+
   String decorateLockedBy(String name) =>
       _t('$name님이 꾸미는 중이에요!', '$name is decorating!', '$nameさんが編集中です！');
   String decorateLockTaken(String name) => _t(
@@ -375,6 +386,13 @@ class AppStrings {
     'Closed the widget editor after 3 minutes without activity. Changes you did not apply stay on this phone only.',
     '3分間操作がなかったため、ウィジェット編集を閉じました。適用していない内容はこの端末にだけ保存されます。',
   );
+  /// Push when someone joins the room (functions/index.js JOIN_TEXT).
+  String togetherJoinedBodyFor(String name) => _t(
+    '$name - 방에 들어왔어요!',
+    '$name joined the room!',
+    '$nameさんが入室しました！',
+  );
+
   String togetherWidgetChangedBodyFor(String name) => _t(
     '$name - 위젯을 수정했어요!',
     '$name updated the widget!',

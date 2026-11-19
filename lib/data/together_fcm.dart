@@ -56,7 +56,11 @@ bool _isSilentRefresh(RemoteMessage message) =>
 
 Future<bool> _applyTogetherMessage(RemoteMessage message) async {
   final type = message.data['type'];
-  if (type != 'together_widget' && type != 'together_refresh') return false;
+  if (type != 'together_widget' &&
+      type != 'together_refresh' &&
+      type != 'together_join') {
+    return false;
+  }
   try {
     // Background isolate: the block list must be loaded before the room sync
     // decides whose edits to apply.
@@ -185,7 +189,8 @@ Future<void> _clearRoomNotices(String roomId, {String? roomTitle}) async {
 }
 
 Future<void> _showTogetherNotice(RemoteMessage message) async {
-  if (message.data['type'] != 'together_widget') return;
+  final type = message.data['type'];
+  if (type != 'together_widget' && type != 'together_join') return;
   // No notice about someone I blocked (the server skips them too once my
   // block list has synced; this covers the time before that).
   if (!blockedUsersController.ready) await blockedUsersController.load();
@@ -215,7 +220,10 @@ Future<void> _showTogetherNotice(RemoteMessage message) async {
   final name =
       actorName.isEmpty ? t.togetherFriendFallbackName : actorName;
   final title = roomTitle.isEmpty ? name : roomTitle;
-  final body = t.togetherWidgetChangedBodyFor(name);
+  // Someone joined the room with an invite code.
+  final body = type == 'together_join'
+      ? t.togetherJoinedBodyFor(name)
+      : t.togetherWidgetChangedBodyFor(name);
   final noticeId = _togetherNoticeId(roomId, stamp);
   await _rememberRoomNotice(roomId, noticeId);
   await plugin.show(

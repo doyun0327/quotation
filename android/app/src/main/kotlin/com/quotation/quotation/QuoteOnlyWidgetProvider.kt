@@ -44,9 +44,10 @@ open class QuoteOnlyWidgetProvider : HomeWidgetProvider() {
         val (widthDp, heightDp) = widgetSizeDp(context, options)
         val views =
             RemoteViews(context.packageName, R.layout.daily_word_widget).apply {
-              val quoteId = pref(widgetData, "quoteId")
-              val categoryId = pref(widgetData, "categoryId")
-              val subId = pref(widgetData, "subCategoryId")
+              val line = QuoteSchedule.current(widgetData)
+              val quoteId = line?.id.orEmpty()
+              val categoryId = line?.categoryId.orEmpty()
+              val subId = line?.subCategoryId.orEmpty()
               val launchUri =
                   Uri.parse("dearly://quote").buildUpon().apply {
                     if (quoteId.isNotBlank()) appendQueryParameter("id", quoteId)

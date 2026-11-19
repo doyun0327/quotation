@@ -1135,13 +1135,19 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
         ),
   ];
 
+  /// Touching a friend's sticker while mine are still locked: the same
+  /// share prompt as the sticker tiles, so unlocking is one step away.
+  /// Once shared, every sticker on the card can be edited right away.
   void _showStickerLocked() {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text(AppStrings.current.stickerLockedEdit)),
-      );
+    if (_stickerPromptOpen) return;
+    _stickerPromptOpen = true;
+    unawaited(
+      _offerStickerShare().whenComplete(() => _stickerPromptOpen = false),
+    );
   }
+
+  /// One prompt at a time (select and edit can both fire on one touch).
+  bool _stickerPromptOpen = false;
 
   void _selectBubble(String id) {
     if (_focus == _DecorateFocus.bubble && _bubbleId == id) return;

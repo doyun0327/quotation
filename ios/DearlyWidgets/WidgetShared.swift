@@ -82,14 +82,83 @@ enum DearlyWidgetStore {
     return texts
   }
 
-  static func quote(at date: Date) -> String {
-    let pool = quotePool()
-    guard !pool.isEmpty else {
-      return "Dearly"
+  struct QuoteLine {
+    let id: String
+    let text: String
+    let categoryId: String
+    let subCategoryId: String
+  }
+
+  /// Quotes change every half hour (:00 / :30).
+  static let quoteSlotSeconds: TimeInterval = 30 * 60
+
+  /// Same numbering as SelectionController.slotAt (epoch ms ~/ 30 min).
+  static func quoteSlot(at date: Date) -> Int64 {
+    Int64((date.timeIntervalSince1970 / quoteSlotSeconds).rounded(.down))
+  }
+
+  static func quoteSlotStart(_ slot: Int64) -> Date {
+    Date(timeIntervalSince1970: TimeInterval(slot) * quoteSlotSeconds)
+  }
+
+  /// The app writes one line per half-hour slot (random across every open
+  /// category) from `quoteScheduleStart`; walk it by the clock. Mirrors
+  /// Kotlin QuoteSchedule.current.
+  static func quoteLine(at date: Date) -> QuoteLine? {
+    let lines = quoteSchedule()
+    if !lines.isEmpty {
+      let slot = quoteSlot(at: date)
+      let offset = Int64(string("quoteScheduleStart")).map { slot - $0 } ?? -1
+      // Past the end (app not opened for days): keep shuffling the same lines.
+      let index = offset >= 0 && offset < Int64(lines.count)
+        ? Int(offset)
+        : Int(mix(slot) % UInt64(lines.count))
+      return lines[index]
     }
-    let hour = Calendar.current.component(.hour, from: date)
-    let day = Calendar.current.ordinality(of: .day, in: .era, for: date) ?? 0
-    return pool[(day * 24 + hour) % pool.count]
+    let single = string("quoteText")
+    if !single.isEmpty {
+      return QuoteLine(
+        id: string("quoteId"), text: single,
+        categoryId: string("categoryId"), subCategoryId: string("subCategoryId"))
+    }
+    let pool = quotePool()
+    guard !pool.isEmpty else { return nil }
+    let slot = quoteSlot(at: date)
+    return QuoteLine(
+      id: "", text: pool[Int(mix(slot) % UInt64(pool.count))],
+      categoryId: "", subCategoryId: "")
+  }
+
+  static func quote(at date: Date) -> String {
+    quoteLine(at: date)?.text ?? "Dearly"
+  }
+
+  private static func quoteSchedule() -> [QuoteLine] {
+    let raw = string("quoteSchedule")
+    guard let data = raw.data(using: .utf8),
+      let decoded = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
+    else {
+      return []
+    }
+    return decoded.compactMap { item in
+      let text = ((item["t"] as? String) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+      guard !text.isEmpty else { return nil }
+      return QuoteLine(
+        id: (item["i"] as? String) ?? "", text: text,
+        categoryId: (item["c"] as? String) ?? "",
+        subCategoryId: (item["s"] as? String) ?? "")
+    }
+  }
+
+  /// Same 32-bit mix as SelectionController._mix.
+  private static func mix(_ value: Int64) -> UInt64 {
+    var h = (UInt64(bitPattern: value) &* 0x9E37_79B1) & 0xFFFF_FFFF
+    h ^= h >> 16
+    h = (h &* 0x45D_9F3B) & 0xFFFF_FFFF
+    h ^= h >> 16
+    h = (h &* 0x45D_9F3B) & 0xFFFF_FFFF
+    h ^= h >> 16
+    return h
   }
 
   static func homeDateLabel(_ date: Date = Date()) -> String {

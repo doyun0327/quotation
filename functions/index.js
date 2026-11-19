@@ -1,4 +1,7 @@
-const { onDocumentUpdated } = require('firebase-functions/v2/firestore');
+const {
+  onDocumentCreated,
+  onDocumentUpdated,
+} = require('firebase-functions/v2/firestore');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const { getMessaging } = require('firebase-admin/messaging');
@@ -210,5 +213,159 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
       }
       if (dirty) await ref.set({ fcmTokens: map }, { merge: true });
     }
+  },
+);
+
+// ---------------------------------------------------------------------------
+// "{nickname} - 방에 들어왔어요!" to everyone already in the room when someone
+// joins with an invite code. Same wording as AppStrings.togetherJoinedBodyFor.
+
+const JOIN_TEXT = {
+  ko: { friend: '친구', together: '같이', body: (name) => `${name} - 방에 들어왔어요!` },
+  en: { friend: 'Friend', together: 'Together', body: (name) => `${name} joined the room!` },
+  ja: { friend: '友だち', together: '一緒', body: (name) => `${name}さんが入室しました！` },
+};
+
+// A real join is written by the joiner (updatedBy) with a fresh joinedAt.
+// An account move (anonymous → Google) swaps uids without either.
+const JOIN_FRESH_MS = 10 * 60 * 1000;
+
+function uidList(data) {
+  return (Array.isArray(data.guestUids) ? data.guestUids : []).filter(
+    (uid) => typeof uid === 'string' && uid.length > 0,
+  );
+}
+
+function joinedUid(before, after) {
+  const joiner = after.updatedBy || '';
+  if (!joiner || joiner === after.hostUid) return '';
+  if (!uidList(after).includes(joiner)) return '';
+  if (uidList(before).includes(joiner) || before.hostUid === joiner) return '';
+  const member = (Array.isArray(after.members) ? after.members : []).find(
+    (m) => m && m.uid === joiner,
+  );
+  const joinedAt = member?.joinedAt?.toMillis?.() || 0;
+  if (!joinedAt || Date.now() - joinedAt > JOIN_FRESH_MS) return '';
+  return joiner;
+}
+
+async function notifyJoin(roomId, after, joiner) {
+  const recipients = [
+    ...new Set([after.hostUid, ...uidList(after)].filter(
+      (uid) => typeof uid === 'string' && uid.length > 0 && uid !== joiner,
+    )),
+  ];
+  if (recipients.length === 0) return;
+
+  const db = getFirestore();
+  const member = (after.members || []).find((m) => m && m.uid === joiner) || {};
+  let joinerName = (member.displayName || '').trim();
+  if (!joinerName) {
+    const profile = await db.collection('profiles').doc(joiner).get();
+    joinerName = (profile.data()?.displayName || '').trim();
+  }
+  const roomDoc = await db.collection('ddays').doc(roomId).get();
+  const roomTitle = (roomDoc.data()?.title || '').trim();
+  const stamp = `join_${joiner}_${member.joinedAt?.toMillis?.() || Date.now()}`;
+
+  const tokensByLocale = new Map();
+  const ownerByToken = new Map();
+  for (const uid of recipients) {
+    const user = (await db.collection('users').doc(uid).get()).data() || {};
+    const blocked = Array.isArray(user.blockedUids) ? user.blockedUids : [];
+    if (blocked.includes(joiner)) continue;
+    const locale = JOIN_TEXT[user.locale] ? user.locale : 'ko';
+    const map = user.fcmTokens || {};
+    for (const token of Object.keys(map)) {
+      if (!map[token]) continue;
+      if (!tokensByLocale.has(locale)) tokensByLocale.set(locale, []);
+      tokensByLocale.get(locale).push(token);
+      ownerByToken.set(token, uid);
+    }
+  }
+
+  const invalid = [];
+  for (const [locale, tokens] of tokensByLocale) {
+    const text = JOIN_TEXT[locale];
+    const name = joinerName || text.friend;
+    const title = roomTitle || text.together;
+    const body = text.body(name);
+    const response = await getMessaging().sendEachForMulticast({
+      tokens,
+      // Android: the app shows the notice (and redraws the widget with the
+      // new character). iPhone: APNs shows it and wakes the app to redraw.
+      data: {
+        type: 'together_join',
+        roomId,
+        stamp,
+        roomTitle,
+        actorName: joinerName,
+        actorUid: joiner,
+        title,
+        body,
+      },
+      android: { priority: 'high' },
+      apns: {
+        headers: { 'apns-push-type': 'alert', 'apns-priority': '10' },
+        payload: {
+          aps: {
+            alert: { title, body },
+            sound: 'default',
+            'content-available': 1,
+            'thread-id': roomId,
+          },
+        },
+      },
+    });
+    response.responses.forEach((result, index) => {
+      const code = result.error?.code || '';
+      if (result.error) {
+        console.warn('together join push failed', {
+          roomId,
+          owner: ownerByToken.get(tokens[index]) || '',
+          code,
+          message: result.error.message || '',
+        });
+      }
+      if (
+        code.includes('registration-token-not-registered') ||
+        code.includes('invalid-registration-token')
+      ) {
+        invalid.push(tokens[index]);
+      }
+    });
+  }
+
+  for (const token of invalid) {
+    const uid = ownerByToken.get(token);
+    if (!uid) continue;
+    const ref = db.collection('users').doc(uid);
+    const snap = await ref.get();
+    const map = { ...(snap.data()?.fcmTokens || {}) };
+    if (!map[token]) continue;
+    delete map[token];
+    await ref.set({ fcmTokens: map }, { merge: true });
+  }
+}
+
+exports.notifyRoomJoin = onDocumentUpdated(
+  'dday_memberships/{roomId}',
+  async (event) => {
+    const before = event.data.before.data() || {};
+    const after = event.data.after.data() || {};
+    const joiner = joinedUid(before, after);
+    if (!joiner) return;
+    await notifyJoin(event.params.roomId, after, joiner);
+  },
+);
+
+// The first friend can create the room's membership doc (no host copy yet).
+exports.notifyRoomJoinCreated = onDocumentCreated(
+  'dday_memberships/{roomId}',
+  async (event) => {
+    const after = event.data?.data() || {};
+    const joiner = joinedUid({}, after);
+    if (!joiner) return;
+    await notifyJoin(event.params.roomId, after, joiner);
   },
 );

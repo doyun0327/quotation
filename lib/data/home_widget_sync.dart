@@ -122,6 +122,13 @@ abstract final class HomeWidgetSync {
   static const keySubCategoryId = 'subCategoryId';
   static const keyCategoryTitle = 'categoryTitle';
   static const keyQuotePool = 'quotePool';
+  /// JSON list of {i, t, c, s} for consecutive half-hour slots, starting at
+  /// [keyQuoteScheduleStart] (slot = epoch ms ~/ 30 min). Widgets pick the
+  /// entry for the current slot on their own between app launches.
+  static const keyQuoteSchedule = 'quoteSchedule';
+  static const keyQuoteScheduleStart = 'quoteScheduleStart';
+  /// Three days of half-hour slots.
+  static const _quoteScheduleLength = 144;
 
   /// Name tag under the character on the home character widget.
   static const keyNickname = 'nickname';
@@ -296,11 +303,24 @@ abstract final class HomeWidgetSync {
     final categoryId = selectionController.mainCategoryId;
     final categoryTitle = AppStrings.current.mainCategoryTitle(categoryId);
     final palette = themeController.palette;
-    final poolTexts = selectionController.bubblePoolQuotes
-        .map((q) => q.text.trim())
-        .where((t) => t.isNotEmpty)
-        .take(160)
-        .toList(growable: false);
+    final schedule =
+        selectionController.upcomingSchedule(_quoteScheduleLength);
+    // The current slot shows what the app shows (a date-tap reshuffle too).
+    final scheduleJson = [
+      {
+        'i': quote.id,
+        't': quote.text.trim(),
+        'c': categoryId,
+        's': selectionController.subCategoryId ?? '',
+      },
+      for (final line in schedule.lines.skip(1))
+        {
+          'i': line.quote.id,
+          't': line.quote.text.trim(),
+          'c': line.mainId,
+          's': line.subId,
+        },
+    ];
 
     try {
       if (_isIOS) {
@@ -316,8 +336,17 @@ abstract final class HomeWidgetSync {
       );
       await HomeWidget.saveWidgetData<String>(keyCategoryTitle, categoryTitle);
       await HomeWidget.saveWidgetData<String>(
+        keyQuoteSchedule,
+        jsonEncode(scheduleJson),
+      );
+      await HomeWidget.saveWidgetData<String>(
+        keyQuoteScheduleStart,
+        schedule.startSlot.toString(),
+      );
+      // Older widget builds read this list; keep it to the same lines.
+      await HomeWidget.saveWidgetData<String>(
         keyQuotePool,
-        jsonEncode(poolTexts),
+        jsonEncode([for (final e in scheduleJson) e['t']]),
       );
       await _saveTheme(palette);
       await _saveCharacter();

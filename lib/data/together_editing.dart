@@ -85,21 +85,21 @@ class TogetherEditingPresence extends ChangeNotifier {
   /// the decorator together cannot both get it. When the lock cannot be
   /// checked at all (signed out, offline), editing is allowed rather than
   /// stranding the user.
-  static Future<({bool ok, String holderName})> claimLock(
+  static Future<({bool ok, String holderName, String holderUid})> claimLock(
     String roomId, {
     required String myName,
   }) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null || !CloudConsent.accepted) return (ok: true, holderName: '');
+    if (uid == null || !CloudConsent.accepted) return (ok: true, holderName: '', holderUid: '');
     final ref =
         FirebaseFirestore.instance.collection('dday_memberships').doc(roomId);
     try {
       return await FirebaseFirestore.instance.runTransaction((tx) async {
         final snap = await tx.get(ref);
-        if (!snap.exists) return (ok: true, holderName: '');
+        if (!snap.exists) return (ok: true, holderName: '', holderUid: '');
         final lock = _parseLock(snap.data()?['editLock']);
         if (lock != null && lock.uid != uid && _fresh(lock.at)) {
-          return (ok: false, holderName: lock.name);
+          return (ok: false, holderName: lock.name, holderUid: lock.uid);
         }
         tx.update(ref, {
           'editLock': {
@@ -108,11 +108,11 @@ class TogetherEditingPresence extends ChangeNotifier {
             'at': FieldValue.serverTimestamp(),
           },
         });
-        return (ok: true, holderName: '');
+        return (ok: true, holderName: '', holderUid: '');
       });
     } catch (e) {
       debugPrint('TogetherEditingPresence.claimLock: $e');
-      return (ok: true, holderName: '');
+      return (ok: true, holderName: '', holderUid: '');
     }
   }
 

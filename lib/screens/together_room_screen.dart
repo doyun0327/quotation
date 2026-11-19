@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
@@ -57,6 +59,13 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
   Set<String> _invited = {};
   Set<String> _decorated = {};
   bool _openingDecorate = false;
+  /// Dim + spinner while the edit lock is checked before decorating.
+  bool _checkingLock = false;
+  Timer? _checkingDelay;
+  /// A friend is decorating: the same card shows who (character + name)
+  /// and closes by itself, or on any tap.
+  ({String name, String? asset})? _lockedBy;
+  Timer? _lockedTimer;
   ScaffoldMessengerState? _messenger;
 
   @override
@@ -69,6 +78,8 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
   void dispose() {
     // Back to the room list: the "applied to home" notice goes with it.
     _messenger?.clearSnackBars();
+    _checkingDelay?.cancel();
+    _lockedTimer?.cancel();
     super.dispose();
   }
 
@@ -129,21 +140,27 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
     try {
       final hasFriends = _room?.friends.isNotEmpty ?? false;
       if (hasFriends) {
-        final claim = await TogetherEditingPresence.claimLock(
-          roomId,
-          myName: authController.nickname?.trim() ?? '',
-        );
+        // A quick answer goes straight in; only a slow one shows the dim.
+        _checkingDelay?.cancel();
+        _checkingDelay = Timer(const Duration(milliseconds: 200), () {
+          if (mounted) setState(() => _checkingLock = true);
+        });
+        final ({bool ok, String holderName, String holderUid}) claim;
+        try {
+          claim = await TogetherEditingPresence.claimLock(
+            roomId,
+            myName: authController.nickname?.trim() ?? '',
+          );
+        } finally {
+          _checkingDelay?.cancel();
+        }
         if (!mounted) return;
         if (!claim.ok) {
-          final t = AppStrings.current;
-          final name = claim.holderName.trim().isEmpty
-              ? t.togetherFriendFallbackName
-              : claim.holderName.trim();
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(t.decorateLockedBy(name))));
+          // The spinner card turns into the answer in place (no flash).
+          _showLockedBy(claim.holderName, claim.holderUid);
           return;
         }
+        if (_checkingLock) setState(() => _checkingLock = false);
       }
       await Navigator.of(context).push<void>(
         MaterialPageRoute(
@@ -159,6 +176,136 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _buildRoom(context),
+        if (_checkingLock || _lockedBy != null)
+          Positioned.fill(child: _checkingOverlay(context)),
+      ],
+    );
+  }
+
+  void _showLockedBy(String holderName, String holderUid) {
+    final t = AppStrings.current;
+    final name = holderName.trim().isEmpty
+        ? t.togetherFriendFallbackName
+        : holderName.trim();
+    final friends = _room?.friends ?? const <DdayFriendMember>[];
+    final match = friends.where((f) => f.uid == holderUid);
+    final asset = match.isEmpty
+        ? null
+        : AppCharacter.byId(match.first.characterId).assetPath;
+    _lockedTimer?.cancel();
+    setState(() {
+      _checkingLock = false;
+      _lockedBy = (name: name, asset: asset);
+    });
+    // Long enough to read one line; a tap closes it sooner.
+    _lockedTimer = Timer(const Duration(milliseconds: 2500), _hideLockedBy);
+  }
+
+  void _hideLockedBy() {
+    _lockedTimer?.cancel();
+    if (mounted && _lockedBy != null) setState(() => _lockedBy = null);
+  }
+
+  /// Dimmed page with a card in the middle: a spinner and "방 확인 중…"
+  /// while the edit lock is checked, then who is decorating, if anyone.
+  /// It swallows taps so nothing else starts meanwhile.
+  Widget _checkingOverlay(BuildContext context) {
+    final palette = context.palette;
+    final locked = _lockedBy;
+    const ink = Color(0xFF3C4C60);
+    final Widget content;
+    if (locked == null) {
+      content = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 28,
+            height: 28,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              color: palette.accent,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            AppStrings.current.decorateCheckingRoom,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: ink,
+              decoration: TextDecoration.none,
+            ),
+          ),
+        ],
+      );
+    } else {
+      final asset = locked.asset;
+      content = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (asset != null) ...[
+            Image.asset(
+              asset,
+              width: 64,
+              height: 64,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.none,
+              isAntiAlias: false,
+            ),
+            const SizedBox(height: 10),
+          ],
+          Text(
+            AppStrings.current.decorateLockedBy(locked.name),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: ink,
+              decoration: TextDecoration.none,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            AppStrings.current.decorateTryLater,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF8EA0B5),
+              decoration: TextDecoration.none,
+            ),
+          ),
+        ],
+      );
+    }
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      // While checking, taps are just swallowed; the answer closes on a tap.
+      onTap: locked == null ? () {} : _hideLockedBy,
+      child: ColoredBox(
+        color: Colors.black.withValues(alpha: 0.35),
+        child: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 280),
+            margin: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 180),
+              child: content,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoom(BuildContext context) {
     final palette = context.palette;
 
     return ListenableBuilder(

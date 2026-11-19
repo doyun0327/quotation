@@ -76,9 +76,11 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       try {
         val views =
             RemoteViews(context.packageName, R.layout.daily_word_widget).apply {
-              val quoteId = prefString(widgetData, "quoteId")
-              val categoryId = prefString(widgetData, "categoryId")
-              val subId = prefString(widgetData, "subCategoryId")
+              // Tap opens the line on screen now (it changes every 30 min).
+              val line = QuoteSchedule.current(widgetData)
+              val quoteId = line?.id.orEmpty()
+              val categoryId = line?.categoryId.orEmpty()
+              val subId = line?.subCategoryId.orEmpty()
               val launchUri =
                   Uri.parse("dearly://quote").buildUpon().apply {
                     if (quoteId.isNotBlank()) appendQueryParameter("id", quoteId)
@@ -128,7 +130,8 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
     /** iOS dateColor (0.45, 0.55, 0.68). */
     private const val IOS_DATE_COLOR = 0xFF738CAD.toInt()
     private const val PAW_ASSET = "assets/images/like/hamfoot.png"
-    private const val HOUR_MS = AlarmManager.INTERVAL_HOUR
+    /** Quotes rotate every half hour (:00 / :30), see [QuoteSchedule]. */
+    private const val HOUR_MS = QuoteSchedule.SLOT_MS
 
     fun buildPinBitmap(
         context: Context,
@@ -179,7 +182,7 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       val pixel = prefString(widgetData, "visualStyle") != "clean"
       val face = bodyTypeface(context, pixel)
       val quote =
-          prefString(widgetData, "quoteText").ifEmpty {
+          QuoteSchedule.current(widgetData)?.text.orEmpty().ifEmpty {
             context.getString(R.string.widget_placeholder_quote)
           }
       val characterId = prefString(widgetData, "characterId").ifEmpty { "basic" }
@@ -369,7 +372,7 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       val pixel = prefString(widgetData, "visualStyle") != "clean"
       val face = bodyTypeface(context, pixel)
       val quote =
-          prefString(widgetData, "quoteText").ifEmpty {
+          QuoteSchedule.current(widgetData)?.text.orEmpty().ifEmpty {
             context.getString(R.string.widget_placeholder_quote)
           }
       val characterId = prefString(widgetData, "characterId").ifEmpty { "basic" }
@@ -781,7 +784,7 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       val pixel = prefString(widgetData, "visualStyle") != "clean"
       val face = bodyTypeface(context, pixel)
       val quote =
-          prefString(widgetData, "quoteText").ifEmpty {
+          QuoteSchedule.current(widgetData)?.text.orEmpty().ifEmpty {
             context.getString(R.string.widget_placeholder_quote)
           }
       val stroke = dp(1.5f)
@@ -913,13 +916,10 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       val alarmManager = context.getSystemService(AlarmManager::class.java) ?: return
       val pending = hourlyPendingIntent(context)
       val now = System.currentTimeMillis()
-      val nextHour = ((now / HOUR_MS) + 1) * HOUR_MS
-      alarmManager.setInexactRepeating(
-          AlarmManager.RTC,
-          nextHour,
-          HOUR_MS,
-          pending,
-      )
+      // One shot just past the next :00 / :30; firing reschedules the next.
+      // RTC (no wakeup): with the screen off it waits until the phone wakes.
+      val nextSlot = ((now / HOUR_MS) + 1) * HOUR_MS + 2_000L
+      alarmManager.set(AlarmManager.RTC, nextSlot, pending)
     }
 
     fun cancelHourlyRefresh(context: Context) {
