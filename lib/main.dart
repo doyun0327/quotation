@@ -6,6 +6,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:quotation/widgets/ios_widget_guide.dart';
+import 'package:quotation/screens/widget_how_to_screen.dart';
+import 'package:quotation/data/app_update_check.dart';
 import 'package:quotation/data/sticker_unlock.dart';
 import 'package:quotation/data/app_check.dart';
 import 'package:quotation/ads/ad_consent.dart';
@@ -46,9 +50,9 @@ final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 String? _widgetLaunchRoom;
 
 Route<void> _mainShellRoute() => MaterialPageRoute<void>(
-      settings: const RouteSettings(name: Navigator.defaultRouteName),
-      builder: (_) => const MainShell(),
-    );
+  settings: const RouteSettings(name: Navigator.defaultRouteName),
+  builder: (_) => const MainShell(),
+);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -112,11 +116,13 @@ Future<void> main() async {
 
   runApp(const QuotationApp());
 
-  unawaited(AdConsent.canShowAds().then((allowed) async {
-    if (!allowed) return;
-    await MobileAds.instance.initialize();
-    InterstitialAds.preload();
-  }));
+  unawaited(
+    AdConsent.canShowAds().then((allowed) async {
+      if (!allowed) return;
+      await MobileAds.instance.initialize();
+      InterstitialAds.preload();
+    }),
+  );
   unawaited(billingController.initialize());
   unawaited(HomeWidgetSync.initialize());
   unawaited(TogetherFcm.start(appNavigatorKey));
@@ -141,7 +147,11 @@ class _QuotationAppState extends State<QuotationApp> {
   void initState() {
     super.initState();
     authController.addListener(_onAuthReady);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onAuthReady());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onAuthReady();
+      // iPhone: an older install than the App Store is sent to update.
+      unawaited(AppUpdateCheck.run(appNavigatorKey));
+    });
   }
 
   @override
@@ -239,7 +249,87 @@ class _QuotationAppState extends State<QuotationApp> {
       if (!ok || !mounted) return;
     }
     await _maybeShowTrialNotice();
+    await _maybeShowWidgetGuideNudge();
   }
+
+  bool _showingWidgetGuideNudge = false;
+  static const _widgetGuideNudgeKey = 'ios_widget_guide_nudge_shown_v1';
+
+  /// iPhone, first run only (after terms, nickname and the trial notice):
+  /// points to Settings › 위젯 설정 방법, since iPhone widgets are added
+  /// from the Home Screen, not from the app.
+  Future<void> _maybeShowWidgetGuideNudge() async {
+    if (!IosWidgetGuide.isIOS || !mounted || _showingWidgetGuideNudge) return;
+    if (_showingTrialNotice || authController.nickname == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_widgetGuideNudgeKey) ?? false) return;
+    final navContext = appNavigatorKey.currentContext;
+    if (navContext == null || !navContext.mounted || !mounted) return;
+    _showingWidgetGuideNudge = true;
+    await prefs.setBool(_widgetGuideNudgeKey, true);
+    if (!navContext.mounted) {
+      _showingWidgetGuideNudge = false;
+      return;
+    }
+    final t = AppStrings.current;
+    final accent = themeController.palette.accent;
+    final open = await showDialog<bool>(
+      context: navContext,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          title: Text(
+            t.widgetGuideNudgeTitle,
+            style: AppTheme.body.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: AppColors.ink,
+            ),
+          ),
+          content: Text(
+            t.widgetGuideNudgeBody,
+            style: AppTheme.body.copyWith(
+              fontSize: 13.5,
+              height: 1.45,
+              fontWeight: FontWeight.w600,
+              color: AppColors.muted,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(
+                t.widgetGuideNudgeLater,
+                style: AppTheme.body.copyWith(color: AppColors.muted),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(
+                t.widgetGuideNudgeOpen,
+                style: AppTheme.body.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: accent,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    _showingWidgetGuideNudge = false;
+    if (open != true || !mounted) return;
+    // Settings tab first, so Back from the guide lands on 위젯 설정 방법.
+    mainShellTab.value = _settingsTab;
+    await appNavigatorKey.currentState?.push(
+      MaterialPageRoute<void>(builder: (_) => const WidgetHowToScreen()),
+    );
+  }
+
+  static const _settingsTab = 3;
 
   Future<bool> _maybeAskNickname() async {
     if (!mounted || _askingNickname || !authController.isReady) {
@@ -309,10 +399,7 @@ class _QuotationAppState extends State<QuotationApp> {
                         ),
                       ),
                       if (showAd)
-                        const SafeArea(
-                          top: false,
-                          child: BottomBannerAd(),
-                        ),
+                        const SafeArea(top: false, child: BottomBannerAd()),
                     ],
                   ),
                   const Positioned.fill(child: _LoginOverlay()),
@@ -322,8 +409,8 @@ class _QuotationAppState extends State<QuotationApp> {
           },
           onGenerateRoute: (settings) =>
               settings.name == Navigator.defaultRouteName
-                  ? _mainShellRoute()
-                  : null,
+              ? _mainShellRoute()
+              : null,
           // A widget tap starts on its room, with the main screen behind it.
           onGenerateInitialRoutes: (_) {
             final room = _widgetLaunchRoom;
@@ -344,11 +431,11 @@ class _AppScrollBehavior extends MaterialScrollBehavior {
 
   @override
   Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.stylus,
-        PointerDeviceKind.mouse,
-        PointerDeviceKind.trackpad,
-      };
+    PointerDeviceKind.touch,
+    PointerDeviceKind.stylus,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.trackpad,
+  };
 }
 
 class _LoginOverlay extends StatelessWidget {

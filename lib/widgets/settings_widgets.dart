@@ -7,6 +7,7 @@ import 'package:quotation/theme/font_scale_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/category_pixel_icon.dart';
 import 'package:quotation/widgets/dashed_border.dart';
+import 'package:quotation/widgets/hamfoot_icon.dart';
 
 class SettingsSection extends StatelessWidget {
   const SettingsSection({
@@ -201,13 +202,9 @@ class AppleMark extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       alignment: Alignment.center,
-      child: Text(
-        'A',
-        style: AppTheme.pixel.copyWith(
-          fontSize: 14,
-          color: Colors.black,
-        ),
-      ),
+      // The app's paw, not a provider letter; same tone as the other
+      // settings icons (premium etc.), following the theme.
+      child: HamfootIcon(size: 24, color: palette.settingsLine),
     );
   }
 }
@@ -227,13 +224,9 @@ class GoogleMark extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       alignment: Alignment.center,
-      child: Text(
-        'G',
-        style: AppTheme.pixel.copyWith(
-          fontSize: 14,
-          color: const Color(0xFF4285F4),
-        ),
-      ),
+      // The app's paw, not a provider letter; same tone as the other
+      // settings icons (premium etc.), following the theme.
+      child: HamfootIcon(size: 24, color: palette.settingsLine),
     );
   }
 }

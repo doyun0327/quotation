@@ -46,6 +46,23 @@ class TogetherCheerPostResult {
 abstract final class TogetherCheerRepository {
   static final _db = FirebaseFirestore.instance;
 
+  /// The room's background text as the cloud has it now ('' when cleared or
+  /// never set), or null when it cannot be read (offline, no access).
+  static Future<String?> cloudText(String roomId) async {
+    try {
+      final snap = await _db
+          .collection('dday_memberships')
+          .doc(roomId)
+          .get()
+          .timeout(const Duration(seconds: 6));
+      final value = snap.data()?['latestCheer'];
+      return value is String ? value.trim() : '';
+    } catch (e) {
+      debugPrint('TogetherCheerRepository.cloudText: $e');
+      return null;
+    }
+  }
+
   static Stream<TogetherCheer?> watch(String roomId) {
     return _db.collection('dday_memberships').doc(roomId).snapshots().map(
           (snap) => TogetherCheer.fromMembership(snap.data()),

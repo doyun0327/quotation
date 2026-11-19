@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/data/archive_controller.dart';
+import 'package:quotation/data/quote_repository.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
@@ -10,6 +11,7 @@ import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/category_pixel_icon.dart';
 import 'package:quotation/widgets/dashed_border.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
+import 'package:quotation/screens/quote_list_screen.dart';
 
 class ArchiveScreen extends StatelessWidget {
   const ArchiveScreen({super.key, this.showBack = false});
@@ -118,10 +120,7 @@ class ArchiveScreen extends StatelessWidget {
       ),
     );
     if (!showBack) return page;
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: page,
-    );
+    return Scaffold(backgroundColor: AppColors.background, body: page);
   }
 }
 
@@ -188,7 +187,10 @@ class _CategoryArchiveSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         for (var i = 0; i < items.length; i++) ...[
-          _ArchiveQuoteCard(item: items[i], borderColor: CategorySky.border(context.palette)),
+          _ArchiveQuoteCard(
+            item: items[i],
+            borderColor: CategorySky.border(context.palette),
+          ),
           if (i < items.length - 1) const SizedBox(height: 10),
         ],
       ],
@@ -197,78 +199,96 @@ class _CategoryArchiveSection extends StatelessWidget {
 }
 
 class _ArchiveQuoteCard extends StatelessWidget {
-  const _ArchiveQuoteCard({
-    required this.item,
-    required this.borderColor,
-  });
+  const _ArchiveQuoteCard({required this.item, required this.borderColor});
 
   final ArchiveItem item;
   final Color borderColor;
+
+  /// Opens the quote where it lives (category › sub › this quote), the same
+  /// screen a widget tap opens.
+  void _open(BuildContext context) {
+    final located = QuoteRepository.locateQuote(
+      item.id,
+      categoryId: item.categoryId,
+      subId: item.subCategoryId,
+    );
+    if (located == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => QuoteListScreen(
+          mainCategory: located.main,
+          subCategory: located.sub,
+          initialIndex: located.index,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final author = item.author?.trim() ?? '';
     final palette = context.palette;
 
-    return DashedBorder(
-      color: borderColor,
-      radius: 14,
-      strokeWidth: 2,
-      dashLength: 4,
-      gapLength: 3,
-      padding: const EdgeInsets.fromLTRB(14, 12, 8, 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.text,
-                  style: AppTheme.body.copyWith(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    height: 1.45,
-                  ),
-                ),
-                if (author.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _open(context),
+      child: DashedBorder(
+        color: borderColor,
+        radius: 14,
+        strokeWidth: 2,
+        dashLength: 4,
+        gapLength: 3,
+        padding: const EdgeInsets.fromLTRB(14, 12, 8, 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    '- $author',
+                    item.text,
                     style: AppTheme.body.copyWith(
-                      fontSize: 11,
-                      color: AppColors.muted,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      height: 1.45,
                     ),
                   ),
+                  if (author.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      '- $author',
+                      style: AppTheme.body.copyWith(
+                        fontSize: 11,
+                        color: AppColors.muted,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-          IconButton(
-            tooltip: AppStrings.current.archiveRemove,
-            onPressed: () {
-              archiveController.remove(item.id);
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      AppStrings.current.removedFromArchive,
-                      style: AppTheme.body.copyWith(color: Colors.white),
+            IconButton(
+              tooltip: AppStrings.current.archiveRemove,
+              onPressed: () {
+                archiveController.remove(item.id);
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        AppStrings.current.removedFromArchive,
+                        style: AppTheme.body.copyWith(color: Colors.white),
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: AppColors.ink,
+                      duration: const Duration(seconds: 2),
                     ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: AppColors.ink,
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-            },
-            icon: HamfootIcon(
-              size: 22,
-              color: palette.accent,
+                  );
+              },
+              icon: HamfootIcon(size: 22, color: palette.accent),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

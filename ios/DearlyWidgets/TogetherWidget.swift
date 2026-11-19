@@ -38,6 +38,16 @@ struct TogetherRoom {
     }
   }
 
+  /// Rooms I left on this phone (written by the app as "ddayLeftRoomIds").
+  static func leftIds() -> Set<String> {
+    guard let data = DearlyWidgetStore.string("ddayLeftRoomIds").data(using: .utf8),
+      let ids = try? JSONSerialization.jsonObject(with: data) as? [String]
+    else {
+      return []
+    }
+    return Set(ids)
+  }
+
   /// The card to show: drawn natively from the latest spec, else the PNG
   /// the app drew last time it was open.
   func card() -> UIImage? {
@@ -93,11 +103,69 @@ struct TogetherEntry: TimelineEntry {
   let useGlass: Bool
   /// Room-slot widget whose slot has no room yet: show a short hint.
   var emptySlot: Int? = nil
+  /// This widget's room was left: ask the user to remove the widget.
+  var leftRoom = false
+}
+
+/// The "같이" gallery pages (one widget kind per page) and which room each
+/// one shows. Every room shows on exactly one page, in the app's room order;
+/// a widget already on the home screen keeps the room it showed, so leaving
+/// or reordering rooms never fills one page with a room another page has.
+enum TogetherSlots {
+  static let count = 5
+
+  static func kind(_ slot: Int) -> String {
+    slot == 0 ? "TogetherWidget" : "TogetherRoom" + String(slot + 1)
+  }
+
+  static func memoryKey(_ slot: Int) -> String { "togetherSlotShown_\(slot)" }
+
+  /// Kinds with a widget on the home screen (nil: could not be read).
+  static func placedKinds() async -> Set<String>? {
+    let infos: [WidgetInfo]? = await withCheckedContinuation { done in
+      WidgetCenter.shared.getCurrentConfigurations { result in
+        done.resume(returning: try? result.get())
+      }
+    }
+    guard let infos else { return nil }
+    return Set(infos.map(\.kind))
+  }
+
+  /// A page with no widget on the home screen has nothing to remember, so a
+  /// deleted widget does not keep a room claimed. [own]: the page of the
+  /// widget being drawn (it is placed even if the system list lags).
+  static func forgetUnplaced(keeping own: Int?) async {
+    guard let placed = await placedKinds() else { return }
+    for slot in 0..<count where slot != own && !placed.contains(kind(slot)) {
+      DearlyWidgetStore.defaults.removeObject(forKey: memoryKey(slot))
+    }
+  }
+
+  /// The room [slot] shows. Pages whose widget remembers a live room keep
+  /// it; the other pages take the remaining rooms in order, one each, and
+  /// stay empty when rooms run out. The gallery preview and a widget just
+  /// added use this same rule, so they always match.
+  static func room(for slot: Int, in rooms: [TogetherRoom]) -> TogetherRoom? {
+    let ids = Set(rooms.map(\.id))
+    var remembered: [Int: String] = [:]
+    for k in 0..<count {
+      let id = DearlyWidgetStore.defaults.string(forKey: memoryKey(k)) ?? ""
+      if !id.isEmpty, ids.contains(id) { remembered[k] = id }
+    }
+    if let id = remembered[slot] { return rooms.first { $0.id == id } }
+    let claimed = Set(remembered.values)
+    let free = rooms.filter { !claimed.contains($0.id) }
+    let needing = (0..<count).filter { remembered[$0] == nil }
+    guard let rank = needing.firstIndex(of: slot), rank < free.count else {
+      return nil
+    }
+    return free[rank]
+  }
 }
 
 struct TogetherProvider: AppIntentTimelineProvider {
-  /// Room-slot widgets (gallery pages "방 1"…) default to the room at this
-  /// index of the room list. Nil is the original widget (app's default room).
+  /// Room-slot widgets (gallery pages) show TogetherSlots.room(for:). Nil is
+  /// the original widget (app's default room).
   var slot: Int? = nil
 
   func placeholder(in context: Context) -> TogetherEntry {
@@ -105,18 +173,45 @@ struct TogetherProvider: AppIntentTimelineProvider {
   }
 
   func snapshot(for configuration: SelectTogetherRoomIntent, in context: Context) async -> TogetherEntry {
-    makeEntry(for: configuration)
+    await TogetherSlots.forgetUnplaced(keeping: context.isPreview ? nil : slot)
+    return makeEntry(for: configuration, preview: context.isPreview)
   }
 
   func timeline(for configuration: SelectTogetherRoomIntent, in context: Context) async -> Timeline<TogetherEntry> {
-    let entry = makeEntry(for: configuration)
+    await TogetherSlots.forgetUnplaced(keeping: context.isPreview ? nil : slot)
+    let entry = makeEntry(for: configuration, preview: context.isPreview)
     let next = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date().addingTimeInterval(3600)
     return Timeline(entries: [entry], policy: .after(next))
   }
 
   /// A widget with no room picked, or whose room was deleted, shows the
   /// app's default room; the card and the tap target always stay paired.
-  private func makeEntry(for configuration: SelectTogetherRoomIntent) -> TogetherEntry {
+  ///
+  /// A widget whose room I left says so instead of switching to another
+  /// room. The gallery preview ([preview]) always shows the slot's room now.
+  private func makeEntry(for configuration: SelectTogetherRoomIntent, preview: Bool = false) -> TogetherEntry {
+    let left = TogetherRoom.leftIds()
+    if let selectedId = configuration.room?.id, left.contains(selectedId) {
+      return Self.leftEntry
+    }
+    // Room-slot widget on the home screen: it keeps the room it first
+    // showed, and says so when that room was left.
+    if !preview, configuration.room == nil, let slot {
+      let shown = DearlyWidgetStore.defaults.string(forKey: TogetherSlots.memoryKey(slot)) ?? ""
+      if !shown.isEmpty, left.contains(shown) { return Self.leftEntry }
+    }
+    let entry = makeRoomEntry(for: configuration)
+    if !preview, configuration.room == nil, let slot, !entry.roomId.isEmpty {
+      DearlyWidgetStore.defaults.set(entry.roomId, forKey: TogetherSlots.memoryKey(slot))
+    }
+    return entry
+  }
+
+  private static var leftEntry: TogetherEntry {
+    TogetherEntry(date: Date(), card: nil, roomId: "", useGlass: false, leftRoom: true)
+  }
+
+  private func makeRoomEntry(for configuration: SelectTogetherRoomIntent) -> TogetherEntry {
     if let selectedId = configuration.room?.id,
       let room = TogetherRoom.all().first(where: { $0.id == selectedId }),
       let card = room.card()
@@ -128,17 +223,18 @@ struct TogetherProvider: AppIntentTimelineProvider {
         useGlass: room.useGlass
       )
     }
-    // Room-slot widget: the n-th room of the list, until one is picked.
+    // Room-slot widget: its page's room (see TogetherSlots), until one is
+    // picked in Edit Widget.
     if let slot {
       let rooms = TogetherRoom.all()
-      if slot < rooms.count,
-        let card = rooms[slot].card()
+      if let room = TogetherSlots.room(for: slot, in: rooms),
+        let card = room.card()
       {
         return TogetherEntry(
           date: Date(),
           card: card,
-          roomId: rooms[slot].id,
-          useGlass: rooms[slot].useGlass
+          roomId: room.id,
+          useGlass: room.useGlass
         )
       }
       return TogetherEntry(
@@ -164,7 +260,7 @@ struct TogetherWidgetView: View {
     // The registered home photo is the base layer under every theme: the
     // pastel themes are mostly see-through decorations drawn on top of it.
     // "투명" (useGlass) is just this layer with no theme picture.
-    let wallpaper = Self.fakeWallpaper()
+    let wallpaper = Self.fakeWallpaper(roomId: entry.roomId)
     GeometryReader { geo in
       ZStack {
         // Widgy-style: cropped home screenshot + blur under a clear card.
@@ -177,7 +273,20 @@ struct TogetherWidgetView: View {
             .blur(radius: 12)
           Color.white.opacity(0.16)
         }
-        if let slot = entry.emptySlot {
+        if entry.leftRoom {
+          VStack(spacing: 6) {
+            Text(WidgetText.pick("나간 방입니다.", "You left this room.", "退出したルームです。"))
+              .font(.system(size: 15, weight: .bold))
+            Text(WidgetText.pick(
+              "위젯을 삭제해 주세요!",
+              "Please remove this widget!",
+              "ウィジェットを削除してください！"))
+              .font(.system(size: 12))
+              .foregroundStyle(.secondary)
+          }
+          .multilineTextAlignment(.center)
+          .padding()
+        } else if let slot = entry.emptySlot {
           VStack(spacing: 6) {
             Text(WidgetText.pick("방 ", "Room ", "ルーム") + String(slot + 1))
               .font(.system(size: 15, weight: .bold))
@@ -209,16 +318,40 @@ struct TogetherWidgetView: View {
   }
 
   /// App-registered home screenshot crop (App Group), top or middle slot.
-  private static func fakeWallpaper() -> UIImage? {
-    let slot = DearlyWidgetStore.string("togetherFakeWallpaperSlot")
-    let preferred = slot == "mid"
-      ? "togetherFakeWallpaperMid"
-      : "togetherFakeWallpaperTop"
-    let fallback = preferred == "togetherFakeWallpaperMid"
-      ? "togetherFakeWallpaperTop"
-      : "togetherFakeWallpaperMid"
-    return DearlyWidgetStore.image(forKey: preferred)
-      ?? DearlyWidgetStore.image(forKey: fallback)
+  /// Each room has its own photo (IosFakeWallpaper.keyForRoom); a room
+  /// without one uses the shared photo registered before that.
+  private static func fakeWallpaper(roomId: String) -> UIImage? {
+    if !roomId.isEmpty {
+      let key = roomKey(roomId)
+      if let own = wallpaper(
+        slotKey: "togetherFakeWallpaperSlot_\(key)",
+        top: "togetherFakeWallpaperTop_\(key)",
+        mid: "togetherFakeWallpaperMid_\(key)")
+      {
+        return own
+      }
+    }
+    return wallpaper(
+      slotKey: "togetherFakeWallpaperSlot",
+      top: "togetherFakeWallpaperTop",
+      mid: "togetherFakeWallpaperMid")
+  }
+
+  private static func wallpaper(slotKey: String, top: String, mid: String) -> UIImage? {
+    let order = DearlyWidgetStore.string(slotKey) == "mid" ? [mid, top] : [top, mid]
+    for key in order {
+      if let image = DearlyWidgetStore.image(forKey: key) { return image }
+    }
+    return nil
+  }
+
+  /// base64url of the room id without padding, as Dart's
+  /// base64Url.encode(utf8.encode(id)).replaceAll('=', '').
+  private static func roomKey(_ roomId: String) -> String {
+    Data(roomId.utf8).base64EncodedString()
+      .replacingOccurrences(of: "+", with: "-")
+      .replacingOccurrences(of: "/", with: "_")
+      .replacingOccurrences(of: "=", with: "")
   }
 
   private var launchURL: URL? {
@@ -241,11 +374,11 @@ func togetherRoomSlotConfiguration(_ slot: Int) -> some WidgetConfiguration {
   // WidgetKit rejects for the name/description and crashes the extension.
   let number = String(slot + 1)
   let name: String = WidgetText.pick(
-    "함께 · 방 " + number, "Together · Room " + number, "一緒 · ルーム" + number)
+    "같이", "Together", "一緒")
   let about: String = WidgetText.pick(
-    "내 방 목록의 " + number + "번째 방을 보여 줍니다. 길게 눌러 다른 방으로 바꿀 수 있어요.",
-    "Shows room " + number + " of your room list. Long-press to switch to another room.",
-    "ルーム一覧の" + number + "番目のルームを表示します。長押しで別のルームに変更できます。")
+    "함께하는 방을 보여 줍니다. 길게 눌러 다른 방으로 바꿀 수 있어요.",
+    "Shows a room you share. Long-press to switch to another room.",
+    "一緒のルームを表示します。長押しで別のルームに変更できます。")
   // Slot 0 keeps the original "TogetherWidget" kind so widgets already on
   // home screens keep working (and the gallery has no duplicate page).
   return AppIntentConfiguration(

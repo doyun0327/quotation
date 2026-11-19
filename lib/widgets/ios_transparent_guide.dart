@@ -35,7 +35,7 @@ abstract final class IosTransparentGuide {
 
   /// Popup with the capture example and a before/after comparison.
   /// Returns true when a photo was registered.
-  static Future<bool> showIntro(BuildContext context) async {
+  static Future<bool> showIntro(BuildContext context, {String? roomId}) async {
     final t = AppStrings.current;
     final register = await showDialog<bool>(
       context: context,
@@ -43,7 +43,10 @@ abstract final class IosTransparentGuide {
         final palette = ctx.palette;
         return AlertDialog(
           backgroundColor: AppColors.background,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
           title: Text(
             t.iosTransparentIntroTitle,
             style: AppTheme.body.copyWith(
@@ -80,12 +83,16 @@ abstract final class IosTransparentGuide {
       },
     );
     if (register != true || !context.mounted) return false;
-    return pickAndRegister(context);
+    return pickAndRegister(context, roomId: roomId);
   }
 
   /// Picks the widget row, then a photo from the album, and saves its
-  /// widget-sized crop. A new photo replaces the old one.
-  static Future<bool> pickAndRegister(BuildContext context) async {
+  /// widget-sized crop. A new photo replaces the old one. With [roomId] the
+  /// photo is that room's own; without, it is the shared default.
+  static Future<bool> pickAndRegister(
+    BuildContext context, {
+    String? roomId,
+  }) async {
     final t = AppStrings.current;
     final slot = await showModalBottomSheet<IosFakeWallpaperSlot>(
       context: context,
@@ -134,7 +141,7 @@ abstract final class IosTransparentGuide {
       },
     );
     if (slot == null || !context.mounted) return false;
-    final ok = await IosFakeWallpaper.pickAndSave(slot);
+    final ok = await IosFakeWallpaper.pickAndSave(slot, roomId: roomId);
     if (!context.mounted) return ok;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -171,8 +178,10 @@ class _Example extends StatelessWidget {
       // screen − dialog inset (20×2) − content padding (24×2) − this box (12×2).
       child: Builder(
         builder: (context) {
-          final dialogW =
-              math.min(MediaQuery.sizeOf(context).width - 40, 560.0);
+          final dialogW = math.min(
+            MediaQuery.sizeOf(context).width - 40,
+            560.0,
+          );
           const gap = 10.0;
           const captionH = 18.0; // caption line + its 4dp spacing
           const pairAspect = 720 / 420; // before/after pictures
@@ -183,7 +192,8 @@ class _Example extends StatelessWidget {
           //   phoneH = captionH + 10 + 2 * rightW / pairAspect
           //   leftW  = phoneH * phoneAspect = total - rightW
           final total = dialogW - 48 - 24 - gap;
-          final rightW = (total - phoneAspect * (captionH + 10)) /
+          final rightW =
+              (total - phoneAspect * (captionH + 10)) /
               (1 + 2 * phoneAspect / pairAspect);
           final leftW = total - rightW;
           final pictureH = rightW / pairAspect;

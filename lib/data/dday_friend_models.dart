@@ -32,7 +32,6 @@ abstract final class DdayInviteLimits {
   /// Friends besides the host.
   static const maxFriends = maxPeople - 1;
   static const codeLength = 6;
-  static const inviteTtl = Duration(days: 7);
 
   static const httpsInviteBase = 'https://dearly-cf730.web.app/invite';
   static const appSchemeInviteBase = 'dearly://invite';

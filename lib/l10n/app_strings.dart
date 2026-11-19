@@ -21,9 +21,8 @@ class AppStrings {
   }
 
   /// Store that sells the subscription on this device.
-  String get _store => defaultTargetPlatform == TargetPlatform.iOS
-      ? 'App Store'
-      : 'Google Play';
+  String get _store =>
+      defaultTargetPlatform == TargetPlatform.iOS ? 'App Store' : 'Google Play';
 
   List<String> _lines(List<String> ko, List<String> en, List<String> ja) {
     switch (language) {
@@ -44,17 +43,30 @@ class AppStrings {
   String get settingsTab => _t('설정', 'Settings', '設定');
 
   String get ddayTitle => _t('같이', 'Together', '一緒');
-  String get ddayHint => _t('친구와 같은 방에서 캐릭터를 공유하고, 위젯을 꾸미며 응원 문구를 남겨요', 'Share a room with friends — characters, widget, and cheers together', '友だちと同じルームでキャラクターを共有し、ウィジェットを飾って応援メッセージを残せます');
+  String get ddayHint => _t(
+    '친구와 같은 방에서 캐릭터를 공유하고, 위젯을 꾸미며 응원 문구를 남겨요',
+    'Share a room with friends — characters, widget, and cheers together',
+    '友だちと同じルームでキャラクターを共有し、ウィジェットを飾って応援メッセージを残せます',
+  );
   String get ddayEmptyTitle =>
       _t('아직 같이 방이 없어요', 'No rooms yet', 'まだ一緒のルームがありません');
-  String get ddayEmptyHint => _t('방을 만들거나, 상단 초대 코드로 참여해 보세요', 'Create a room, or join with an invite code above', 'ルームを作るか、上の招待コードで参加してみてください');
+  String get ddayEmptyHint => _t(
+    '방을 만들거나, 상단 초대 코드로 참여해 보세요',
+    'Create a room, or join with an invite code above',
+    'ルームを作るか、上の招待コードで参加してみてください',
+  );
   String get ddayLeaveRoom => _t('방 나가기', 'Leave room', 'ルームを出る');
   String get ddayLeave => _t('나가기', 'Leave', '退出');
   String get ddayAdd => _t('방 만들기', 'Create room', 'ルームを作る');
   String get ddayEdit => _t('방 수정', 'Edit room', 'ルームを編集');
-  String get ddayAddSubtitle => _t('친구들과 응원할 방 이름을 정해 보세요', 'Name a room to cheer with friends', '友だちと応援するルームの名前を決めましょう');
+  String get ddayAddSubtitle => _t(
+    '친구들과 응원할 방 이름을 정해 보세요',
+    'Name a room to cheer with friends',
+    '友だちと応援するルームの名前を決めましょう',
+  );
   String get ddayWhatDay => _t('방 이름', 'Room name', 'ルーム名');
-  String get ddayPickIcon => _t('아이콘을 골라 주세요', 'Choose an icon', 'アイコンを選んでください');
+  String get ddayPickIcon =>
+      _t('아이콘을 골라 주세요', 'Choose an icon', 'アイコンを選んでください');
   String get ddayTitlePlaceholder =>
       _t('예: 우리 팀, 스터디 방', 'e.g. Our team, study buddies', '例: 私たちのチーム、勉強ルーム');
   String get ddayTitleHint => _t('방 이름', 'Room name', 'ルーム名');
@@ -71,51 +83,77 @@ class AppStrings {
   String get ddayPinnedWidget => _t('위젯에 표시 중', 'On widget', 'ウィジェットに表示中');
   String get ddayDuoTestSection =>
       _t('위젯 꾸미기', 'Customize widget', 'ウィジェットを飾る');
-  String get ddayDuoTestUpdatedToast =>
-      _t('홈 화면 같이 위젯에 반영했어요', 'Applied to the Together home widget', 'ホームの一緒ウィジェットに反映しました');
-  String get ddayDuoDecorateOpen => _t('위젯 꾸미기', 'Customize widget', 'ウィジェットを飾る');
+  String get ddayDuoTestUpdatedToast => _t(
+    '홈 화면 같이 위젯에 반영했어요',
+    'Applied to the Together home widget',
+    'ホームの一緒ウィジェットに反映しました',
+  );
+  String get ddayDuoDecorateOpen =>
+      _t('위젯 꾸미기', 'Customize widget', 'ウィジェットを飾る');
   String get ddayDuoDecorateTitle =>
       _t('위젯 꾸미기', 'Customize widget', 'ウィジェットを飾る');
-  String get ddayDuoDecorateSubtitle => _t('같은 방 친구와 캐릭터 위치를 함께 맞추고, 홈 위젯에 바로 반영해요', 'Place characters with room friends — changes sync to the home widget', '同じルームの友だちとキャラクターの位置を合わせ、ホームウィジェットにすぐ反映します');
+  String get ddayDuoDecorateSubtitle => _t(
+    '같은 방 친구와 캐릭터 위치를 함께 맞추고, 홈 위젯에 바로 반영해요',
+    'Place characters with room friends — changes sync to the home widget',
+    '同じルームの友だちとキャラクターの位置を合わせ、ホームウィジェットにすぐ反映します',
+  );
   String get ddayDuoDecoratePreview => _t('미리보기', 'Preview', 'プレビュー');
-  String get ddayDuoDecorateDragHint => _t('캐릭터를 선택한 뒤 이동시켜보세요!', 'Select a character, then move it!', 'キャラクターを選んで、動かしてみてください！');
-  String get ddayDuoDecorateMenuHint => _t('친구와 함께 꾸미는 응원 위젯', 'Cheer widget you decorate with friends', '友だちと一緒に飾る応援ウィジェット');
+  String get ddayDuoDecorateDragHint => _t(
+    '캐릭터를 선택한 뒤 이동시켜보세요!',
+    'Select a character, then move it!',
+    'キャラクターを選んで、動かしてみてください！',
+  );
+  String get ddayDuoDecorateMenuHint => _t(
+    '친구와 함께 꾸미는 응원 위젯',
+    'Cheer widget you decorate with friends',
+    '友だちと一緒に飾る応援ウィジェット',
+  );
   String get ddayDuoDecorateDone => _t('홈에 적용', 'Apply to home', 'ホームに適用');
+  String get ddayDecorateApply => _t('적용', 'Apply', '適用');
   String get ddayDuoDecorateExport =>
       _t('위젯으로 내보내기', 'Add as widget', 'ウィジェットに書き出す');
   String get togetherInviteNudge =>
       _t('친구를 초대해볼까요?', 'Invite a friend?', '友だちを招待してみる？');
-  String get togetherDecorateNudge => _t(
-        '위젯 꾸미기를 눌러볼까요?',
-        'Try customizing the widget?',
-        'ウィジェットを飾ってみる？',
-      );
+  String get togetherDecorateNudge =>
+      _t('위젯 꾸미기를 눌러볼까요?', 'Try customizing the widget?', 'ウィジェットを飾ってみる？');
   String get ddayDuoDecorateSampleTitle => _t('우리 방', 'Our room', '私たちのルーム');
-  String get ddayDecorateSoloHint => _t('친구가 초대를 수락하면 같이 위젯으로 바뀌어요', 'Together widget appears after a friend accepts your invite', '友だちが招待を受けると、一緒ウィジェットに変わります');
-  String get ddayDecorateInviteHint => _t('방에서 친구를 초대해 보세요', 'Invite friends from the room', 'ルームから友だちを招待してみてください');
+  String get ddayDecorateSoloHint => _t(
+    '친구가 초대를 수락하면 같이 위젯으로 바뀌어요',
+    'Together widget appears after a friend accepts your invite',
+    '友だちが招待を受けると、一緒ウィジェットに変わります',
+  );
+  String get ddayDecorateInviteHint => _t(
+    '방에서 친구를 초대해 보세요',
+    'Invite friends from the room',
+    'ルームから友だちを招待してみてください',
+  );
   String get ddayDecorateShapeLabel => _t('모양', 'Shape', '形');
   String get ddayDecorateSizeLabel => _t('위젯 크기', 'Widget size', 'ウィジェットサイズ');
   String get ddayDecorateBgLabel => _t('배경테마', 'Background theme', '背景テーマ');
 
   String get ddayDecorateBgNone => _t('투명', 'Transparent', '透明');
   String get ddayDecorateBgAlbum => _t('앨범', 'Album', 'アルバム');
-  String get ddayDecorateBgAlbumFailed => _t('사진을 불러오지 못했어요', 'Could not open that photo', '写真を読み込めませんでした');
+  String get ddayDecorateBgAlbumFailed =>
+      _t('사진을 불러오지 못했어요', 'Could not open that photo', '写真を読み込めませんでした');
   String get iosFakeWallpaperNextTitle =>
       _t('위젯 위치 선택', 'Choose widget spot', 'ウィジェット位置を選択');
   String get iosFakeWallpaperNextBody => _t(
-        '캡처한 사진을 올린 뒤, 위젯을 둘 위치를 골라 주세요.',
-        'Upload the screenshot, then pick where the widget sits.',
-        'キャプチャした写真をアップロードし、ウィジェットの位置を選んでください。',
-      );
+    '캡처한 사진을 올린 뒤, 위젯을 둘 위치를 골라 주세요.',
+    'Upload the screenshot, then pick where the widget sits.',
+    'キャプチャした写真をアップロードし、ウィジェットの位置を選んでください。',
+  );
   String get iosFakeWallpaperTop => _t('위쪽', 'Top', '上');
   String get iosFakeWallpaperMid => _t('가운데', 'Middle', '中央');
-  String get iosTransparentIntroTitle =>
-      _t('아이폰 투명 위젯 설정하기', 'Set up a transparent iPhone widget', 'iPhoneの透明ウィジェットを設定');
+  String get iosTransparentIntroTitle => _t(
+    '아이폰 투명 위젯 설정하기',
+    'Set up a transparent iPhone widget',
+    'iPhoneの透明ウィジェットを設定',
+  );
   String get iosTransparentIntroBody => _t(
-        '위젯을 투명하게 사용하려면 앱 아이콘이 없는 빈 홈 화면을 캡처해서 등록해 주세요.\n사진을 등록하지 않으면 투명 배경이 흰색으로 표시돼요.',
-        'To make the widget transparent, take a screenshot of an empty home screen page with no app icons and add it here.\nWithout it, the transparent background shows as white.',
-        'ウィジェットを透明にするには、アプリアイコンのない空のホーム画面をキャプチャして登録してください。\n登録しないと透明の背景は白で表示されます。',
-      );
+    '위젯을 투명하게 사용하려면 앱 아이콘이 없는 빈 홈 화면을 캡처해서 등록해 주세요.\n사진을 등록하지 않으면 투명 배경이 흰색으로 표시돼요.',
+    'To make the widget transparent, take a screenshot of an empty home screen page with no app icons and add it here.\nWithout it, the transparent background shows as white.',
+    'ウィジェットを透明にするには、アプリアイコンのない空のホーム画面をキャプチャして登録してください。\n登録しないと透明の背景は白で表示されます。',
+  );
   String get iosTransparentCaptureHint =>
       _t('이렇게 캡처해 주세요!', 'Capture it like this!', 'このようにキャプチャしてください！');
   String get iosTransparentBefore => _t('등록 전', 'Before', '登録前');
@@ -126,34 +164,37 @@ class AppStrings {
   String get iosTransparentSettingTitle =>
       _t('투명 배경 사진', 'Transparent background photo', '透明背景の写真');
   String get iosTransparentNone => _t(
-        '등록된 사진이 없어 흰색으로 보여요',
-        'No photo yet — it shows as white',
-        '写真がないため白で表示されます',
-      );
+    '등록된 사진이 없어 흰색으로 보여요',
+    'No photo yet — it shows as white',
+    '写真がないため白で表示されます',
+  );
   String get iosFakeWallpaperDone =>
       _t('투명 배경을 적용했어요', 'Transparent background applied', '透明背景を適用しました');
   String get iosFakeWallpaperFailed =>
       _t('사진을 적용하지 못했어요', 'Could not apply the photo', '写真を適用できませんでした');
-  String get ddayDecorateTextColorLabel => _t('글자색', 'Text color', '文字色');
+  String get ddayDecorateTextColorLabel =>
+      _t('배경 글자색', 'Background text color', '背景の文字色');
   String get ddayDecorateFontLabel => _t('글꼴', 'Font', 'フォント');
   String ddayDecorateFontName(WidgetFont font) => switch (font) {
-        WidgetFont.basic => _t('기본', 'Basic', '基本'),
-        WidgetFont.jua => _t('주아체', 'Jua', 'Jua'),
-        WidgetFont.singleDay => _t('싱글데이', 'Single Day', 'Single Day'),
-        WidgetFont.gaegu => _t('개구체', 'Gaegu', 'Gaegu'),
-        WidgetFont.nanumPen => _t('나눔손글씨 펜', 'Nanum Pen', 'Nanum Pen'),
-        WidgetFont.yeonSung => _t('연성체', 'Yeon Sung', 'Yeon Sung'),
-      };
+    WidgetFont.basic => _t('기본', 'Basic', '基本'),
+    WidgetFont.jua => _t('주아체', 'Jua', 'Jua'),
+    WidgetFont.singleDay => _t('싱글데이', 'Single Day', 'Single Day'),
+    WidgetFont.gaegu => _t('개구체', 'Gaegu', 'Gaegu'),
+    WidgetFont.nanumPen => _t('나눔손글씨 펜', 'Nanum Pen', 'Nanum Pen'),
+    WidgetFont.yeonSung => _t('연성체', 'Yeon Sung', 'Yeon Sung'),
+  };
   String get ddayDecorateTransparent => _t('투명', 'Transparent', '透明');
   String get ddayDecoratePickColor => _t('색 고르기', 'Pick a color', '色を選ぶ');
-  String get ddayDecoratePickColorDone => _t('이 색으로 적용', 'Use this color', 'この色で適用');
+  String get ddayDecoratePickColorDone =>
+      _t('이 색으로 적용', 'Use this color', 'この色で適用');
   String get ddayDecoratePaletteHue => _t('색조', 'Hue', '色相');
   String get ddayDecoratePalettePresets => _t('팔레트', 'Palette', 'パレット');
   String get ddayDecorateMoreColors => _t('더 고르기', 'More colors', 'もっと選ぶ');
   String get ddayDecorateChangeMyCharacter => _t('변경', 'Change', '変更');
   String get ddayDecorateBubbleLabel => _t('말풍선', 'Speech bubbles', '吹き出し');
   String get ddayDecorateBubbleDefault => _t('안녕!', 'Hi!', 'やあ!');
-  String get ddayDecorateBubbleTextHint => _t('말풍선에 쓸 말', 'Bubble text', '吹き出しの言葉');
+  String get ddayDecorateBubbleTextHint =>
+      _t('말풍선에 쓸 말', 'Bubble text', '吹き出しの言葉');
   String get ddayDecorateBubbleEdit => _t('글 수정', 'Edit', '編集');
   String get ddayDecorateBubbleSmaller => _t('작게', 'Smaller', '小さく');
   String get ddayDecorateBubbleLarger => _t('크게', 'Larger', '大きく');
@@ -163,68 +204,93 @@ class AppStrings {
   String get ddayDecorateBubbleDelete => _t('삭제', 'Delete', '削除');
   String get ddayDecorateBubbleColor => _t('색', 'Color', '色');
   String get ddayDecorateBubbleDone => _t('완료', 'Done', '完了');
-  String get ddayDecorateBubbleLimit => _t('말풍선은 ${TogetherBubble.maxCount}개까지 넣을 수 있어요', 'You can add up to ${TogetherBubble.maxCount} bubbles', '吹き出しは${TogetherBubble.maxCount}個まで追加できます');
-  String get ddayDecorateStickerLimit => _t('스티커는 ${TogetherBubble.maxStickers}개까지 넣을 수 있어요', 'You can add up to ${TogetherBubble.maxStickers} stickers', 'ステッカーは${TogetherBubble.maxStickers}個まで追加できます');
+  String get ddayDecorateBubbleLimit => _t(
+    '말풍선은 ${TogetherBubble.maxCount}개까지 넣을 수 있어요',
+    'You can add up to ${TogetherBubble.maxCount} bubbles',
+    '吹き出しは${TogetherBubble.maxCount}個まで追加できます',
+  );
+  String get ddayDecorateStickerLimit => _t(
+    '스티커는 ${TogetherBubble.maxStickers}개까지 넣을 수 있어요',
+    'You can add up to ${TogetherBubble.maxStickers} stickers',
+    'ステッカーは${TogetherBubble.maxStickers}個まで追加できます',
+  );
   // First-time decorator tutorial.
-  String get coachPickTitle => _t('1. 캐릭터 선택', '1. Pick your character', '1. キャラクターを選ぶ');
+  String get coachPickTitle =>
+      _t('1. 캐릭터 선택', '1. Pick your character', '1. キャラクターを選ぶ');
   String get coachPickBody => _t(
-        '미리보기에서 내 캐릭터를 눌러 보세요.\n선택하면 끌어서 옮길 수도 있어요.',
-        'Tap your character in the preview.\nOnce picked, you can drag it around.',
-        'プレビューで自分のキャラクターをタップしてみて。\n選ぶとドラッグで動かせます。',
-      );
-  String get coachSizeTitle => _t('2. 크기 조절', '2. Change the size', '2. サイズを変える');
+    '미리보기에서 내 캐릭터를 눌러 보세요.\n선택하면 끌어서 옮길 수도 있어요.',
+    'Tap your character in the preview.\nOnce picked, you can drag it around.',
+    'プレビューで自分のキャラクターをタップしてみて。\n選ぶとドラッグで動かせます。',
+  );
+  String get coachPencilTitle =>
+      _t('2. 캐릭터 바꾸기', '2. Change your character', '2. キャラクターを変える');
+  String get coachPencilBody => _t(
+    '내 캐릭터 카드의 연필 버튼을 누르면\n이 방에서 쓸 캐릭터를 바꿀 수 있어요.',
+    'Tap the pencil on your card\nto pick a different character for this room.',
+    '自分のカードの鉛筆ボタンを押すと\nこのルームで使うキャラクターを変えられます。',
+  );
+  String get coachNext => _t('다음', 'Next', '次へ');
+  String get coachSizeTitle =>
+      _t('3. 크기 조절', '3. Change the size', '3. サイズを変える');
   String get coachSizeBody => _t(
-        '슬라이더를 밀어서 내 캐릭터 크기를 바꿔 보세요.',
-        'Slide to make your character bigger or smaller.',
-        'スライダーでキャラクターの大きさを変えてみて。',
-      );
-  String get coachTextTitle => _t('3. 글자 넣기', '3. Add words', '3. 文字を入れる');
+    '슬라이더를 밀어서 내 캐릭터 크기를 바꿔 보세요.',
+    'Slide to make your character bigger or smaller.',
+    'スライダーでキャラクターの大きさを変えてみて。',
+  );
+  String get coachTextTitle => _t('4. 글자 넣기', '4. Add words', '4. 文字を入れる');
   String get coachTextBody => _t(
-        '위젯에 보여줄 말을 적어 보세요.\n적는 대로 미리보기에 바로 나타나요.',
-        'Write what the widget should say.\nIt shows in the preview as you type.',
-        'ウィジェットに表示する言葉を書いてみて。\nすぐプレビューに表示されます。',
-      );
-  String get coachTextSizeTitle => _t('4. 글자 크기', '4. Text size', '4. 文字の大きさ');
+    '위젯에 보여줄 말을 적어 보세요.\n적는 대로 미리보기에 바로 나타나요.',
+    'Write what the widget should say.\nIt shows in the preview as you type.',
+    'ウィジェットに表示する言葉を書いてみて。\nすぐプレビューに表示されます。',
+  );
+  String get coachTextSizeTitle =>
+      _t('5. 배경 글자 크기', '5. Background text size', '5. 背景の文字サイズ');
   String get coachTextSizeBody => _t(
-        '슬라이더로 글자 크기를 바꿔 보세요.\n미리보기의 글자를 누르면 옮기거나 돌릴 수도 있어요.',
-        'Slide to change the text size.\nTap the words in the preview to move or turn them.',
-        'スライダーで文字の大きさを変えてみて。\nプレビューの文字をタップすると動かしたり回したりできます。',
-      );
+    '슬라이더로 글자 크기를 바꿔 보세요.\n미리보기의 글자를 누르면 옮기거나 돌릴 수도 있어요.',
+    'Slide to change the text size.\nTap the words in the preview to move or turn them.',
+    'スライダーで文字の大きさを変えてみて。\nプレビューの文字をタップすると動かしたり回したりできます。',
+  );
   String get coachDoneTitle => _t('다 꾸몄어요!', 'All set!', 'できました！');
   String get coachDoneBody => _t(
-        '마음에 들면 홈에 적용을 눌러 위젯에 반영해 주세요.',
-        'Happy with it? Tap Apply to home to put it on your widget.',
-        '気に入ったら「ホームに適用」を押してウィジェットに反映してください。',
-      );
+    '마음에 들면 오른쪽 위 [적용]을 눌러 위젯에 반영해 주세요.',
+    'Happy with it? Tap Apply at the top right to put it on your widget.',
+    '気に入ったら右上の「適用」を押してウィジェットに反映してください。',
+  );
   String get coachDoneButton => _t('확인', 'OK', 'OK');
   String get coachSkip => _t('건너뛰기', 'Skip', 'スキップ');
   String get stickerShareTitle =>
       _t('친구에게 Dearly 공유하기', 'Share Dearly with a friend', '友だちにDearlyを共有');
   String get stickerShareBody => _t(
-        '친구에게 Dearly 다운로드 링크를 공유하면 스티커를 사용할 수 있어요!💌',
-        'Share the Dearly download link with a friend to keep the stickers for good.💌',
-        '友だちにDearlyのダウンロードリンクを共有すると、ステッカーをずっと使えます💌',
-      );
+    '친구에게 Dearly 다운로드 링크를 공유하면 스티커를 사용할 수 있어요!💌',
+    'Share the Dearly download link with a friend to keep the stickers for good.💌',
+    '友だちにDearlyのダウンロードリンクを共有すると、ステッカーをずっと使えます💌',
+  );
   String get stickerShareAction => _t('공유하기', 'Share', '共有する');
   String get stickerLockedEdit => _t(
-        '친구에게 Dearly를 공유하면 스티커를 옮기고 바꿀 수 있어요',
-        'Share Dearly with a friend to move or change stickers',
-        '友だちにDearlyを共有すると、ステッカーを動かしたり変えたりできます',
-      );
+    '친구에게 Dearly를 공유하면 스티커를 옮기고 바꿀 수 있어요',
+    'Share Dearly with a friend to move or change stickers',
+    '友だちにDearlyを共有すると、ステッカーを動かしたり変えたりできます',
+  );
   String stickerShareText(String link) => _t(
-        '같이 Dearly 써요! 매일 위젯으로 마음을 전하는 앱이에요 💌\n$link',
-        "Let's use Dearly together! Send each other little notes on your home screen 💌\n$link",
-        '一緒にDearlyを使おう！ホーム画面のウィジェットで気持ちを伝えるアプリです 💌\n$link',
-      );
-  String get stickerShareUnlocked =>
-      _t('스티커가 열렸어요! 이제 계속 쓸 수 있어요', 'Stickers unlocked for good!', 'ステッカーが使えるようになりました！');
-  String get ddayDecorateCharScaleLabel => _t('캐릭터 크기', 'Character size', 'キャラクターサイズ');
+    '같이 Dearly 써요! 매일 위젯으로 마음을 전하는 앱이에요 💌\n$link',
+    "Let's use Dearly together! Send each other little notes on your home screen 💌\n$link",
+    '一緒にDearlyを使おう！ホーム画面のウィジェットで気持ちを伝えるアプリです 💌\n$link',
+  );
+  String get stickerShareUnlocked => _t(
+    '스티커가 열렸어요! 이제 계속 쓸 수 있어요',
+    'Stickers unlocked for good!',
+    'ステッカーが使えるようになりました！',
+  );
+  String get ddayDecorateCharScaleLabel =>
+      _t('캐릭터 크기', 'Character size', 'キャラクターサイズ');
   String ddayDecorateCharScaleFor(String name) =>
       _t('$name 크기', '$name size', '$nameのサイズ');
-  String ddayDecorateMeChip(String name) => _t('나 · $name', 'Me · $name', 'わたし · $name');
+  String ddayDecorateMeChip(String name) =>
+      _t('나 · $name', 'Me · $name', 'わたし · $name');
   String ddayDecorateFriendChip(String name) =>
       _t('친구 · $name', 'Friend · $name', '友だち · $name');
-  String get ddayDecorateTextScaleLabel => _t('글자 크기', 'Text size', '文字サイズ');
+  String get ddayDecorateTextScaleLabel =>
+      _t('배경 글자 크기', 'Background text size', '背景の文字サイズ');
   String ddayDecorateShapeName(String id) {
     switch (id) {
       case 'circle':
@@ -258,61 +324,86 @@ class AppStrings {
   }
 
   String get ddayInviteTitle => _t('친구 초대', 'Invite friends', '友だちを招待');
-  String get ddayInviteOpen => _t('초대 코드·링크 만들기', 'Create invite', '招待コード・リンクを作る');
-  String ddayInviteFriendCount(int n) =>
-      _t('친구 $n명', 'Friends $n', '友だち $n人');
+  String get ddayInviteOpen =>
+      _t('초대 코드·링크 만들기', 'Create invite', '招待コード・リンクを作る');
+  String ddayInviteFriendCount(int n) => _t('친구 $n명', 'Friends $n', '友だち $n人');
   String get ddayInviteCodeLabel => _t('초대 코드', 'Invite code', '招待コード');
   String get ddayInviteCopyCode => _t('코드 복사', 'Copy code', 'コードをコピー');
-  String get ddayInviteCodeCopied => _t('코드를 복사했어요', 'Code copied', 'コードをコピーしました');
+  String get ddayInviteCodeCopied =>
+      _t('코드를 복사했어요', 'Code copied', 'コードをコピーしました');
   String get ddayInviteCopyLink => _t('링크 복사', 'Copy link', 'リンクをコピー');
   String get ddayInviteLinkCopied =>
       _t('초대 링크를 복사했어요', 'Invite link copied', '招待リンクをコピーしました');
   String get ddayInviteShare => _t('초대하기', 'Invite', '招待する');
   String ddayInviteShareText(String title, String code, String url) => _t(
-        '우리 같이 위젯 꾸밀래? 💙\n「$title」\n코드: $code\n$url',
-        'Want to decorate a widget together? 💙\n"$title"\nCode: $code\n$url',
-        '一緒にウィジェットを飾ろう？ 💙\n「$title」\nコード: $code\n$url',
-      );
+    '우리 같이 위젯 꾸밀래? 💙\n「$title」\n코드: $code\n$url',
+    'Want to decorate a widget together? 💙\n"$title"\nCode: $code\n$url',
+    '一緒にウィジェットを飾ろう？ 💙\n「$title」\nコード: $code\n$url',
+  );
   String ddayInviteSlotsLeft(int n) =>
       _t('남은 자리 $n명', '$n spots left', '残り $n人');
-  String get ddayInviteFull => _t('이 방은 방장 포함 ${DdayInviteLimits.maxPeople}명까지예요', 'This room is full (${DdayInviteLimits.maxPeople} people, including the host)', 'このルームはホストを含めて${DdayInviteLimits.maxPeople}人までです');
+  String get ddayInviteFull => _t(
+    '이 방은 방장 포함 ${DdayInviteLimits.maxPeople}명까지예요',
+    'This room is full (${DdayInviteLimits.maxPeople} people, including the host)',
+    'このルームはホストを含めて${DdayInviteLimits.maxPeople}人までです',
+  );
   String get ddayInviteNeedLogin =>
       _t('Google로 로그인해 주세요', 'Please sign in with Google', 'Googleでログインしてください');
+
   /// Shown only when cloud auth is not ready (host create-invite path).
-  String get ddayInviteLoginAgain => _t('초대를 만들려면 Google로 다시 로그인해 주세요', 'Sign in with Google again to create an invite', '招待を作るには、Googleでもう一度ログインしてください');
-  String get ddayInviteCreateFailed =>
-      _t('초대를 만들지 못했어요. 잠시 후 다시 시도해 주세요', 'Could not create invite. Try again shortly', '招待を作れませんでした。しばらくしてからもう一度お試しください');
+  String get ddayInviteLoginAgain => _t(
+    '초대를 만들려면 Google로 다시 로그인해 주세요',
+    'Sign in with Google again to create an invite',
+    '招待を作るには、Googleでもう一度ログインしてください',
+  );
+  String get ddayInviteCreateFailed => _t(
+    '초대를 만들지 못했어요. 잠시 후 다시 시도해 주세요',
+    'Could not create invite. Try again shortly',
+    '招待を作れませんでした。しばらくしてからもう一度お試しください',
+  );
   String get ddayInviteRetry => _t('다시 시도', 'Retry', 'もう一度');
   String get togetherFriendFallbackName => _t('친구', 'Friend', '友だち');
-  String decorateLockedBy(String name) => _t(
-        '$name님이 꾸미는 중이에요!',
-        '$name is decorating!',
-        '$nameさんが編集中です！',
-      );
+  String decorateLockedBy(String name) =>
+      _t('$name님이 꾸미는 중이에요!', '$name is decorating!', '$nameさんが編集中です！');
   String decorateLockTaken(String name) => _t(
-        '$name님이 꾸미기를 시작해서 위젯 꾸미기를 닫았어요.',
-        '$name started decorating, so this editor was closed.',
-        '$nameさんが編集を始めたため、ウィジェット編集を閉じました。',
-      );
+    '$name님이 꾸미기를 시작해서 위젯 꾸미기를 닫았어요.',
+    '$name started decorating, so this editor was closed.',
+    '$nameさんが編集を始めたため、ウィジェット編集を閉じました。',
+  );
   String get decorateIdleClosed => _t(
-        '3분 동안 움직임이 없어 위젯 꾸미기를 닫았어요. 적용하지 않은 내용은 내 폰에만 저장돼요.',
-        'Closed the widget editor after 3 minutes without activity. Changes you did not apply stay on this phone only.',
-        '3分間操作がなかったため、ウィジェット編集を閉じました。適用していない内容はこの端末にだけ保存されます。',
-      );
-  String togetherWidgetChangedBodyFor(String name) => _t('$name - 위젯을 수정했어요!', '$name updated the widget!', '$nameさんがウィジェットを更新しました！');
-  String get ddayInviteAcceptTitle => _t('초대 코드 입력', 'Enter invite code', '招待コードを入力');
-  String get ddayInviteAcceptSubtitle => _t('친구가 보낸 6자리 코드를 입력하세요.', 'Enter the 6-digit code from your friend.', '友だちからもらった6桁のコードを入力してください。');
+    '3분 동안 움직임이 없어 위젯 꾸미기를 닫았어요. 적용하지 않은 내용은 내 폰에만 저장돼요.',
+    'Closed the widget editor after 3 minutes without activity. Changes you did not apply stay on this phone only.',
+    '3分間操作がなかったため、ウィジェット編集を閉じました。適用していない内容はこの端末にだけ保存されます。',
+  );
+  String togetherWidgetChangedBodyFor(String name) => _t(
+    '$name - 위젯을 수정했어요!',
+    '$name updated the widget!',
+    '$nameさんがウィジェットを更新しました！',
+  );
+  String get ddayInviteAcceptTitle =>
+      _t('초대 코드 입력', 'Enter invite code', '招待コードを入力');
+  String get ddayInviteAcceptSubtitle => _t(
+    '친구가 보낸 6자리 코드를 입력하세요.',
+    'Enter the 6-digit code from your friend.',
+    '友だちからもらった6桁のコードを入力してください。',
+  );
   String get ddayInviteAcceptAction => _t('입장', 'Enter', '入室');
-  String get ddayInviteAcceptSuccess =>
-      _t('같은 방에 참여했어요! 위젯에 반영돼요', 'Joined the room! It will show on the widget', '同じルームに参加しました！ウィジェットに反映されます');
+  String get ddayInviteAcceptSuccess => _t(
+    '같은 방에 참여했어요! 위젯에 반영돼요',
+    'Joined the room! It will show on the widget',
+    '同じルームに参加しました！ウィジェットに反映されます',
+  );
   String get ddayInviteAcceptFailed =>
       _t('수락에 실패했어요', 'Could not accept invite', '参加できませんでした');
   String get ddayInviteNotFound =>
       _t('유효한 초대 코드를 찾지 못했어요', 'Invite code not found', '有効な招待コードが見つかりません');
   String get ddayInviteExpired =>
       _t('만료된 초대예요', 'This invite has expired', 'この招待は期限切れです');
-  String get ddayInviteOwnCode =>
-      _t('내가 만든 초대에는 참여할 수 없어요', "You can't join your own invite", '自分が作った招待には参加できません');
+  String get ddayInviteOwnCode => _t(
+    '내가 만든 초대에는 참여할 수 없어요',
+    "You can't join your own invite",
+    '自分が作った招待には参加できません',
+  );
   String get ddayInviteInvalidCode =>
       _t('코드는 6자리예요', 'Code must be 6 characters', 'コードは6桁です');
   String get ddayInviteEnterCodeMenu =>
@@ -321,8 +412,12 @@ class AppStrings {
       _t('코드로 입장', 'Enter with code', 'コードで入室');
 
   String get togetherOpenRoom => _t('방 열기', 'Open room', 'ルームを開く');
-  String get togetherCheerTitle => _t('응원 문구', 'Cheer', '応援メッセージ');
-  String get togetherCheerHint => _t('문구를 눌러 수정할 수 있어요. 방마다 하나 · 위젯에 바로 반영돼요', 'Tap the cheer to edit. One per room — syncs to the widget', 'メッセージをタップして編集できます。ルームにつき1つ、ウィジェットにすぐ反映されます');
+  String get togetherCheerTitle => _t('배경 문구', 'Background text', '背景の文字');
+  String get togetherCheerHint => _t(
+    '문구를 눌러 수정할 수 있어요. 방마다 하나 · 위젯에 바로 반영돼요',
+    'Tap the cheer to edit. One per room — syncs to the widget',
+    'メッセージをタップして編集できます。ルームにつき1つ、ウィジェットにすぐ反映されます',
+  );
   String get togetherCheerPlaceholder =>
       _t('예: 오늘도 화이팅!', 'e.g. You got this today!', '例: 今日もがんばって！');
   String get togetherCheerSend => _t('저장', 'Save', '保存');
@@ -330,103 +425,112 @@ class AppStrings {
   String get togetherCheerCancel => _t('취소', 'Cancel', 'キャンセル');
   String get togetherCheerEmpty =>
       _t('탭해서 응원 문구를 적어 보세요', 'Tap to write a cheer', 'タップして応援メッセージを書いてみてください');
-  String get togetherCheerTapHint =>
-      _t('탭해서 수정', 'Tap to edit', 'タップして編集');
-  String get togetherCheerNeedLogin =>
-      _t('응원을 남기려면 Google로 로그인해 주세요', 'Sign in with Google to cheer', '応援を残すにはGoogleでログインしてください');
+  String get togetherCheerTapHint => _t('탭해서 수정', 'Tap to edit', 'タップして編集');
+  String get togetherCheerNeedLogin => _t(
+    '응원을 남기려면 Google로 로그인해 주세요',
+    'Sign in with Google to cheer',
+    '応援を残すにはGoogleでログインしてください',
+  );
   String get togetherCheerFailed =>
       _t('응원을 남기지 못했어요', 'Could not send cheer', '応援を残せませんでした');
   String get togetherCheerOtherAccount => _t(
-        '이 방은 다른 계정에서 만들어졌어요. 방을 만든 계정으로 로그인해 주세요',
-        'This room was made on another account. Sign in with that account',
-        'このルームは別のアカウントで作られました。そのアカウントでログインしてください',
-      );
-  String get togetherCheerPermission => _t('Google 로그인 후 다시 시도해 주세요', 'No permission to cheer. Sign in with Google and try again', 'Googleでログインしてから、もう一度お試しください');
-  String get togetherWidgetPinnedToast => _t('홈 화면 추가 창이 열렸어요. 추가를 눌러 주세요', 'Add-to-home sheet opened — tap Add to place the widget', 'ホーム画面への追加が表示されました。追加をタップしてください');
+    '이 방은 다른 계정에서 만들어졌어요. 방을 만든 계정으로 로그인해 주세요',
+    'This room was made on another account. Sign in with that account',
+    'このルームは別のアカウントで作られました。そのアカウントでログインしてください',
+  );
+  String get togetherCheerPermission => _t(
+    'Google 로그인 후 다시 시도해 주세요',
+    'No permission to cheer. Sign in with Google and try again',
+    'Googleでログインしてから、もう一度お試しください',
+  );
+  String get togetherWidgetPinnedToast => _t(
+    '홈 화면 추가 창이 열렸어요. 추가를 눌러 주세요',
+    'Add-to-home sheet opened — tap Add to place the widget',
+    'ホーム画面への追加が表示されました。追加をタップしてください',
+  );
   String get togetherWidgetOnHomeBody => _t(
-        '홈 화면에 반영했어요.\n홈 화면에 안 보이면 추가를 눌러 주세요.',
-        'Applied to the home screen.\nNot showing? Tap Add.',
-        'ホーム画面に反映しました。\nホームにない場合は追加をタップしてください。',
-      );
+    '홈 화면에 반영했어요.\n홈 화면에 안 보이면 추가를 눌러 주세요.',
+    'Applied to the home screen.\nNot showing? Tap Add.',
+    'ホーム画面に反映しました。\nホームにない場合は追加をタップしてください。',
+  );
+
   /// iPhone (and non-Galaxy Android): no add-to-home button to offer.
   String get togetherWidgetOnHomeShort =>
       _t('홈 화면에 반영했어요.', 'Applied to the home screen.', 'ホーム画面に反映しました。');
   String get togetherWidgetOnHomeAdd => _t('추가', 'Add', '追加');
-  String get togetherWidgetSyncToast => _t('위젯에 수정 내용을 반영했어요!', 'Widget updated!', '変更をウィジェットに反映しました！');
-  String get togetherFriendsLabel => _t('같은 방 친구', 'Friends in room', '同じルームの友だち');
-  String get togetherSoloFriends =>
-      _t('아직 친구가 없어요. 초대해 보세요', 'No friends yet — invite someone', 'まだ友だちがいません。招待してみてください');
+  String get togetherWidgetSyncToast =>
+      _t('위젯에 수정 내용을 반영했어요!', 'Widget updated!', '変更をウィジェットに反映しました！');
+  String get togetherFriendsLabel =>
+      _t('같은 방 친구', 'Friends in room', '同じルームの友だち');
+  String get togetherSoloFriends => _t(
+    '아직 친구가 없어요. 초대해 보세요',
+    'No friends yet — invite someone',
+    'まだ友だちがいません。招待してみてください',
+  );
   String get togetherLatestCheerFallback =>
       _t('응원을 남겨 보세요', 'Leave a cheer', '応援を残してみてください');
   String get safetyReport => _t('신고', 'Report', '通報');
-  String get safetyReportTitle =>
-      _t('신고하기', 'Report', '通報する');
+  String get safetyReportTitle => _t('신고하기', 'Report', '通報する');
   String get safetyReportBody => _t(
-        '불쾌한 내용을 골라 운영자에게 알립니다. 확인한 뒤 내용을 지우거나 이용을 제한합니다.',
-        'Pick what to report. The operator reviews it and can remove it or limit the account.',
-        '不快な内容を選んで運営に知らせます。確認のうえ、削除や利用制限を行います。',
-      );
+    '불쾌한 내용을 골라 운영자에게 알립니다. 확인한 뒤 내용을 지우거나 이용을 제한합니다.',
+    'Pick what to report. The operator reviews it and can remove it or limit the account.',
+    '不快な内容を選んで運営に知らせます。確認のうえ、削除や利用制限を行います。',
+  );
   String get safetyNothingToReport => _t(
-        '이 방에 신고할 수 있는 다른 사람의 글이 없어요.',
-        'There is nothing written by someone else to report here.',
-        'この部屋に通報できる他の人の内容はありません。',
-      );
+    '이 방에 신고할 수 있는 다른 사람의 글이 없어요.',
+    'There is nothing written by someone else to report here.',
+    'この部屋に通報できる他の人の内容はありません。',
+  );
   String get safetyKindCheer => _t('응원 문구', 'Cheer', '応援メッセージ');
   String get safetyKindBubble => _t('말풍선', 'Speech bubble', '吹き出し');
   String get safetyKindNickname => _t('닉네임', 'Nickname', 'ニックネーム');
   String get safetyKindRoom => _t('방 이름', 'Room name', '部屋の名前');
-  String get safetyReasonHarassment =>
-      _t('괴롭힘', 'Harassment', '嫌がらせ');
-  String get safetyReasonSexual =>
-      _t('성적 내용', 'Sexual content', '性的な内容');
+  String get safetyReasonHarassment => _t('괴롭힘', 'Harassment', '嫌がらせ');
+  String get safetyReasonSexual => _t('성적 내용', 'Sexual content', '性的な内容');
   String get safetyReasonSpam => _t('스팸', 'Spam', 'スパム');
   String get safetyReasonOther => _t('기타', 'Other', 'その他');
-  String get safetyNoteHint => _t(
-        '추가로 알릴 내용 (선택)',
-        'Extra details (optional)',
-        '追加で伝えること（任意）',
-      );
+  String get safetyNoteHint =>
+      _t('추가로 알릴 내용 (선택)', 'Extra details (optional)', '追加で伝えること（任意）');
   String get safetyBlockUser =>
       _t('이 사용자 차단', 'Block this person', 'このユーザーをブロック');
   String get safetyBlock => _t('차단', 'Block', 'ブロック');
   String get safetyBlockHint => _t(
-        '차단하면 이 기기에서 그 사람의 문구, 말풍선, 캐릭터가 보이지 않습니다.',
-        'Blocking hides their cheer, speech bubbles and character on this device.',
-        'ブロックすると、この端末ではその人のメッセージ、吹き出し、キャラクターが非表示になります。',
-      );
+    '차단하면 이 기기에서 그 사람의 문구, 말풍선, 캐릭터가 보이지 않습니다.',
+    'Blocking hides their cheer, speech bubbles and character on this device.',
+    'ブロックすると、この端末ではその人のメッセージ、吹き出し、キャラクターが非表示になります。',
+  );
   String get safetySubmit => _t('신고하기', 'Submit report', '通報する');
   String get safetySent => _t(
-        '신고를 접수했어요. 확인 후 조치합니다.',
-        'Report received. We will review it.',
-        '通報を受け付けました。確認して対応します。',
-      );
+    '신고를 접수했어요. 확인 후 조치합니다.',
+    'Report received. We will review it.',
+    '通報を受け付けました。確認して対応します。',
+  );
   String get safetyNeedLogin => _t(
-        '신고하려면 로그인이 필요해요. 잠시 후 다시 시도해 주세요.',
-        'Sign-in is required to report. Please try again.',
-        '通報にはログインが必要です。しばらくしてからもう一度お試しください。',
-      );
+    '신고하려면 로그인이 필요해요. 잠시 후 다시 시도해 주세요.',
+    'Sign-in is required to report. Please try again.',
+    '通報にはログインが必要です。しばらくしてからもう一度お試しください。',
+  );
   String get safetyFailed => _t(
-        '신고를 보내지 못했어요. 잠시 후 다시 시도해 주세요.',
-        'Could not send the report. Please try again.',
-        '通報を送れませんでした。しばらくしてからもう一度お試しください。',
-      );
+    '신고를 보내지 못했어요. 잠시 후 다시 시도해 주세요.',
+    'Could not send the report. Please try again.',
+    '通報を送れませんでした。しばらくしてからもう一度お試しください。',
+  );
   String get safetyCheerHidden => _t(
-        '차단한 사용자의 문구는 숨겼어요',
-        'A blocked person’s cheer is hidden',
-        'ブロックした人のメッセージは非表示です',
-      );
+    '차단한 사용자의 문구는 숨겼어요',
+    'A blocked person’s cheer is hidden',
+    'ブロックした人のメッセージは非表示です',
+  );
   String get safetyNoCheer => _t(
-        '부적절한 문구를 사용한 사용자는 차단할 수 있어요.',
-        'You can block users who posted inappropriate messages.',
-        '不適切なメッセージを使ったユーザーはブロックできます。',
-      );
+    '부적절한 문구를 사용한 사용자는 차단할 수 있어요.',
+    'You can block users who posted inappropriate messages.',
+    '不適切なメッセージを使ったユーザーはブロックできます。',
+  );
   String get safetyOwnCheer => _t(
-        '불쾌한 문구는 신고할 수 있어요.',
-        'You can report an unpleasant message.',
-        '不快なメッセージは通報できます。',
-      );
-  String get safetyBlocked =>
-      _t('차단한 사용자', 'Blocked people', 'ブロックした人');
+    '불쾌한 문구는 신고할 수 있어요.',
+    'You can report an unpleasant message.',
+    '不快なメッセージは通報できます。',
+  );
+  String get safetyBlocked => _t('차단한 사용자', 'Blocked people', 'ブロックした人');
   String get safetyUnblock => _t('차단 해제', 'Unblock', 'ブロック解除');
   String get safetyBlockedDone =>
       _t('이 기기에서 차단했어요', 'Blocked on this device', 'この端末でブロックしました');
@@ -454,51 +558,161 @@ class AppStrings {
   String get settingsTitle => _t('설정', 'Settings', '設定');
   String get characterSection => _t('캐릭터', 'Character', 'キャラクター');
   String get characterTitle => _t('내 캐릭터', 'My character', 'マイキャラクター');
-  String get characterSubtitle => _t('홈과 위젯에 보여줄 캐릭터를 고를 수 있어요', 'Choose the character for home and widget', 'ホームとウィジェットに出すキャラクターを選べます');
+  String get characterSubtitle => _t(
+    '홈과 위젯에 보여줄 캐릭터를 고를 수 있어요',
+    'Choose the character for home and widget',
+    'ホームとウィジェットに出すキャラクターを選べます',
+  );
   String get characterSelectTitle =>
       _t('캐릭터를 골라 주세요', 'Pick your character', 'キャラクターを選んでください');
-  String get characterSelectSubtitle => _t('나중에 설정에서 언제든 바꿀 수 있어요', 'You can change this anytime in Settings', 'あとから設定でいつでも変えられます');
+  String get characterSelectSubtitle => _t(
+    '나중에 설정에서 언제든 바꿀 수 있어요',
+    'You can change this anytime in Settings',
+    'あとから設定でいつでも変えられます',
+  );
   String get characterTapHint => _t('클릭해보세요!', 'Tap here!', 'タップしてみて！');
-  String get dateTapHint =>
-      _t('날짜 탭하면 문구가 바뀌어요!', 'Tap the date to change the quote!', '日付をタップすると文章が変わります！');
+  String get dateTapHint => _t(
+    '날짜 탭하면 문구가 바뀌어요!',
+    'Tap the date to change the quote!',
+    '日付をタップすると文章が変わります！',
+  );
   String get archivePawHint =>
       _t('🐾 누르면 보관함에 담겨요!', '🐾 Tap to save to Archive!', '🐾 タップすると保存に入ります！');
-  String get characterWidgetHint => _t('캐릭터와 말풍선을 위젯으로 내보낼 수 있어요!', 'You can send your character and speech bubble to a widget!', 'キャラクターと吹き出しをウィジェットに書き出せます！');
+  String get characterWidgetHint => _t(
+    '캐릭터와 말풍선을 위젯으로 내보낼 수 있어요!',
+    'You can send your character and speech bubble to a widget!',
+    'キャラクターと吹き出しをウィジェットに書き出せます！',
+  );
   String get characterWidgetStyleTitle =>
       _t('어떤 모양으로 내보낼까요?', 'Which style?', 'どの形で書き出しますか？');
-  String get characterWidgetStyleBubble =>
-      _t('말풍선', 'Speech bubble', '吹き出し');
+  String get characterWidgetStyleBubble => _t('말풍선', 'Speech bubble', '吹き出し');
   String get characterWidgetStyleBubbleNote => _t(
-        '캐릭터 옆 말풍선에 문구가 들어가요',
-        'The quote sits in a bubble beside the character',
-        'キャラクターの横の吹き出しに言葉が入ります',
-      );
-  String get characterWidgetStyleClassic =>
-      _t('기본 칸', 'Classic box', '基本の枠');
-  String get characterWidgetStyleClassicNote => _t(
-        '지금까지의 네모 칸 모양이에요',
-        'The square box used until now',
-        'これまでの四角い枠です',
-      );
+    '캐릭터 옆 말풍선에 문구가 들어가요',
+    'The quote sits in a bubble beside the character',
+    'キャラクターの横の吹き出しに言葉が入ります',
+  );
+  String get characterWidgetStyleClassic => _t('기본 칸', 'Classic box', '基本の枠');
+  String get characterWidgetStyleClassicNote =>
+      _t('지금까지의 네모 칸 모양이에요', 'The square box used until now', 'これまでの四角い枠です');
   String get characterWidgetHintExport => _t('내보내기', 'Export', '書き出す');
   String get characterWidgetHintClose => _t('닫기', 'Close', '閉じる');
-  String get iosWidgetGuideTitle => _t('홈 화면에 위젯 추가하기', 'Add the widget to your Home Screen', 'ホーム画面にウィジェットを追加');
-  String get iosWidgetGuideSubtitle => _t('홈 화면에서 직접 추가해야 해요. 한 번만 하면 이후엔 자동으로 바뀌어요.', 'On iPhone you add it from the Home Screen once. After that it updates by itself.', 'iPhoneはホーム画面から一度追加すれば、その後は自動で更新されます。');
-  String get iosWidgetGuideStep1 => _t('홈 화면 빈 곳을 앱이 흔들릴 때까지 꾹 눌러요', 'Touch and hold an empty spot on the Home Screen until the apps jiggle', 'ホーム画面の空いている所を、アプリが揺れるまで長押しします');
+  String get iosWidgetGuideTitle => _t(
+    '홈 화면에 위젯 추가하기',
+    'Add the widget to your Home Screen',
+    'ホーム画面にウィジェットを追加',
+  );
+  String get iosWidgetGuideSubtitle => _t(
+    '홈 화면에서 직접 추가해야 해요. 한 번만 하면 이후엔 자동으로 바뀌어요.',
+    'On iPhone you add it from the Home Screen once. After that it updates by itself.',
+    'iPhoneはホーム画面から一度追加すれば、その後は自動で更新されます。',
+  );
+  String get iosWidgetGuideStep1 => _t(
+    '홈 화면 빈 곳을 앱이 흔들릴 때까지 꾹 눌러요',
+    'Touch and hold an empty spot on the Home Screen until the apps jiggle',
+    'ホーム画面の空いている所を、アプリが揺れるまで長押しします',
+  );
   String get iosWidgetGuideStep2 => _t(
-        '왼쪽 상단 [편집] → [위젯 추가]를 눌러요',
-        'Tap Edit at the top left, then Add Widget',
-        '左上の［編集］→［ウィジェットを追加］をタップします',
-      );
-  String iosWidgetGuideStep3(String name) => _t("'Dearly'를 검색해 '$name' 위젯을 고르고 [위젯 추가]를 눌러요", "Search for Dearly, choose the '$name' widget, then tap Add Widget", "「Dearly」を検索して「$name」ウィジェットを選び、［ウィジェットを追加］をタップします");
+    '왼쪽 상단 [편집] → [위젯 추가]를 눌러요',
+    'Tap Edit at the top left, then Add Widget',
+    '左上の［編集］→［ウィジェットを追加］をタップします',
+  );
+  String iosWidgetGuideStep3(String name) => _t(
+    "'Dearly'를 검색해 '$name' 위젯을 고르고 [위젯 추가]를 눌러요",
+    "Search for Dearly, choose the '$name' widget, then tap Add Widget",
+    "「Dearly」を検索して「$name」ウィジェットを選び、［ウィジェットを追加］をタップします",
+  );
+
   /// iPhone widget gallery names (keep in step with ios/DearlyWidgets).
   String get iosGalleryTogetherName =>
-      _t('함께 · 방 1', 'Together · Room 1', '一緒 · ルーム1');
+      _t('같이', 'Together', '一緒');
   String get iosGalleryDailyWordName =>
       _t('오늘의 말', 'Word of the day', '今日のことば');
   String get iosWidgetGuideOk => _t('알겠어요', 'Got it', 'わかりました');
-  String get characterWidgetHintClosed => _t('홈 화면을 길게 눌러 위젯을 추가할 수 있어요!', 'Long-press the home screen to add the widget!', 'ホーム画面を長押ししてウィジェットを追加できます！');
-  String get characterSelectConfirm => _t('이 캐릭터로 시작', 'Start with this', 'このキャラクターで始める');
+
+  // Settings › 위젯 설정 방법 (iPhone, step-by-step screenshots).
+  String get widgetHowToSection =>
+      _t('위젯 설정 방법', 'How to add the widget', 'ウィジェットの設定方法');
+  String get widgetHowToTitle =>
+      _t('위젯 설정 방법', 'How to add the widget', 'ウィジェットの設定方法');
+  String get widgetHowToSubtitle => _t(
+    '아이폰 홈 화면에 위젯을 추가하는 방법',
+    'Put the widget on your iPhone Home Screen',
+    'iPhoneのホーム画面にウィジェットを追加する方法',
+  );
+  String get widgetGuideNudgeTitle =>
+      _t('위젯 설정 방법', 'Set up the widget', 'ウィジェットの設定方法');
+  String get widgetGuideNudgeBody => _t(
+        '아이폰은 홈 화면에서 위젯을 직접 추가해야 해요.\n설정 › 위젯 설정 방법에서 사진으로 한 단계씩 볼 수 있어요.',
+        'On iPhone you add the widget from the Home Screen yourself.\nSee each step with pictures in Settings › How to add the widget.',
+        'iPhoneではホーム画面からウィジェットを追加します。\n設定 › ウィジェットの設定方法で、写真付きで手順を確認できます。',
+      );
+  String get widgetGuideNudgeOpen => _t('보러 가기', 'Show me', '見てみる');
+  String get widgetGuideNudgeLater => _t('나중에', 'Later', 'あとで');
+  String get widgetAddSection =>
+      _t('위젯 추가 방법', 'Add a widget', 'ウィジェットを追加する');
+  String get widgetChangeSection =>
+      _t('위젯 교체 방법', 'Change the room on a widget', 'ウィジェットのルームを変える');
+  List<String> get widgetAddSteps => [
+    _t(
+      '홈 화면의 빈 곳을 앱 아이콘이 흔들릴 때까지 꾹 눌러요.',
+      'Touch and hold an empty spot on the Home Screen until the apps jiggle.',
+      'ホーム画面の空いている所を、アプリが揺れるまで長押しします。',
+    ),
+    _t(
+      '왼쪽 위 버튼을 누르고 [위젯 추가]를 골라요.',
+      'Tap the button at the top left, then choose Add Widget.',
+      '左上のボタンを押して［ウィジェットを追加］を選びます。',
+    ),
+    _t(
+      '목록을 내려 [Dearly]를 찾아 눌러요. 위에서 검색해도 돼요.',
+      'Scroll down and tap Dearly. You can also search for it at the top.',
+      'リストを下へスクロールして［Dearly］をタップします。上で検索してもOKです。',
+    ),
+    _t(
+      '옆으로 넘기면서 원하는 위젯을 추가해요!',
+      'Swipe sideways and add the widget you want!',
+      '横にスワイプして、好きなウィジェットを追加しましょう！',
+    ),
+    _t(
+      '위젯이 홈 화면에 생겼어요. 끌어서 원하는 곳으로 옮길 수 있어요.',
+      'The widget is on your Home Screen. Drag it wherever you like.',
+      'ウィジェットがホーム画面に追加されました。ドラッグして好きな場所へ動かせます。',
+    ),
+    _t(
+      '오른쪽 위 [완료]를 누르면 끝! 앱에서 꾸민 대로 바로 바뀌어요.',
+      'Tap Done at the top right. It follows what you decorate in the app.',
+      '右上の［完了］を押せば完了！アプリで飾った通りにすぐ変わります。',
+    ),
+  ];
+  String get widgetAddRoomsHint => _t(
+    '아직 방이 없는 칸은 "Dearly에서 방을 만들면 여기에 보여요"라고 나와요.',
+    'A slot without a room yet says "Make a room in Dearly to show it here".',
+    'まだルームがない枠には「Dearlyでルームを作るとここに表示されます」と出ます。',
+  );
+  List<String> get widgetChangeSteps => [
+    _t(
+      '홈 화면의 Dearly 위젯을 꾹 눌러 [위젯 편집]을 골라요.',
+      'Touch and hold the Dearly widget and choose Edit Widget.',
+      'ホーム画面のDearlyウィジェットを長押しして［ウィジェットを編集］を選びます。',
+    ),
+    _t(
+      '[방] 오른쪽을 눌러요.',
+      'Tap the value next to Room.',
+      '［ルーム］の右側をタップします。',
+    ),
+    _t(
+      '보여 줄 방을 고르면 위젯이 그 방으로 바뀌어요.',
+      'Pick the room to show and the widget switches to it.',
+      '表示するルームを選ぶと、ウィジェットがそのルームに変わります。',
+    ),
+  ];
+  String get characterWidgetHintClosed => _t(
+    '홈 화면을 길게 눌러 위젯을 추가할 수 있어요!',
+    'Long-press the home screen to add the widget!',
+    'ホーム画面を長押ししてウィジェットを追加できます！',
+  );
+  String get characterSelectConfirm =>
+      _t('이 캐릭터로 시작', 'Start with this', 'このキャラクターで始める');
   String get characterChange => _t('캐릭터 변경', 'Change character', 'キャラクターを変更');
   String get shopTitle => _t('상점', 'Shop', 'ショップ');
   String get characterSettingsTitle =>
@@ -508,22 +722,22 @@ class AppStrings {
   String get shopGroupMale => _t('남', 'Men', '男');
   String get shopGroupSpecial => _t('스페셜', 'Special', 'スペシャル');
   String get shareEventTitle => _t(
-        '방을 만들고 친구를 3명 초대하면 캐릭터가 열려요!',
-        'Make a room and invite 3 friends to unlock this character!',
-        'ルームを作って友だちを3人招待するとキャラクターが開放されます！',
-      );
+    '방을 만들고 친구를 3명 초대하면 캐릭터가 열려요!',
+    'Make a room and invite 3 friends to unlock this character!',
+    'ルームを作って友だちを3人招待するとキャラクターが開放されます！',
+  );
   String get shareEventLocked => _t(
-        '같이 탭에서 방을 만들고 초대코드를 3번 보내면 열려요.',
-        'Opens after you send an invite code 3 times from a Together room.',
-        '一緒タブで部屋を作り、招待コードを3回送ると開放されます。',
-      );
+    '같이 탭에서 방을 만들고 초대코드를 3번 보내면 열려요.',
+    'Opens after you send an invite code 3 times from a Together room.',
+    '一緒タブで部屋を作り、招待コードを3回送ると開放されます。',
+  );
   String get shareEventOpenedTitle =>
       _t('새 캐릭터가 열렸어요!', 'New character unlocked!', '新しいキャラクターが開放されました！');
   String get shareEventOpenedBody => _t(
-        '초대해줘서 고마워요!\n캐릭터 상점의 스페셜 탭에서 고를 수 있어요.',
-        'Thanks for inviting!\nPick it in the Special tab of the character shop.',
-        '招待してくれてありがとう！\nキャラクターショップのスペシャルタブで選べます。',
-      );
+    '초대해줘서 고마워요!\n캐릭터 상점의 스페셜 탭에서 고를 수 있어요.',
+    'Thanks for inviting!\nPick it in the Special tab of the character shop.',
+    '招待してくれてありがとう！\nキャラクターショップのスペシャルタブで選べます。',
+  );
   String get shareEventSection => _t('이벤트', 'Event', 'イベント');
   String characterPackName(String packId) {
     switch (packId) {
@@ -535,28 +749,55 @@ class AppStrings {
         return packId;
     }
   }
+
   String get shopPackNew => 'NEW';
   String get shopPackOwned => _t('보유 중', 'Owned', '所持中');
-  String shopPackBuy(String price) => _t('$price 구매', 'Buy $price', '$price で購入');
-  String shopPackBuyTitle(String name) => _t('$name 팩', '$name pack', '$name パック');
+  String shopPackBuy(String price) =>
+      _t('$price 구매', 'Buy $price', '$price で購入');
+  String shopPackBuyTitle(String name) =>
+      _t('$name 팩', '$name pack', '$name パック');
   String shopPackBuyBody(int count, String price) => _t(
-        '캐릭터 $count개가 들어 있는 팩이에요. $price에 한 번 구매하면 구독과 상관없이 계속 쓸 수 있어요.',
-        'A pack of $count characters. Buy once for $price and keep them, with or without a subscription.',
-        'キャラクター$count体のパックです。$priceで一度購入すれば、登録に関係なくずっと使えます。',
-      );
-  String shopPackBought(String name) => _t('$name 팩을 열었어요!', '$name pack unlocked!', '$name パックを開放しました！');
+    '캐릭터 $count개가 들어 있는 팩이에요. $price에 한 번 구매하면 구독과 상관없이 계속 쓸 수 있어요.',
+    'A pack of $count characters. Buy once for $price and keep them, with or without a subscription.',
+    'キャラクター$count体のパックです。$priceで一度購入すれば、登録に関係なくずっと使えます。',
+  );
+  String shopPackBought(String name) =>
+      _t('$name 팩을 열었어요!', '$name pack unlocked!', '$name パックを開放しました！');
   String get shopMaleEmpty =>
       _t('남자 캐릭터를 준비 중이에요', 'Male characters are on the way', '男性キャラクターは準備中です');
-  String get shopAdUnlock => _t('캐릭터 소유하기', 'Get this character', 'キャラクターを手に入れる');
-  String get shopAdUnlockBody => _t('영상을 시청하고 새로운 캐릭터를 받아보세요!', 'Watch a video and get a new character!', '動画を見て、新しいキャラクターを受け取ってみてください！');
+  String get shopAdUnlock =>
+      _t('캐릭터 소유하기', 'Get this character', 'キャラクターを手に入れる');
+  String get shopAdUnlockBody => _t(
+    '영상을 시청하고 새로운 캐릭터를 받아보세요!',
+    'Watch a video and get a new character!',
+    '動画を見て、新しいキャラクターを受け取ってみてください！',
+  );
   String get shopAdConfirm => _t('확인', 'OK', '確認');
-  String shopAdLeft(int n) => _t('광고로 열 수 있는 캐릭터가 $n개 남았어요.', '$n characters left to unlock with ads.', '広告で開放できるキャラクターはあと$n体です。');
-  String get shopNeedPremium => _t('구독하면 기본 캐릭터가 모두 열려요. (스페셜 제외)', 'Subscribe to unlock every standard character (Special packs not included).', '登録すると基本キャラクターがすべて開放されます。（スペシャルは除く）');
-  String get shopAdFailed => _t('광고를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.', 'Could not load the ad. Try again shortly.', '広告を読み込めませんでした。しばらくしてからもう一度お試しください。');
-  String get shopUnlocked => _t('캐릭터를 열었어요', 'Character unlocked', 'キャラクターを開放しました');
+  String shopAdLeft(int n) => _t(
+    '광고로 열 수 있는 캐릭터가 $n개 남았어요.',
+    '$n characters left to unlock with ads.',
+    '広告で開放できるキャラクターはあと$n体です。',
+  );
+  String get shopNeedPremium => _t(
+    '구독하면 기본 캐릭터가 모두 열려요. (스페셜 제외)',
+    'Subscribe to unlock every standard character (Special packs not included).',
+    '登録すると基本キャラクターがすべて開放されます。（スペシャルは除く）',
+  );
+  String get shopAdFailed => _t(
+    '광고를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',
+    'Could not load the ad. Try again shortly.',
+    '広告を読み込めませんでした。しばらくしてからもう一度お試しください。',
+  );
+  String get shopUnlocked =>
+      _t('캐릭터를 열었어요', 'Character unlocked', 'キャラクターを開放しました');
   String get shopSubscribe => _t('구독하기', 'Subscribe', '登録する');
-  String get friendCharacterTitle => _t('친구 캐릭터', 'Friend character', '友だちキャラクター');
-  String get friendCharacterSubtitle => _t('켜면 같은 방에 들어와요. 서로 고친 위젯이 양쪽 폰에 반영돼요', 'Turn on to join the same room. Edits show on both phones', 'オンにすると同じルームに入ります。お互いの編集が両方のスマホに反映されます');
+  String get friendCharacterTitle =>
+      _t('친구 캐릭터', 'Friend character', '友だちキャラクター');
+  String get friendCharacterSubtitle => _t(
+    '켜면 같은 방에 들어와요. 서로 고친 위젯이 양쪽 폰에 반영돼요',
+    'Turn on to join the same room. Edits show on both phones',
+    'オンにすると同じルームに入ります。お互いの編集が両方のスマホに反映されます',
+  );
   String get friendCharacterOnToast =>
       _t('같은 방에 들어왔어요', 'Joined the shared room', '同じルームに入りました');
   String get friendCharacterOffToast =>
@@ -575,7 +816,11 @@ class AppStrings {
 
   String get styleSection => _t('화면 스타일', 'Visual style', '画面スタイル');
   String get styleTitle => _t('앱 스타일', 'App style', 'アプリスタイル');
-  String get styleSubtitle => _t('픽셀 또는 클린 스타일을 선택할 수 있어요', 'Choose pixel or clean style', 'ピクセルまたはクリーンのスタイルを選べます');
+  String get styleSubtitle => _t(
+    '픽셀 또는 클린 스타일을 선택할 수 있어요',
+    'Choose pixel or clean style',
+    'ピクセルまたはクリーンのスタイルを選べます',
+  );
   String styleName(String id) {
     switch (id) {
       case 'clean':
@@ -591,31 +836,38 @@ class AppStrings {
 
   String get themeSection => _t('테마 색상', 'Theme color', 'テーマカラー');
   String get themeTitle => _t('앱 테마', 'App theme', 'アプリテーマ');
-  String get themeSubtitle => _t('포인트 색을 바꿔 분위기를 바꿔보세요', 'Change the accent color of the app', 'アクセントカラーを変えて雰囲気を変えてみましょう');
+  String get themeSubtitle => _t(
+    '포인트 색을 바꿔 분위기를 바꿔보세요',
+    'Change the accent color of the app',
+    'アクセントカラーを変えて雰囲気を変えてみましょう',
+  );
   String themeChanged(String name) =>
       _t('$name 테마로 변경했어요', 'Theme changed to $name', '$nameテーマに変更しました');
 
   String get fontSection => _t('글자 크기', 'Font size', '文字サイズ');
   String get fontTitle => _t('본문 글자 크기', 'Body text size', '本文の文字サイズ');
-  String get fontSubtitle =>
-      _t('읽기 편한 크기로 조절할 수 있어요', 'Choose a comfortable reading size', '読みやすいサイズに調節できます');
+  String get fontSubtitle => _t(
+    '읽기 편한 크기로 조절할 수 있어요',
+    'Choose a comfortable reading size',
+    '読みやすいサイズに調節できます',
+  );
   String fontChanged(String name) =>
       _t('글자 크기: $name', 'Font size: $name', '文字サイズ: $name');
 
   String get accountSection => _t('계정', 'Account', 'アカウント');
   String get cloudConsentTitle => _t(
-        '친구와 위젯을 공유하려면 로그인이 필요해요!',
-        'Sign in to share a widget with a friend',
-        '友だちとウィジェットを共有するにはログインが必要です',
-      );
+    '친구와 위젯을 공유하려면 로그인이 필요해요!',
+    'Sign in to share a widget with a friend',
+    '友だちとウィジェットを共有するにはログインが必要です',
+  );
   String get cloudConsentBody => _t(
-        '로그인하면 이름, 이메일 등 계정 정보가 안전하게 저장돼요.\n\n'
-            '로그인하지 않으면 친구와 위젯을 공유할 수 없어요.',
-        'When you sign in, your name, email, and other account details are stored securely.\n\n'
-            'Without signing in, you can’t share a widget with a friend.',
-        'ログインすると、名前やメールなどのアカウント情報が安全に保存されます。\n\n'
-            'ログインしないと、友だちとウィジェットを共有できません。',
-      );
+    '로그인하면 이름, 이메일 등 계정 정보가 안전하게 저장돼요.\n\n'
+        '로그인하지 않으면 친구와 위젯을 공유할 수 없어요.',
+    'When you sign in, your name, email, and other account details are stored securely.\n\n'
+        'Without signing in, you can’t share a widget with a friend.',
+    'ログインすると、名前やメールなどのアカウント情報が安全に保存されます。\n\n'
+        'ログインしないと、友だちとウィジェットを共有できません。',
+  );
   String get cloudConsentAccept => _t('동의', 'Agree', '同意');
   String get cloudConsentDecline => _t('취소', 'Cancel', 'キャンセル');
   String get nicknameTitle => _t('닉네임', 'Nickname', 'ニックネーム');
@@ -628,11 +880,16 @@ class AppStrings {
       _t('탭해서 닉네임 수정', 'Tap to edit nickname', 'タップしてニックネームを編集');
   String get nicknameRequired =>
       _t('닉네임을 입력해 주세요', 'Enter a nickname', 'ニックネームを入力してください');
-  String get nicknameSaved => _t('닉네임을 저장했어요', 'Nickname saved', 'ニックネームを保存しました');
+  String get nicknameSaved =>
+      _t('닉네임을 저장했어요', 'Nickname saved', 'ニックネームを保存しました');
   String get nicknameUpdated => _t('수정되었습니다.', 'Updated.', '変更しました。');
   String get googleLoginTitle =>
       _t('Google 계정으로 로그인', 'Sign in with Google', 'Googleアカウントでログイン');
-  String get googleLoginSubtitle => _t('로그인하면 데이터를 동기화할 수 있어요', 'Sign in to sync your data', 'ログインするとデータを同期できます');
+  String get googleLoginSubtitle => _t(
+    '로그인하면 데이터를 동기화할 수 있어요',
+    'Sign in to sync your data',
+    'ログインするとデータを同期できます',
+  );
   String get googleLoggedInTitle =>
       _t('Google 계정', 'Google account', 'Googleアカウント');
   String googleLoggedInSubtitle(String email) =>
@@ -644,15 +901,26 @@ class AppStrings {
   String get googleLoginSuccess =>
       _t('Google 로그인 완료', 'Signed in with Google', 'Googleログインが完了しました');
   String get googleLoggingIn => _t('로그인 중', 'Signing in', 'ログイン中');
-  String get googleLogoutSuccess =>
-      _t('로그아웃했어요', 'Signed out', 'ログアウトしました');
+  String get googleLogoutSuccess => _t('로그아웃했어요', 'Signed out', 'ログアウトしました');
   String get googleLoginCanceled =>
       _t('로그인을 취소했어요', 'Sign-in canceled', 'ログインをキャンセルしました');
-  String get googleLoginConfigError => _t('지금은 Google 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요', 'Google sign-in is unavailable right now. Please try again later', '現在Googleログインを利用できません。しばらくしてからもう一度お試しください');
-  String get googleLoginConfigMissing => _t('지금은 Google 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요', 'Google sign-in is unavailable right now. Please try again later', '現在Googleログインを利用できません。しばらくしてからもう一度お試しください');
+  String get googleLoginConfigError => _t(
+    '지금은 Google 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요',
+    'Google sign-in is unavailable right now. Please try again later',
+    '現在Googleログインを利用できません。しばらくしてからもう一度お試しください',
+  );
+  String get googleLoginConfigMissing => _t(
+    '지금은 Google 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요',
+    'Google sign-in is unavailable right now. Please try again later',
+    '現在Googleログインを利用できません。しばらくしてからもう一度お試しください',
+  );
   String get googleLoginFailed =>
       _t('Google 로그인에 실패했어요', 'Google sign-in failed', 'Googleログインに失敗しました');
-  String googleLoginFailedDetail(String detail) => _t('Google 로그인 실패: $detail', 'Google sign-in failed: $detail', 'Googleログイン失敗: $detail');
+  String googleLoginFailedDetail(String detail) => _t(
+    'Google 로그인 실패: $detail',
+    'Google sign-in failed: $detail',
+    'Googleログイン失敗: $detail',
+  );
   String get loginMethodTitle =>
       _t('로그인 방법 선택', 'Choose how to sign in', 'ログイン方法を選択');
   String get appleLoginTitle =>
@@ -662,113 +930,152 @@ class AppStrings {
   String get purchaseLoginTitle =>
       _t('로그인하고 구독할까요?', 'Sign in before subscribing?', 'ログインしてから購読しますか？');
   String get purchaseLoginBody => _t(
-        '로그인하면 앱을 다시 설치하거나 기기를 바꿔도 구독을 이어서 쓸 수 있어요.',
-        'Signing in keeps your plan when you reinstall the app or change phones.',
-        'ログインすると、再インストールや機種変更後も購読を引き継げます。',
-      );
+    '로그인하면 앱을 다시 설치하거나 기기를 바꿔도 구독을 이어서 쓸 수 있어요.',
+    'Signing in keeps your plan when you reinstall the app or change phones.',
+    'ログインすると、再インストールや機種変更後も購読を引き継げます。',
+  );
   String get purchaseLoginSkip =>
       _t('로그인 없이 계속', 'Continue without signing in', 'ログインせずに続ける');
   String get appleLoginSuccess =>
       _t('Apple 로그인 완료', 'Signed in with Apple', 'Appleログインが完了しました');
-  String get appleLoginConfigError => _t('지금은 Apple 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요', 'Sign in with Apple is unavailable right now. Please try again later', '現在Appleでサインインを利用できません。しばらくしてからもう一度お試しください');
+  String get appleLoginConfigError => _t(
+    '지금은 Apple 로그인을 할 수 없어요. 잠시 후 다시 시도해 주세요',
+    'Sign in with Apple is unavailable right now. Please try again later',
+    '現在Appleでサインインを利用できません。しばらくしてからもう一度お試しください',
+  );
   String get appleLoginFailed =>
       _t('Apple 로그인에 실패했어요', 'Apple sign-in failed', 'Appleログインに失敗しました');
-  String appleLoginFailedDetail(String detail) => _t('Apple 로그인 실패: $detail', 'Apple sign-in failed: $detail', 'Appleログイン失敗: $detail');
+  String appleLoginFailedDetail(String detail) => _t(
+    'Apple 로그인 실패: $detail',
+    'Apple sign-in failed: $detail',
+    'Appleログイン失敗: $detail',
+  );
 
   String get notificationSection => _t('알림', 'Notifications', '通知');
   String get morningFortuneTitle =>
       _t('아침 오늘의 운세', 'Morning fortune', '朝の今日の運勢');
   String get morningFortuneSubtitle => _t(
-        '매일 아침에 오늘의 운세를 보내드려요',
-        'Today\'s fortune every morning',
-        '毎朝、今日の運勢をお届けします',
-      );
+    '매일 아침에 오늘의 운세를 보내드려요',
+    'Today\'s fortune every morning',
+    '毎朝、今日の運勢をお届けします',
+  );
   String get eveningCheerTitle => _t('저녁 응원 문구', 'Evening cheer', '夜の応援メッセージ');
-  String get eveningCheerSubtitle => _t('매일 저녁에 응원 문구를 보내드려요', 'A cheer message every day at 7 PM', '毎日19時に応援メッセージをお届けします');
+  String get eveningCheerSubtitle => _t(
+    '매일 저녁에 응원 문구를 보내드려요',
+    'A cheer message every day at 7 PM',
+    '毎日19時に応援メッセージをお届けします',
+  );
   String get notificationEnabledToast =>
       _t('알림을 켰어요', 'Notifications turned on', '通知をオンにしました');
   String get notificationDisabledToast =>
       _t('알림을 껐어요', 'Notifications turned off', '通知をオフにしました');
   String get languageSection => _t('앱 언어', 'App language', 'アプリの言語');
   String get languageTitle => _t('앱 언어', 'App language', 'アプリの言語');
-  String get languageSubtitle =>
-      _t('원하는 언어로 앱을 사용할 수 있어요', 'Choose Korean, English, or Japanese', '好きな言語でアプリを使えます');
+  String get languageSubtitle => _t(
+    '원하는 언어로 앱을 사용할 수 있어요',
+    'Choose Korean, English, or Japanese',
+    '好きな言語でアプリを使えます',
+  );
   String languageChanged(String name) =>
       _t('언어: $name', 'Language: $name', '言語: $name');
 
   String get subscriptionSection => _t('구독 관리', 'Subscription', '登録の管理');
   String get premiumTitle => _t('프리미엄 구독', 'Premium', 'プレミアム登録');
-  String get premiumSubtitle =>
-      _t('광고 없이 모든 기능을 이용하세요', 'Enjoy all features without ads', '広告なしですべての機能を利用できます');
+  String get premiumSubtitle => _t(
+    '광고 없이 모든 기능을 이용하세요',
+    'Enjoy all features without ads',
+    '広告なしですべての機能を利用できます',
+  );
   String get viewPremium => _t('구독하기', 'Subscribe', '登録する');
   String get premiumSubscribed => _t('구독 중', 'Subscribed', '登録中');
-  String get subscribeProcessing => _t(
-        '구독을 확인하고 있어요…',
-        'Confirming your subscription…',
-        '購読を確認しています…',
-      );
+  String get subscribeProcessing =>
+      _t('구독을 확인하고 있어요…', 'Confirming your subscription…', '購読を確認しています…');
   String get subscribeProcessingNote => _t(
-        '몇 초 정도 걸려요. 창을 닫지 말아 주세요.',
-        'This takes a few seconds. Please keep the app open.',
-        '数秒かかります。アプリを閉じないでください。',
-      );
+    '몇 초 정도 걸려요. 창을 닫지 말아 주세요.',
+    'This takes a few seconds. Please keep the app open.',
+    '数秒かかります。アプリを閉じないでください。',
+  );
   String get subscribeDoneTitle =>
       _t('프리미엄이 열렸어요! 🎉', 'Premium is on! 🎉', 'プレミアムが開放されました！🎉');
   String get subscribeDoneBody => _t(
-        '모든 명언 카테고리, 위젯 꾸미기, 기본 캐릭터가 열렸고 배너 광고가 사라져요.',
-        'Every quote category, widget decorating and the standard characters are open, and banner ads are gone.',
-        'すべての名言カテゴリー、ウィジェット装飾、基本キャラクターが開放され、バナー広告が消えます。',
-      );
+    '모든 명언 카테고리, 위젯 꾸미기, 기본 캐릭터가 열렸고 배너 광고가 사라져요.',
+    'Every quote category, widget decorating and the standard characters are open, and banner ads are gone.',
+    'すべての名言カテゴリー、ウィジェット装飾、基本キャラクターが開放され、バナー広告が消えます。',
+  );
   String get subscribeLaterTitle =>
       _t('결제가 완료됐어요', 'Payment complete', '決済が完了しました');
   String get subscribeLaterBody => _t(
-        '구독 확인에 조금 더 걸리고 있어요. 확인이 끝나면 자동으로 열리고 알려 드릴게요.',
-        'Confirming the subscription is taking a little longer. It opens automatically and we will let you know.',
-        '購読の確認に少し時間がかかっています。確認が終わると自動で開放し、お知らせします。',
-      );
+    '구독 확인에 조금 더 걸리고 있어요. 확인이 끝나면 자동으로 열리고 알려 드릴게요.',
+    'Confirming the subscription is taking a little longer. It opens automatically and we will let you know.',
+    '購読の確認に少し時間がかかっています。確認が終わると自動で開放し、お知らせします。',
+  );
   String get subscribePendingTitle =>
       _t('결제 승인을 기다리고 있어요', 'Waiting for payment approval', '決済の承認を待っています');
   String get subscribePendingBody => _t(
-        '결제 수단의 승인이 끝나면 자동으로 프리미엄이 열려요.',
-        'Premium opens automatically once your payment method approves it.',
-        'お支払い方法の承認が終わると、自動でプレミアムが開放されます。',
-      );
+    '결제 수단의 승인이 끝나면 자동으로 프리미엄이 열려요.',
+    'Premium opens automatically once your payment method approves it.',
+    'お支払い方法の承認が終わると、自動でプレミアムが開放されます。',
+  );
   String billingError(String code) {
     switch (code) {
       case 'missing_key':
-        return _t('지금은 결제를 사용할 수 없어요. 잠시 후 다시 시도해 주세요', 'Purchases are unavailable right now. Please try again later', '現在決済を利用できません。しばらくしてからもう一度お試しください');
+        return _t(
+          '지금은 결제를 사용할 수 없어요. 잠시 후 다시 시도해 주세요',
+          'Purchases are unavailable right now. Please try again later',
+          '現在決済を利用できません。しばらくしてからもう一度お試しください',
+        );
       case 'unavailable':
         return defaultTargetPlatform == TargetPlatform.iOS
-            ? _t('App Store 결제를 사용할 수 없어요', 'App Store payments are unavailable', 'App Storeの決済を利用できません')
-            : _t('Play 스토어 결제를 사용할 수 없어요', 'Play Store billing is unavailable', 'Playストアの決済を利用できません');
+            ? _t(
+                'App Store 결제를 사용할 수 없어요',
+                'App Store payments are unavailable',
+                'App Storeの決済を利用できません',
+              )
+            : _t(
+                'Play 스토어 결제를 사용할 수 없어요',
+                'Play Store billing is unavailable',
+                'Playストアの決済を利用できません',
+              );
       case 'restore_none':
         return _t('복원할 구독이 없어요', 'No subscription to restore', '復元できる購読がありません');
       case 'not_found':
-        return _t('상품 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요', 'Could not load the product. Please try again later', '商品情報を読み込めませんでした。しばらくしてからもう一度お試しください');
+        return _t(
+          '상품 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요',
+          'Could not load the product. Please try again later',
+          '商品情報を読み込めませんでした。しばらくしてからもう一度お試しください',
+        );
       default:
-        return _t('구독을 시작하지 못했어요', 'Could not start the subscription', '登録を開始できませんでした');
+        return _t(
+          '구독을 시작하지 못했어요',
+          'Could not start the subscription',
+          '登録を開始できませんでした',
+        );
     }
   }
-  String get restorePurchasesTitle =>
-      _t('구매 복원', 'Restore purchases', '購入を復元');
+
+  String get restorePurchasesTitle => _t('구매 복원', 'Restore purchases', '購入を復元');
   String get restorePurchasesSubtitle => _t(
-        '이전에 구독했다면 다시 불러와요',
-        'Bring back a plan you already bought',
-        '以前の購読を呼び戻します',
-      );
+    '이전에 구독했다면 다시 불러와요',
+    'Bring back a plan you already bought',
+    '以前の購読を呼び戻します',
+  );
   String get restorePurchasesDone =>
       _t('구독을 복원했어요', 'Subscription restored', '購読を復元しました');
   String get premiumToast => _t('프리미엄 보기', 'View Premium', 'プレミアムを見る');
-  String get premiumLockedTitle =>
-      _t('프리미엄 전용', 'Premium only', 'プレミアム限定');
-  String get premiumLockedBody => _t('이 카테고리는 프리미엄 회원만 볼 수 있어요.', 'This category is for premium members.', 'このカテゴリーはプレミアム会員だけが見られます。');
+  String get premiumLockedTitle => _t('프리미엄 전용', 'Premium only', 'プレミアム限定');
+  String get premiumLockedBody => _t(
+    '이 카테고리는 프리미엄 회원만 볼 수 있어요.',
+    'This category is for premium members.',
+    'このカテゴリーはプレミアム会員だけが見られます。',
+  );
   String get premiumLockedDecorateBody => _t(
-        '구독하면 더 많은 배경과 글꼴을 쓸 수 있어요.',
-        'Subscribe to unlock more backgrounds and fonts.',
-        '登録すると、さらに多くの背景とフォントが使えます。',
-      );
+    '구독하면 더 많은 배경과 글꼴을 쓸 수 있어요.',
+    'Subscribe to unlock more backgrounds and fonts.',
+    '登録すると、さらに多くの背景とフォントが使えます。',
+  );
   String get premiumLockedDismiss => _t('닫기', 'Close', '閉じる');
   String get premiumLockedCta => _t('월 구독하기', 'Subscribe monthly', '月額で登録');
+
   /// Two per row in Korean, one per line in English and Japanese. Matches
   /// the code: categories and decorating
   /// (membershipController.hasPremiumContent), standard characters
@@ -776,136 +1083,144 @@ class AppStrings {
   /// "standard" / "基本": keep that word) and
   /// no banner (main.dart showAd).
   List<String> get subscriptionBenefits => [
-        _t('명언 전체 카테고리 해제', 'Unlock all quote categories', '名言の全カテゴリーを解放'),
-        _t('기본 캐릭터 전체 해제', 'Unlock all standard characters', '基本キャラクターをすべて解放'),
-        _t('위젯 꾸미기 전체 기능', 'Every widget decorating feature', 'ウィジェット装飾の全機能'),
-        _t('배너 광고 제거', 'No banner ads', 'バナー広告なし'),
-      ];
+    _t('명언 전체 카테고리 해제', 'Unlock all quote categories', '名言の全カテゴリーを解放'),
+    _t('기본 캐릭터 전체 해제', 'Unlock all standard characters', '基本キャラクターをすべて解放'),
+    _t('위젯 꾸미기 전체 기능', 'Every widget decorating feature', 'ウィジェット装飾の全機能'),
+    _t('배너 광고 제거', 'No banner ads', 'バナー広告なし'),
+  ];
   String subscriptionPriceLine(String price) =>
       _t('월 $price', '$price / month', '月額 $price');
   String get subscriptionPriceUnknown => _t(
-        '월 구독 · 가격은 결제 화면에서 확인할 수 있어요',
-        'Monthly plan · the price is shown at checkout',
-        '月額プラン・料金は決済画面で確認できます',
-      );
+    '월 구독 · 가격은 결제 화면에서 확인할 수 있어요',
+    'Monthly plan · the price is shown at checkout',
+    '月額プラン・料金は決済画面で確認できます',
+  );
   String subscriptionFinePrint(String store) => _t(
-        '매월 자동으로 갱신되며, $store에서 언제든 해지할 수 있어요.',
-        'Your plan renews automatically every month, and you can cancel anytime in $store.',
-        '毎月自動で更新され、$storeでいつでも解約できます。',
-      );
+    '매월 자동으로 갱신되며, $store에서 언제든 해지할 수 있어요.',
+    'Your plan renews automatically every month, and you can cancel anytime in $store.',
+    '毎月自動で更新され、$storeでいつでも解約できます。',
+  );
 
   String get trialWelcomeTitle =>
       _t('설치 환영 선물', 'A welcome gift', 'インストール記念プレゼント');
   // Not a store free trial: no subscription starts and nothing is charged.
   String get trialWelcomeBody => _t(
-        '설치 후 3일 동안 모든 명언과 위젯 꾸미기가 무료로 열려요!',
-        'All quotes and widget decorating are free for 3 days after install!',
-        'インストール後3日間、すべての名言とウィジェット装飾が無料で開放されます！',
-      );
+    '설치 후 3일 동안 모든 명언과 위젯 꾸미기가 무료로 열려요!',
+    'All quotes and widget decorating are free for 3 days after install!',
+    'インストール後3日間、すべての名言とウィジェット装飾が無料で開放されます！',
+  );
   String get trialWelcomeConfirm => _t('확인', 'Got it', 'OK');
+
+  String get appUpdateTitle =>
+      _t('업데이트가 필요해요', 'Update required', 'アップデートが必要です');
+  String get appUpdateBody => _t(
+    '새 버전이 나왔어요. App Store에서 업데이트한 뒤 이용해 주세요.',
+    'A new version is out. Please update it on the App Store to keep using Dearly.',
+    '新しいバージョンが公開されました。App Storeでアップデートしてからご利用ください。',
+  );
+  String get appUpdateButton => _t('업데이트', 'Update', 'アップデート');
 
   String get termsConsentTitle =>
       _t('이용약관 동의', 'Agree to the terms', '利用規約への同意');
   String get termsConsentBody => _t(
-        'Dearly를 쓰려면 이용약관과 개인정보처리방침에 동의해 주세요.\n\n'
-            '닉네임, 응원 문구, 말풍선, 방 이름에 괴롭힘, 혐오, 성적인 내용, 위협, 스팸 등 부적절한 내용을 쓰면 안 돼요. 이런 내용은 허용하지 않으며, 신고되면 내용을 지우거나 이용을 제한합니다. 불쾌한 내용과 사용자는 같이 방에서 신고하고 차단할 수 있어요.',
-        'To use Dearly, please agree to the Terms and Privacy Policy.\n\n'
-            'Do not put harassment, hate, sexual content, threats, spam or other objectionable content in nicknames, cheers, speech bubbles or room names. We do not tolerate it: reported content can be removed and accounts limited. You can report and block content and people from a Together room.',
-        'Dearlyを使うには、利用規約とプライバシーポリシーに同意してください。\n\n'
-            'ニックネーム、応援メッセージ、吹き出し、部屋の名前に、嫌がらせ、差別、性的な内容、脅迫、スパムなどの不適切な内容を書かないでください。こうした内容は認めておらず、通報されると削除や利用制限を行います。不快な内容や利用者は一緒ルームから通報・ブロックできます。',
-      );
+    'Dearly를 쓰려면 이용약관과 개인정보처리방침에 동의해 주세요.\n\n'
+        '닉네임, 응원 문구, 말풍선, 방 이름에 괴롭힘, 혐오, 성적인 내용, 위협, 스팸 등 부적절한 내용을 쓰면 안 돼요. 이런 내용은 허용하지 않으며, 신고되면 내용을 지우거나 이용을 제한합니다. 불쾌한 내용과 사용자는 같이 방에서 신고하고 차단할 수 있어요.',
+    'To use Dearly, please agree to the Terms and Privacy Policy.\n\n'
+        'Do not put harassment, hate, sexual content, threats, spam or other objectionable content in nicknames, cheers, speech bubbles or room names. We do not tolerate it: reported content can be removed and accounts limited. You can report and block content and people from a Together room.',
+    'Dearlyを使うには、利用規約とプライバシーポリシーに同意してください。\n\n'
+        'ニックネーム、応援メッセージ、吹き出し、部屋の名前に、嫌がらせ、差別、性的な内容、脅迫、スパムなどの不適切な内容を書かないでください。こうした内容は認めておらず、通報されると削除や利用制限を行います。不快な内容や利用者は一緒ルームから通報・ブロックできます。',
+  );
   String get termsConsentAccept =>
       _t('동의하고 시작', 'Agree and continue', '同意して始める');
   String get adPrivacyTitle =>
       _t('광고 개인정보 설정', 'Ad privacy settings', '広告のプライバシー設定');
   String get adPrivacySubtitle => _t(
-        '광고 동의 선택을 바꿀 수 있어요',
-        'Change your ad consent choice',
-        '広告の同意内容を変更できます',
-      );
+    '광고 동의 선택을 바꿀 수 있어요',
+    'Change your ad consent choice',
+    '広告の同意内容を変更できます',
+  );
   String get otherSection => _t('기타 설정', 'Other', 'その他');
   String get eveningDebugToast =>
       _t('저녁 알림을 보냈어요', 'Evening notification sent', '夜の通知を送りました');
   String get termsTitle =>
       _t('이용약관 및 개인정보처리방침', 'Terms & Privacy', '利用規約とプライバシーポリシー');
-  String get termsSubtitle =>
-      _t('서비스 이용 관련 정보를 확인하세요', 'Review terms and privacy policy', 'サービスの利用に関する情報を確認してください');
-  String get accountDeleteTitle =>
-      _t('계정 삭제', 'Delete account', 'アカウント削除');
+  String get termsSubtitle => _t(
+    '서비스 이용 관련 정보를 확인하세요',
+    'Review terms and privacy policy',
+    'サービスの利用に関する情報を確認してください',
+  );
+  String get accountDeleteTitle => _t('계정 삭제', 'Delete account', 'アカウント削除');
   String get accountDeleteGuideTitle =>
       _t('계정 삭제 안내', 'Account deletion notice', 'アカウント削除のご案内');
-  String get accountDeleteAsk => _t(
-        '계정을 삭제하시겠어요?',
-        'Delete your account?',
-        'アカウントを削除しますか？',
-      );
+  String get accountDeleteAsk =>
+      _t('계정을 삭제하시겠어요?', 'Delete your account?', 'アカウントを削除しますか？');
   String get accountDeleteDataNotice => _t(
-        '계정을 삭제하면 내 프로필, 위젯 설정, 저장한 문구 등 계정과 관련된 데이터가 삭제되며 복구할 수 없어요.',
-        'Deleting your account removes related data such as your profile, widget settings, and saved quotes. This cannot be undone.',
-        'アカウントを削除すると、プロフィール、ウィジェット設定、保存した文章など、アカウントに関するデータが削除され、元に戻せません。',
-      );
+    '계정을 삭제하면 내 프로필, 위젯 설정, 저장한 문구 등 계정과 관련된 데이터가 삭제되며 복구할 수 없어요.',
+    'Deleting your account removes related data such as your profile, widget settings, and saved quotes. This cannot be undone.',
+    'アカウントを削除すると、プロフィール、ウィジェット設定、保存した文章など、アカウントに関するデータが削除され、元に戻せません。',
+  );
   String get accountDeleteSubscriptionHeading =>
       _t('구독 이용 안내', 'About your subscription', '定期購入についてのご案内');
   String get accountDeleteSubscriptionKeep => _t(
-        '현재 구독 중인 경우 계정을 삭제해도 $_store 정기결제는 자동으로 해지되지 않아요.',
-        'If you are subscribed, deleting your account does not automatically cancel the $_store subscription.',
-        '定期購入中の場合、アカウントを削除しても $_store の定期購入は自動では解約されません。',
-      );
+    '현재 구독 중인 경우 계정을 삭제해도 $_store 정기결제는 자동으로 해지되지 않아요.',
+    'If you are subscribed, deleting your account does not automatically cancel the $_store subscription.',
+    '定期購入中の場合、アカウントを削除しても $_store の定期購入は自動では解約されません。',
+  );
   String get accountDeleteSubscriptionCancel => _t(
-        '추가 결제가 발생하지 않도록 $_store에서 직접 구독을 해지해 주세요.',
-        'Cancel the subscription yourself in the $_store so you are not charged again.',
-        '追加の請求が発生しないよう、$_store でご自身で定期購入を解約してください。',
-      );
+    '추가 결제가 발생하지 않도록 $_store에서 직접 구독을 해지해 주세요.',
+    'Cancel the subscription yourself in the $_store so you are not charged again.',
+    '追加の請求が発生しないよう、$_store でご自身で定期購入を解約してください。',
+  );
   String get accountDeleteSubscriptionRenew => _t(
-        '계정 삭제 후에도 구독은 별도로 해지하기 전까지 자동 갱신될 수 있어요.',
-        'After the account is deleted, the subscription can keep renewing until you cancel it separately.',
-        'アカウント削除後も、別途解約するまで定期購入は自動更新されることがあります。',
-      );
+    '계정 삭제 후에도 구독은 별도로 해지하기 전까지 자동 갱신될 수 있어요.',
+    'After the account is deleted, the subscription can keep renewing until you cancel it separately.',
+    'アカウント削除後も、別途解約するまで定期購入は自動更新されることがあります。',
+  );
   String get accountDeleteSubtitle => _t(
-        '앱에서 계정과 클라우드 데이터를 삭제합니다',
-        'Delete your account and cloud data in the app',
-        'アプリでアカウントとクラウドデータを削除します',
-      );
+    '앱에서 계정과 클라우드 데이터를 삭제합니다',
+    'Delete your account and cloud data in the app',
+    'アプリでアカウントとクラウドデータを削除します',
+  );
   String get accountDeleteBody => _t(
-        '아래 버튼으로 이 앱에서 계정, 프로필, 같이 방 클라우드 데이터를 바로 삭제할 수 있어요.\n\n'
-            '메일이 필요할 때는 계정에 쓰는 이메일로 보내 주세요. 다른 주소에서 보낼 때는 어떤 계정을 지울지 적어 주세요.\n\n'
-            '법령상 남겨야 하는 항목이 있으면 알려 드려요. '
-            '구독은 $_store에서 따로 해지해야 해요. 기기에만 있는 데이터는 앱을 삭제하면 지워집니다.',
-        'The button below deletes your account, profile, and Together cloud data from this app.\n\n'
-            'If you also email us, write from the address on the account. From another address, say which account to delete.\n\n'
-            'We will tell you if a record must be kept by law. '
-            'Cancel a subscription in $_store separately. On-device data is removed when you uninstall.',
-        '下のボタンで、このアプリからアカウント、プロフィール、一緒ルームのクラウドデータを削除できます。\n\n'
-            'メールでも依頼する場合は、アカウントのメールから送ってください。別のアドレスから送るときは、削除するアカウントを書いてください。\n\n'
-            '法令上残すものがあればお知らせします。'
-            '定期購入は $_store で別途解約してください。端末だけのデータはアプリ削除で消えます。',
-      );
+    '아래 버튼으로 이 앱에서 계정, 프로필, 같이 방 클라우드 데이터를 바로 삭제할 수 있어요.\n\n'
+        '메일이 필요할 때는 계정에 쓰는 이메일로 보내 주세요. 다른 주소에서 보낼 때는 어떤 계정을 지울지 적어 주세요.\n\n'
+        '법령상 남겨야 하는 항목이 있으면 알려 드려요. '
+        '구독은 $_store에서 따로 해지해야 해요. 기기에만 있는 데이터는 앱을 삭제하면 지워집니다.',
+    'The button below deletes your account, profile, and Together cloud data from this app.\n\n'
+        'If you also email us, write from the address on the account. From another address, say which account to delete.\n\n'
+        'We will tell you if a record must be kept by law. '
+        'Cancel a subscription in $_store separately. On-device data is removed when you uninstall.',
+    '下のボタンで、このアプリからアカウント、プロフィール、一緒ルームのクラウドデータを削除できます。\n\n'
+        'メールでも依頼する場合は、アカウントのメールから送ってください。別のアドレスから送るときは、削除するアカウントを書いてください。\n\n'
+        '法令上残すものがあればお知らせします。'
+        '定期購入は $_store で別途解約してください。端末だけのデータはアプリ削除で消えます。',
+  );
   String get accountDeleteNow =>
       _t('앱에서 계정 삭제', 'Delete account in the app', 'アプリでアカウントを削除');
   String get accountDeleteConfirmBody => _t(
-        '계정, 프로필, 같이 방 클라우드 데이터를 지웁니다. 이 작업은 되돌릴 수 없어요.\n\n구독은 계정 삭제와 함께 해지되지 않아요. $_store에서 따로 해지해 주세요.',
-        'This deletes your account, profile, and Together cloud data. It cannot be undone.\n\nDeleting the account does not cancel a subscription. Cancel it separately in $_store.',
-        'アカウント、プロフィール、一緒ルームのクラウドデータを削除します。この操作は元に戻せません。\n\nアカウントを削除しても定期購入は解約されません。$_store で別途解約してください。',
-      );
+    '계정, 프로필, 같이 방 클라우드 데이터를 지웁니다. 이 작업은 되돌릴 수 없어요.\n\n구독은 계정 삭제와 함께 해지되지 않아요. $_store에서 따로 해지해 주세요.',
+    'This deletes your account, profile, and Together cloud data. It cannot be undone.\n\nDeleting the account does not cancel a subscription. Cancel it separately in $_store.',
+    'アカウント、プロフィール、一緒ルームのクラウドデータを削除します。この操作は元に戻せません。\n\nアカウントを削除しても定期購入は解約されません。$_store で別途解約してください。',
+  );
   String get accountDeleteDone => _t(
-        '계정과 클라우드 데이터를 삭제했어요',
-        'Account and cloud data deleted',
-        'アカウントとクラウドデータを削除しました',
-      );
+    '계정과 클라우드 데이터를 삭제했어요',
+    'Account and cloud data deleted',
+    'アカウントとクラウドデータを削除しました',
+  );
   String get accountDeleteFailed => _t(
-        '계정 삭제를 끝내지 못했어요. 잠시 후 다시 시도해 주세요.',
-        'Could not finish account deletion. Please try again shortly.',
-        'アカウント削除を完了できませんでした。しばらくしてからもう一度お試しください。',
-      );
+    '계정 삭제를 끝내지 못했어요. 잠시 후 다시 시도해 주세요.',
+    'Could not finish account deletion. Please try again shortly.',
+    'アカウント削除を完了できませんでした。しばらくしてからもう一度お試しください。',
+  );
   String get accountDeleteMailCta =>
       _t('삭제 요청 메일 보내기', 'Email deletion request', '削除依頼メールを送る');
   String get accountDeleteWebCta =>
       _t('웹에서 안내 보기', 'Open web instructions', 'ウェブで案内を見る');
   String get accountDeleteMailBody => _t(
-        'Dearly 계정과 관련 클라우드 데이터 삭제를 요청합니다.\n\n계정 이메일: ',
-        'Please delete my Dearly account and related cloud data.\n\nAccount email: ',
-        'Dearlyアカウントと関連クラウドデータの削除を依頼します。\n\nアカウントのメール: ',
-      );
+    'Dearly 계정과 관련 클라우드 데이터 삭제를 요청합니다.\n\n계정 이메일: ',
+    'Please delete my Dearly account and related cloud data.\n\nAccount email: ',
+    'Dearlyアカウントと関連クラウドデータの削除を依頼します。\n\nアカウントのメール: ',
+  );
   String get accountDeleteMailFailed =>
       _t('메일 앱을 열지 못했어요', 'Could not open mail', 'メールアプリを開けませんでした');
   String get appInfoTitle => _t('앱 정보', 'App info', 'アプリ情報');
@@ -917,8 +1232,7 @@ class AppStrings {
   String get filterNewest => _t('최신순', 'Newest', '新しい順');
   String get filterPopular => _t('인기순', 'Popular', '人気順');
   String get noQuotes => _t('표시할 문장이 없어요', 'No quotes to show', '表示する文章がありません');
-  String get savedToArchive =>
-      _t('보관함에 담았어요', 'Saved to archive', '保存しました');
+  String get savedToArchive => _t('보관함에 담았어요', 'Saved to archive', '保存しました');
   String get characterFavoriteAdded =>
       _t('즐겨찾기에 추가되었어요!', 'Added to favorites!', 'お気に入りに追加しました！');
   String get archiveRemove => _t('보관 해제', 'Remove from archive', '保存を解除');
@@ -935,13 +1249,15 @@ class AppStrings {
       _t('$title에서 검색', 'Search in $title', '$titleで検索');
   String searchResults(int count) =>
       _t('$count개의 결과', '$count results', '$count件の結果');
-  String get searchEmpty =>
-      _t('검색 결과가 없어요', 'No results found', '検索結果がありません');
+  String get searchEmpty => _t('검색 결과가 없어요', 'No results found', '検索結果がありません');
   String get searchExample =>
       _t('예: 위로, 용기, 감사', 'e.g. comfort, courage, thanks', '例: 慰め、勇気、感謝');
 
-  String get placeholderArchiveSubtitle =>
-      _t('마음에 둔 문장이 여기에 모예요', 'Your hearted quotes will appear here', '気に入った文章がここに集まります');
+  String get placeholderArchiveSubtitle => _t(
+    '마음에 둔 문장이 여기에 모예요',
+    'Your hearted quotes will appear here',
+    '気に入った文章がここに集まります',
+  );
 
   String themeName(String id) {
     switch (id) {
@@ -1052,13 +1368,29 @@ class AppStrings {
   List<String> mainCategoryLines(String id) {
     switch (id) {
       case 'comfort':
-        return _lines(['지친 마음에', '따뜻한 한마디'], ['Warm words', 'for a tired heart'], ['疲れた心に', 'あたたかい一言']);
+        return _lines(
+          ['지친 마음에', '따뜻한 한마디'],
+          ['Warm words', 'for a tired heart'],
+          ['疲れた心に', 'あたたかい一言'],
+        );
       case 'faith':
-        return _lines(['불교 · 천주교', '개신교 · 가르침'], ['Buddhism · Catholicism', 'Protestant · Teachings'], ['仏教・カトリック', 'プロテスタント・教え']);
+        return _lines(
+          ['불교 · 천주교', '개신교 · 가르침'],
+          ['Buddhism · Catholicism', 'Protestant · Teachings'],
+          ['仏教・カトリック', 'プロテスタント・教え'],
+        );
       case 'literature':
-        return _lines(['유명인의 명언', '작가의 문장'], ['Famous quotes', "Writers' lines"], ['有名人の名言', '作家の文章']);
+        return _lines(
+          ['유명인의 명언', '작가의 문장'],
+          ['Famous quotes', "Writers' lines"],
+          ['有名人の名言', '作家の文章'],
+        );
       case 'daily':
-        return _lines(['사랑, 관계, 감사', '매일의 작은 기쁨'], ['Love, connection, gratitude', 'Small daily joys'], ['愛、関係、感謝', '毎日の小さな喜び']);
+        return _lines(
+          ['사랑, 관계, 감사', '매일의 작은 기쁨'],
+          ['Love, connection, gratitude', 'Small daily joys'],
+          ['愛、関係、感謝', '毎日の小さな喜び'],
+        );
       default:
         return const [];
     }
@@ -1067,13 +1399,29 @@ class AppStrings {
   String mainCategoryBanner(String id) {
     switch (id) {
       case 'comfort':
-        return _t('지금, 네 마음에 따뜻한 위로를 보낼게요.', 'Sending warm comfort to your heart.', 'いま、あなたの心にあたたかい慰めを届けます。');
+        return _t(
+          '지금, 네 마음에 따뜻한 위로를 보낼게요.',
+          'Sending warm comfort to your heart.',
+          'いま、あなたの心にあたたかい慰めを届けます。',
+        );
       case 'faith':
-        return _t('고요한 마음이 필요할 때, 지혜의 말을 건네줄게요.', 'When you need quiet wisdom, these words are here.', '静かな心がほしいとき、知恵の言葉を届けます。');
+        return _t(
+          '고요한 마음이 필요할 때, 지혜의 말을 건네줄게요.',
+          'When you need quiet wisdom, these words are here.',
+          '静かな心がほしいとき、知恵の言葉を届けます。',
+        );
       case 'literature':
-        return _t('오래 남는 문장으로 마음에 불을 밝혀줄게요.', 'Let lasting lines light your heart.', '長く残る文章で、心に灯をともします。');
+        return _t(
+          '오래 남는 문장으로 마음에 불을 밝혀줄게요.',
+          'Let lasting lines light your heart.',
+          '長く残る文章で、心に灯をともします。',
+        );
       case 'daily':
-        return _t('평범한 하루 속 반짝임을 함께 찾아봐요.', "Let's find sparkle in ordinary days.", 'ふつうの一日の中のきらめきを、一緒に見つけましょう。');
+        return _t(
+          '평범한 하루 속 반짝임을 함께 찾아봐요.',
+          "Let's find sparkle in ordinary days.",
+          'ふつうの一日の中のきらめきを、一緒に見つけましょう。',
+        );
       default:
         return '';
     }
@@ -1119,21 +1467,49 @@ class AppStrings {
       case 'tired':
         return _t('힘든 하루를 보낸 나에게', 'For me after a hard day', 'つらい一日を終えた自分へ');
       case 'self':
-        return _t('나 자신을 아끼고 싶을 때', 'When I want to cherish myself', '自分を大切にしたくなったとき');
+        return _t(
+          '나 자신을 아끼고 싶을 때',
+          'When I want to cherish myself',
+          '自分を大切にしたくなったとき',
+        );
       case 'courage':
-        return _t('새로운 시작이 두려울 때', 'When a new start feels scary', '新しい始まりがこわいとき');
+        return _t(
+          '새로운 시작이 두려울 때',
+          'When a new start feels scary',
+          '新しい始まりがこわいとき',
+        );
       case 'anxiety':
-        return _t('미래가 걱정되고 마음이 복잡할 때', 'When worry fills the mind', '未来が心配で心がざわつくとき');
+        return _t(
+          '미래가 걱정되고 마음이 복잡할 때',
+          'When worry fills the mind',
+          '未来が心配で心がざわつくとき',
+        );
       case 'lonely':
         return _t('누군가에게 위로받고 싶을 때', 'When I need comfort', '誰かに慰めてほしいとき');
       case 'growth':
-        return _t('실수했거나 다시 일어서고 싶을 때', 'When I want to rise again', '失敗したあと、また立ち上がりたいとき');
+        return _t(
+          '실수했거나 다시 일어서고 싶을 때',
+          'When I want to rise again',
+          '失敗したあと、また立ち上がりたいとき',
+        );
       case 'relation':
-        return _t('친구, 가족, 사람 때문에 힘들 때', 'When people feel heavy', '友だちや家族、人のことでつらいとき');
+        return _t(
+          '친구, 가족, 사람 때문에 힘들 때',
+          'When people feel heavy',
+          '友だちや家族、人のことでつらいとき',
+        );
       case 'dream':
-        return _t('목표를 향해 나아가고 싶을 때', 'When I want to move toward a goal', '目標に向かって進みたくなったとき');
+        return _t(
+          '목표를 향해 나아가고 싶을 때',
+          'When I want to move toward a goal',
+          '目標に向かって進みたくなったとき',
+        );
       case 'buddhism':
-        return _t('마음에 고요를 담고 싶을 때', 'When I seek quiet mindfulness', '心に静けさを置きたくなったとき');
+        return _t(
+          '마음에 고요를 담고 싶을 때',
+          'When I seek quiet mindfulness',
+          '心に静けさを置きたくなったとき',
+        );
       case 'christian':
         return _t('믿음과 소망이 필요할 때', 'When I need faith and hope', '信仰と希望が必要なとき');
       case 'quotes':
@@ -1141,7 +1517,11 @@ class AppStrings {
       case 'writers':
         return _t('책 속에서 건진 위로', 'Comfort found in books', '本の中で見つけた慰め');
       case 'gratitude':
-        return _t('작은 행복을 발견하고 싶을 때', 'When I want small joys', '小さな幸せを見つけたくなったとき');
+        return _t(
+          '작은 행복을 발견하고 싶을 때',
+          'When I want small joys',
+          '小さな幸せを見つけたくなったとき',
+        );
       case 'love':
         return _t('마음이 따뜻해지고 싶을 때', 'When I want warmth', '心があたたかくなりたくなったとき');
       default:
@@ -1152,31 +1532,79 @@ class AppStrings {
   String subCategoryBanner(String id) {
     switch (id) {
       case 'tired':
-        return _t('오늘도 수고한 너에게 따뜻한 문장을 전해요.', 'Warm lines for you who worked hard today.', '今日もがんばったあなたへ、あたたかい文章を届けます。');
+        return _t(
+          '오늘도 수고한 너에게 따뜻한 문장을 전해요.',
+          'Warm lines for you who worked hard today.',
+          '今日もがんばったあなたへ、あたたかい文章を届けます。',
+        );
       case 'self':
-        return _t('너를 가장 먼저 아껴주는 사람이 되어봐.', 'Be the first to cherish yourself.', '自分をいちばん大切にしてくれる人になってみて。');
+        return _t(
+          '너를 가장 먼저 아껴주는 사람이 되어봐.',
+          'Be the first to cherish yourself.',
+          '自分をいちばん大切にしてくれる人になってみて。',
+        );
       case 'courage':
-        return _t('작은 한 걸음도 멋진 시작이야.', 'Even a small step is a brave start.', '小さな一歩も、すてきな始まりだよ。');
+        return _t(
+          '작은 한 걸음도 멋진 시작이야.',
+          'Even a small step is a brave start.',
+          '小さな一歩も、すてきな始まりだよ。',
+        );
       case 'anxiety':
-        return _t('지금 이 순간만 천천히 바라보자.', 'Look gently at this moment only.', 'いまこの瞬間だけを、ゆっくり見てみよう。');
+        return _t(
+          '지금 이 순간만 천천히 바라보자.',
+          'Look gently at this moment only.',
+          'いまこの瞬間だけを、ゆっくり見てみよう。',
+        );
       case 'lonely':
-        return _t('혼자가 아니야. 여기 따뜻한 말이 있어.', "You're not alone. Warm words are here.", 'ひとりじゃないよ。ここにあたたかい言葉があるよ。');
+        return _t(
+          '혼자가 아니야. 여기 따뜻한 말이 있어.',
+          "You're not alone. Warm words are here.",
+          'ひとりじゃないよ。ここにあたたかい言葉があるよ。',
+        );
       case 'growth':
-        return _t('넘어짐도 성장의 일부야.', 'Falling is part of growing.', '転ぶことも、成長の一部だよ。');
+        return _t(
+          '넘어짐도 성장의 일부야.',
+          'Falling is part of growing.',
+          '転ぶことも、成長の一部だよ。',
+        );
       case 'relation':
-        return _t('관계는 천천히, 진심으로 가꿔가면 돼.', 'Grow relationships slowly and sincerely.', '関係はゆっくり、真心で育てていけばいいよ。');
+        return _t(
+          '관계는 천천히, 진심으로 가꿔가면 돼.',
+          'Grow relationships slowly and sincerely.',
+          '関係はゆっくり、真心で育てていけばいいよ。',
+        );
       case 'dream':
-        return _t('네 꿈은 여전히 반짝이고 있어.', 'Your dream is still shining.', 'あなたの夢は、いまもきらめいているよ。');
+        return _t(
+          '네 꿈은 여전히 반짝이고 있어.',
+          'Your dream is still shining.',
+          'あなたの夢は、いまもきらめいているよ。',
+        );
       case 'buddhism':
-        return _t('집착을 내려놓고 숨을 고르자.', 'Let go a little, and breathe.', 'こだわりを置いて、呼吸を整えよう。');
+        return _t(
+          '집착을 내려놓고 숨을 고르자.',
+          'Let go a little, and breathe.',
+          'こだわりを置いて、呼吸を整えよう。',
+        );
       case 'christian':
-        return _t('따뜻한 위로가 네 마음에 닿기를.', 'May warm comfort reach your heart.', 'あたたかい慰めが、あなたの心に届きますように。');
+        return _t(
+          '따뜻한 위로가 네 마음에 닿기를.',
+          'May warm comfort reach your heart.',
+          'あたたかい慰めが、あなたの心に届きますように。',
+        );
       case 'quotes':
         return _t('짧은 문장, 긴 울림.', 'Short lines, lasting echoes.', '短い文章、長い響き。');
       case 'writers':
-        return _t('문학이 건네는 따뜻한 손길.', 'Literature offering a warm hand.', '文学が差し伸べる、あたたかい手。');
+        return _t(
+          '문학이 건네는 따뜻한 손길.',
+          'Literature offering a warm hand.',
+          '文学が差し伸べる、あたたかい手。',
+        );
       case 'gratitude':
-        return _t('오늘도 고마운 일이 분명 있어.', 'There is something to be thankful for today.', '今日も、感謝できることがきっとあるよ。');
+        return _t(
+          '오늘도 고마운 일이 분명 있어.',
+          'There is something to be thankful for today.',
+          '今日も、感謝できることがきっとあるよ。',
+        );
       case 'love':
         return _t('사랑은 가까운 곳에서 피어나.', 'Love blooms nearby.', '愛は、すぐ近くで咲くよ。');
       default:
@@ -1186,26 +1614,20 @@ class AppStrings {
 
   String get cancel => _t('취소', 'Cancel', 'キャンセル');
   String get meLabel => _t('나', 'Me', 'わたし');
-  String leaveRoomConfirm(String title) => _t(
-        '「$title」 방을 나갈까요?',
-        'Leave room "$title"?',
-        '「$title」ルームを出ますか？',
-      );
+  String leaveRoomConfirm(String title) =>
+      _t('「$title」 방을 나갈까요?', 'Leave room "$title"?', '「$title」ルームを出ますか？');
   String get roomLeftToast =>
       _t('방에서 나왔어요.', 'You left the room.', 'ルームを出ました。');
   String get homeGreeting => _t(
-        '안녕, 오늘도 잘하고 있어.',
-        "Hi, you're doing well today.",
-        'こんにちは。今日もよく頑張ってるよ。',
-      );
-  String get doingWell => _t(
-        '오늘도 잘하고 있어.',
-        "You're doing well today.",
-        '今日もよく頑張ってるよ。',
-      );
+    '안녕, 오늘도 잘하고 있어.',
+    "Hi, you're doing well today.",
+    'こんにちは。今日もよく頑張ってるよ。',
+  );
+  String get doingWell =>
+      _t('오늘도 잘하고 있어.', "You're doing well today.", '今日もよく頑張ってるよ。');
   String get fortuneFallbackLine => _t(
-        '오늘도 좋은 일이 생길 거예요.',
-        'Something good is waiting today.',
-        '今日もいいことがあるよ。',
-      );
+    '오늘도 좋은 일이 생길 거예요.',
+    'Something good is waiting today.',
+    '今日もいいことがあるよ。',
+  );
 }

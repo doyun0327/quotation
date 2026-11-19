@@ -61,16 +61,19 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
         return;
       }
 
-      final roomId =
-          await DdayInviteRepository.acceptInviteByCode(_codeCtrl.text);
+      final roomId = await DdayInviteRepository.acceptInviteByCode(
+        _codeCtrl.text,
+      );
       // Joining again cancels an earlier leave still waiting to be retried.
       await DdayCloudSync.cancelPendingLeave(roomId);
       await DdayCloudSync.pullMemberships();
       await ddayController.pinForWidget(roomId);
       await HomeWidgetSync.syncDday();
       if (!mounted) return;
+      // Straight into the decorator with the tutorial, even for someone
+      // who already saw it in another room.
       await Navigator.of(context).pushReplacement(
-        TogetherRoomScreen.route(roomId),
+        TogetherRoomScreen.route(roomId, decorateWithTutorial: true),
       );
     } catch (e) {
       if (!mounted) return;
@@ -85,7 +88,12 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
 
   String _mapError(Object e, AppStrings t) {
     final s = e.toString();
-    if (s.contains('invite_not_found')) return t.ddayInviteNotFound;
+    // A code whose room is gone is just a code that leads nowhere.
+    if (s.contains('invite_not_found') ||
+        s.contains('room_gone') ||
+        s.contains('dday_missing')) {
+      return t.ddayInviteNotFound;
+    }
     if (s.contains('invite_expired')) return t.ddayInviteExpired;
     if (s.contains('friends_full')) return t.ddayInviteFull;
     if (s.contains('cannot_join_own')) return t.ddayInviteOwnCode;
@@ -130,10 +138,7 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
         children: [
           Text(
             t.ddayInviteAcceptSubtitle,
-            style: AppTheme.body.copyWith(
-              fontSize: 13,
-              color: AppColors.muted,
-            ),
+            style: AppTheme.body.copyWith(fontSize: 13, color: AppColors.muted),
           ),
           const SizedBox(height: 20),
           TextField(

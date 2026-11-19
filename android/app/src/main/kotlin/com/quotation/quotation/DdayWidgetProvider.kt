@@ -7,6 +7,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.Typeface
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +24,7 @@ import android.widget.RemoteViews
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Locale
 import kotlin.math.max
 import kotlin.math.roundToInt
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
@@ -100,6 +109,12 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
 
     val roomId = bindRoom(widgetData, widgetId)
     if (roomId.isBlank()) return
+    // A room I left: say so and ask for the widget to be removed, instead of
+    // drawing it with another room's leftovers.
+    if (readLeftRoomIds(widgetData).contains(roomId)) {
+      drawLeftRoom(context, appWidgetManager, widgetId, widgetData, canvasW, canvasH)
+      return
+    }
     val room = readJson(widgetData, "ddayRoomsJson").optJSONObject(roomId)
     val label = roomStr(room, "label", readString(widgetData, "ddayLabel"))
     val meId = roomStr(room, "me", readString(widgetData, "ddayCharMe")).ifBlank { "basic" }
@@ -377,6 +392,101 @@ open class DdayWidgetProvider : HomeWidgetProvider() {
   ): SharedPreferences.Editor {
     val raw = bindings.toString()
     return prefs.edit().putString("ddayWidgetBindings", raw).putString("flutter.ddayWidgetBindings", raw)
+  }
+
+  private fun readLeftRoomIds(prefs: SharedPreferences): Set<String> {
+    val raw = readString(prefs, "ddayLeftRoomIds")
+    if (raw.isBlank()) return emptySet()
+    return try {
+      val array = JSONArray(raw)
+      (0 until array.length()).map { array.optString(it) }.filter { it.isNotBlank() }.toSet()
+    } catch (_: Exception) {
+      emptySet()
+    }
+  }
+
+  /** Widget labels follow the app language ("appLanguage"), else the phone's. */
+  private fun pickText(prefs: SharedPreferences, ko: String, en: String, ja: String): String {
+    val saved = readString(prefs, "appLanguage")
+    val lang =
+        if (saved in setOf("ko", "en", "ja")) saved
+        else Locale.getDefault().language.takeIf { it in setOf("ko", "en", "ja") } ?: "en"
+    return when (lang) {
+      "en" -> en
+      "ja" -> ja
+      else -> ko
+    }
+  }
+
+  /** "You left this room. Please remove this widget!" on a plain card. */
+  private fun drawLeftRoom(
+      context: Context,
+      appWidgetManager: AppWidgetManager,
+      widgetId: Int,
+      prefs: SharedPreferences,
+      canvasW: Float,
+      canvasH: Float,
+  ) {
+    val scale = DdayWidgetVisuals.WIDGET_PIXELS_PER_DP
+    val w = (canvasW * scale).roundToInt().coerceAtLeast(1)
+    val h = (canvasH * scale).roundToInt().coerceAtLeast(1)
+    val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val corner = DdayWidgetVisuals.DESIGN_CORNER_DP * scale
+    canvas.drawRoundRect(
+        RectF(0f, 0f, w.toFloat(), h.toFloat()),
+        corner,
+        corner,
+        Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(235, 255, 255, 255) },
+    )
+    val title = pickText(prefs, "나간 방입니다.", "You left this room.", "退出したルームです。")
+    val body =
+        pickText(
+            prefs,
+            "위젯을 삭제해 주세요!",
+            "Please remove this widget!",
+            "ウィジェットを削除してください！",
+        )
+    val maxWidth = (w * 0.86f).roundToInt()
+    fun layout(text: String, sizeDp: Float, bold: Boolean, argb: Int): StaticLayout {
+      val paint =
+          TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            textSize = sizeDp * scale
+            color = argb
+            typeface = if (bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+          }
+      return StaticLayout.Builder.obtain(text, 0, text.length, paint, maxWidth)
+          .setAlignment(Layout.Alignment.ALIGN_CENTER)
+          .build()
+    }
+    val top = layout(title, 15f, true, Color.rgb(0x22, 0x2B, 0x3A))
+    val bottom = layout(body, 12f, false, Color.rgb(0x7A, 0x86, 0x99))
+    val gap = 6f * scale
+    var y = (h - top.height - gap - bottom.height) / 2f
+    val x = (w - maxWidth) / 2f
+    canvas.save()
+    canvas.translate(x, y)
+    top.draw(canvas)
+    canvas.restore()
+    y += top.height + gap
+    canvas.save()
+    canvas.translate(x, y)
+    bottom.draw(canvas)
+    canvas.restore()
+
+    val views =
+        RemoteViews(context.packageName, R.layout.dday_widget).apply {
+          val launchIntent =
+              HomeWidgetLaunchIntent.getActivity(
+                  context,
+                  MainActivity::class.java,
+                  Uri.parse("dearly://together"),
+              )
+          setOnClickPendingIntent(R.id.dday_widget_root, launchIntent)
+          setOnClickPendingIntent(R.id.dday_composite, launchIntent)
+          setImageViewBitmap(R.id.dday_composite, DdayWidgetVisuals.fitBitmap(bitmap, 480))
+        }
+    appWidgetManager.updateAppWidget(widgetId, views)
   }
 
   private fun readJson(prefs: SharedPreferences, key: String): JSONObject {

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -32,6 +33,17 @@ abstract final class IosFakeWallpaper {
   static String keyFor(IosFakeWallpaperSlot slot) =>
       slot == IosFakeWallpaperSlot.top ? keyTop : keyMid;
 
+  /// Each room keeps its own photo. Same id encoding as the room cards
+  /// ("togetherCard_…"); TogetherWidget.swift builds the same keys.
+  static String roomKey(String roomId) =>
+      base64Url.encode(utf8.encode(roomId)).replaceAll('=', '');
+
+  static String keyForRoom(IosFakeWallpaperSlot slot, String roomId) =>
+      '${keyFor(slot)}_${roomKey(roomId)}';
+
+  static String slotKeyForRoom(String roomId) =>
+      '${keySlot}_${roomKey(roomId)}';
+
   /// Medium Together card aspect (width / height), same as Galaxy / iOS PNG.
   static const cardAspect = 2.14;
 
@@ -62,18 +74,13 @@ abstract final class IosFakeWallpaper {
           continue;
         }
         try {
-          await HomeWidget.renderFlutterWidget(
-            RawImage(image: cropped, fit: BoxFit.fill),
-            key: keyFor(slot),
-            logicalSize: Size(cropped.width / 3.0, cropped.height / 3.0),
-            pixelRatio: 3,
-          );
+          await _store(cropped, keyFor(slot));
         } finally {
           cropped.dispose();
         }
       }
       await HomeWidget.saveWidgetData<String>(keySlot, 'top');
-      await HomeWidget.updateWidget(iOSName: HomeWidgetSync.iosTogetherName);
+      await HomeWidgetSync.reloadAllIos();
       return ok;
     } finally {
       src.dispose();
@@ -82,7 +89,10 @@ abstract final class IosFakeWallpaper {
 
   /// Picks a photo, crops the medium-widget band for [slot], writes it into
   /// the App Group via [HomeWidget.renderFlutterWidget].
-  static Future<bool> pickAndSave(IosFakeWallpaperSlot slot) async {
+  static Future<bool> pickAndSave(
+    IosFakeWallpaperSlot slot, {
+    String? roomId,
+  }) async {
     if (!isIOS) return false;
     final picked = await ImagePicker().pickImage(
       source: ImageSource.gallery,
@@ -98,26 +108,81 @@ abstract final class IosFakeWallpaper {
       if (cropped == null) return false;
       try {
         await HomeWidget.setAppGroupId(HomeWidgetSync.appGroupId);
-        await HomeWidget.renderFlutterWidget(
-          RawImage(image: cropped, fit: BoxFit.fill),
-          key: keyFor(slot),
-          logicalSize: Size(
-            cropped.width / 3.0,
-            cropped.height / 3.0,
-          ),
-          pixelRatio: 3,
+        // No room (first-visit intro): the shared photo every room without
+        // its own uses.
+        await _store(
+          cropped,
+          roomId == null ? keyFor(slot) : keyForRoom(slot, roomId),
         );
         await HomeWidget.saveWidgetData<String>(
-          keySlot,
+          roomId == null ? keySlot : slotKeyForRoom(roomId),
           slot == IosFakeWallpaperSlot.top ? 'top' : 'mid',
         );
-        await HomeWidget.updateWidget(iOSName: HomeWidgetSync.iosTogetherName);
+        // Every kind at once: "방 2"… and the add-widget gallery would
+        // otherwise keep the old photo until the room cards are redrawn.
+        await HomeWidgetSync.reloadAllIos();
         return true;
       } finally {
         cropped.dispose();
       }
     } finally {
       src.dispose();
+    }
+  }
+
+  /// Renders [cropped] into the App Group under a new file name each time.
+  ///
+  /// home_widget always writes `{key}.png`, so a changed photo kept the old
+  /// path: Flutter's image cache (and the widget) went on showing the first
+  /// photo. A fresh name per save makes every reader load the new one.
+  static Future<void> _store(ui.Image cropped, String key) async {
+    final previous = await HomeWidget.getWidgetData<String>(key) ?? '';
+    final base = await HomeWidget.renderFlutterWidget(
+      RawImage(image: cropped, fit: BoxFit.fill),
+      key: key,
+      logicalSize: Size(cropped.width / 3.0, cropped.height / 3.0),
+      pixelRatio: 3,
+    );
+    final stamp = DateTime.now().microsecondsSinceEpoch;
+    final versioned = base.replaceFirst(RegExp(r'\.png$'), '_$stamp.png');
+    var stored = base;
+    try {
+      await File(base).rename(versioned);
+      stored = versioned;
+    } on FileSystemException {
+      // Keep the plain name; the widget still reads it.
+    }
+    await HomeWidget.saveWidgetData<String>(key, stored);
+    if (previous.isNotEmpty && previous != stored && previous != base) {
+      try {
+        await File(previous).delete();
+      } on FileSystemException {
+        // Already gone.
+      }
+    }
+  }
+
+  /// Drops [roomId]'s own transparent photo (both crops and the row choice)
+  /// when the room is left; other rooms and the shared photo stay.
+  static Future<void> forgetRoom(String roomId) async {
+    if (!isIOS) return;
+    try {
+      await HomeWidget.setAppGroupId(HomeWidgetSync.appGroupId);
+      for (final slot in IosFakeWallpaperSlot.values) {
+        final key = keyForRoom(slot, roomId);
+        final path = await HomeWidget.getWidgetData<String>(key) ?? '';
+        if (path.isNotEmpty) {
+          try {
+            await File(path).delete();
+          } on FileSystemException {
+            // Already gone.
+          }
+        }
+        await HomeWidget.saveWidgetData<String>(key, null);
+      }
+      await HomeWidget.saveWidgetData<String>(slotKeyForRoom(roomId), null);
+    } catch (e) {
+      debugPrint('forget wallpaper $roomId: $e');
     }
   }
 
@@ -132,11 +197,11 @@ abstract final class IosFakeWallpaper {
       'assets/images/widgetbackground/ios_transparent_after.png';
 
   /// First Together visit on iPhone with no photo yet, shown once.
-  static Future<bool> shouldShowIntro() async {
+  static Future<bool> shouldShowIntro([String? roomId]) async {
     if (!isIOS) return false;
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(_introShownKey) ?? false) return false;
-    return !await hasAny();
+    return await currentPath(roomId) == null;
   }
 
   static Future<void> markIntroShown() async {
@@ -144,12 +209,29 @@ abstract final class IosFakeWallpaper {
     await prefs.setBool(_introShownKey, true);
   }
 
-  /// The crop the widget uses now (the chosen row), or null if none.
-  static Future<String?> currentPath() async {
+  /// The crop [roomId]'s widget uses now (its chosen row), or null if none.
+  /// A room without its own photo uses the one registered before photos
+  /// were per room.
+  static Future<String?> currentPath([String? roomId]) async {
     if (!isIOS) return null;
     await HomeWidget.setAppGroupId(HomeWidgetSync.appGroupId);
-    final slot = await HomeWidget.getWidgetData<String>(keySlot) ?? 'top';
-    final order = slot == 'mid' ? [keyMid, keyTop] : [keyTop, keyMid];
+    final own = roomId == null
+        ? null
+        : await _pathFor(
+            slotKey: slotKeyForRoom(roomId),
+            top: keyForRoom(IosFakeWallpaperSlot.top, roomId),
+            mid: keyForRoom(IosFakeWallpaperSlot.mid, roomId),
+          );
+    return own ?? await _pathFor(slotKey: keySlot, top: keyTop, mid: keyMid);
+  }
+
+  static Future<String?> _pathFor({
+    required String slotKey,
+    required String top,
+    required String mid,
+  }) async {
+    final slot = await HomeWidget.getWidgetData<String>(slotKey) ?? 'top';
+    final order = slot == 'mid' ? [mid, top] : [top, mid];
     for (final key in order) {
       final path = await HomeWidget.getWidgetData<String>(key) ?? '';
       if (path.isNotEmpty && File(path).existsSync()) return path;

@@ -39,8 +39,12 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
 
   Future<void> _ensureInvite() async {
     final t = AppStrings.current;
+    final cached = await DdayInviteRepository.cachedCode(_roomId);
+    if (!mounted) return;
     setState(() {
-      _busy = true;
+      // A known code shows right away; only a first visit waits.
+      if (cached != null) _code = cached;
+      _busy = cached == null;
       _error = null;
     });
     try {
@@ -48,17 +52,20 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
       if (FirebaseAuth.instance.currentUser == null) {
         final ok = await authController.ensureFirebaseSession();
         if (!ok || FirebaseAuth.instance.currentUser == null) {
-          if (!mounted) return;
+          if (!mounted || _code != null) return;
           setState(() => _error = t.ddayInviteLoginAgain);
           return;
         }
       }
 
       final result = await _createInvite().timeout(const Duration(seconds: 15));
+      await DdayInviteRepository.cacheCode(_roomId, result.code);
       if (!mounted) return;
-      setState(() => _code = result.code);
+      if (_code != result.code) setState(() => _code = result.code);
     } catch (e) {
       if (!mounted) return;
+      // The cached code still works: keep it, no error over it.
+      if (_code != null) return;
       final detail = e.toString();
       debugPrint('createOrGetInvite: $detail');
       if (detail.contains('not_signed_in') ||
@@ -75,8 +82,7 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
   }
 
   DdayItem get _room {
-    final matches =
-        ddayController.items.where((e) => e.id == _roomId).toList();
+    final matches = ddayController.items.where((e) => e.id == _roomId).toList();
     return matches.isEmpty ? widget.item : matches.first;
   }
 
@@ -92,7 +98,8 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
       );
     } catch (e) {
       final detail = e.toString();
-      final foreign = detail.contains('not_member') || detail.contains('not_host');
+      final foreign =
+          detail.contains('not_member') || detail.contains('not_host');
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (!foreign || _rehomed || uid == null) rethrow;
       // The room still lives on an older Firebase account. Move it to the
@@ -135,9 +142,9 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
   Future<void> _copy(BuildContext context, String value, String message) async {
     await Clipboard.setData(ClipboardData(text: value));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
     // A copied code is usually pasted into a chat, so it counts as a send.
     await ShareEvent.onInviteSent(context);
   }
@@ -158,146 +165,149 @@ class _DdayInviteScreenState extends State<DdayInviteScreen> {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
         final code = _code;
-        Navigator.of(context).pop(
-          code != null && code.isNotEmpty ? _roomId : null,
-        );
+        Navigator.of(
+          context,
+        ).pop(code != null && code.isNotEmpty ? _roomId : null);
       },
       child: Scaffold(
-      backgroundColor: const Color(0xFFF3F7FD),
-      appBar: AppBar(
         backgroundColor: const Color(0xFFF3F7FD),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          icon: const Icon(Icons.chevron_left_rounded, size: 28),
-        ),
-        title: Text(
-          t.ddayInviteTitle,
-          style: AppTheme.body.copyWith(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            color: palette.accent,
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFF3F7FD),
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () => Navigator.of(context).maybePop(),
+            icon: const Icon(Icons.chevron_left_rounded, size: 28),
           ),
+          title: Text(
+            t.ddayInviteTitle,
+            style: AppTheme.body.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: palette.accent,
+            ),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: ListenableBuilder(
-        listenable: ddayController,
-        builder: (context, _) {
-          final item = _room;
-          final liveFriends = item.friends;
+        body: ListenableBuilder(
+          listenable: ddayController,
+          builder: (context, _) {
+            final item = _room;
+            final liveFriends = item.friends;
 
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-            children: [
-              Text(
-                item.title,
-                style: AppTheme.body.copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                t.ddayInviteFriendCount(liveFriends.length),
-                style: AppTheme.body.copyWith(
-                  fontSize: 13,
-                  color: palette.accent,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              if (liveFriends.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final f in liveFriends)
-                      Chip(
-                        label: Text(
-                          f.displayName?.isNotEmpty == true
-                              ? f.displayName!
-                              : t.characterName(f.characterId),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-              const SizedBox(height: 24),
-              if (_busy)
-                const Center(child: CircularProgressIndicator())
-              else if (_error != null) ...[
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+              children: [
                 Text(
-                  _error!,
-                  style: AppTheme.body.copyWith(color: Colors.redAccent),
-                ),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: () async {
-                    await authController.ensureFirebaseSession();
-                    await _ensureInvite();
-                  },
-                  child: Text(
-                    FirebaseAuth.instance.currentUser == null
-                        ? t.googleLoginTitle
-                        : t.ddayInviteRetry,
+                  item.title,
+                  style: AppTheme.body.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-              ] else if (_code != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFE0E6EF)),
+                const SizedBox(height: 6),
+                Text(
+                  t.ddayInviteFriendCount(liveFriends.length),
+                  style: AppTheme.body.copyWith(
+                    fontSize: 13,
+                    color: palette.accent,
+                    fontWeight: FontWeight.w700,
                   ),
-                  child: Column(
+                ),
+                if (liveFriends.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
-                      Text(
-                        t.ddayInviteCodeLabel,
-                        style: AppTheme.body.copyWith(
-                          fontSize: 13,
-                          color: AppColors.muted,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SelectableText(
-                        _code!,
-                        style: AppTheme.body.copyWith(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 4,
-                          color: palette.accent,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () => _copy(
-                              context,
-                              _code!,
-                              t.ddayInviteCodeCopied,
-                            ),
-                            icon: const Icon(Icons.copy_rounded, size: 18),
-                            label: Text(t.ddayInviteCopyCode),
+                      for (final f in liveFriends)
+                        Chip(
+                          label: Text(
+                            f.displayName?.isNotEmpty == true
+                                ? f.displayName!
+                                : t.characterName(f.characterId),
                           ),
-                          TextButton.icon(
-                            onPressed: _shareInvite,
-                            icon: const Icon(Icons.ios_share_rounded, size: 18),
-                            label: Text(t.ddayInviteShare),
-                          ),
-                        ],
-                      ),
+                        ),
                     ],
                   ),
-                ),
+                ],
+                const SizedBox(height: 24),
+                if (_busy)
+                  const Center(child: CircularProgressIndicator())
+                else if (_error != null) ...[
+                  Text(
+                    _error!,
+                    style: AppTheme.body.copyWith(color: Colors.redAccent),
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: () async {
+                      await authController.ensureFirebaseSession();
+                      await _ensureInvite();
+                    },
+                    child: Text(
+                      FirebaseAuth.instance.currentUser == null
+                          ? t.googleLoginTitle
+                          : t.ddayInviteRetry,
+                    ),
+                  ),
+                ] else if (_code != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFFE0E6EF)),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          t.ddayInviteCodeLabel,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 13,
+                            color: AppColors.muted,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        SelectableText(
+                          _code!,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 4,
+                            color: palette.accent,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton.icon(
+                              onPressed: () => _copy(
+                                context,
+                                _code!,
+                                t.ddayInviteCodeCopied,
+                              ),
+                              icon: const Icon(Icons.copy_rounded, size: 18),
+                              label: Text(t.ddayInviteCopyCode),
+                            ),
+                            TextButton.icon(
+                              onPressed: _shareInvite,
+                              icon: const Icon(
+                                Icons.ios_share_rounded,
+                                size: 18,
+                              ),
+                              label: Text(t.ddayInviteShare),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
-            ],
-          );
-        },
-      ),
+            );
+          },
+        ),
       ),
     );
   }

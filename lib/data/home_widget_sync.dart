@@ -59,6 +59,7 @@ abstract final class HomeWidgetSync {
 
   /// App language ('ko' / 'en' / 'ja') for the iOS widget's own labels.
   static const keyAppLanguage = 'appLanguage';
+  static const keyDdayLeftRoomIds = 'ddayLeftRoomIds';
 
   /// Gallery pages "방 1"…: 방 1 is [iosTogetherName], then TogetherRoom2…N.
   static const iosTogetherRoomSlots = 5;
@@ -71,8 +72,10 @@ abstract final class HomeWidgetSync {
   static const keyCharacterImage = 'characterImage';
   static const keyPawImage = 'pawImage';
   static const keyTogetherBgImage = 'togetherBgImage';
+
   /// Full Together card PNG (decorate-sized) for the iOS home widget.
   static const keyTogetherCardImage = 'togetherCardImage';
+
   /// iOS room picker data: `[{id, title, imageKey}]`, one card PNG per room.
   static const keyDdayRoomIndex = 'ddayRoomIndex';
   static const keyDdayRoomCardSignatures = 'ddayRoomCardSignatures';
@@ -119,6 +122,7 @@ abstract final class HomeWidgetSync {
   static const keySubCategoryId = 'subCategoryId';
   static const keyCategoryTitle = 'categoryTitle';
   static const keyQuotePool = 'quotePool';
+
   /// Name tag under the character on the home character widget.
   static const keyNickname = 'nickname';
   static const keyThemeAccent = 'themeAccent';
@@ -165,7 +169,26 @@ abstract final class HomeWidgetSync {
   static const keyDdayHostCornerDp = 'ddayHostCornerDp';
   static const keyVisualStyle = 'visualStyle';
   static const keyCharacterId = 'characterId';
-  static const _pinChannel = MethodChannel('com.quotation.quotation/widget_pin');
+  static const _pinChannel = MethodChannel(
+    'com.quotation.quotation/widget_pin',
+  );
+
+  /// iOS: WidgetCenter.reloadAllTimelines (AppDelegate.registerWidgetReload).
+  static const _reloadChannel = MethodChannel(
+    'com.dearly.quoteswidget/widget_reload',
+  );
+
+  /// iPhone: redraws every widget kind now, gallery previews included.
+  /// Falls back to the Together kind alone if the native call is missing.
+  static Future<void> reloadAllIos() async {
+    if (!_isIOS) return;
+    try {
+      await _reloadChannel.invokeMethod<bool>('reloadAll');
+    } catch (e) {
+      debugPrint('reload all widgets: $e');
+      await HomeWidget.updateWidget(iOSName: iosTogetherName);
+    }
+  }
 
   /// Pin provider = size chip (default 3×2).
   static ({String key, String name, String qualified}) _providerForSize(
@@ -192,7 +215,7 @@ abstract final class HomeWidgetSync {
 
   /// Measured home-widget host size + corner (written by Android provider).
   static Future<({Size size, TogetherWidgetSize forSize, double cornerDp})?>
-      loadHostPreviewSize({String? roomId}) async {
+  loadHostPreviewSize({String? roomId}) async {
     // Host cell size is reported by the Android launcher only.
     if (!_isAndroid) return null;
     try {
@@ -206,10 +229,14 @@ abstract final class HomeWidgetSync {
       final exactH = double.tryParse(
         await HomeWidget.getWidgetData<String>(keyDdayHostHeightExact) ?? '',
       );
-      final w = exactW ??
+      final w =
+          exactW ??
           (await HomeWidget.getWidgetData<int>(keyDdayHostWidthDp))?.toDouble();
-      final h = exactH ??
-          (await HomeWidget.getWidgetData<int>(keyDdayHostHeightDp))?.toDouble();
+      final h =
+          exactH ??
+          (await HomeWidget.getWidgetData<int>(
+            keyDdayHostHeightDp,
+          ))?.toDouble();
       final id = await HomeWidget.getWidgetData<String>(keyDdayHostSizeId);
       if (w == null || h == null || w < 40 || h < 40) return null;
       final forSize = TogetherWidgetSize.byId(id);
@@ -263,11 +290,9 @@ abstract final class HomeWidgetSync {
   static Future<void> syncFromHome() async {
     if (!_supportsWidgets) return;
 
-    final quote = selectionController.bubbleQuote ??
-        Quote(
-          id: 'greeting_today',
-          text: AppStrings.current.homeGreeting,
-        );
+    final quote =
+        selectionController.bubbleQuote ??
+        Quote(id: 'greeting_today', text: AppStrings.current.homeGreeting);
     final categoryId = selectionController.mainCategoryId;
     final categoryTitle = AppStrings.current.mainCategoryTitle(categoryId);
     final palette = themeController.palette;
@@ -363,9 +388,15 @@ abstract final class HomeWidgetSync {
       );
       if (_isIOS) {
         // Room-slot widgets (TogetherRoomSlotWidget) show the same cards.
-        // Slot 1 is the original TogetherWidget kind, reloaded above.
-        for (var i = 2; i <= iosTogetherRoomSlots; i++) {
-          await HomeWidget.updateWidget(iOSName: 'TogetherRoom$i');
+        // Reload every kind at once: per-kind reloads left the widget
+        // gallery's "방 1"… previews in the old room order (favorites).
+        try {
+          await _reloadChannel.invokeMethod<bool>('reloadAll');
+        } catch (e) {
+          debugPrint('reload all widgets: $e');
+          for (var i = 2; i <= iosTogetherRoomSlots; i++) {
+            await HomeWidget.updateWidget(iOSName: 'TogetherRoom$i');
+          }
         }
       }
     } catch (e) {
@@ -481,8 +512,12 @@ abstract final class HomeWidgetSync {
         await ddayController.reloadOffsetsFromPrefs();
       }
       await _saveDday();
+    } catch (e) {
+      debugPrint('save dday widget: $e');
+    } finally {
+      // Reload even after a failure: the room list is already written.
       await _pushTogetherWidget();
-    } catch (_) {}
+    }
   }
 
   /// Saves every room, then updates only the home widget for [roomId].
@@ -511,8 +546,9 @@ abstract final class HomeWidgetSync {
       final state = await _togetherWidgetState();
       final installed = state.ids;
       final bindings = state.bindings;
-      final hasThisRoom =
-          installed.any((widgetId) => bindings['$widgetId'] == id);
+      final hasThisRoom = installed.any(
+        (widgetId) => bindings['$widgetId'] == id,
+      );
       if (id.isNotEmpty && !hasThisRoom) {
         _lockExistingWidgets(
           roomId: id,
@@ -527,14 +563,13 @@ abstract final class HomeWidgetSync {
       }
       await HomeWidget.saveWidgetData<String>(
         keyDdayKnownWidgetIds,
-        jsonEncode({
-          for (final widgetId in installed) '$widgetId': true,
-        }),
+        jsonEncode({for (final widgetId in installed) '$widgetId': true}),
       );
       final kept = legacyRoom == id ? '' : legacyRoom;
       await HomeWidget.saveWidgetData<String>(keyDdayLegacyRoomId, kept);
       await _saveDday();
-      final placed = id.isNotEmpty && _roomAlreadyPlaced(id, installed, bindings);
+      final placed =
+          id.isNotEmpty && _roomAlreadyPlaced(id, installed, bindings);
       if (id.isEmpty || (placed && !force)) {
         await HomeWidget.saveWidgetData<String>(keyDdayPendingRoomId, '');
         await _pushTogetherWidget();
@@ -560,7 +595,9 @@ abstract final class HomeWidgetSync {
     required List<int> installed,
     required Map<String, String> bindings,
   }) {
-    final keep = legacyRoom.isNotEmpty && legacyRoom != roomId ? legacyRoom : '';
+    final keep = legacyRoom.isNotEmpty && legacyRoom != roomId
+        ? legacyRoom
+        : '';
     if (keep.isEmpty) {
       if (legacyRoom == roomId) {
         final unbound = installed
@@ -578,9 +615,11 @@ abstract final class HomeWidgetSync {
   }
 
   static Future<({List<int> ids, Map<String, String> bindings})>
-      _togetherWidgetState() async {
+  _togetherWidgetState() async {
     try {
-      final raw = await _pinChannel.invokeMethod<dynamic>('togetherWidgetState');
+      final raw = await _pinChannel.invokeMethod<dynamic>(
+        'togetherWidgetState',
+      );
       if (raw is Map) {
         final ids = <int>[];
         final idRaw = raw['ids'];
@@ -603,7 +642,10 @@ abstract final class HomeWidgetSync {
     } catch (e) {
       debugPrint('togetherWidgetState: $e');
     }
-    return (ids: await _installedTogetherIds(), bindings: await _readBindings());
+    return (
+      ids: await _installedTogetherIds(),
+      bindings: await _readBindings(),
+    );
   }
 
   static bool _roomAlreadyPlaced(
@@ -672,7 +714,7 @@ abstract final class HomeWidgetSync {
   }
 
   static Future<({Size size, TogetherWidgetSize forSize, double cornerDp})?>
-      _hostForRoom(String roomId) async {
+  _hostForRoom(String roomId) async {
     final raw = await HomeWidget.getWidgetData<String>(keyDdayHostByRoom) ?? '';
     if (raw.isEmpty) return null;
     try {
@@ -717,11 +759,9 @@ abstract final class HomeWidgetSync {
       debugPrint('pinCharacterWidget channel: $e');
     }
     try {
-      final supported =
-          await HomeWidget.isRequestPinWidgetSupported() ?? false;
+      final supported = await HomeWidget.isRequestPinWidgetSupported() ?? false;
       if (!supported) return false;
-      final name =
-          bubble ? androidBubbleProviderName : androidProviderName;
+      final name = bubble ? androidBubbleProviderName : androidProviderName;
       await HomeWidget.requestPinWidget(
         name: name,
         androidName: name,
@@ -747,8 +787,7 @@ abstract final class HomeWidgetSync {
       debugPrint('pinTogetherWidget channel: $e');
     }
     try {
-      final supported =
-          await HomeWidget.isRequestPinWidgetSupported() ?? false;
+      final supported = await HomeWidget.isRequestPinWidgetSupported() ?? false;
       if (!supported) return false;
       await HomeWidget.requestPinWidget(
         name: provider.name,
@@ -798,7 +837,8 @@ abstract final class HomeWidgetSync {
         item.id,
         item.latestCheer,
       );
-      final box = hosts[item.id] ??
+      final box =
+          hosts[item.id] ??
           TogetherWidgetSize.s42.homeSize(_screenWidthDp().toDouble());
       var label = cheer;
       try {
@@ -812,27 +852,29 @@ abstract final class HomeWidgetSync {
         debugPrint('cheer wrap: $e');
       }
       final themeId = ddayController.bgThemeForRoom(item.id);
-      final placed = _withoutBlocked(TogetherCrowdLayout.withUserScale(
-        placed: TogetherCrowdLayout.resolve(
-          people: TogetherCrowdLayout.roster(
-            myUid: authController.viewerUid,
-            myCharacterId: meId,
-            myIds: authController.myIds,
-            hostUid: item.cloudOwnerUid,
-            friends: item.friends,
+      final placed = _withoutBlocked(
+        TogetherCrowdLayout.withUserScale(
+          placed: TogetherCrowdLayout.resolve(
+            people: TogetherCrowdLayout.roster(
+              myUid: authController.viewerUid,
+              myCharacterId: meId,
+              myIds: authController.myIds,
+              hostUid: item.cloudOwnerUid,
+              friends: item.friends,
+            ),
+            canvasW: box.width,
+            canvasH: box.height,
+            charFactor: TogetherWidgetSize.s42.charFactor,
+            saved: ddayController.crowdForRoom(item.id),
           ),
-          canvasW: box.width,
-          canvasH: box.height,
-          charFactor: TogetherWidgetSize.s42.charFactor,
-          saved: ddayController.crowdForRoom(item.id),
+          myUid: authController.viewerUid,
+          meScale: ddayController.charScaleForRoom(item.id),
+          friendScale: ddayController.friendScaleForRoom(item.id),
+          saved: TogetherCrowdLayout.scalesOf(
+            ddayController.crowdForRoom(item.id),
+          ),
         ),
-        myUid: authController.viewerUid,
-        meScale: ddayController.charScaleForRoom(item.id),
-        friendScale: ddayController.friendScaleForRoom(item.id),
-        saved: TogetherCrowdLayout.scalesOf(
-          ddayController.crowdForRoom(item.id),
-        ),
-      ));
+      );
       rooms[item.id] = {
         'label': label,
         'me': meId,
@@ -847,7 +889,8 @@ abstract final class HomeWidgetSync {
         'charScale': ddayController.charScaleForRoom(item.id),
         'friendScale': ddayController.friendScaleForRoom(item.id),
         'textScale': textScale,
-        'bgAsset': WidgetAlbumBackground.resolvedAsset(
+        'bgAsset':
+            WidgetAlbumBackground.resolvedAsset(
               themeId: themeId,
               roomId: item.id,
             ) ??
@@ -891,9 +934,99 @@ abstract final class HomeWidgetSync {
   ) async {
     final previous = await _readIosRoomImageKeys();
     final savedSignatures = await _readIosCardSignatures();
-    final index = <Map<String, String>>[];
+    String keyPart(String id) =>
+        base64Url.encode(utf8.encode(id)).replaceAll('=', '');
+    // The room list goes first, before any card is drawn: a card that fails
+    // or stalls (Flutter cannot draw in the background) used to leave the
+    // old list behind, so the widget gallery kept showing rooms I had left.
+    final index = <Map<String, String>>[
+      for (final card in cards)
+        {
+          'id': card.item.id,
+          'title': card.item.title,
+          'imageKey': 'togetherCard_${keyPart(card.item.id)}',
+          'specKey': 'togetherSpec_${keyPart(card.item.id)}',
+          if (_iosGlassTheme(card.item.id)) 'glass': '1',
+        },
+    ];
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayRoomIndex,
+      jsonEncode(index),
+    );
+    final current = {for (final card in cards) card.item.id};
+    var roomsGone = false;
+    for (final entry in previous.entries) {
+      if (current.contains(entry.key)) continue;
+      roomsGone = true;
+      await _deleteWidgetFile(entry.value);
+      await HomeWidget.saveWidgetData<String>(
+        'togetherSpec_${keyPart(entry.key)}',
+        null,
+      );
+    }
+    // A room left or deleted: refresh the widgets (and the add-widget
+    // gallery, 위젯 편집's room list) now, not after every card is redrawn
+    // below, which takes seconds and stalls while the app is in the
+    // background.
+    if (roomsGone || previous.length != current.length) {
+      await reloadAllIos();
+    }
     final signatures = <String, String>{};
+    // Layouts first: they are what the widgets draw from, and quick. The
+    // widgets and the add-widget gallery refresh as soon as they are in,
+    // not after the slow fallback images below (seconds per room).
     for (final card in cards) {
+      try {
+        await _saveIosRoomCard(
+          card,
+          rooms,
+          savedSignatures,
+          signatures,
+          specOnly: true,
+        );
+      } catch (e) {
+        debugPrint('iOS room spec ${card.item.id}: $e');
+      }
+    }
+    await reloadAllIos();
+    for (final card in cards) {
+      try {
+        await _saveIosRoomCard(
+          card,
+          rooms,
+          savedSignatures,
+          signatures,
+          specOnly: false,
+        );
+      } catch (e) {
+        // One bad room must not keep the other cards from updating.
+        debugPrint('iOS room card ${card.item.id}: $e');
+      }
+    }
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayRoomCardSignatures,
+      jsonEncode(signatures),
+    );
+  }
+
+  static bool _iosGlassTheme(String roomId) {
+    final themeId = ddayController.bgThemeForRoom(roomId);
+    // iPhone only: “투명” → widget chrome uses ultraThinMaterial.
+    return themeId == TogetherBgTheme.none.id || themeId.isEmpty;
+  }
+
+  /// One room's widget data (keys as in the room list). [specOnly]: just
+  /// the native draw commands, which the widget draws from and which are
+  /// quick to write; otherwise the fallback PNG, which is slow (Flutter has
+  /// to draw it) and only matters when the spec is missing.
+  static Future<void> _saveIosRoomCard(
+    _IosRoomCard card,
+    Map<String, Map<String, Object>> rooms,
+    Map<String, String> savedSignatures,
+    Map<String, String> signatures, {
+    required bool specOnly,
+  }) async {
+    {
       final item = card.item;
       final bgAsset = rooms[item.id]?['bgAsset'] as String? ?? '';
       final imageKey =
@@ -904,33 +1037,37 @@ abstract final class HomeWidgetSync {
       // background (see TogetherIosCardSpec).
       final specKey =
           'togetherSpec_${base64Url.encode(utf8.encode(item.id)).replaceAll('=', '')}';
-      var specSaved = false;
-      try {
-        final spec = await TogetherIosCardSpec.build(
-          box: card.box,
-          corner: TogetherWidgetSize.defaultCornerDp,
-          label: card.label,
-          isPixel: visualStyleController.isPixel,
-          textColor: ddayController.textColorForRoom(item.id),
-          textScale: card.textScale,
-          textX: ddayController.textOffsetXForRoom(item.id).toDouble(),
-          textY: ddayController.textOffsetYForRoom(item.id).toDouble(),
-          textRotation: ddayController.textRotationForRoom(item.id).toDouble(),
-          textFont: ddayController.textFontForRoom(item.id),
-          bgAsset: bgAsset,
-          placed: card.placed,
-          charW: 72 * TogetherWidgetSize.s42.charFactor,
-          charH: 96 * TogetherWidgetSize.s42.charFactor,
-          bubbles: _shownBubbles(item.id),
-        );
-        if (spec != null) {
-          await HomeWidget.saveWidgetData<String>(specKey, spec);
-          specSaved = true;
+      if (specOnly) {
+        try {
+          final spec = await TogetherIosCardSpec.build(
+            box: card.box,
+            corner: TogetherWidgetSize.defaultCornerDp,
+            label: card.label,
+            isPixel: visualStyleController.isPixel,
+            textColor: ddayController.textColorForRoom(item.id),
+            textScale: card.textScale,
+            textX: ddayController.textOffsetXForRoom(item.id).toDouble(),
+            textY: ddayController.textOffsetYForRoom(item.id).toDouble(),
+            textRotation: ddayController
+                .textRotationForRoom(item.id)
+                .toDouble(),
+            textFont: ddayController.textFontForRoom(item.id),
+            bgAsset: bgAsset,
+            placed: card.placed,
+            charW: 72 * TogetherWidgetSize.s42.charFactor,
+            charH: 96 * TogetherWidgetSize.s42.charFactor,
+            bubbles: _shownBubbles(item.id),
+          );
+          if (spec != null) {
+            await HomeWidget.saveWidgetData<String>(specKey, spec);
+          }
+        } catch (e) {
+          debugPrint('iOS card spec: $e');
         }
-      } catch (e) {
-        debugPrint('iOS card spec: $e');
+        return;
       }
-      var ready = savedSignatures[item.id] == signature &&
+      var ready =
+          savedSignatures[item.id] == signature &&
           await _widgetFileExists(imageKey);
       // The Flutter-drawn PNG is only a fallback now. In the background the
       // engine would hold the render until the app opens, stalling this sync.
@@ -953,27 +1090,6 @@ abstract final class HomeWidgetSync {
         );
       }
       if (ready) signatures[item.id] = signature;
-      final themeId = ddayController.bgThemeForRoom(item.id);
-      index.add({
-        'id': item.id,
-        'title': item.title,
-        'imageKey': imageKey,
-        if (specSaved) 'specKey': specKey,
-        // iPhone only: “투명” → widget chrome uses ultraThinMaterial.
-        if (themeId == TogetherBgTheme.none.id || themeId.isEmpty) 'glass': '1',
-      });
-    }
-    await HomeWidget.saveWidgetData<String>(
-      keyDdayRoomIndex,
-      jsonEncode(index),
-    );
-    await HomeWidget.saveWidgetData<String>(
-      keyDdayRoomCardSignatures,
-      jsonEncode(signatures),
-    );
-    final current = {for (final card in cards) card.item.id};
-    for (final entry in previous.entries) {
-      if (!current.contains(entry.key)) await _deleteWidgetFile(entry.value);
     }
   }
 
@@ -1054,33 +1170,45 @@ abstract final class HomeWidgetSync {
       localeController.language.id,
     );
     final item = ddayController.widgetDday;
+    // Widgets still on a room I left say so (and ask to be removed) instead
+    // of quietly switching to another room.
+    await HomeWidget.saveWidgetData<String>(
+      keyDdayLeftRoomIds,
+      jsonEncode(ddayController.leftRoomIds.toList()),
+    );
     await _saveAllRooms();
     final roomId = item?.id;
     final meId = ddayController.meCharacterIdForRoom(roomId);
-    final charScale =
-        roomId == null ? 100 : ddayController.charScaleForRoom(roomId);
-    final friendScale =
-        roomId == null ? 100 : ddayController.friendScaleForRoom(roomId);
-    final textScale =
-        roomId == null ? 100 : ddayController.textScaleForRoom(roomId);
+    final charScale = roomId == null
+        ? 100
+        : ddayController.charScaleForRoom(roomId);
+    final friendScale = roomId == null
+        ? 100
+        : ddayController.friendScaleForRoom(roomId);
+    final textScale = roomId == null
+        ? 100
+        : ddayController.textScaleForRoom(roomId);
     final bgThemeId = roomId == null
         ? 'widget_background'
         : ddayController.bgThemeForRoom(roomId);
     final bgAsset = roomId == null
         ? TogetherBgTheme.byId(bgThemeId).assetPath
         : (WidgetAlbumBackground.resolvedAsset(
-              themeId: bgThemeId,
-              roomId: roomId,
-            ) ??
-            '');
-    final textColor =
-        roomId == null ? 0xFFF26B8A : ddayController.textColorForRoom(roomId);
+                themeId: bgThemeId,
+                roomId: roomId,
+              ) ??
+              '');
+    final textColor = roomId == null
+        ? 0xFFF26B8A
+        : ddayController.textColorForRoom(roomId);
     const shape = TogetherWidgetShape.square;
     final widgetSize = TogetherWidgetSize.s42;
-    final textOffsetX =
-        roomId == null ? 0 : ddayController.textOffsetXForRoom(roomId);
-    final textOffsetY =
-        roomId == null ? 0 : ddayController.textOffsetYForRoom(roomId);
+    final textOffsetX = roomId == null
+        ? 0
+        : ddayController.textOffsetXForRoom(roomId);
+    final textOffsetY = roomId == null
+        ? 0
+        : ddayController.textOffsetYForRoom(roomId);
     // Same screen width the app preview uses → identical cellDp on the home widget.
     await HomeWidget.saveWidgetData<int>(
       keyDdayScreenWidthDp,
@@ -1090,31 +1218,29 @@ abstract final class HomeWidgetSync {
       keyVisualStyle,
       visualStyleController.style.id,
     );
-    final meOffsetX =
-        roomId == null ? 0 : ddayController.meOffsetXForRoom(roomId);
-    final meOffsetY =
-        roomId == null ? 0 : ddayController.meOffsetYForRoom(roomId);
-    final friendOffsetX =
-        roomId == null ? 0 : ddayController.friendOffsetXForRoom(roomId);
-    final friendOffsetY =
-        roomId == null ? 0 : ddayController.friendOffsetYForRoom(roomId);
+    final meOffsetX = roomId == null
+        ? 0
+        : ddayController.meOffsetXForRoom(roomId);
+    final meOffsetY = roomId == null
+        ? 0
+        : ddayController.meOffsetYForRoom(roomId);
+    final friendOffsetX = roomId == null
+        ? 0
+        : ddayController.friendOffsetXForRoom(roomId);
+    final friendOffsetY = roomId == null
+        ? 0
+        : ddayController.friendOffsetYForRoom(roomId);
     await HomeWidget.saveWidgetData<int>(keyDdayMeOffsetX, meOffsetX);
     await HomeWidget.saveWidgetData<int>(keyDdayMeOffsetY, meOffsetY);
     await HomeWidget.saveWidgetData<int>(keyDdayFriendOffsetX, friendOffsetX);
-    await HomeWidget.saveWidgetData<int>(
-      keyDdayFriendOffsetY,
-      friendOffsetY,
-    );
+    await HomeWidget.saveWidgetData<int>(keyDdayFriendOffsetY, friendOffsetY);
     await HomeWidget.saveWidgetData<int>(keyDdayTextOffsetX, textOffsetX);
     await HomeWidget.saveWidgetData<int>(keyDdayTextOffsetY, textOffsetY);
     await HomeWidget.saveWidgetData<int>(keyDdayCharScale, charScale);
     await HomeWidget.saveWidgetData<int>(keyDdayFriendCharScale, friendScale);
     await HomeWidget.saveWidgetData<int>(keyDdayTextScale, textScale);
     await HomeWidget.saveWidgetData<String>(keyDdayBgTheme, bgThemeId);
-    await HomeWidget.saveWidgetData<String>(
-      keyDdayBgAsset,
-      bgAsset,
-    );
+    await HomeWidget.saveWidgetData<String>(keyDdayBgAsset, bgAsset);
     await HomeWidget.saveWidgetData<String>(
       keyDdayTextColor,
       _hex(Color(textColor)),
@@ -1204,27 +1330,29 @@ abstract final class HomeWidgetSync {
         keyDdayDesignHeight,
         box.height.toString(),
       );
-      final placed = _withoutBlocked(TogetherCrowdLayout.withUserScale(
-        placed: TogetherCrowdLayout.resolve(
-          people: TogetherCrowdLayout.roster(
-            myUid: authController.viewerUid,
-            myCharacterId: meId,
-            myIds: authController.myIds,
-            hostUid: item.cloudOwnerUid,
-            friends: item.friends,
+      final placed = _withoutBlocked(
+        TogetherCrowdLayout.withUserScale(
+          placed: TogetherCrowdLayout.resolve(
+            people: TogetherCrowdLayout.roster(
+              myUid: authController.viewerUid,
+              myCharacterId: meId,
+              myIds: authController.myIds,
+              hostUid: item.cloudOwnerUid,
+              friends: item.friends,
+            ),
+            canvasW: box.width,
+            canvasH: box.height,
+            charFactor: TogetherWidgetSize.s42.charFactor,
+            saved: ddayController.crowdForRoom(item.id),
           ),
-          canvasW: box.width,
-          canvasH: box.height,
-          charFactor: TogetherWidgetSize.s42.charFactor,
-          saved: ddayController.crowdForRoom(item.id),
+          myUid: authController.viewerUid,
+          meScale: ddayController.charScaleForRoom(item.id),
+          friendScale: ddayController.friendScaleForRoom(item.id),
+          saved: TogetherCrowdLayout.scalesOf(
+            ddayController.crowdForRoom(item.id),
+          ),
         ),
-        myUid: authController.viewerUid,
-        meScale: ddayController.charScaleForRoom(item.id),
-        friendScale: ddayController.friendScaleForRoom(item.id),
-        saved: TogetherCrowdLayout.scalesOf(
-          ddayController.crowdForRoom(item.id),
-        ),
-      ));
+      );
       await _renderIosTogetherCard(
         box: box,
         corner: corner,

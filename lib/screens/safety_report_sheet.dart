@@ -10,20 +10,18 @@ import 'package:quotation/data/safety_report_repository.dart';
 import 'package:quotation/data/together_cheer_repository.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/theme/app_colors.dart';
+import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 
 Future<void> showSafetyReportSheet({
   required BuildContext context,
   required DdayItem room,
 }) {
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  // Full screen with a top bar and back button, like the other room screens.
+  return Navigator.of(context).push<void>(
+    MaterialPageRoute(
+      builder: (context) => _SafetyReportSheet(roomId: room.id),
     ),
-    builder: (context) => _SafetyReportSheet(roomId: room.id),
   );
 }
 
@@ -59,7 +57,8 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
   _CheerTarget _targetOf(DdayItem room, TogetherCheer? cloud) {
     final local = room.latestCheer?.trim();
     final cloudText = cloud?.text.trim();
-    final mine = local != null &&
+    final mine =
+        local != null &&
         local.isNotEmpty &&
         (cloudText == null || local != cloudText);
     final text = mine ? local : (cloudText ?? local ?? '');
@@ -164,7 +163,9 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
     if (!result.ok) {
       setState(() => _busy = false);
       _snack(
-        result.errorCode == 'not_signed_in' ? t.safetyNeedLogin : t.safetyFailed,
+        result.errorCode == 'not_signed_in'
+            ? t.safetyNeedLogin
+            : t.safetyFailed,
       );
       return;
     }
@@ -218,7 +219,10 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       SnackBar(
-        content: Text(message, style: AppTheme.body.copyWith(color: Colors.white)),
+        content: Text(
+          message,
+          style: AppTheme.body.copyWith(color: Colors.white),
+        ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.ink,
       ),
@@ -228,171 +232,177 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
   @override
   Widget build(BuildContext context) {
     final t = AppStrings.current;
-    final bottom = MediaQuery.viewInsetsOf(context).bottom;
+    final palette = context.palette;
 
-    return StreamBuilder<TogetherCheer?>(
-      stream: TogetherCheerRepository.watch(widget.roomId),
-      builder: (context, snap) {
-        return ListenableBuilder(
-          listenable: Listenable.merge([
-            blockedUsersController,
-            ddayController,
-          ]),
-          builder: (context, _) {
-            final room = _room;
-            if (room == null) return const SizedBox.shrink();
-            final cheer = _targetOf(room, snap.data);
-            final me = _myUid;
-            final friends = room.friends.where((friend) {
-              return friend.uid.isNotEmpty && friend.uid != me;
-            }).toList();
-            final targets = _reportTargets(t, room, cheer, friends);
-            final canReport = targets.isNotEmpty;
-            final target = !canReport
-                ? null
-                : targets.where((e) => e.key == _targetKey).firstOrNull ??
-                    targets.first;
-            return Padding(
-              padding: EdgeInsets.fromLTRB(20, 12, 20, 20 + bottom),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 36,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD5DDE8),
-                          borderRadius: BorderRadius.circular(4),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF3F7FD),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF3F7FD),
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).maybePop(),
+          icon: const Icon(Icons.chevron_left_rounded, size: 28),
+        ),
+        title: Text(
+          t.safetyReportTitle,
+          style: AppTheme.body.copyWith(
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: palette.accent,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: StreamBuilder<TogetherCheer?>(
+        stream: TogetherCheerRepository.watch(widget.roomId),
+        builder: (context, snap) {
+          return ListenableBuilder(
+            listenable: Listenable.merge([
+              blockedUsersController,
+              ddayController,
+            ]),
+            builder: (context, _) {
+              final room = _room;
+              if (room == null) return const SizedBox.shrink();
+              final cheer = _targetOf(room, snap.data);
+              final me = _myUid;
+              final friends = room.friends.where((friend) {
+                return friend.uid.isNotEmpty && friend.uid != me;
+              }).toList();
+              final targets = _reportTargets(t, room, cheer, friends);
+              final canReport = targets.isNotEmpty;
+              final target = !canReport
+                  ? null
+                  : targets.where((e) => e.key == _targetKey).firstOrNull ??
+                        targets.first;
+              return SafeArea(
+                top: false,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        canReport
+                            ? t.safetyReportBody
+                            : t.safetyNothingToReport,
+                        style: AppTheme.body.copyWith(
+                          fontSize: 13,
+                          height: 1.45,
+                          color: AppColors.muted,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      t.safetyReportTitle,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      canReport ? t.safetyReportBody : t.safetyNothingToReport,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 13,
-                        height: 1.45,
-                        color: AppColors.muted,
-                      ),
-                    ),
-                    if (target != null) ...[
-                      const SizedBox(height: 12),
-                      // Material, not a DecoratedBox: the tiles paint their
-                      // ink on it.
-                      Material(
-                        color: const Color(0xFFF7F9FC),
-                        borderRadius: BorderRadius.circular(12),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: RadioGroup<String>(
-                            groupValue: target.key,
-                            onChanged: (next) {
-                              if (_busy || next == null) return;
-                              setState(() => _targetKey = next);
-                            },
-                            child: Column(
-                              children: [
-                                for (final item in targets) _targetTile(item),
-                              ],
+                      if (target != null) ...[
+                        const SizedBox(height: 12),
+                        // Material, not a DecoratedBox: the tiles paint their
+                        // ink on it.
+                        Material(
+                          color: const Color(0xFFF7F9FC),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: RadioGroup<String>(
+                              groupValue: target.key,
+                              onChanged: (next) {
+                                if (_busy || next == null) return;
+                                setState(() => _targetKey = next);
+                              },
+                              child: Column(
+                                children: [
+                                  for (final item in targets) _targetTile(item),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      RadioGroup<String>(
-                        groupValue: _reason,
-                        onChanged: (next) {
-                          if (_busy || next == null) return;
-                          setState(() => _reason = next);
-                        },
-                        child: Column(
-                          children: [
-                            _reasonTile(
-                              t.safetyReasonHarassment,
-                              SafetyReportReason.harassment,
-                            ),
-                            _reasonTile(
-                              t.safetyReasonSexual,
-                              SafetyReportReason.sexual,
-                            ),
-                            _reasonTile(
-                              t.safetyReasonSpam,
-                              SafetyReportReason.spam,
-                            ),
-                            _reasonTile(
-                              t.safetyReasonOther,
-                              SafetyReportReason.other,
-                            ),
-                          ],
-                        ),
-                      ),
-                      if ((target.authorUid ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        CheckboxListTile(
-                          contentPadding: EdgeInsets.zero,
-                          value: _block,
-                          onChanged: _busy
-                              ? null
-                              : (value) =>
-                                  setState(() => _block = value ?? false),
-                          title: Text(
-                            t.safetyBlockUser,
-                            style: AppTheme.body.copyWith(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                            ),
+                        const SizedBox(height: 12),
+                        RadioGroup<String>(
+                          groupValue: _reason,
+                          onChanged: (next) {
+                            if (_busy || next == null) return;
+                            setState(() => _reason = next);
+                          },
+                          child: Column(
+                            children: [
+                              _reasonTile(
+                                t.safetyReasonHarassment,
+                                SafetyReportReason.harassment,
+                              ),
+                              _reasonTile(
+                                t.safetyReasonSexual,
+                                SafetyReportReason.sexual,
+                              ),
+                              _reasonTile(
+                                t.safetyReasonSpam,
+                                SafetyReportReason.spam,
+                              ),
+                              _reasonTile(
+                                t.safetyReasonOther,
+                                SafetyReportReason.other,
+                              ),
+                            ],
                           ),
-                          subtitle: Text(
-                            t.safetyBlockHint,
-                            style: AppTheme.body.copyWith(
-                              fontSize: 12,
+                        ),
+                        if ((target.authorUid ?? '').isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          CheckboxListTile(
+                            contentPadding: EdgeInsets.zero,
+                            value: _block,
+                            onChanged: _busy
+                                ? null
+                                : (value) =>
+                                      setState(() => _block = value ?? false),
+                            title: Text(
+                              t.safetyBlockUser,
+                              style: AppTheme.body.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            subtitle: Text(
+                              t.safetyBlockHint,
+                              style: AppTheme.body.copyWith(
+                                fontSize: 12,
+                                color: AppColors.muted,
+                              ),
+                            ),
+                            controlAffinity: ListTileControlAffinity.leading,
+                          ),
+                        ],
+                        TextField(
+                          controller: _note,
+                          maxLength: 300,
+                          minLines: 1,
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            hintText: t.safetyNoteHint,
+                            hintStyle: AppTheme.body.copyWith(
                               color: AppColors.muted,
                             ),
                           ),
-                          controlAffinity: ListTileControlAffinity.leading,
+                        ),
+                        const SizedBox(height: 8),
+                        FilledButton(
+                          onPressed: _busy
+                              ? null
+                              : () => _submit(target, cheer),
+                          child: Text(t.safetySubmit),
                         ),
                       ],
-                      TextField(
-                        controller: _note,
-                        maxLength: 300,
-                        minLines: 1,
-                        maxLines: 3,
-                        decoration: InputDecoration(
-                          hintText: t.safetyNoteHint,
-                          hintStyle:
-                              AppTheme.body.copyWith(color: AppColors.muted),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      FilledButton(
-                        onPressed: _busy ? null : () => _submit(target, cheer),
-                        child: Text(t.safetySubmit),
-                      ),
+                      if (friends.isNotEmpty) ...[
+                        const SizedBox(height: 18),
+                        for (final friend in friends)
+                          _friendRow(t, friend, cheer),
+                      ],
                     ],
-                    if (friends.isNotEmpty) ...[
-                      const SizedBox(height: 18),
-                      for (final friend in friends)
-                        _friendRow(t, friend, cheer),
-                    ],
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -425,12 +435,19 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
       value: value,
       title: Text(
         label,
-        style: AppTheme.body.copyWith(fontSize: 14, fontWeight: FontWeight.w700),
+        style: AppTheme.body.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
 
-  Widget _friendRow(AppStrings t, DdayFriendMember friend, _CheerTarget target) {
+  Widget _friendRow(
+    AppStrings t,
+    DdayFriendMember friend,
+    _CheerTarget target,
+  ) {
     final blocked = blockedUsersController.isBlocked(friend.uid);
     final name = friend.displayName?.trim();
     final label = (name != null && name.isNotEmpty)
@@ -440,7 +457,10 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
       contentPadding: EdgeInsets.zero,
       title: Text(
         label,
-        style: AppTheme.body.copyWith(fontSize: 14, fontWeight: FontWeight.w700),
+        style: AppTheme.body.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       trailing: TextButton(
         onPressed: _busy
@@ -488,11 +508,7 @@ class _ReportTarget {
 }
 
 class _CheerTarget {
-  const _CheerTarget({
-    required this.text,
-    this.authorUid,
-    this.authorName,
-  });
+  const _CheerTarget({required this.text, this.authorUid, this.authorName});
 
   final String text;
   final String? authorUid;

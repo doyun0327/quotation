@@ -69,9 +69,19 @@ service cloud.firestore {
 
     match /dday_invites/{inviteId} {
       allow read: if signedIn();
+      // The host, or a friend already in the room. A friend's code still
+      // names the room's real host (joining is checked against it) and
+      // records who made it in createdBy.
+      function friendInvites() {
+        let room = get(/databases/$(database)/documents/dday_memberships/$(request.resource.data.ddayId)).data;
+        return request.resource.data.get('createdBy', null) == request.auth.uid
+          && request.auth.uid in room.get('guestUids', [])
+          && room.hostUid == request.resource.data.hostUid;
+      }
       allow create: if signedIn()
-        && request.resource.data.hostUid == request.auth.uid
-        && request.resource.data.status == 'pending';
+        && request.resource.data.status == 'pending'
+        && (request.resource.data.hostUid == request.auth.uid
+            || friendInvites());
       allow update: if signedIn()
         && (resource.data.hostUid == request.auth.uid
             || resource.data.status == 'pending');

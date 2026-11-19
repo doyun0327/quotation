@@ -8,14 +8,14 @@ abstract final class DearlyStoreLinks {
   static const androidPackage = 'com.dearly.quoteswidget';
 
   /// Numeric App Store id from App Store Connect (App Information → Apple ID).
-  static const appStoreId = '';
+  static const appStoreId = '6827842803';
 
   static const playStore =
       'https://play.google.com/store/apps/details?id=$androidPackage';
 
-  static String get appStore => appStoreId.isEmpty
-      ? 'https://apps.apple.com/search?term=Dearly'
-      : 'https://apps.apple.com/app/id$appStoreId';
+  /// Dearly's App Store page, as shared from the widget decorator. No
+  /// country in the path, so it opens the viewer's own store.
+  static const appStore = 'https://apps.apple.com/app/id$appStoreId';
 
   /// The link for this phone's own store.
   static String get forThisPhone =>

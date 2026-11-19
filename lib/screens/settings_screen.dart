@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quotation/screens/widget_how_to_screen.dart';
+import 'package:quotation/widgets/ios_widget_guide.dart';
 import 'package:quotation/widgets/subscribe_flow.dart';
 import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/data/auth_controller.dart';
@@ -203,6 +205,25 @@ class SettingsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
+                      // iPhone only: Galaxy adds the widget from the app itself.
+                      if (IosWidgetGuide.isIOS) ...[
+                        const SizedBox(height: 18),
+                        SettingsSection(
+                          title: t.widgetHowToSection,
+                          children: [
+                            SettingsItem(
+                              icon: Icons.widgets_rounded,
+                              title: t.widgetHowToTitle,
+                              subtitle: t.widgetHowToSubtitle,
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const WidgetHowToScreen(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 18),
                       SettingsSection(
                         title: t.subscriptionSection,

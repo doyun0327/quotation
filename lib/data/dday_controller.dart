@@ -1122,9 +1122,14 @@ class DdayController extends ChangeNotifier {
   Future<void> remove(String id) async {
     _items.removeWhere((e) => e.id == id);
     if (_meCharByRoom.remove(id) != null) await _persistMeCharacters();
+    // The room's own look (positions, bubbles, colors) goes with it, so a
+    // room joined again later does not come back looking like before.
+    _localCheerIds.remove(id);
+    if (_roomOffsets.remove(id) != null) await _persistRoomOffsets();
     if (_items.isNotEmpty && !_items.any((e) => e.pinnedForWidget)) {
       _items[0] = _items[0].copyWith(pinnedForWidget: true);
     }
+    _applyActiveOffsetsFromPinned();
     await _persist();
   }
 

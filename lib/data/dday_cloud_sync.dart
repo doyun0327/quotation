@@ -41,8 +41,11 @@ class DdayCloudSync {
   DdayCloudSync._();
 
   static final _db = FirebaseFirestore.instance;
-  static final Map<String, StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>>
-      _roomSubs = {};
+  static final Map<
+    String,
+    StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>
+  >
+  _roomSubs = {};
   static final Map<String, String> _seenLayoutNotify = {};
 
   /// Last widget-edit notice per `room|friend`, for the one-per-minute limit.
@@ -86,8 +89,9 @@ class DdayCloudSync {
     }
     try {
       final docs = await DdayInviteRepository.allMembershipsForUser(uid);
-      final dropped =
-          await ddayController.dropRoomsOutside({for (final d in docs) d.id});
+      final dropped = await ddayController.dropRoomsOutside({
+        for (final d in docs) d.id,
+      });
       debugPrint('Account changed: dropped $dropped rooms of the old account');
       await ddayController.setRoomsOwnerUid(uid);
       return true;
@@ -118,37 +122,38 @@ class DdayCloudSync {
     for (final id in ids) {
       if (_roomSubs.containsKey(id)) continue;
       var first = true;
-      _roomSubs[id] = _db.collection('dday_memberships').doc(id).snapshots().listen(
-        (snap) async {
-          final data = snap.data();
-          if (data == null || !_started) return;
-          togetherEditing.applyDoc(snap.id, data);
-          // Someone opening/closing the decorator only touches `editLock`.
-          // Skip the layout apply and the (heavy) widget redraw for that.
-          final sig = (Map.of(data)..remove('editLock')).toString();
-          if (!first && sig == _layoutSig[id]) return;
-          _layoutSig[id] = sig;
-          final notify = !first;
-          first = false;
-          try {
-            final notice = await _applyMembershipDoc(
-              snap.id,
-              data,
-              uid,
-              notifyRemote: notify,
-            );
-            // My own unconfirmed write echoes back first; local state already
-            // has it, and the server-confirmed snapshot redraws once.
-            if (!snap.metadata.hasPendingWrites) {
-              await HomeWidgetSync.syncDday();
+      _roomSubs[id] = _db
+          .collection('dday_memberships')
+          .doc(id)
+          .snapshots()
+          .listen((snap) async {
+            final data = snap.data();
+            if (data == null || !_started) return;
+            togetherEditing.applyDoc(snap.id, data);
+            // Someone opening/closing the decorator only touches `editLock`.
+            // Skip the layout apply and the (heavy) widget redraw for that.
+            final sig = (Map.of(data)..remove('editLock')).toString();
+            if (!first && sig == _layoutSig[id]) return;
+            _layoutSig[id] = sig;
+            final notify = !first;
+            first = false;
+            try {
+              final notice = await _applyMembershipDoc(
+                snap.id,
+                data,
+                uid,
+                notifyRemote: notify,
+              );
+              // My own unconfirmed write echoes back first; local state already
+              // has it, and the server-confirmed snapshot redraws once.
+              if (!snap.metadata.hasPendingWrites) {
+                await HomeWidgetSync.syncDday();
+              }
+              if (notice != null) onRemoteWidgetEdit?.call(notice);
+            } catch (e) {
+              debugPrint('room watch $id: $e');
             }
-            if (notice != null) onRemoteWidgetEdit?.call(notice);
-          } catch (e) {
-            debugPrint('room watch $id: $e');
-          }
-        },
-        onError: (Object e) => debugPrint('room watch $id: $e'),
-      );
+          }, onError: (Object e) => debugPrint('room watch $id: $e'));
     }
   }
 
@@ -174,24 +179,21 @@ class DdayCloudSync {
         continue; // joined dday owned by someone else
       }
       try {
-        await _db.collection('ddays').doc(item.id).set(
-          {
-            'ownerUid': uid,
-            'title': item.title,
-            'targetDate': Timestamp.fromDate(
-              DateTime(
-                item.targetDate.year,
-                item.targetDate.month,
-                item.targetDate.day,
-              ),
+        await _db.collection('ddays').doc(item.id).set({
+          'ownerUid': uid,
+          'title': item.title,
+          'targetDate': Timestamp.fromDate(
+            DateTime(
+              item.targetDate.year,
+              item.targetDate.month,
+              item.targetDate.day,
             ),
-            'iconId': item.iconId,
-            'repeatYearly': item.repeatYearly,
-            'status': item.hasFriend ? 'paired' : 'solo',
-            'updatedAt': FieldValue.serverTimestamp(),
-          },
-          SetOptions(merge: true),
-        );
+          ),
+          'iconId': item.iconId,
+          'repeatYearly': item.repeatYearly,
+          'status': item.hasFriend ? 'paired' : 'solo',
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
       } catch (e) {
         debugPrint('pushOwnedDdays ${item.id}: $e');
       }
@@ -203,24 +205,21 @@ class DdayCloudSync {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
     if (item.cloudOwnerUid != null && item.cloudOwnerUid != uid) return;
-    await _db.collection('ddays').doc(item.id).set(
-      {
-        'ownerUid': uid,
-        'title': item.title,
-        'targetDate': Timestamp.fromDate(
-          DateTime(
-            item.targetDate.year,
-            item.targetDate.month,
-            item.targetDate.day,
-          ),
+    await _db.collection('ddays').doc(item.id).set({
+      'ownerUid': uid,
+      'title': item.title,
+      'targetDate': Timestamp.fromDate(
+        DateTime(
+          item.targetDate.year,
+          item.targetDate.month,
+          item.targetDate.day,
         ),
-        'iconId': item.iconId,
-        'repeatYearly': item.repeatYearly,
-        'status': item.hasFriend ? 'paired' : 'solo',
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      SetOptions(merge: true),
-    );
+      ),
+      'iconId': item.iconId,
+      'repeatYearly': item.repeatYearly,
+      'status': item.hasFriend ? 'paired' : 'solo',
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
     try {
       await DdayInviteRepository.ensureHostMembership(item.id);
     } catch (e) {
@@ -314,10 +313,15 @@ class DdayCloudSync {
       return _profileName(uid);
     }
 
-    var hostName = await nameFor(hostUid, data['hostDisplayName'] as String? ?? '');
+    var hostName = await nameFor(
+      hostUid,
+      data['hostDisplayName'] as String? ?? '',
+    );
     final membersRaw = data['members'] as List<dynamic>? ?? [];
     final members = membersRaw
-        .map((e) => DdayFriendMember.fromJson(Map<String, dynamic>.from(e as Map)))
+        .map(
+          (e) => DdayFriendMember.fromJson(Map<String, dynamic>.from(e as Map)),
+        )
         .where((m) => m.uid.isNotEmpty)
         .toList();
     final namedMembers = <DdayFriendMember>[];
@@ -366,7 +370,8 @@ class DdayCloudSync {
         ...namedMembers.where((m) => m.uid != myUid),
       ].toList();
     }
-    final shownFriends = (ddayId == TogetherTestRoom.roomId &&
+    final shownFriends =
+        (ddayId == TogetherTestRoom.roomId &&
             friendsForMe.isEmpty &&
             togetherTestRoom.enabled)
         ? [TogetherTestRoom.placeholderFriend()]
@@ -405,7 +410,8 @@ class DdayCloudSync {
       final ddaySnap = await _db.collection('ddays').doc(ddayId).get();
       final dday = ddaySnap.data();
       if (dday == null) return null;
-      final target = (dday['targetDate'] as Timestamp?)?.toDate() ?? DateTime.now();
+      final target =
+          (dday['targetDate'] as Timestamp?)?.toDate() ?? DateTime.now();
       await ddayController.upsertFromCloud(
         DdayItem(
           id: ddayId,
@@ -449,9 +455,11 @@ class DdayCloudSync {
       if (changed && myUid == hostUid) {
         final room = ddayController.items.where((e) => e.id == ddayId);
         if (room.isNotEmpty) {
-          unawaited(pushDday(room.first).catchError((Object e) {
-            debugPrint('pushDday after room info: $e');
-          }));
+          unawaited(
+            pushDday(room.first).catchError((Object e) {
+              debugPrint('pushDday after room info: $e');
+            }),
+          );
         }
       }
     }
@@ -472,7 +480,14 @@ class DdayCloudSync {
     // lock); taking the same saved look again would wipe my edits that are
     // not applied yet, and the home widget would jump back to the old look.
     final layoutSig = _layoutSignature(data);
-    final layoutChanged = await _layoutSeen(ddayId) != layoutSig;
+    final seenSig = await _layoutSeen(ddayId);
+    // A fingerprint from before v2 counted characters and names too: take
+    // the new one quietly instead of treating every room as changed once.
+    final oldFormat = seenSig != null && !seenSig.startsWith(_layoutSigVersion);
+    final editingHere = editingRoomIds.contains(
+      ddayController.currentRoomId(ddayId),
+    );
+    final layoutChanged = !oldFormat && !editingHere && seenSig != layoutSig;
     if ((layoutChanged || mineButMissing) &&
         (actor.isEmpty || actor != myUid || mineButMissing) &&
         !blockedActor) {
@@ -525,14 +540,39 @@ class DdayCloudSync {
 
   /// Short stable fingerprint of the room's shared look (every `layout*`
   /// field), so a re-sent copy of the same look is told apart from a new one.
+  /// Fingerprint of the room *look* only. Left out: who saved it (name),
+  /// and each person's character inside `layoutCrowd`, which a friend's
+  /// character change rewrites. Counting those made a character change or
+  /// a nickname edit look like a new decoration, and the room's old look
+  /// was put back over edits not applied yet.
+  static const _layoutSigVersion = 'v2:';
+  static const _layoutSigSkip = {'layoutUpdatedBy', 'layoutUpdatedByName'};
+
   static String _layoutSignature(Map<String, dynamic> data) {
-    final keys = data.keys.where((k) => k.startsWith('layout')).toList()..sort();
+    final keys =
+        data.keys
+            .where((k) => k.startsWith('layout') && !_layoutSigSkip.contains(k))
+            .toList()
+          ..sort();
     final text = StringBuffer();
     for (final key in keys) {
+      var value = data[key];
+      if (key == 'layoutCrowd' && value is List) {
+        value = [
+          for (final entry in value)
+            if (entry is Map)
+              {
+                for (final e in entry.entries)
+                  if (e.key != 'characterId') e.key: e.value,
+              }
+            else
+              entry,
+        ];
+      }
       text
         ..write(key)
         ..write('=')
-        ..write(data[key])
+        ..write(value)
         ..write(';');
     }
     // FNV-1a (32-bit): the same on every run, unlike String.hashCode.
@@ -541,8 +581,13 @@ class DdayCloudSync {
       hash ^= unit;
       hash = (hash * 0x01000193) & 0xffffffff;
     }
-    return '${keys.length}:${hash.toRadixString(16)}';
+    return '$_layoutSigVersion${keys.length}:${hash.toRadixString(16)}';
   }
+
+  /// Rooms whose decorator is open on this phone. A friend cannot decorate
+  /// then (the edit lock), so a look change arriving meanwhile is a side
+  /// effect (a leave, a character) and must not undo what is on screen.
+  static final Set<String> editingRoomIds = {};
 
   /// Read fresh each time: the FCM background isolate writes this too.
   static Future<Map<String, String>> _layoutSeenMap() async {
@@ -684,10 +729,12 @@ class DdayCloudSync {
     final textY = rawTextY == null ? null : ay(rawTextY);
     final textRotation = (data['layoutTextRotation'] as num?)?.toInt();
     final legacyScale = (data['layoutCharScale'] as num?)?.toInt();
-    final hostScale =
-        aScale((data['layoutHostScale'] as num?)?.toInt() ?? legacyScale);
-    final guestScale =
-        aScale((data['layoutGuestScale'] as num?)?.toInt() ?? legacyScale);
+    final hostScale = aScale(
+      (data['layoutHostScale'] as num?)?.toInt() ?? legacyScale,
+    );
+    final guestScale = aScale(
+      (data['layoutGuestScale'] as num?)?.toInt() ?? legacyScale,
+    );
     final textScale = aScale((data['layoutTextScale'] as num?)?.toInt());
     final rawBg = data['layoutBgTheme'] as String?;
     final bgTheme = rawBg == TogetherBgTheme.albumId ? null : rawBg;
@@ -695,11 +742,9 @@ class DdayCloudSync {
     final textFontId = data['layoutTextFont'] as String?;
     final textFont = textFontId == null ? null : WidgetFont.byId(textFontId);
     final shapeId = data['layoutShape'] as String?;
-    final shape =
-        shapeId == null ? null : TogetherWidgetShape.byId(shapeId);
+    final shape = shapeId == null ? null : TogetherWidgetShape.byId(shapeId);
     final sizeId = data['layoutWidgetSize'] as String?;
-    final widgetSize =
-        sizeId == null ? null : TogetherWidgetSize.byId(sizeId);
+    final widgetSize = sizeId == null ? null : TogetherWidgetSize.byId(sizeId);
     final crowdKey = data['layoutCrowdKey'] as String?;
     final crowd = _crowdPoints(data['layoutCrowd'], ax, ay);
     final sharedCrowd = crowd.isEmpty ? null : crowd;
@@ -709,8 +754,8 @@ class DdayCloudSync {
     // Absent on layouts pushed by older app versions: keep what we have.
     // Stickers are stored apart so older apps never draw them as empty
     // speech bubbles.
-    final bubbles = data.containsKey('layoutBubbles') ||
-            data.containsKey('layoutStickers')
+    final bubbles =
+        data.containsKey('layoutBubbles') || data.containsKey('layoutStickers')
         ? [
             for (final key in const ['layoutBubbles', 'layoutStickers'])
               ...TogetherBubble.listFromJson(
@@ -788,7 +833,8 @@ class DdayCloudSync {
         uid: uid,
         x: ax((entry['x'] as num?)?.toInt() ?? 0),
         y: ay((entry['y'] as num?)?.toInt() ?? 0),
-        rotation: (entry['rotation'] as num?)?.toInt() ??
+        rotation:
+            (entry['rotation'] as num?)?.toInt() ??
             (entry['r'] as num?)?.toInt() ??
             0,
         // A percent, not a canvas offset: the same on every phone.
@@ -890,59 +936,55 @@ class DdayCloudSync {
     }
 
     try {
-      await _db.collection('dday_memberships').doc(item.id).set(
-        {
-          'layoutCanvasW': cw,
-          'layoutCanvasH': ch,
-          'layoutHostX': hostX,
-          'layoutHostY': hostY,
-          'layoutGuestX': guestX,
-          'layoutGuestY': guestY,
-          'layoutTextX': textX,
-          'layoutTextY': textY,
-          'layoutTextRotation': textRotation,
-          'layoutCharScale': hostScale,
-          'layoutHostScale': hostScale,
-          'layoutGuestScale': guestScale,
-          'layoutTextScale': textScale,
-          'layoutBgTheme': bgTheme,
-          'layoutTextColor': textColor,
-          'layoutTextFont': textFont.id,
-          'layoutShape': shape.id,
-          'layoutWidgetSize': widgetSize.id,
-          if (crowdKey.isNotEmpty) 'layoutCrowdKey': crowdKey,
-          if (crowd.isNotEmpty)
-            'layoutCrowd': [
-              for (final slot in crowd)
-                {
-                  'uid': slot.uid,
-                  'x': slot.x,
-                  'y': slot.y,
-                  'rotation': slot.rotation,
-                  if (slot.scale > 0) 's': slot.scale,
-                  if ((charByUid[slot.uid] ?? '').isNotEmpty)
-                    'characterId': charByUid[slot.uid],
-                },
-            ],
-          // Always written so a deleted bubble disappears for friends too.
-          'layoutBubbles': [
-            for (final b in bubbles)
-              if (!b.isSticker) b.toJson(),
+      await _db.collection('dday_memberships').doc(item.id).set({
+        'layoutCanvasW': cw,
+        'layoutCanvasH': ch,
+        'layoutHostX': hostX,
+        'layoutHostY': hostY,
+        'layoutGuestX': guestX,
+        'layoutGuestY': guestY,
+        'layoutTextX': textX,
+        'layoutTextY': textY,
+        'layoutTextRotation': textRotation,
+        'layoutCharScale': hostScale,
+        'layoutHostScale': hostScale,
+        'layoutGuestScale': guestScale,
+        'layoutTextScale': textScale,
+        'layoutBgTheme': bgTheme,
+        'layoutTextColor': textColor,
+        'layoutTextFont': textFont.id,
+        'layoutShape': shape.id,
+        'layoutWidgetSize': widgetSize.id,
+        if (crowdKey.isNotEmpty) 'layoutCrowdKey': crowdKey,
+        if (crowd.isNotEmpty)
+          'layoutCrowd': [
+            for (final slot in crowd)
+              {
+                'uid': slot.uid,
+                'x': slot.x,
+                'y': slot.y,
+                'rotation': slot.rotation,
+                if (slot.scale > 0) 's': slot.scale,
+                if ((charByUid[slot.uid] ?? '').isNotEmpty)
+                  'characterId': charByUid[slot.uid],
+              },
           ],
-          'layoutStickers': [
-            for (final b in bubbles)
-              if (b.isSticker) b.toJson(),
-          ],
-          'layoutPaidLooks': looks.paidLooks.toList(),
-          'layoutUpdatedBy': uid,
-          'layoutUpdatedByName':
-              (await UserProfileSync.savedNickname()) ?? '',
-          'updatedBy': uid,
-          'updatedAt': FieldValue.serverTimestamp(),
-          if (notifyFriends) 'layoutNotifyAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      );
+        // Always written so a deleted bubble disappears for friends too.
+        'layoutBubbles': [
+          for (final b in bubbles)
+            if (!b.isSticker) b.toJson(),
+        ],
+        'layoutStickers': [
+          for (final b in bubbles)
+            if (b.isSticker) b.toJson(),
+        ],
+        'layoutPaidLooks': looks.paidLooks.toList(),
+        'layoutUpdatedBy': uid,
+        'layoutUpdatedByName': (await UserProfileSync.savedNickname()) ?? '',
+        'updatedBy': uid,
+        'updatedAt': FieldValue.serverTimestamp(),
+        if (notifyFriends) 'layoutNotifyAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
     } catch (e) {
       debugPrint('pushSharedLayout: $e');
     }
@@ -956,6 +998,16 @@ class DdayCloudSync {
   /// the words this person wrote (bubbles, latest cheer) go with them.
   /// Friends' widgets redraw quietly; leaving is not "edited the widget".
   /// A leave that fails (offline) is retried by [retryPendingLeaves].
+  /// Writes down that [roomId] is being left, before anything is removed
+  /// on this phone, so the leave still finishes on the next start if the
+  /// app is closed right after (see [retryPendingLeaves]).
+  static Future<void> queueLeave(String roomId) async {
+    if (!CloudConsent.accepted) return;
+    if (FirebaseAuth.instance.currentUser == null || roomId.isEmpty) return;
+    if (roomId == TogetherTestRoom.roomId) return;
+    await _setPendingLeave(roomId, pending: true);
+  }
+
   static Future<void> leaveRoom(String roomId) async {
     if (!CloudConsent.accepted) return;
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -964,8 +1016,13 @@ class DdayCloudSync {
 
     await _setPendingLeave(roomId, pending: true);
     final ref = _db.collection('dday_memberships').doc(roomId);
+    // What the transaction did to the room, for its invite codes below.
+    var roomDeleted = false;
+    String? handedTo;
     try {
       await _db.runTransaction((tx) async {
+        roomDeleted = false;
+        handedTo = null;
         final snap = await tx.get(ref);
         if (!snap.exists) return;
         final data = snap.data() ?? {};
@@ -999,24 +1056,21 @@ class DdayCloudSync {
         if (hostUid == uid) {
           if (members.isEmpty) {
             tx.delete(ref);
+            roomDeleted = true;
             return;
           }
           final next = members.removeAt(0);
+          handedTo = next['uid'] as String?;
           // merge: the room's look, cheer and invite settings stay.
-          tx.set(
-            ref,
-            {
-              ...mine,
-              'hostUid': next['uid'],
-              'hostCharacterId': next['characterId'] ?? 'basic',
-              'hostDisplayName': next['displayName'],
-              'members': members,
-              'guestUids': [
-                for (final m in members) m['uid'] as String? ?? '',
-              ]..removeWhere((id) => id.isEmpty),
-            },
-            SetOptions(merge: true),
-          );
+          tx.set(ref, {
+            ...mine,
+            'hostUid': next['uid'],
+            'hostCharacterId': next['characterId'] ?? 'basic',
+            'hostDisplayName': next['displayName'],
+            'members': members,
+            'guestUids': [for (final m in members) m['uid'] as String? ?? '']
+              ..removeWhere((id) => id.isEmpty),
+          }, SetOptions(merge: true));
           return;
         }
 
@@ -1027,22 +1081,69 @@ class DdayCloudSync {
           // Not in this room's cloud roster — nothing to update.
           return;
         }
-        tx.set(
-          ref,
-          {
-            ...mine,
-            'members': members,
-            'guestUids': [
-              for (final m in members) m['uid'] as String? ?? '',
-            ]..removeWhere((id) => id.isEmpty),
-          },
-          SetOptions(merge: true),
-        );
+        tx.set(ref, {
+          ...mine,
+          'members': members,
+          'guestUids': [for (final m in members) m['uid'] as String? ?? '']
+            ..removeWhere((id) => id.isEmpty),
+        }, SetOptions(merge: true));
       });
       await _setPendingLeave(roomId, pending: false);
+      // Best effort and apart from the leave itself: a failure here must
+      // not undo it (the join code also copes with an out-of-date invite).
+      await _updateInvitesAfterLeave(
+        roomId,
+        myUid: uid,
+        roomDeleted: roomDeleted,
+        handedTo: handedTo,
+      );
     } catch (e) {
       debugPrint('leaveRoom $roomId: $e');
     }
+  }
+
+  /// The room's invite codes follow what the leave did to the room: they
+  /// name the new host when it was handed over (so the same codes keep
+  /// working and everyone keeps seeing the same code), and are closed when
+  /// the room went away with its last person.
+  static Future<void> _updateInvitesAfterLeave(
+    String roomId, {
+    required String myUid,
+    required bool roomDeleted,
+    required String? handedTo,
+  }) async {
+    if (!roomDeleted && (handedTo == null || handedTo.isEmpty)) return;
+    try {
+      final mine = await _db
+          .collection('dday_invites')
+          .where('hostUid', isEqualTo: myUid)
+          .limit(40)
+          .get();
+      for (final doc in mine.docs) {
+        if (doc.data()['ddayId'] != roomId) continue;
+        await doc.reference.update(
+          roomDeleted
+              ? {'status': 'revoked', 'updatedAt': FieldValue.serverTimestamp()}
+              : {
+                  'hostUid': handedTo,
+                  'updatedAt': FieldValue.serverTimestamp(),
+                },
+        );
+      }
+    } catch (e) {
+      debugPrint('invites after leave $roomId: $e');
+    }
+  }
+
+  /// Forgets which room look this phone last took for [roomId] (a room I
+  /// left must not keep a stale "already seen" fingerprint).
+  static Future<void> forgetLayoutSeen(String roomId) async {
+    final map = await _layoutSeenMap();
+    if (map.remove(roomId) == null) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_layoutSeenKey, jsonEncode(map));
+    } catch (_) {}
   }
 
   /// Leaves that could not reach the server (offline) are finished here, so
@@ -1058,9 +1159,14 @@ class DdayCloudSync {
   static Future<void> cancelPendingLeave(String roomId) =>
       _setPendingLeave(roomId, pending: false);
 
-  static Future<void> _setPendingLeave(String roomId, {required bool pending}) async {
+  static Future<void> _setPendingLeave(
+    String roomId, {
+    required bool pending,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
-    final list = {...prefs.getStringList(_pendingLeavesKey) ?? const <String>[]};
+    final list = {
+      ...prefs.getStringList(_pendingLeavesKey) ?? const <String>[],
+    };
     final changed = pending ? list.add(roomId) : list.remove(roomId);
     if (changed) await prefs.setStringList(_pendingLeavesKey, list.toList());
   }

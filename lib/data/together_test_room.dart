@@ -144,6 +144,9 @@ class TogetherTestRoom extends ChangeNotifier {
       );
     });
 
+    // An older leave from the room list marked it as left on this phone:
+    // sync would skip the room for good, so joining again clears that.
+    await ddayController.forgetLeft(roomId);
     final prefs = await SharedPreferences.getInstance();
     final current = ddayController.widgetDday?.id;
     if (current != null && current != roomId) {

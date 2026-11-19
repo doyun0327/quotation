@@ -23,18 +23,31 @@ import 'package:quotation/widgets/dday_pixel_icon.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
 
 class TogetherRoomScreen extends StatefulWidget {
-  const TogetherRoomScreen({super.key, required this.roomId});
+  const TogetherRoomScreen({
+    super.key,
+    required this.roomId,
+    this.decorateWithTutorial = false,
+  });
 
   final String roomId;
+  final bool decorateWithTutorial;
 
   /// Route name so a widget/notification tap can find an already-open room
   /// instead of stacking another copy on top.
   static String routeNameFor(String roomId) => '/together_room/$roomId';
 
-  static Route<void> route(String roomId) => MaterialPageRoute<void>(
-        settings: RouteSettings(name: routeNameFor(roomId)),
-        builder: (_) => TogetherRoomScreen(roomId: roomId),
-      );
+  /// [decorateWithTutorial]: just joined by invite, so the decorator opens
+  /// right away with its tutorial.
+  static Route<void> route(
+    String roomId, {
+    bool decorateWithTutorial = false,
+  }) => MaterialPageRoute<void>(
+    settings: RouteSettings(name: routeNameFor(roomId)),
+    builder: (_) => TogetherRoomScreen(
+      roomId: roomId,
+      decorateWithTutorial: decorateWithTutorial,
+    ),
+  );
 
   @override
   State<TogetherRoomScreen> createState() => _TogetherRoomScreenState();
@@ -72,6 +85,18 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
   void initState() {
     super.initState();
     _loadGuide();
+    if (widget.decorateWithTutorial) {
+      // After the push slide, so the decorator opens over a settled room.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future<void>.delayed(const Duration(milliseconds: 350), () {
+          if (!mounted) return;
+          _openDecorate(
+            ddayController.currentRoomId(widget.roomId),
+            tutorial: true,
+          );
+        });
+      });
+    }
   }
 
   Future<void> _loadGuide() async {
@@ -86,9 +111,7 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
 
   Future<void> _openInvite(DdayItem room) async {
     final invitedRoom = await Navigator.of(context).push<String?>(
-      MaterialPageRoute(
-        builder: (_) => DdayInviteScreen(item: room),
-      ),
+      MaterialPageRoute(builder: (_) => DdayInviteScreen(item: room)),
     );
     if (invitedRoom != null) {
       await TogetherGuide.markInvited(invitedRoom);
@@ -100,7 +123,7 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
   /// now: then it stays closed and says who. The room itself stays viewable.
   /// The decorator takes the lock again on entry, for a friend who got in
   /// between this check and the push.
-  Future<void> _openDecorate(String roomId) async {
+  Future<void> _openDecorate(String roomId, {bool tutorial = false}) async {
     if (_openingDecorate) return;
     _openingDecorate = true;
     try {
@@ -124,7 +147,8 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
       }
       await Navigator.of(context).push<void>(
         MaterialPageRoute(
-          builder: (_) => DdayWidgetDecorateScreen(roomId: roomId),
+          builder: (_) =>
+              DdayWidgetDecorateScreen(roomId: roomId, forceTutorial: tutorial),
         ),
       );
     } finally {
@@ -215,7 +239,8 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
                     children: [
                       _FriendsCard(
                         room: room,
-                        showInviteNudge: TogetherCrowdLayout.withoutMe(
+                        showInviteNudge:
+                            TogetherCrowdLayout.withoutMe(
                               room.friends,
                               myIds: authController.myIds,
                               myCharacterId: ddayController
@@ -403,10 +428,7 @@ class _FriendsCard extends StatelessWidget {
 }
 
 class _CharBubble extends StatelessWidget {
-  const _CharBubble({
-    required this.asset,
-    required this.label,
-  });
+  const _CharBubble({required this.asset, required this.label});
 
   final String asset;
   final String label;
@@ -497,7 +519,8 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
     final cheer = cheerText?.trim();
     final label = (cheer != null && cheer.isNotEmpty) ? cheer : '';
     final friendId = room.friendCharacterId;
-    final friendBlocked = friendId != null &&
+    final friendBlocked =
+        friendId != null &&
         room.friends.any(
           (friend) =>
               friend.characterId == friendId &&
@@ -535,9 +558,7 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
       myUid: authController.viewerUid,
       meScale: ddayController.charScaleForRoom(room.id),
       friendScale: ddayController.friendScaleForRoom(room.id),
-      saved: TogetherCrowdLayout.scalesOf(
-        ddayController.crowdForRoom(room.id),
-      ),
+      saved: TogetherCrowdLayout.scalesOf(ddayController.crowdForRoom(room.id)),
     );
 
     return Material(
@@ -550,59 +571,61 @@ class _RoomWidgetPreviewState extends State<_RoomWidgetPreview> {
             child: TogetherWidgetPreview(
               // "투명" stays see-through here on iPhone too, like Galaxy.
               iosGlass: false,
-            width: previewSize.width,
-            height: previewSize.height,
-            charW: 72 * charBase,
-            charH: 96 * charBase,
-            label: label,
-            me: ddayController.meCharacterForRoom(room.id),
-            friend: room.hasFriend && friendId != null && !friendBlocked
-                ? AppCharacter.byId(friendId)
-                : null,
-            meX: meX,
-            meY: meY,
-            friendX: friendX,
-            friendY: friendY,
-            crowd: [
-              for (final slot in placed)
-                // Blocked friends are not drawn on my widget.
-                if (!blockedUsersController.isBlocked(slot.uid))
-                TogetherPreviewSprite(
-                  keyId: slot.uid,
-                  isMe: slot.uid == authController.viewerUid,
-                  assetPath: slot.uid == authController.viewerUid
-                      ? ddayController.meCharacterForRoom(room.id).assetPath
-                      : AppCharacter.byId(slot.characterId).assetPath,
-                  x: slot.x,
-                  y: slot.y,
-                  scale: slot.scale,
-                  rotation: slot.rotation,
-                ),
-            ],
-            bubbles: [
-              for (final bubble in blockedUsersController.visibleBubbles(
-                room.id,
-                ddayController.bubblesForRoom(room.id),
-              ))
-                TogetherPreviewBubble(bubble: bubble),
-            ],
-            textX: textX,
-            textY: textY,
-            textRotation: ddayController.textRotationForRoom(room.id).toDouble(),
-            isPixel: true,
-            meScale: ddayController.charScaleForRoom(room.id),
-            friendScale: ddayController.friendScaleForRoom(room.id),
-            textScale: ddayController.textScaleForRoom(room.id),
-            bgColor: 0x00000000,
-            bgOpacity: 100,
-            bgAssetPath: WidgetAlbumBackground.resolvedAsset(
-              themeId: ddayController.bgThemeForRoom(room.id),
-              roomId: room.id,
-            ),
-            textColor: ddayController.textColorForRoom(room.id),
-            textFont: ddayController.textFontForRoom(room.id),
-            shape: TogetherWidgetShape.square,
-            cornerRadius: _hostCornerDp,
+              width: previewSize.width,
+              height: previewSize.height,
+              charW: 72 * charBase,
+              charH: 96 * charBase,
+              label: label,
+              me: ddayController.meCharacterForRoom(room.id),
+              friend: room.hasFriend && friendId != null && !friendBlocked
+                  ? AppCharacter.byId(friendId)
+                  : null,
+              meX: meX,
+              meY: meY,
+              friendX: friendX,
+              friendY: friendY,
+              crowd: [
+                for (final slot in placed)
+                  // Blocked friends are not drawn on my widget.
+                  if (!blockedUsersController.isBlocked(slot.uid))
+                    TogetherPreviewSprite(
+                      keyId: slot.uid,
+                      isMe: slot.uid == authController.viewerUid,
+                      assetPath: slot.uid == authController.viewerUid
+                          ? ddayController.meCharacterForRoom(room.id).assetPath
+                          : AppCharacter.byId(slot.characterId).assetPath,
+                      x: slot.x,
+                      y: slot.y,
+                      scale: slot.scale,
+                      rotation: slot.rotation,
+                    ),
+              ],
+              bubbles: [
+                for (final bubble in blockedUsersController.visibleBubbles(
+                  room.id,
+                  ddayController.bubblesForRoom(room.id),
+                ))
+                  TogetherPreviewBubble(bubble: bubble),
+              ],
+              textX: textX,
+              textY: textY,
+              textRotation: ddayController
+                  .textRotationForRoom(room.id)
+                  .toDouble(),
+              isPixel: true,
+              meScale: ddayController.charScaleForRoom(room.id),
+              friendScale: ddayController.friendScaleForRoom(room.id),
+              textScale: ddayController.textScaleForRoom(room.id),
+              bgColor: 0x00000000,
+              bgOpacity: 100,
+              bgAssetPath: WidgetAlbumBackground.resolvedAsset(
+                themeId: ddayController.bgThemeForRoom(room.id),
+                roomId: room.id,
+              ),
+              textColor: ddayController.textColorForRoom(room.id),
+              textFont: ddayController.textFontForRoom(room.id),
+              shape: TogetherWidgetShape.square,
+              cornerRadius: _hostCornerDp,
             ),
           ),
         ),
@@ -649,15 +672,19 @@ class _NudgeBubble extends StatelessWidget {
       ),
     );
     final pointer = Padding(
-      padding: EdgeInsets.only(right: alignEnd ? 12 : 0, left: alignEnd ? 0 : 18),
+      padding: EdgeInsets.only(
+        right: alignEnd ? 12 : 0,
+        left: alignEnd ? 0 : 18,
+      ),
       child: CustomPaint(
         size: const Size(14, 8),
         painter: _NudgeTailPainter(color: accent, up: tail == _NudgeTail.up),
       ),
     );
     return Column(
-      crossAxisAlignment:
-          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         if (tail == _NudgeTail.up) pointer,
         bubble,
@@ -694,4 +721,3 @@ class _NudgeTailPainter extends CustomPainter {
   bool shouldRepaint(covariant _NudgeTailPainter oldDelegate) =>
       oldDelegate.color != color || oldDelegate.up != up;
 }
-

@@ -35,7 +35,8 @@ class DecorateCoach extends StatefulWidget {
   final VoidCallback onSkip;
   final Color accent;
 
-  /// Last card only: a button that ends the tutorial.
+  /// A button on the card: "다음" for a step with nothing to do here, or the
+  /// last card's button that ends the tutorial.
   final String? doneLabel;
   final VoidCallback? onDone;
 
@@ -81,7 +82,8 @@ class _DecorateCoachState extends State<DecorateCoach>
             final visibleBottom = box.maxHeight - keyboard;
             final cardW = math.min(box.maxWidth - 32, 360.0);
             // Below the hole when there is room, otherwise above it.
-            final below = hole == null ||
+            final below =
+                hole == null ||
                 hole.bottom + 170 < visibleBottom ||
                 hole.top < 190;
             return Stack(
@@ -166,7 +168,8 @@ class _DecorateCoachState extends State<DecorateCoach>
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (widget.onDone == null)
+                // Skip stays on every card but the last ("다음" cards too).
+                if (widget.onDone == null || widget.step < widget.total - 1)
                   TextButton(
                     onPressed: widget.onSkip,
                     child: Text(

@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/character_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/room_local_cleanup.dart';
+import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/dday_accept_invite_screen.dart';
@@ -42,9 +46,9 @@ class _DdayScreenState extends State<DdayScreen> {
   }
 
   Future<void> _openEditor() async {
-    await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const DdayEditScreen()),
-    );
+    await Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => const DdayEditScreen()));
   }
 
   /// Paw on a room card: toggle favorite, confirm when it was added.
@@ -60,9 +64,7 @@ class _DdayScreenState extends State<DdayScreen> {
   }
 
   Future<void> _openRoom(DdayItem item) async {
-    await Navigator.of(context).push<void>(
-      TogetherRoomScreen.route(item.id),
-    );
+    await Navigator.of(context).push<void>(TogetherRoomScreen.route(item.id));
   }
 
   Future<void> _confirmLeave(DdayItem item) async {
@@ -86,20 +88,36 @@ class _DdayScreenState extends State<DdayScreen> {
         );
       },
     );
-    if (ok == true) {
-      // Remembered first: the cloud listener or the next start must not bring
-      // the room back, even if the leave below fails.
-      await ddayController.markLeft(item.id);
-      // Drop me from cloud membership so friends lose my character.
-      await DdayCloudSync.leaveRoom(item.id);
-      await ddayController.remove(item.id);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppStrings.current.roomLeftToast)),
-        );
+    if (ok != true) return;
+    final roomId = item.id;
+    // The shared test room is switched off as a whole (it also keeps its own
+    // "on" flag, which would bring it back on the next start otherwise).
+    if (roomId == TogetherTestRoom.roomId) {
+      final off = await togetherTestRoom.setEnabled(false);
+      if (!off || togetherTestRoom.enabled) {
+        await ddayController.markLeft(roomId);
+        await ddayController.remove(roomId);
       }
-      await HomeWidgetSync.syncDday();
+    } else {
+      // Remembered first: the cloud listener or the next start must not
+      // bring the room back, even if the leave below fails or the app is
+      // closed right now. The room is gone from the list at once; telling
+      // the server (friends lose my character, a host hands the room over)
+      // happens behind it and is retried on the next start when it fails.
+      await ddayController.markLeft(roomId);
+      await DdayCloudSync.queueLeave(roomId);
+      await ddayController.remove(roomId);
+      await RoomLocalCleanup.run(roomId);
     }
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(AppStrings.current.roomLeftToast)));
+    }
+    if (roomId != TogetherTestRoom.roomId) {
+      unawaited(DdayCloudSync.leaveRoom(roomId));
+    }
+    await HomeWidgetSync.syncDday();
   }
 
   @override
@@ -147,8 +165,7 @@ class _DdayScreenState extends State<DdayScreen> {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
-                              builder: (_) =>
-                                  const DdayAcceptInviteScreen(),
+                              builder: (_) => const DdayAcceptInviteScreen(),
                             ),
                           );
                         },
@@ -249,8 +266,9 @@ class _DdayScreenState extends State<DdayScreen> {
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: palette.accent,
                                   side: BorderSide(
-                                    color:
-                                        palette.accent.withValues(alpha: 0.35),
+                                    color: palette.accent.withValues(
+                                      alpha: 0.35,
+                                    ),
                                   ),
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 14,
@@ -374,10 +392,7 @@ class _TogetherRoomCard extends StatelessWidget {
                       minWidth: 32,
                       minHeight: 32,
                     ),
-                    icon: HamfootIcon(
-                      size: 22,
-                      active: item.favorite,
-                    ),
+                    icon: HamfootIcon(size: 22, active: item.favorite),
                   ),
                   IconButton(
                     onPressed: onDelete,

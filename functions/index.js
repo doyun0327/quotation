@@ -55,7 +55,13 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
     const recipients = [after.hostUid, ...(after.guestUids || [])].filter(
       (uid) => typeof uid === 'string' && uid.length > 0 && uid !== actor,
     );
-    if (recipients.length === 0) return;
+    if (recipients.length === 0) {
+      console.log('together push skipped: no recipients', {
+        roomId: event.params.roomId,
+        actor,
+      });
+      return;
+    }
 
     const db = getFirestore();
     const roomId = event.params.roomId;
@@ -77,12 +83,18 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
     // their phone cannot filter an iPhone alert the server already wrote.
     const tokensByLocale = new Map();
     const ownerByToken = new Map();
+    // Per recipient: how many tokens, or why none (for iPhone debugging).
+    const perRecipient = {};
     for (const uid of recipients) {
       const user = (await db.collection('users').doc(uid).get()).data() || {};
       const blocked = Array.isArray(user.blockedUids) ? user.blockedUids : [];
-      if (actor && blocked.includes(actor)) continue;
+      if (actor && blocked.includes(actor)) {
+        perRecipient[uid] = 'blocked';
+        continue;
+      }
       const locale = NOTICE_TEXT[user.locale] ? user.locale : 'ko';
       const map = user.fcmTokens || {};
+      perRecipient[uid] = Object.keys(map).filter((t) => map[t]).length;
       for (const token of Object.keys(map)) {
         if (!map[token]) continue;
         if (!tokensByLocale.has(locale)) tokensByLocale.set(locale, []);
@@ -90,6 +102,12 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
         ownerByToken.set(token, uid);
       }
     }
+    console.log('together push', {
+      roomId,
+      actor,
+      kind: refreshOnly ? 'refresh' : 'alert',
+      tokensByRecipient: perRecipient,
+    });
     if (tokensByLocale.size === 0) return;
 
     const invalid = [];
@@ -142,8 +160,26 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
             },
           };
       const response = await getMessaging().sendEachForMulticast(message);
+      console.log('together push sent', {
+        roomId,
+        locale,
+        ok: response.successCount,
+        failed: response.failureCount,
+      });
       response.responses.forEach((result, index) => {
         const code = result.error?.code || '';
+        // Failed sends used to vanish. An iPhone-only failure is almost
+        // always APNs setup: `messaging/third-party-auth-error` means the
+        // APNs key is missing or wrong in Firebase › Cloud Messaging.
+        if (result.error) {
+          console.warn('together push failed', {
+            roomId,
+            kind: refreshOnly ? 'refresh' : 'alert',
+            owner: ownerByToken.get(tokens[index]) || '',
+            code,
+            message: result.error.message || '',
+          });
+        }
         if (
           code.includes('registration-token-not-registered') ||
           code.includes('invalid-registration-token')
