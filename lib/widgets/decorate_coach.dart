@@ -22,6 +22,7 @@ class DecorateCoach extends StatefulWidget {
     required this.accent,
     this.doneLabel,
     this.onDone,
+    this.showSkip = true,
   });
 
   final GlobalKey target;
@@ -39,6 +40,9 @@ class DecorateCoach extends StatefulWidget {
   /// last card's button that ends the tutorial.
   final String? doneLabel;
   final VoidCallback? onDone;
+
+  /// Skip stays on every card but the last.
+  final bool showSkip;
 
   @override
   State<DecorateCoach> createState() => _DecorateCoachState();
@@ -168,8 +172,7 @@ class _DecorateCoachState extends State<DecorateCoach>
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Skip stays on every card but the last ("다음" cards too).
-                if (widget.onDone == null || widget.step < widget.total - 1)
+                if (widget.showSkip)
                   TextButton(
                     onPressed: widget.onSkip,
                     child: Text(

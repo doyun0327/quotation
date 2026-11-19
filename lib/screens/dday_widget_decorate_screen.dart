@@ -1805,18 +1805,6 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _applyGuidePending = true;
     if (!mounted || _closing) return;
     setState(() => _coachStep = 0);
-    _scheduleCoachAuto();
-  }
-
-  /// Each card shows for 4 s, then the next one comes on its own (doing
-  /// the step still moves on too). The last card waits for 확인.
-  static const _coachAutoDelay = Duration(seconds: 4);
-
-  void _scheduleCoachAuto() {
-    final step = _coachStep;
-    _coachTyping?.cancel();
-    if (step == null || step >= 5) return;
-    _coachTyping = Timer(_coachAutoDelay, () => _coachDone(step, now: true));
   }
 
   GlobalKey? _coachTarget(int? step) => switch (step) {
@@ -1829,18 +1817,13 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _ => null,
   };
 
-  /// [step] was done for real: show the next one 4 s later (so the person
-  /// sees what they just did) and scroll it into view. [now]: the card's
-  /// own "다음" button, which moves on at once.
+  /// The tutorial moves on only with the card's own "다음" button ([now]).
+  /// Doing the step for real (tap, slide, type) no longer advances it, so
+  /// the person reads each card at their own pace.
   void _coachDone(int step, {bool now = false}) {
-    if (_coachStep != step || !mounted) return;
+    if (!now || _coachStep != step || !mounted) return;
     _coachTyping?.cancel();
-    if (!now) {
-      _coachTyping = Timer(_coachAutoDelay, () => _coachDone(step, now: true));
-      return;
-    }
     setState(() => _coachStep = step + 1);
-    _scheduleCoachAuto();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final target = _coachTarget(_coachStep)?.currentContext;
       if (target == null || !mounted) return;
@@ -1874,12 +1857,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       4 => (t.coachTextSizeTitle, t.coachTextSizeBody),
       _ => (t.coachDoneTitle, t.coachDoneBody),
     };
-    // The pencil opens another screen, so its card moves on with "다음".
-    final (doneLabel, onDone) = switch (step) {
-      1 => (t.coachNext, () => _coachDone(1, now: true)),
-      >= 5 => (t.coachDoneButton, _finishCoach),
-      _ => (null, null),
-    };
+    // Every card has "다음"; the last one ends the tutorial.
+    final (doneLabel, onDone) = step >= 5
+        ? (t.coachDoneButton, _finishCoach)
+        : (t.coachNext, () => _coachDone(step, now: true));
     return DecorateCoach(
       target: target,
       step: step.clamp(0, 4),
@@ -1891,6 +1872,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
       accent: context.palette.accent,
       doneLabel: doneLabel,
       onDone: onDone,
+      showSkip: step < 5,
     );
   }
 
