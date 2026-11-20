@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/character_controller.dart';
@@ -112,7 +113,17 @@ class _DdayScreenState extends State<DdayScreen> {
     if (mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(AppStrings.current.roomLeftToast)));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(
+            // iOS redraws the widget gallery on its own schedule.
+            defaultTargetPlatform == TargetPlatform.iOS
+                ? '${AppStrings.current.roomLeftToast}\n'
+                    '${AppStrings.current.roomWidgetLeaveNote}'
+                : AppStrings.current.roomLeftToast,
+          ),
+        ),
+      );
     }
     if (roomId != TogetherTestRoom.roomId) {
       unawaited(DdayCloudSync.leaveRoom(roomId));

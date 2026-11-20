@@ -72,6 +72,11 @@ class AppStrings {
   String get ddayTitleHint => _t('방 이름', 'Room name', 'ルーム名');
   String get ddayTitleRequired =>
       _t('방 이름을 입력해 주세요', 'Please enter a room name', 'ルーム名を入力してください');
+  String get roomWidgetDelayNote => _t(
+    '위젯 목록에는 몇 분 뒤 나타나요',
+    'It shows up in the widget list in a few minutes',
+    'ウィジェット一覧には数分後に表示されます',
+  );
   String get ddayPickDate =>
       _t('날짜를 선택해 주세요', 'Please select a date', '日付を選んでください');
   String get ddayDate => _t('날짜', 'Date', '日付');
@@ -1651,6 +1656,11 @@ class AppStrings {
       _t('「$title」 방을 나갈까요?', 'Leave room "$title"?', '「$title」ルームを出ますか？');
   String get roomLeftToast =>
       _t('방에서 나왔어요.', 'You left the room.', 'ルームを出ました。');
+  String get roomWidgetLeaveNote => _t(
+    '위젯 목록에서는 몇 분 뒤 사라져요',
+    'It disappears from the widget list in a few minutes',
+    'ウィジェット一覧からは数分後に消えます',
+  );
   String get homeGreeting => _t(
     '안녕, 오늘도 잘하고 있어.',
     "Hi, you're doing well today.",

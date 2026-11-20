@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quotation/data/dday_controller.dart';
+import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/dday_invite_screen.dart';
@@ -70,8 +72,19 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
         ),
       );
     }
+    // Write the new/edited room to the home widget right away.
+    await HomeWidgetSync.syncDday();
     if (!mounted) return;
+    // iOS redraws the widget gallery on its own schedule.
+    final messenger = ScaffoldMessenger.of(context);
+    final showDelayNote =
+        existing == null && defaultTargetPlatform == TargetPlatform.iOS;
     Navigator.of(context).pop(true);
+    if (showDelayNote) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(AppStrings.current.roomWidgetDelayNote)),
+      );
+    }
   }
 
   @override
