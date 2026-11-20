@@ -73,14 +73,16 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
       text: visible,
       authorUid: authorUid,
       authorName: authorName,
+      // A cheer I wrote here that has not reached the cloud yet has no uid
+      // when I am not signed in, so it is marked explicitly.
+      isMine: mine,
     );
   }
 
   bool _canReport(_CheerTarget target) {
-    if (target.text.isEmpty) return false;
+    if (target.text.isEmpty || target.isMine) return false;
     final author = target.authorUid;
-    final me = _myUid;
-    if (author != null && author.isNotEmpty && me != null && author == me) {
+    if (author != null && author.isNotEmpty && authController.myIds.contains(author)) {
       return false;
     }
     return true;
@@ -131,7 +133,10 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
             authorUid: friend.uid,
             authorName: friend.displayName!.trim(),
           ),
-      if (room.title.trim().isNotEmpty && !mine(room.cloudOwnerUid))
+      // A room with no cloud owner was made on this phone: it is mine.
+      if (room.title.trim().isNotEmpty &&
+          (room.cloudOwnerUid ?? '').isNotEmpty &&
+          !mine(room.cloudOwnerUid))
         _ReportTarget(
           key: 'room',
           type: 'room_title',
@@ -265,9 +270,9 @@ class _SafetyReportSheetState extends State<_SafetyReportSheet> {
               final room = _room;
               if (room == null) return const SizedBox.shrink();
               final cheer = _targetOf(room, snap.data);
-              final me = _myUid;
               final friends = room.friends.where((friend) {
-                return friend.uid.isNotEmpty && friend.uid != me;
+                return friend.uid.isNotEmpty &&
+                    !authController.myIds.contains(friend.uid);
               }).toList();
               final targets = _reportTargets(t, room, cheer, friends);
               final canReport = targets.isNotEmpty;
@@ -508,8 +513,14 @@ class _ReportTarget {
 }
 
 class _CheerTarget {
-  const _CheerTarget({required this.text, this.authorUid, this.authorName});
+  const _CheerTarget({
+    required this.text,
+    this.authorUid,
+    this.authorName,
+    this.isMine = false,
+  });
 
+  final bool isMine;
   final String text;
   final String? authorUid;
   final String? authorName;
