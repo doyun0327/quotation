@@ -8,7 +8,6 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:quotation/widgets/character_widget_hint.dart';
 
 class CharacterSelectScreen extends StatefulWidget {
   const CharacterSelectScreen({
@@ -29,8 +28,6 @@ class CharacterSelectScreen extends StatefulWidget {
 
 class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
   late AppCharacter _selected;
-  bool _hintVisible = true;
-  bool _hintBusy = false;
   CharacterGroup _group = CharacterGroup.female;
 
   List<AppCharacter> get _choices {
@@ -52,29 +49,6 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
   void initState() {
     super.initState();
     _selected = characterController.character;
-  }
-
-  Future<void> _hideHint() async {
-    await CharacterWidgetHint.markDismissed();
-    if (!mounted) return;
-    setState(() => _hintVisible = false);
-  }
-
-  Future<void> _exportHint() async {
-    if (_hintBusy) return;
-    setState(() => _hintBusy = true);
-    await characterController.select(_selected);
-    await UserProfileSync.syncCharacter();
-    await _hideHint();
-    if (!mounted) return;
-    await CharacterWidgetHint.export(context);
-  }
-
-  Future<void> _closeHint() async {
-    if (_hintBusy) return;
-    setState(() => _hintBusy = true);
-    CharacterWidgetHint.showClosedMessage(context);
-    await _hideHint();
   }
 
   Future<void> _confirm() async {
@@ -137,13 +111,6 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
                       color: AppColors.muted,
                     ),
                   ),
-                  if (!widget.allowSkip && _hintVisible) ...[
-                    const SizedBox(height: 16),
-                    CharacterWidgetHintCard(
-                      onExport: _exportHint,
-                      onClose: _closeHint,
-                    ),
-                  ],
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -273,10 +273,10 @@ abstract final class TogetherCrowdLayout {
   }
 
   /// Follows the full character size slider (DdayController.scaleMin..
-  /// charScaleMax = 60..148%). It used to stop at 100%, so the upper part of
+  /// charScaleMax = 20..148%). It used to stop at 100%, so the upper part of
   /// the slider did nothing.
   static double userFactor(int scalePercent) =>
-      (scalePercent / 100).clamp(0.6, 1.48);
+      (scalePercent / 100).clamp(0.2, 1.48);
 
   /// Saved size per person. Every phone reads the same numbers, so a guest
   /// no longer sees the host's size on the other guests.
@@ -319,7 +319,7 @@ abstract final class TogetherCrowdLayout {
           'asset': AppCharacter.byId(slot.characterId).assetPath,
           'x': slot.x.round(),
           'y': slot.y.round(),
-          's': (slot.scale * 100).round().clamp(28, 400),
+          's': (slot.scale * 100).round().clamp(4, 400),
           'r': slot.rotationDegrees,
         },
     ];

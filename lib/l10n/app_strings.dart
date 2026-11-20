@@ -131,6 +131,9 @@ class AppStrings {
   String get ddayDecorateSizeLabel => _t('위젯 크기', 'Widget size', 'ウィジェットサイズ');
   String get ddayDecorateBgLabel => _t('배경테마', 'Background theme', '背景テーマ');
 
+  /// Section under the background themes: speech bubbles and stickers.
+  String get ddayDecorateDecoLabel => _t('꾸미기', 'Decorate', 'デコ');
+
   String get ddayDecorateBgNone => _t('투명', 'Transparent', '透明');
   String get ddayDecorateBgAlbum => _t('앨범', 'Album', 'アルバム');
   String get ddayDecorateBgAlbumFailed =>
@@ -233,9 +236,9 @@ class AppStrings {
   String get coachSizeTitle =>
       _t('3. 크기 조절', '3. Change the size', '3. サイズを変える');
   String get coachSizeBody => _t(
-    '슬라이더를 밀어서 내 캐릭터 크기를 바꿔 보세요.',
-    'Slide to make your character bigger or smaller.',
-    'スライダーでキャラクターの大きさを変えてみて。',
+    '슬라이더를 밀거나, 캐릭터를 누른 채\n두 손가락으로 벌리고 좁혀서 크기를 바꿔 보세요.',
+    'Slide, or select your character and\npinch with two fingers to resize it.',
+    'スライダーを動かすか、キャラクターを選んで\n2本指でつまむように広げたり狭めたりしてみて。',
   );
   String get coachTextTitle => _t('4. 글자 넣기', '4. Add words', '4. 文字を入れる');
   String get coachTextBody => _t(
@@ -246,9 +249,9 @@ class AppStrings {
   String get coachTextSizeTitle =>
       _t('5. 배경 글자 크기', '5. Background text size', '5. 背景の文字サイズ');
   String get coachTextSizeBody => _t(
-    '슬라이더로 글자 크기를 바꿔 보세요.\n미리보기의 글자를 누르면 옮기거나 돌릴 수도 있어요.',
-    'Slide to change the text size.\nTap the words in the preview to move or turn them.',
-    'スライダーで文字の大きさを変えてみて。\nプレビューの文字をタップすると動かしたり回したりできます。',
+    '슬라이더로 글자 크기를 바꿔 보세요.\n미리보기의 글자를 누르면 옮기고 돌리고,\n두 손가락으로 크기도 바꿀 수 있어요.',
+    'Slide to change the text size.\nTap the words in the preview to move or turn them,\nor pinch with two fingers to resize.',
+    'スライダーで文字の大きさを変えてみて。\nプレビューの文字をタップすると動かしたり回したり、\n2本指で大きさも変えられます。',
   );
   String get coachDoneTitle => _t('다 꾸몄어요!', 'All set!', 'できました！');
   String get coachDoneBody => _t(

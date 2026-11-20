@@ -94,10 +94,10 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                     children: [
                       IconButton(
                         onPressed: () => Navigator.of(context).maybePop(),
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.chevron_left_rounded,
-                          size: 32,
-                          color: accent,
+                          size: 28,
+                          color: AppColors.ink,
                         ),
                       ),
                       Expanded(
@@ -106,7 +106,7 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
                             Text(
                               isEdit ? t.ddayEdit : t.ddayAdd,
                               style: AppTheme.body.copyWith(
-                                fontSize: 22,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w900,
                                 color: accent,
                               ),

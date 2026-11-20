@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/theme/style_text_scale.dart';
 import 'package:quotation/widgets/pixel_color_tile.dart';
 
 /// Bottom sheet: pick a color from a palette board (+ optional transparent).
@@ -292,7 +293,7 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
     final t = AppStrings.current;
     final bottom = MediaQuery.paddingOf(context).bottom;
     final rows = widget.pixelStyle ? _pixelPresetRows : _presetRows;
-    return Padding(
+    final sheet = Padding(
       padding: EdgeInsets.fromLTRB(16, 12, 16, 16 + bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -362,6 +363,8 @@ class _ColorPaletteSheetState extends State<_ColorPaletteSheet> {
         ],
       ),
     );
+    // The pixel palette (decorator) keeps pixel-sized letters in the clean look too.
+    return widget.pixelStyle ? StyleTextScale.pixelOnly(context, sheet) : sheet;
   }
 }
 

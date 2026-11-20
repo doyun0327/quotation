@@ -128,7 +128,8 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     setState(() => _sharing = true);
     try {
       final boundary =
-          _shareKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+          _shareKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary == null) return;
 
       final image = await boundary.toImage(pixelRatio: 3);
@@ -142,9 +143,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
       await file.writeAsBytes(byteData.buffer.asUint8List());
 
       await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path, mimeType: 'image/png')],
-        ),
+        ShareParams(files: [XFile(file.path, mimeType: 'image/png')]),
       );
     } catch (_) {
       if (!mounted) return;
@@ -162,7 +161,10 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     }
   }
 
-  Future<void> _openReaderMenu(BuildContext context, String currentAsset) async {
+  Future<void> _openReaderMenu(
+    BuildContext context,
+    String currentAsset,
+  ) async {
     final t = AppStrings.current;
     await showModalBottomSheet<void>(
       context: context,
@@ -274,13 +276,13 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                               color: AppColors.muted,
                             )
                           : main.id == widget.mainCategory.id &&
-                                  sub.id == widget.subCategory.id
-                              ? AppPixelIcon(
-                                  AppGlyph.check,
-                                  size: 16,
-                                  color: palette.accent,
-                                )
-                              : null,
+                                sub.id == widget.subCategory.id
+                          ? AppPixelIcon(
+                              AppGlyph.check,
+                              size: 16,
+                              color: palette.accent,
+                            )
+                          : null,
                       onTap: () => _openCategory(sheetContext, main, sub),
                     ),
                 const SizedBox(height: 8),
@@ -330,10 +332,8 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     final freshSub = QuoteRepository.subById(main.id, sub.id) ?? sub;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (_) => QuoteListScreen(
-          mainCategory: freshMain,
-          subCategory: freshSub,
-        ),
+        builder: (_) =>
+            QuoteListScreen(mainCategory: freshMain, subCategory: freshSub),
       ),
     );
   }
@@ -485,10 +485,10 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                           gaplessPlayback: true,
                           errorBuilder: (context, error, stackTrace) =>
                               Container(
-                            color: clean
-                                ? const Color(0xFFF3EDE4)
-                                : const Color(0xFFE8F1FF),
-                          ),
+                                color: clean
+                                    ? const Color(0xFFF3EDE4)
+                                    : const Color(0xFFE8F1FF),
+                              ),
                         ),
                       ),
                       Positioned.fill(
@@ -559,65 +559,12 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                     ),
                   ),
                 ),
-                if (quotes.isNotEmpty)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 28,
-                    child: SafeArea(
-                      top: false,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Stack(
-                            clipBehavior: Clip.none,
-                            alignment: Alignment.center,
-                            children: [
-                              _ActionButton(
-                                mark: HamfootIcon(
-                                  size: 24,
-                                  active: archiveController.contains(
-                                    quotes[_page.clamp(0, quotes.length - 1)]
-                                        .id,
-                                  ),
-                                ),
-                                label: t.favorite,
-                                color: AppColors.ink,
-                                onTap: () {
-                                  final quote = quotes[
-                                      _page.clamp(0, quotes.length - 1)];
-                                  _toggleHeart(
-                                    quote: quote,
-                                    categoryTitle: categoryTitle,
-                                    subTitle: title,
-                                  );
-                                },
-                              ),
-                              if (_showArchiveHint)
-                                const Positioned(
-                                  bottom: 58,
-                                  child: _ArchivePawHint(),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(width: 28),
-                          _ActionButton(
-                            mark: const AppPixelIcon(
-                              AppGlyph.share,
-                              size: 22,
-                              color: AppColors.ink,
-                            ),
-                            label: t.share,
-                            color: AppColors.ink,
-                            onTap: _sharing ? null : _shareImage,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                // Three round buttons of one size: the menu bottom left, the paw
+                // (favorite) above the share button bottom right. Icons only; the
+                // quote keeps the middle of the screen.
                 Positioned(
                   left: 16,
-                  bottom: 20,
+                  bottom: 24,
                   child: SafeArea(
                     top: false,
                     child: _ReaderMenuButton(
@@ -626,6 +573,59 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                     ),
                   ),
                 ),
+                if (quotes.isNotEmpty)
+                  Positioned(
+                    right: 16,
+                    bottom: 24,
+                    child: SafeArea(
+                      top: false,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: [
+                              _RoundAction(
+                                label: t.favorite,
+                                onTap: () {
+                                  final quote =
+                                      quotes[_page.clamp(0, quotes.length - 1)];
+                                  _toggleHeart(
+                                    quote: quote,
+                                    categoryTitle: categoryTitle,
+                                    subTitle: title,
+                                  );
+                                },
+                                child: HamfootIcon(
+                                  size: 26,
+                                  active: archiveController.contains(
+                                    quotes[_page.clamp(0, quotes.length - 1)].id,
+                                  ),
+                                ),
+                              ),
+                              if (_showArchiveHint)
+                                const Positioned(
+                                  right: 0,
+                                  bottom: 58,
+                                  child: _ArchivePawHint(),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          _RoundAction(
+                            label: t.share,
+                            onTap: _sharing ? null : _shareImage,
+                            child: const AppPixelIcon(
+                              AppGlyph.share,
+                              size: 22,
+                              color: AppColors.ink,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -643,7 +643,7 @@ class _QuotePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(28, 0, 28, 96),
+      padding: const EdgeInsets.fromLTRB(28, 0, 28, 140),
       child: Column(
         children: [
           const Spacer(flex: 2),
@@ -677,18 +677,40 @@ class _QuotePage extends StatelessWidget {
 }
 
 class _ReaderMenuButton extends StatelessWidget {
-  const _ReaderMenuButton({
-    required this.label,
-    required this.onTap,
-  });
+  const _ReaderMenuButton({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    return _RoundAction(
+      label: label,
+      onTap: onTap,
+      child: const AppPixelIcon(AppGlyph.menu, size: 20, color: AppColors.ink),
+    );
+  }
+}
+
+/// One round icon button of the reader (menu, favorite, share): same size,
+/// same white disc, the icon exactly in the middle.
+class _RoundAction extends StatelessWidget {
+  const _RoundAction({
+    required this.child,
+    required this.label,
+    required this.onTap,
+  });
+
+  static const size = 48.0;
+
+  final Widget child;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withValues(alpha: 0.82),
+      color: Colors.white.withValues(alpha: onTap == null ? 0.5 : 0.82),
       shape: const CircleBorder(),
       elevation: 0,
       child: InkWell(
@@ -696,62 +718,10 @@ class _ReaderMenuButton extends StatelessWidget {
         customBorder: const CircleBorder(),
         child: Tooltip(
           message: label,
-          child: const Padding(
-            padding: EdgeInsets.all(12),
-            child: AppPixelIcon(
-              AppGlyph.menu,
-              size: 20,
-              color: AppColors.ink,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
-    required this.mark,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  final Widget mark;
-  final String label;
-  final Color color;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.72),
-      borderRadius: BorderRadius.circular(28),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(28),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: label.isEmpty ? 16 : 18,
-            vertical: 12,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              mark,
-              if (label.isNotEmpty) ...[
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: AppTheme.body.copyWith(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: color,
-                  ),
-                ),
-              ],
-            ],
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: Center(child: child),
           ),
         ),
       ),
@@ -796,6 +766,8 @@ class _ArchivePawHintState extends State<_ArchivePawHint>
           offset: Offset(0, -5 * _bounce.value),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            // The paw sits at the right edge: the tip hangs over its middle.
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               DecoratedBox(
                 decoration: BoxDecoration(
@@ -811,8 +783,10 @@ class _ArchivePawHintState extends State<_ArchivePawHint>
                   ],
                 ),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   child: Text(
                     AppStrings.current.archivePawHint,
                     textAlign: TextAlign.center,
@@ -824,9 +798,12 @@ class _ArchivePawHintState extends State<_ArchivePawHint>
                   ),
                 ),
               ),
-              CustomPaint(
-                size: const Size(14, 8),
-                painter: _HintCaretPainter(color: palette.accent),
+              Padding(
+                padding: EdgeInsets.only(right: (_RoundAction.size - 14) / 2),
+                child: CustomPaint(
+                  size: const Size(14, 8),
+                  painter: _HintCaretPainter(color: palette.accent),
+                ),
               ),
             ],
           ),

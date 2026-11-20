@@ -91,22 +91,29 @@ class TogetherBgTheme {
   /// Picker shows transparent plus every bundled photo.
   static List<TogetherBgTheme> get choices => all;
 
-  /// Backgrounds free users may pick. By id, so reordering the picker
-  /// never locks a background someone already uses.
-  static const freeIds = {
-    'none',
-    // pastel_1 (airplane) is premium.
-    'pastel_2',
-    'pastel_3',
-    'pastel_4',
-    'pastel_5',
-    'widget_background',
-    'widget_background2',
-    'widget_background6',
-  };
+  /// Picker order: transparent first, then either the paid pastel set before
+  /// the free backgrounds ([pastelFirst]: subscribers and the free trial) or
+  /// after them (everyone else, so the free ones come first). Each group
+  /// keeps its own order.
+  static List<TogetherBgTheme> ordered({required bool pastelFirst}) {
+    final pastel = [
+      for (final t in all)
+        if (!t.isNone && requiresPremium(t)) t,
+    ];
+    final free = [
+      for (final t in all)
+        if (!t.isNone && !requiresPremium(t)) t,
+    ];
+    return [none, ...(pastelFirst ? [...pastel, ...free] : [...free, ...pastel])];
+  }
 
+  /// Only the pastel set is paid: airplane (pastel_1), the four hearts
+  /// (2-5), cloud (6), four-leaf clover (7), rainbow (8) and the two buses
+  /// (9, 10). Every other background is free for good, also once the free
+  /// trial is over. By id, so reordering the picker never changes what is
+  /// locked.
   static bool requiresPremium(TogetherBgTheme theme) =>
-      !freeIds.contains(theme.id);
+      theme.id.startsWith('pastel_');
 
   static TogetherBgTheme byId(String? id) {
     if (id == null || id.isEmpty) return none;

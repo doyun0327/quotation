@@ -394,6 +394,12 @@ class _ShopScreenState extends State<ShopScreen> {
           appBar: AppBar(
             backgroundColor: const Color(0xFFF3F7FD),
             elevation: 0,
+            // Same back chevron and centered title as the other pages.
+            leading: IconButton(
+              onPressed: () => Navigator.of(context).maybePop(),
+              icon: const Icon(Icons.chevron_left_rounded, size: 28),
+            ),
+            centerTitle: true,
             title: Text(
               widget.asSettings ? t.characterSettingsTitle : t.shopTitle,
               style: AppTheme.body.copyWith(

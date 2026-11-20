@@ -20,6 +20,7 @@ import 'package:quotation/screens/dday_widget_decorate_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/theme/style_text_scale.dart';
 import 'package:quotation/widgets/app_pixel_icon.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 import 'package:quotation/widgets/together_widget_preview.dart';
@@ -59,9 +60,11 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
   Set<String> _invited = {};
   Set<String> _decorated = {};
   bool _openingDecorate = false;
+
   /// Dim + spinner while the edit lock is checked before decorating.
   bool _checkingLock = false;
   Timer? _checkingDelay;
+
   /// A friend is decorating: the same card shows who (character + name)
   /// and closes by itself, or on any tap.
   ({String name, String? asset})? _lockedBy;
@@ -232,7 +235,9 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
           const SizedBox(height: 12),
           Text(
             AppStrings.current.decorateCheckingRoom,
-            style: const TextStyle(
+            // Same font as the 위젯 꾸미기 title.
+            style: AppTheme.body.copyWith(
+              fontFamily: 'Galmuri',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: ink,
@@ -260,7 +265,8 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
           Text(
             AppStrings.current.decorateLockedBy(locked.name),
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: AppTheme.body.copyWith(
+              fontFamily: 'Galmuri',
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: ink,
@@ -271,33 +277,37 @@ class _TogetherRoomScreenState extends State<TogetherRoomScreen> {
           Text(
             AppStrings.current.decorateTryLater,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: AppTheme.body.copyWith(
+              fontFamily: 'Galmuri',
               fontSize: 12,
-              color: Color(0xFF8EA0B5),
+              color: const Color(0xFF8EA0B5),
               decoration: TextDecoration.none,
             ),
           ),
         ],
       );
     }
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      // While checking, taps are just swallowed; the answer closes on a tap.
-      onTap: locked == null ? () {} : _hideLockedBy,
-      child: ColoredBox(
-        color: Colors.black.withValues(alpha: 0.35),
-        child: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 280),
-            margin: const EdgeInsets.symmetric(horizontal: 32),
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 180),
-              child: content,
+    return StyleTextScale.pixelOnly(
+      context,
+      GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        // While checking, taps are just swallowed; the answer closes on a tap.
+        onTap: locked == null ? () {} : _hideLockedBy,
+        child: ColoredBox(
+          color: Colors.black.withValues(alpha: 0.35),
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 280),
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 180),
+                child: content,
+              ),
             ),
           ),
         ),

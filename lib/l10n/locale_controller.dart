@@ -69,11 +69,20 @@ class LocaleController extends ChangeNotifier {
   bool get isKorean => _language == AppLanguage.korean;
   bool get isJapanese => _language == AppLanguage.japanese;
 
+  /// The phone's language when the app supports it, else English. Used until
+  /// the person picks one in Settings (that choice is saved and wins).
+  static AppLanguage fromPhone() {
+    final code = PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+    for (final language in AppLanguage.values) {
+      if (language.id == code) return language;
+    }
+    return AppLanguage.english;
+  }
+
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_prefsKey);
-    if (saved == null) return;
-    final next = AppLanguage.byId(saved);
+    final next = saved == null ? fromPhone() : AppLanguage.byId(saved);
     if (next == _language) return;
     _language = next;
     notifyListeners();

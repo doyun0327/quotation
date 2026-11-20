@@ -6,9 +6,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:quotation/widgets/ios_widget_guide.dart';
-import 'package:quotation/screens/widget_how_to_screen.dart';
 import 'package:quotation/data/app_update_check.dart';
 import 'package:quotation/data/sticker_unlock.dart';
 import 'package:quotation/data/app_check.dart';
@@ -39,6 +36,10 @@ import 'package:quotation/screens/together_room_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/font_scale_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:quotation/widgets/ios_widget_guide.dart';
+import 'package:quotation/screens/widget_how_to_screen.dart';
+import 'package:quotation/theme/style_text_scale.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
 import 'package:quotation/widgets/bottom_banner_ad.dart';
@@ -57,6 +58,11 @@ Route<void> _mainShellRoute() => MaterialPageRoute<void>(
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetFont.registerLicenses();
+  // Portrait only (the manifest and Info.plist say so too; this covers
+  // large screens that ignore the manifest).
+  unawaited(
+    SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]),
+  );
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -77,6 +83,7 @@ Future<void> main() async {
   }
 
   await visualStyleController.load();
+  await fontScaleController.load();
   await characterController.load();
   await stickerUnlock.load();
   await membershipController.load();
@@ -378,7 +385,9 @@ class _QuotationAppState extends State<QuotationApp> {
             final media = MediaQuery.of(context);
             final showAd = !membershipController.isPremium;
             var data = media.copyWith(
-              textScaler: TextScaler.linear(fontScaleController.scale),
+              // Settings size, plus a boost in the clean look so the same
+              // size reads the same as in the pixel look.
+              textScaler: TextScaler.linear(StyleTextScale.appScale),
             );
             if (showAd) {
               data = data.removePadding(removeBottom: true);

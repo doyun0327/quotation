@@ -116,7 +116,7 @@ class _TopBar extends StatelessWidget {
             child: Text(
               title,
               style: AppTheme.body.copyWith(
-                fontSize: 17,
+                fontSize: 18,
                 fontWeight: FontWeight.w900,
                 color: accent,
               ),

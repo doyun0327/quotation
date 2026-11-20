@@ -568,7 +568,7 @@ class DdayController extends ChangeNotifier {
   static const textOffsetMaxX = 480;
   static const textOffsetMinY = -320;
   static const textOffsetMaxY = 320;
-  static const scaleMin = 60;
+  static const scaleMin = 20;
   static const bgOpacityMin = 20;
   static const bgOpacityMax = 100;
   static const scaleMax = 240;

@@ -30,6 +30,8 @@ class TogetherPreviewSprite {
     this.onPan,
     this.onSelect,
     this.onRotate,
+    this.onPinchStart,
+    this.onPinch,
   });
 
   final String keyId;
@@ -49,6 +51,11 @@ class TogetherPreviewSprite {
   final TogetherWidgetPanDelta? onPan;
   final VoidCallback? onSelect;
   final ValueChanged<double>? onRotate;
+
+  /// Two fingers on the selected character: [onPinchStart] when they land,
+  /// then [onPinch] with the spread since then (1 = unchanged, 2 = twice).
+  final VoidCallback? onPinchStart;
+  final ValueChanged<double>? onPinch;
 }
 
 /// One speech bubble in the decorate preview.
@@ -151,6 +158,12 @@ class TogetherWidgetPreview extends StatelessWidget {
     this.onMePan,
     this.onFriendPan,
     this.onTextPan,
+    this.onMePinchStart,
+    this.onMePinch,
+    this.onFriendPinchStart,
+    this.onFriendPinch,
+    this.onTextPinchStart,
+    this.onTextPinch,
     this.onTextRotate,
     this.onTextSelect,
     this.highlightText = false,
@@ -207,6 +220,15 @@ class TogetherWidgetPreview extends StatelessWidget {
   final TogetherWidgetPanDelta? onMePan;
   final TogetherWidgetPanDelta? onFriendPan;
   final TogetherWidgetPanDelta? onTextPan;
+
+  /// Pinch to resize the selected character / the background text; see
+  /// [TogetherPreviewSprite.onPinch].
+  final VoidCallback? onMePinchStart;
+  final ValueChanged<double>? onMePinch;
+  final VoidCallback? onFriendPinchStart;
+  final ValueChanged<double>? onFriendPinch;
+  final VoidCallback? onTextPinchStart;
+  final ValueChanged<double>? onTextPinch;
   final ValueChanged<double>? onTextRotate;
   final VoidCallback? onTextSelect;
   final bool highlightText;
@@ -334,6 +356,8 @@ class TogetherWidgetPreview extends StatelessWidget {
       VoidCallback? onSelect,
       double rotation = 0,
       ValueChanged<double>? onRotate,
+      VoidCallback? onPinchStart,
+      ValueChanged<double>? onPinch,
     }) {
       final VoidCallback? onTap = onRotate != null
           ? () {
@@ -343,6 +367,29 @@ class TogetherWidgetPreview extends StatelessWidget {
             }
           : onSelect;
       if (onTap == null && onPan == null) return child;
+      // Selected and resizable: one finger moves it, two fingers spread or
+      // pinch to resize it. (A scale gesture covers both; it cannot be mixed
+      // with a pan on the same detector.)
+      if (onPan != null && onPinch != null) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          onScaleStart: (_) {
+            onSelect?.call();
+            onDragStart?.call();
+            onPinchStart?.call();
+          },
+          onScaleUpdate: (d) {
+            if (d.pointerCount >= 2) {
+              onPinch(d.scale);
+            } else {
+              onPan(d.focalPointDelta.dx, -d.focalPointDelta.dy);
+            }
+          },
+          onScaleEnd: (_) => onDragEnd?.call(),
+          child: child,
+        );
+      }
       return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
@@ -378,21 +425,16 @@ class TogetherWidgetPreview extends StatelessWidget {
       required VoidCallback? onSelect,
       double rotation = 0,
       ValueChanged<double>? onRotate,
+      VoidCallback? onPinchStart,
+      ValueChanged<double>? onPinch,
       bool art = true,
     }) {
-      const knob = 36.0;
-      const gap = 6.0;
-      // Sit a little closer to the picture. The angle still uses the real center.
-      const knobDrop = 8.0;
-      final showKnob = highlight && onRotate != null;
       final artGap = CharacterArtInsets.forAsset(asset).gaps(spriteW, spriteH);
-      // Extra space stays inside this box so the handle can be hit.
-      // The picture stays on the bottom edge, so bottom-anchored layout
-      // does not shift the character.
-      final reach = showKnob ? knob + gap : 0.0;
+      // The rotate handle is drawn by the preview itself (see
+      // characterKnobs), because it follows the head and so can leave this box.
       return SizedBox(
         width: spriteW,
-        height: spriteH + reach,
+        height: spriteH,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -406,6 +448,8 @@ class TogetherWidgetPreview extends StatelessWidget {
                 onSelect: onSelect,
                 rotation: rotation,
                 onRotate: onRotate,
+                onPinchStart: onPinchStart,
+                onPinch: onPinch,
                 child: Transform.rotate(
                   alignment: Alignment.center,
                   angle: rotation * math.pi / 180,
@@ -450,21 +494,6 @@ class TogetherWidgetPreview extends StatelessWidget {
                 ),
               ),
             ),
-            if (showKnob)
-              Positioned(
-                left: (spriteW - knob) / 2,
-                // Follow the drawn character, not the empty top of the sprite box.
-                top: knobDrop + artGap.top,
-                width: knob,
-                height: knob,
-                child: _RotateKnob(
-                  spriteHeight: spriteH,
-                  gap: gap - knobDrop - artGap.top,
-                  onRotate: onRotate,
-                  onDragStart: onDragStart,
-                  onDragEnd: onDragEnd,
-                ),
-              ),
           ],
         ),
       );
@@ -498,6 +527,8 @@ class TogetherWidgetPreview extends StatelessWidget {
           highlight: !art && highlightMe,
           onPan: art ? null : onMePan,
           onSelect: art ? null : onMeSelect,
+          onPinchStart: art ? null : onMePinchStart,
+          onPinch: art ? null : onMePinch,
           art: art,
         ),
       );
@@ -514,6 +545,8 @@ class TogetherWidgetPreview extends StatelessWidget {
                 highlight: !art && highlightFriend,
                 onPan: art ? null : onFriendPan,
                 onSelect: art ? null : onFriendSelect,
+                onPinchStart: art ? null : onFriendPinchStart,
+                onPinch: art ? null : onFriendPinch,
                 art: art,
               ),
             );
@@ -533,6 +566,8 @@ class TogetherWidgetPreview extends StatelessWidget {
                 onSelect: art ? null : person.onSelect,
                 rotation: person.rotation,
                 onRotate: art ? null : person.onRotate,
+                onPinchStart: art ? null : person.onPinchStart,
+                onPinch: art ? null : person.onPinch,
                 art: art,
               ),
             ),
@@ -557,9 +592,67 @@ class TogetherWidgetPreview extends StatelessWidget {
 
     final hasImage = bgAssetPath != null && bgAssetPath!.isNotEmpty;
     final rotatingText = highlightText && onTextRotate != null;
-    const textKnob = 36.0;
-    const textKnobGap = 6.0;
-    const textKnobDrop = 8.0;
+
+    /// The rotate handle sits just past the head of whatever is selected, in
+    /// the direction it points now, so it turns with the picture: you hold
+    /// the head and turn it. [halfExtent] is the distance from [center] to
+    /// the top edge of the drawn thing; [degrees] is its clockwise rotation.
+    /// The handle stays inside the card (the card is where touches land), and
+    /// the drag math is told how far the real center is from the handle.
+    Widget rotateKnob({
+      required Key key,
+      required Offset center,
+      required double halfExtent,
+      required double degrees,
+      required ValueChanged<double> onRotate,
+    }) {
+      const knob = 36.0;
+      const clearance = 16.0;
+      final rad = degrees * math.pi / 180;
+      final reach = halfExtent + clearance;
+      final wanted = center + Offset(math.sin(rad), -math.cos(rad)) * reach;
+      final at = Offset(
+        wanted.dx.clamp(knob / 2, math.max(knob / 2, width - knob / 2)),
+        wanted.dy.clamp(knob / 2, math.max(knob / 2, height - knob / 2)),
+      );
+      return Positioned(
+        key: key,
+        left: at.dx - knob / 2,
+        top: at.dy - knob / 2,
+        width: knob,
+        height: knob,
+        child: _RotateKnob(
+          centerOffset: center - at,
+          onRotate: onRotate,
+          onDragStart: onDragStart,
+          onDragEnd: onDragEnd,
+        ),
+      );
+    }
+
+    // Characters in the crowd: sprite box center and the drawn head's reach.
+    List<Widget> characterKnobs() {
+      final people = crowd;
+      if (people == null) return const [];
+      return [
+        for (final person in people)
+          if (person.highlight && person.onRotate != null)
+            () {
+              final w = charW * person.scale;
+              final h = charH * person.scale;
+              final gap = CharacterArtInsets.forAsset(
+                person.assetPath,
+              ).gaps(w, h);
+              return rotateKnob(
+                key: ValueKey('together-knob-${person.keyId}'),
+                center: Offset(4 + person.x + w / 2, height - person.y - h / 2),
+                halfExtent: math.max(0.0, h / 2 - gap.top),
+                degrees: person.rotation,
+                onRotate: person.onRotate!,
+              );
+            }(),
+      ];
+    }
     final shownLabel = TogetherCheerLayout.wrapStyled(
       labelListenable?.value ?? label,
       labelStyle,
@@ -581,13 +674,14 @@ class TogetherWidgetPreview extends StatelessWidget {
         ? 1.0
         : math.min(1.0, math.min(innerW / rawW, innerH / rawH));
     final textH = rawH * fit;
-    final textTop = (innerH - textH) / 2;
     // Moving stays on the letters. Turning uses the same handle as a character.
     // The letters themselves are drawn in a separate clipped layer so a long
     // rotated line is cut at the card edge, the same way the home widget clips.
     final cheer = panTarget(
       onPan: onTextPan,
       onSelect: onTextSelect,
+      onPinchStart: onTextPinchStart,
+      onPinch: onTextPinch,
       child: const SizedBox.expand(),
     );
     final cheerVisual = Transform.rotate(
@@ -813,43 +907,32 @@ class TogetherWidgetPreview extends StatelessWidget {
                     : const SizedBox.expand(),
               ),
             ),
-          // Same handle as a character, above the selected bubble.
+          // Rotate handles, last so nothing covers them: they follow the
+          // head of the selected character, bubble or text.
+          ...characterKnobs(),
           for (var i = 0; i < bubbles.length; i++)
             if (bubbles[i].highlight && bubbles[i].onRotate != null)
-              Positioned(
+              rotateKnob(
                 key: ValueKey('bubble-knob-${bubbles[i].bubble.id}'),
-                left: bubbleAt(i).dx + (bubbleBoxes[i].width - textKnob) / 2,
-                top: bubbleAt(i).dy - textKnobGap - textKnob + textKnobDrop,
-                width: textKnob,
-                height: textKnob,
-                child: _RotateKnob(
-                  spriteHeight: bubbleBoxes[i].height,
-                  gap: textKnobGap - textKnobDrop,
-                  onRotate: bubbles[i].onRotate!,
-                  onDragStart: onDragStart,
-                  onDragEnd: onDragEnd,
+                center: Offset(
+                  bubbleAt(i).dx + bubbleBoxes[i].width / 2,
+                  bubbleAt(i).dy + bubbleBoxes[i].height / 2,
                 ),
+                halfExtent: bubbleBoxes[i].height / 2,
+                degrees: bubbles[i].bubble.rotation.toDouble(),
+                onRotate: bubbles[i].onRotate!,
               ),
-          // Above the characters. Their hit boxes used to cover this handle,
-          // and a knob drawn outside the text box cannot receive drags.
           if (rotatingText)
-            Positioned(
-              left: (width - innerW) / 2 + textX + (innerW - textKnob) / 2,
-              top: (height - innerH) / 2 -
-                  textY +
-                  textTop -
-                  textKnobGap -
-                  textKnob +
-                  textKnobDrop,
-              width: textKnob,
-              height: textKnob,
-              child: _RotateKnob(
-                spriteHeight: textH,
-                gap: textKnobGap - textKnobDrop,
-                onRotate: onTextRotate!,
-                onDragStart: onDragStart,
-                onDragEnd: onDragEnd,
+            rotateKnob(
+              key: const ValueKey('text-knob'),
+              // The letters turn about the middle of the text box.
+              center: Offset(
+                (width - innerW) / 2 + textX + innerW / 2,
+                (height - innerH) / 2 - textY + innerH / 2,
               ),
+              halfExtent: textH / 2,
+              degrees: textRotation.toDouble(),
+              onRotate: onTextRotate!,
             ),
         ],
       ),
@@ -932,15 +1015,14 @@ class _PixelSelectPainter extends CustomPainter {
 /// Drag handle shown above the selected character in the widget decorator.
 class _RotateKnob extends StatefulWidget {
   const _RotateKnob({
-    required this.spriteHeight,
-    required this.gap,
+    required this.centerOffset,
     required this.onRotate,
     this.onDragStart,
     this.onDragEnd,
   });
 
-  final double spriteHeight;
-  final double gap;
+  /// From the middle of this handle to the middle of what it turns.
+  final Offset centerOffset;
   final ValueChanged<double> onRotate;
   final VoidCallback? onDragStart;
   final VoidCallback? onDragEnd;
@@ -950,14 +1032,15 @@ class _RotateKnob extends StatefulWidget {
 }
 
 class _RotateKnobState extends State<_RotateKnob> {
-  /// Degrees from the sprite center to the finger.
-  /// 0 is upright. The same angle turns the picture so the head points at the finger.
+  /// Degrees from the center of what is turned to the finger.
+  /// 0 is upright. The same angle turns the picture so the head points at the
+  /// finger. The handle sits on the head, so a new grab never makes it jump.
   double _degrees(Offset global) {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null || !box.hasSize) return 0;
-    final knob = box.localToGlobal(box.size.center(Offset.zero));
-    final center = knob +
-        Offset(0, box.size.height / 2 + widget.gap + widget.spriteHeight / 2);
+    final center = box.localToGlobal(
+      box.size.center(Offset.zero) + widget.centerOffset,
+    );
     final delta = global - center;
     return math.atan2(delta.dx, -delta.dy) * 180 / math.pi;
   }

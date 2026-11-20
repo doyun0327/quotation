@@ -256,14 +256,14 @@ object DdayWidgetVisuals {
     canvas.save()
     canvas.clipPath(clipPath)
 
-    val meScale = (charScale / 100f).coerceIn(0.6f, 3.0f)
-    val frScale = (friendScale / 100f).coerceIn(0.6f, 3.0f)
-    val meWDp = (72f * sizeCharFactor * meScale).toInt().coerceAtLeast(20)
-    val meHDp = (96f * sizeCharFactor * meScale).toInt().coerceAtLeast(28)
+    val meScale = (charScale / 100f).coerceIn(0.2f, 3.0f)
+    val frScale = (friendScale / 100f).coerceIn(0.2f, 3.0f)
+    val meWDp = (72f * sizeCharFactor * meScale).toInt().coerceAtLeast(4)
+    val meHDp = (96f * sizeCharFactor * meScale).toInt().coerceAtLeast(5)
     val meW = (meWDp * density).toInt().coerceAtLeast(8)
     val meH = (meHDp * density).toInt().coerceAtLeast(8)
-    val friendWDp = (72f * sizeCharFactor * frScale).toInt().coerceAtLeast(20)
-    val friendHDp = (96f * sizeCharFactor * frScale).toInt().coerceAtLeast(28)
+    val friendWDp = (72f * sizeCharFactor * frScale).toInt().coerceAtLeast(4)
+    val friendHDp = (96f * sizeCharFactor * frScale).toInt().coerceAtLeast(5)
     val friendW = (friendWDp * density).toInt().coerceAtLeast(8)
     val friendH = (friendHDp * density).toInt().coerceAtLeast(8)
     val charPaint =
@@ -322,9 +322,10 @@ object DdayWidgetVisuals {
         val offsetX = obj.optInt("x", 0)
         val offsetY = obj.optInt("y", 0)
         // Upper bound matches Flutter widgetChars (400) so large sizes survive.
-        val spriteScale = (obj.optInt("s", 100) / 100f).coerceIn(0.28f, 4.0f)
-        val spriteWDp = (72f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(16)
-        val spriteHDp = (96f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(20)
+        // Layout fit (down to 28%) times the person's own size (down to 20%).
+        val spriteScale = (obj.optInt("s", 100) / 100f).coerceIn(0.04f, 4.0f)
+        val spriteWDp = (72f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(4)
+        val spriteHDp = (96f * sizeCharFactor * spriteScale).toInt().coerceAtLeast(5)
         val spriteW = (spriteWDp * density).toInt().coerceAtLeast(8)
         val spriteH = (spriteHDp * density).toInt().coerceAtLeast(8)
         val bmp =

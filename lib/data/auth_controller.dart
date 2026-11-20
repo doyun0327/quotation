@@ -733,7 +733,20 @@ class AuthController extends ChangeNotifier {
     await prefs.setString(_prefsNickname, name);
     notifyListeners();
     if (!CloudConsent.accepted) return true;
+    // Saved on this phone: the caller can close at once. The sign-in and the
+    // profile name (three server round trips on a fresh install) finish in
+    // the background; the name stays local if they fail.
+    unawaited(_syncNicknameToCloud(name, prefs));
+    return true;
+  }
+
+  Future<void> _syncNicknameToCloud(
+    String name,
+    SharedPreferences prefs,
+  ) async {
     await ensureAnonymous();
+    // A newer nickname was saved while this one was syncing: that call syncs.
+    if (_nickname != name) return;
     try {
       final fb = FirebaseAuth.instance.currentUser;
       if (fb != null) {
@@ -768,7 +781,6 @@ class AuthController extends ChangeNotifier {
     }
     notifyListeners();
     unawaited(UserProfileSync.syncDisplayName(name));
-    return true;
   }
 
   Future<void> _setUser(AuthUser user) async {

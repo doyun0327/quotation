@@ -148,14 +148,14 @@ class _DdayScreenState extends State<DdayScreen> {
                     children: [
                       Icon(
                         Icons.groups_rounded,
-                        size: 26,
+                        size: 24,
                         color: palette.accent,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         t.ddayTitle,
                         style: AppTheme.body.copyWith(
-                          fontSize: 22,
+                          fontSize: 20,
                           fontWeight: FontWeight.w900,
                           color: palette.accent,
                         ),

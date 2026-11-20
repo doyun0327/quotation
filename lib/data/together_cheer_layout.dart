@@ -24,7 +24,7 @@ abstract final class TogetherCheerLayout {
     required double textScale,
     WidgetFont font = WidgetFont.basic,
   }) {
-    final factor = (textScale / 100).clamp(0.6, 2.4);
+    final factor = (textScale / 100).clamp(0.2, 2.4);
     final family = font.family;
     if (family != null) {
       // Bundled fonts ship one weight. A heavier weight would fake bold here

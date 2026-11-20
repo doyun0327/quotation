@@ -31,6 +31,7 @@ import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/theme/style_text_scale.dart';
 import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/widgets/color_palette_sheet.dart';
 import 'package:quotation/widgets/ios_widget_guide.dart';
@@ -932,6 +933,52 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     _dragTick.value++;
   }
 
+  /// Pinch to resize: the size (percent) the fingers started from. The
+  /// sliders still work; both change the same numbers.
+  int _pinchBase = 100;
+
+  void _pinchMeStart() => _pinchBase = _meScale;
+
+  void _pinchMe(double ratio) {
+    final next = (_pinchBase * ratio)
+        .round()
+        .clamp(DdayController.scaleMin, DdayController.charScaleMax)
+        .toInt();
+    if (next == _meScale) return;
+    setState(() {
+      _meScale = next;
+      // My size travels with the crowd too.
+      if (_placed.isNotEmpty) _crowdDirty = true;
+      _fitCharacters();
+    });
+  }
+
+  void _pinchFriendStart(String? uid) =>
+      _pinchBase = _scaleOf(uid ?? _pickedFriendUid ?? '');
+
+  void _pinchFriend(double ratio) {
+    final next = (_pinchBase * ratio)
+        .round()
+        .clamp(DdayController.scaleMin, DdayController.charScaleMax)
+        .toInt();
+    if (next == _scaleOf(_pickedFriendUid ?? '')) return;
+    setState(() {
+      _setFriendScale(next);
+      _fitCharacters();
+    });
+  }
+
+  void _pinchTextStart() => _pinchBase = _textScale;
+
+  void _pinchText(double ratio) {
+    final next = (_pinchBase * ratio)
+        .round()
+        .clamp(DdayController.scaleMin, DdayController.scaleMax)
+        .toInt();
+    if (next == _textScale) return;
+    setState(() => _textScale = next);
+  }
+
   List<TogetherPreviewSprite> _crowdSprites() {
     final myUid = authController.viewerUid;
     return [
@@ -975,6 +1022,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                           _pickedFriendUid == person.uid)
                 ? (dx, dy) => _movePerson(person.uid, dx, dy)
                 : null,
+            onPinchStart: person.uid == myUid
+                ? _pinchMeStart
+                : () => _pinchFriendStart(person.uid),
+            onPinch: person.uid == myUid ? _pinchMe : _pinchFriend,
           ),
     ];
   }
@@ -1892,18 +1943,23 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) unawaited(_saveLocallyOnLeave());
-      },
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _onBlankScreenTap,
-        child: Stack(
-          children: [
-            _buildScreen(context),
-            if (_coachStep != null) Positioned.fill(child: _coachLayer()),
-          ],
+    // The decorator always draws in the pixel font, so it skips the clean
+    // look's text boost (see StyleTextScale).
+    return StyleTextScale.pixelOnly(
+      context,
+      PopScope(
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) unawaited(_saveLocallyOnLeave());
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _onBlankScreenTap,
+          child: Stack(
+            children: [
+              _buildScreen(context),
+              if (_coachStep != null) Positioned.fill(child: _coachLayer()),
+            ],
+          ),
         ),
       ),
     );
@@ -1997,6 +2053,11 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                 ]),
                 builder: (context, _) {
                   final isPremium = membershipController.hasPremiumContent;
+                  // Paid pastel backgrounds lead for subscribers and during
+                  // the free trial; otherwise the free ones lead.
+                  final bgChoices = TogetherBgTheme.ordered(
+                    pastelFirst: isPremium,
+                  );
                   final live = _room;
                   final liveHasFriend = live?.hasFriend ?? false;
                   final liveFriendId = live?.friendCharacterId;
@@ -2075,9 +2136,16 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                             _focus == _DecorateFocus.friend)
                                         ? _clampFriend
                                         : null,
+                                    onMePinchStart: _pinchMeStart,
+                                    onMePinch: _pinchMe,
+                                    onFriendPinchStart: () =>
+                                        _pinchFriendStart(null),
+                                    onFriendPinch: _pinchFriend,
                                     onTextPan: _focus == _DecorateFocus.text
                                         ? _clampText
                                         : null,
+                                    onTextPinchStart: _pinchTextStart,
+                                    onTextPinch: _pinchText,
                                     onTextRotate: _focus == _DecorateFocus.text
                                         ? _rotateText
                                         : null,
@@ -2273,16 +2341,101 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                 child: ListView.separated(
                                   scrollDirection: Axis.horizontal,
                                   physics: const BouncingScrollPhysics(),
-                                  // Transparent, the speech-bubble tile, the stickers,
-                                  // then the backgrounds.
-                                  itemCount:
-                                      TogetherBgTheme.choices.length +
-                                      1 +
-                                      TogetherSticker.styles.length,
+                                  // Transparent, then the backgrounds. Speech
+                                  // bubbles and stickers live under 꾸미기.
+                                  itemCount: bgChoices.length,
                                   separatorBuilder: (_, _) =>
                                       const SizedBox(width: 10),
                                   itemBuilder: (context, index) {
-                                    if (index == 1) {
+                                    final theme = bgChoices[index];
+                                    final locked =
+                                        !isPremium &&
+                                        TogetherBgTheme.requiresPremium(theme);
+                                    return _bgChoice(
+                                      selected: _bgThemeId == theme.id,
+                                      accent: palette.accent,
+                                      locked: locked,
+                                      onTap: () async {
+                                        if (locked) {
+                                          _showPremiumLock();
+                                          return;
+                                        }
+                                        _clearSelection();
+                                        setState(() => _bgThemeId = theme.id);
+                                        _persist();
+                                        // iPhone: no home photo yet → explain and offer to add.
+                                        if (theme.isNone &&
+                                            IosFakeWallpaper.isIOS &&
+                                            _iosWallpaperPath == null) {
+                                          await _offerIosFakeWallpaper();
+                                        }
+                                      },
+                                      child: theme.isNone
+                                          ? Center(
+                                              child: Text(
+                                                t.ddayDecorateBgNone,
+                                                textAlign: TextAlign.center,
+                                                style: AppTheme.body.copyWith(
+                                                  fontFamily: 'Galmuri',
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: const Color(
+                                                    0xFF5B6B8C,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : Image.asset(
+                                              theme.assetPath,
+                                              width: 72,
+                                              height: 72,
+                                              fit: BoxFit.cover,
+                                              cacheWidth:
+                                                  (72 *
+                                                          MediaQuery.devicePixelRatioOf(
+                                                            context,
+                                                          ))
+                                                      .round(),
+                                              gaplessPlayback: true,
+                                              filterQuality: FilterQuality.none,
+                                              isAntiAlias: false,
+                                            ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              // iPhone, "투명" picked: the home photo + change button.
+                              if (IosFakeWallpaper.isIOS &&
+                                  _bgThemeId == TogetherBgTheme.none.id) ...[
+                                const SizedBox(height: 12),
+                                IosTransparentSetting(
+                                  photoPath: _iosWallpaperPath,
+                                  onChange: () =>
+                                      unawaited(_changeIosWallpaper()),
+                                ),
+                              ],
+                              const SizedBox(height: 18),
+                              // Speech bubbles and the three hearts behind them.
+                              Text(
+                                t.ddayDecorateDecoLabel,
+                                style: AppTheme.body.copyWith(
+                                  fontFamily: 'Galmuri',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: palette.accent,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                height: 72,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemCount: 1 + TogetherSticker.styles.length,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(width: 10),
+                                  itemBuilder: (context, index) {
+                                    if (index == 0) {
                                       return _bgChoice(
                                         selected:
                                             _selectedBubble != null &&
@@ -2317,11 +2470,8 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                         ),
                                       );
                                     }
-                                    final linkCount =
-                                        TogetherSticker.styles.length;
-                                    if (index >= 2 && index < 2 + linkCount) {
                                       final style =
-                                          TogetherSticker.styles[index - 2];
+                                          TogetherSticker.styles[index - 1];
                                       // Paid subscribers right away; everyone else
                                       // (free trial included) once they shared Dearly
                                       // with a friend (kept for good).
@@ -2393,77 +2543,9 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                           ],
                                         ),
                                       );
-                                    }
-                                    final theme =
-                                        TogetherBgTheme.choices[index == 0
-                                            ? 0
-                                            : index - 1 - linkCount];
-                                    final locked =
-                                        !isPremium &&
-                                        TogetherBgTheme.requiresPremium(theme);
-                                    return _bgChoice(
-                                      selected: _bgThemeId == theme.id,
-                                      accent: palette.accent,
-                                      locked: locked,
-                                      onTap: () async {
-                                        if (locked) {
-                                          _showPremiumLock();
-                                          return;
-                                        }
-                                        _clearSelection();
-                                        setState(() => _bgThemeId = theme.id);
-                                        _persist();
-                                        // iPhone: no home photo yet → explain and offer to add.
-                                        if (theme.isNone &&
-                                            IosFakeWallpaper.isIOS &&
-                                            _iosWallpaperPath == null) {
-                                          await _offerIosFakeWallpaper();
-                                        }
-                                      },
-                                      child: theme.isNone
-                                          ? Center(
-                                              child: Text(
-                                                t.ddayDecorateBgNone,
-                                                textAlign: TextAlign.center,
-                                                style: AppTheme.body.copyWith(
-                                                  fontFamily: 'Galmuri',
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.w800,
-                                                  color: const Color(
-                                                    0xFF5B6B8C,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : Image.asset(
-                                              theme.assetPath,
-                                              width: 72,
-                                              height: 72,
-                                              fit: BoxFit.cover,
-                                              cacheWidth:
-                                                  (72 *
-                                                          MediaQuery.devicePixelRatioOf(
-                                                            context,
-                                                          ))
-                                                      .round(),
-                                              gaplessPlayback: true,
-                                              filterQuality: FilterQuality.none,
-                                              isAntiAlias: false,
-                                            ),
-                                    );
                                   },
                                 ),
                               ),
-                              // iPhone, "투명" picked: the home photo + change button.
-                              if (IosFakeWallpaper.isIOS &&
-                                  _bgThemeId == TogetherBgTheme.none.id) ...[
-                                const SizedBox(height: 12),
-                                IosTransparentSetting(
-                                  photoPath: _iosWallpaperPath,
-                                  onChange: () =>
-                                      unawaited(_changeIosWallpaper()),
-                                ),
-                              ],
                               const SizedBox(height: 18),
                               Text(
                                 t.ddayDecorateFontLabel,

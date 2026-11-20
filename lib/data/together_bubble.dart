@@ -34,7 +34,7 @@ class TogetherBubble {
   static const maxCount = 5;
   static const maxStickers = 10;
   static const maxLength = 16;
-  static const scaleMin = 70;
+  static const scaleMin = 50;
   static const scaleMax = 200;
   static const scaleStep = 10;
 

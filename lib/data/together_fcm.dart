@@ -20,6 +20,7 @@ import 'package:quotation/data/home_widget_sync.dart';
 import 'package:quotation/data/quote_repository.dart';
 import 'package:quotation/firebase_options.dart';
 import 'package:quotation/l10n/app_strings.dart';
+import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/main_shell.dart';
 import 'package:quotation/screens/quote_list_screen.dart';
 import 'package:quotation/screens/together_room_screen.dart';
@@ -31,6 +32,9 @@ Future<void> togetherFcmBackground(RemoteMessage message) async {
   // Separate isolate: without its own App Check token, the room sync below
   // would be refused once App Check is enforced.
   await activateAppCheck();
+  // This isolate starts with the default language; the notice must follow
+  // the language the app uses.
+  await localeController.load();
   final applied = await _applyTogetherMessage(message);
   if (!applied || _isSilentRefresh(message)) return;
   // iOS shows the APNs alert itself; a local notice here would duplicate it.

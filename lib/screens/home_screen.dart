@@ -19,7 +19,6 @@ import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
 import 'package:quotation/theme/theme_controller.dart';
 import 'package:quotation/theme/visual_style_controller.dart';
-import 'package:quotation/widgets/character_widget_hint.dart';
 import 'package:quotation/widgets/hamfoot_icon.dart';
 import 'package:quotation/widgets/category_browse_section.dart';
 import 'package:quotation/widgets/category_pixel_icon.dart';
@@ -160,7 +159,6 @@ class HomeScreen extends StatelessWidget {
                           }
                         },
                       ),
-                      const CharacterWidgetHintBanner(),
                     ],
                   ),
                 ),

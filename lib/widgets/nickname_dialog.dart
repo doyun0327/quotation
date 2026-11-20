@@ -5,7 +5,6 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:quotation/widgets/language_row.dart';
 import 'package:quotation/data/home_widget_sync.dart';
 
 /// Asks for a friend-facing nickname.
@@ -104,21 +103,6 @@ class _NicknameDialogState extends State<_NicknameDialog> {
                       errorText: _error.isEmpty ? null : _error,
                     ),
                   ),
-                  if (widget.requiredName) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      t.languageTitle,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    LanguageRow(
-                      selectedId: localeController.language.id,
-                      onSelected: localeController.setLanguage,
-                      nativeNames: true,
-                    ),
-                  ],
                 ],
               ),
             ),
