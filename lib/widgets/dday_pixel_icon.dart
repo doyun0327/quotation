@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Selectable pixel icons for D-Day cards.
 enum DdayIconKind {
-  cake('cake'),
+  heart('heart'),
   plane('plane'),
   cat('cat'),
   dog('dog'),
@@ -21,7 +21,7 @@ enum DdayIconKind {
   flower('flower'),
   music('music'),
   bunny('bunny'),
-  heart('heart');
+  cake('cake');
 
   const DdayIconKind(this.id);
   final String id;
