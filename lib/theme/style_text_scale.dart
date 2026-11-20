@@ -4,13 +4,14 @@ import 'package:quotation/theme/visual_style_controller.dart';
 
 /// Keeps the letters the same size in the pixel and the clean look.
 ///
-/// The pixel font (Galmuri) draws wider and taller letters than the phone's
-/// own font at the same font size: about 9% wider in Korean and up to 14%
-/// taller in Latin letters. So the same "보통" size looked smaller as soon as
-/// the clean look was picked. In the clean look every text is scaled up by
-/// [cleanBoost] on top of the size chosen in Settings.
+/// The pixel font (Galmuri) draws much wider letters than the phone's own
+/// font at the same font size: measured on device, the same Korean line is
+/// about 25% wider in Galmuri. With the old 1.1 boost the clean look was still
+/// ~12% narrower than pixel at the same "작게" size. 1.2 keeps the widths close
+/// (about 4% narrower) without breaking narrow layouts. In the clean look every
+/// text is scaled up by [cleanBoost] on top of the size chosen in Settings.
 abstract final class StyleTextScale {
-  static const cleanBoost = 1.1;
+  static const cleanBoost = 1.2;
 
   /// The text scale for the whole app.
   static double get appScale =>
