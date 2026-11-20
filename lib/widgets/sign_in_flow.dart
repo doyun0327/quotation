@@ -121,12 +121,12 @@ Future<bool> suggestSignInBeforePurchase(BuildContext context) async {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(dialogContext).pop('skip'),
-          child: Text(t.purchaseLoginSkip),
-        ),
-        FilledButton(
           onPressed: () => Navigator.of(dialogContext).pop('login'),
           child: Text(t.login),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(dialogContext).pop('skip'),
+          child: Text(t.purchaseLoginSkip),
         ),
       ],
     ),

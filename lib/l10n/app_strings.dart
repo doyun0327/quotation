@@ -948,15 +948,18 @@ class AppStrings {
       _t('Apple로 로그인', 'Sign in with Apple', 'Appleでサインイン');
   String get appleSignedInLabel =>
       _t('Apple로 로그인함', 'Signed in with Apple', 'Appleでログイン中');
-  String get purchaseLoginTitle =>
-      _t('로그인하고 구독할까요?', 'Sign in before subscribing?', 'ログインしてから購読しますか？');
+  String get purchaseLoginTitle => _t(
+    '로그인은 선택이에요',
+    'Signing in is optional',
+    'ログインは任意です',
+  );
   String get purchaseLoginBody => _t(
-    '로그인하면 앱을 다시 설치하거나 기기를 바꿔도 구독을 이어서 쓸 수 있어요.',
-    'Signing in keeps your plan when you reinstall the app or change phones.',
-    'ログインすると、再インストールや機種変更後も購読を引き継げます。',
+    '로그인 없이도 바로 구매할 수 있어요. 로그인하면 앱을 다시 설치하거나 다른 기기에서도 구매한 내용을 이어서 쓸 수 있고, 나중에 설정에서 언제든 로그인할 수 있어요.',
+    'You can buy without signing in. Signing in lets you use your purchase after reinstalling or on your other devices, and you can sign in later from Settings at any time.',
+    'ログインしなくても購入できます。ログインすると、再インストール後や他の端末でも購入内容を引き継げます。あとから設定でいつでもログインできます。',
   );
   String get purchaseLoginSkip =>
-      _t('로그인 없이 계속', 'Continue without signing in', 'ログインせずに続ける');
+      _t('로그인 없이 구매', 'Continue without signing in', 'ログインせずに購入');
   String get appleLoginSuccess =>
       _t('Apple 로그인 완료', 'Signed in with Apple', 'Appleログインが完了しました');
   String get appleLoginConfigError => _t(
@@ -1163,6 +1166,15 @@ class AppStrings {
   String get otherSection => _t('기타 설정', 'Other', 'その他');
   String get eveningDebugToast =>
       _t('저녁 알림을 보냈어요', 'Evening notification sent', '夜の通知を送りました');
+  String get subscriptionPlanName => _t(
+    'Dearly 프리미엄 (월간 자동 갱신 구독)',
+    'Dearly Premium (monthly auto-renewing subscription)',
+    'Dearlyプレミアム（月額・自動更新）',
+  );
+  String get termsOfUseLink =>
+      _t('이용약관 (EULA)', 'Terms of Use (EULA)', '利用規約 (EULA)');
+  String get privacyPolicyLink =>
+      _t('개인정보처리방침', 'Privacy Policy', 'プライバシーポリシー');
   String get termsTitle =>
       _t('이용약관 및 개인정보처리방침', 'Terms & Privacy', '利用規約とプライバシーポリシー');
   String get termsSubtitle => _t(

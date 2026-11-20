@@ -4,6 +4,7 @@ import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/legal_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -24,6 +25,14 @@ class _SubscriptionTermsState extends State<SubscriptionTerms> {
     super.initState();
     billingController.loadMonthlyPrice();
   }
+
+  // iPhone: Apple's standard EULA (same link goes in the App Store
+  // description). Elsewhere: the app's own terms page.
+  static Uri get _termsUrl => defaultTargetPlatform == TargetPlatform.iOS
+      ? Uri.parse('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')
+      : Uri.parse('https://dearly-cf730.web.app/terms.html');
+  static final Uri _privacyUrl =
+      Uri.parse('https://dearly-cf730.web.app/privacy.html');
 
   static String get _store =>
       defaultTargetPlatform == TargetPlatform.iOS ? 'App Store' : 'Google Play';
@@ -60,6 +69,15 @@ class _SubscriptionTermsState extends State<SubscriptionTerms> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
+                    t.subscriptionPlanName,
+                    style: AppTheme.body.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.muted,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
                     price == null
                         ? t.subscriptionPriceUnknown
                         : t.subscriptionPriceLine(price),
@@ -84,26 +102,50 @@ class _SubscriptionTermsState extends State<SubscriptionTerms> {
             // Billing period, auto-renewal, how to cancel, what is not
             // included: the store policy terms, kept to one quiet line.
             Text(t.subscriptionFinePrint(_store), style: fine),
-            TextButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const LegalScreen()),
-              ),
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                minimumSize: const Size(0, 26),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: AppColors.muted,
-                textStyle: AppTheme.body.copyWith(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  decoration: TextDecoration.underline,
+            Wrap(
+              spacing: 14,
+              children: [
+                _LegalLink(label: t.termsOfUseLink, url: _termsUrl),
+                _LegalLink(label: t.privacyPolicyLink, url: _privacyUrl),
+                _LegalLink(
+                  label: t.termsTitle,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const LegalScreen()),
+                  ),
                 ),
-              ),
-              child: Text(t.termsTitle),
+              ],
             ),
           ],
         );
       },
+    );
+  }
+}
+
+class _LegalLink extends StatelessWidget {
+  const _LegalLink({required this.label, this.url, this.onTap});
+
+  final String label;
+  final Uri? url;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed:
+          onTap ?? () => launchUrl(url!, mode: LaunchMode.externalApplication),
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.zero,
+        minimumSize: const Size(0, 26),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        foregroundColor: AppColors.muted,
+        textStyle: AppTheme.body.copyWith(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      child: Text(label),
     );
   }
 }
