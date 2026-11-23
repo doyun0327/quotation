@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:quotation/data/push_trace.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/character_controller.dart';
@@ -401,6 +402,7 @@ abstract final class HomeWidgetSync {
   }
 
   static Future<void> _pushTogetherWidget() async {
+    unawaited(PushTrace.add('widget reload'));
     if (_isAndroid) {
       try {
         await _pinChannel.invokeMethod<bool>('refreshTogetherWidget');
@@ -542,7 +544,7 @@ abstract final class HomeWidgetSync {
       }
       await _saveDday();
     } catch (e) {
-      debugPrint('save dday widget: $e');
+      unawaited(PushTrace.add('save widget failed: $e'));
     } finally {
       // Reload even after a failure: the room list is already written.
       await _pushTogetherWidget();
@@ -854,56 +856,74 @@ abstract final class HomeWidgetSync {
         ddayController.bubblesForRoom(roomId),
       );
 
+  /// What one room's card is drawn from.
+  static _IosRoomCard _cardInputs(DdayItem item, Map<String, Size> hosts) {
+    // My character is chosen per room (main-screen pick is the default).
+    final meId = ddayController.meCharacterIdForRoom(item.id);
+    final textScale = ddayController.textScaleForRoom(item.id);
+    final cheer = blockedUsersController.visibleCheer(
+      item.id,
+      item.latestCheer,
+    );
+    final box =
+        hosts[item.id] ??
+        TogetherWidgetSize.s42.homeSize(_screenWidthDp().toDouble());
+    var label = cheer;
+    try {
+      label = TogetherCheerLayout.wrap(
+        text: cheer,
+        isPixel: visualStyleController.isPixel,
+        textScale: textScale.toDouble(),
+        font: ddayController.textFontForRoom(item.id),
+      );
+    } catch (e) {
+      debugPrint('cheer wrap: $e');
+    }
+    final placed = _withoutBlocked(
+      TogetherCrowdLayout.withUserScale(
+        placed: TogetherCrowdLayout.resolve(
+          people: TogetherCrowdLayout.roster(
+            myUid: authController.viewerUid,
+            myCharacterId: meId,
+            myIds: authController.myIds,
+            hostUid: item.cloudOwnerUid,
+            friends: item.friends,
+          ),
+          canvasW: box.width,
+          canvasH: box.height,
+          charFactor: TogetherWidgetSize.s42.charFactor,
+          saved: ddayController.crowdForRoom(item.id),
+        ),
+        myUid: authController.viewerUid,
+        meScale: ddayController.charScaleForRoom(item.id),
+        friendScale: ddayController.friendScaleForRoom(item.id),
+        saved: TogetherCrowdLayout.scalesOf(
+          ddayController.crowdForRoom(item.id),
+        ),
+      ),
+    );
+    return (
+      item: item,
+      meId: meId,
+      box: box,
+      label: label,
+      textScale: textScale,
+      placed: placed,
+    );
+  }
+
   static Future<void> _saveAllRooms() async {
     final hosts = await _readHostByRoom();
     final rooms = <String, Map<String, Object>>{};
     final iosCards = <_IosRoomCard>[];
     for (final item in ddayController.items) {
-      // My character is chosen per room (main-screen pick is the default).
-      final meId = ddayController.meCharacterIdForRoom(item.id);
-      final textScale = ddayController.textScaleForRoom(item.id);
-      final cheer = blockedUsersController.visibleCheer(
-        item.id,
-        item.latestCheer,
-      );
-      final box =
-          hosts[item.id] ??
-          TogetherWidgetSize.s42.homeSize(_screenWidthDp().toDouble());
-      var label = cheer;
-      try {
-        label = TogetherCheerLayout.wrap(
-          text: cheer,
-          isPixel: visualStyleController.isPixel,
-          textScale: textScale.toDouble(),
-          font: ddayController.textFontForRoom(item.id),
-        );
-      } catch (e) {
-        debugPrint('cheer wrap: $e');
-      }
+      final card = _cardInputs(item, hosts);
+      final meId = card.meId;
+      final textScale = card.textScale;
+      final box = card.box;
+      final label = card.label;
+      final placed = card.placed;
       final themeId = ddayController.bgThemeForRoom(item.id);
-      final placed = _withoutBlocked(
-        TogetherCrowdLayout.withUserScale(
-          placed: TogetherCrowdLayout.resolve(
-            people: TogetherCrowdLayout.roster(
-              myUid: authController.viewerUid,
-              myCharacterId: meId,
-              myIds: authController.myIds,
-              hostUid: item.cloudOwnerUid,
-              friends: item.friends,
-            ),
-            canvasW: box.width,
-            canvasH: box.height,
-            charFactor: TogetherWidgetSize.s42.charFactor,
-            saved: ddayController.crowdForRoom(item.id),
-          ),
-          myUid: authController.viewerUid,
-          meScale: ddayController.charScaleForRoom(item.id),
-          friendScale: ddayController.friendScaleForRoom(item.id),
-          saved: TogetherCrowdLayout.scalesOf(
-            ddayController.crowdForRoom(item.id),
-          ),
-        ),
-      );
       rooms[item.id] = {
         'label': label,
         'me': meId,
@@ -976,6 +996,13 @@ abstract final class HomeWidgetSync {
           'imageKey': 'togetherCard_${keyPart(card.item.id)}',
           'specKey': 'togetherSpec_${keyPart(card.item.id)}',
           if (_iosGlassTheme(card.item.id)) 'glass': '1',
+          if (TogetherBgTheme.iosPastelTint(
+                ddayController.bgThemeForRoom(card.item.id),
+              ) !=
+              null)
+            'tint': TogetherBgTheme.iosPastelTint(
+              ddayController.bgThemeForRoom(card.item.id),
+            )!,
         },
     ];
     await HomeWidget.saveWidgetData<String>(
@@ -1269,6 +1296,10 @@ abstract final class HomeWidgetSync {
     await HomeWidget.saveWidgetData<int>(keyDdayFriendCharScale, friendScale);
     await HomeWidget.saveWidgetData<int>(keyDdayTextScale, textScale);
     await HomeWidget.saveWidgetData<String>(keyDdayBgTheme, bgThemeId);
+    await HomeWidget.saveWidgetData<String>(
+      'ddayBgTint',
+      TogetherBgTheme.iosPastelTint(bgThemeId) ?? '',
+    );
     await HomeWidget.saveWidgetData<String>(keyDdayBgAsset, bgAsset);
     await HomeWidget.saveWidgetData<String>(
       keyDdayTextColor,
@@ -1418,11 +1449,46 @@ abstract final class HomeWidgetSync {
     List<TogetherBubble> bubbles = const [],
   }) async {
     if (!_isIOS) return false;
-    // In the background iOS turns the GPU off and Flutter holds the render
-    // until the app is opened, which would stall a push-driven sync. The
-    // widget draws from TogetherIosCardSpec instead.
+    final path = await _renderTogetherCardFile(
+      imageKey: imageKey,
+      box: box,
+      corner: corner,
+      label: label,
+      meId: meId,
+      textColor: textColor,
+      textScale: textScale,
+      textX: textX,
+      textY: textY,
+      textRotation: textRotation,
+      textFont: textFont,
+      bgAsset: bgAsset,
+      placed: placed,
+      bubbles: bubbles,
+    );
+    return path != null;
+  }
+
+  /// Draws a Together card to a PNG file (iOS or Android) and returns its
+  /// path, or null. Needs the app on screen: in the background the engine
+  /// holds the render until the app is opened.
+  static Future<String?> _renderTogetherCardFile({
+    required String imageKey,
+    required Size box,
+    required double corner,
+    required String label,
+    required String meId,
+    required int textColor,
+    required int textScale,
+    required double textX,
+    required double textY,
+    required double textRotation,
+    required WidgetFont textFont,
+    required String bgAsset,
+    required List<TogetherPlaced> placed,
+    List<TogetherBubble> bubbles = const [],
+  }) async {
     if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
-      return false;
+      return null;
     }
     final decoded = <String, ui.Image>{};
     ui.Image? bgImage;
@@ -1449,7 +1515,7 @@ abstract final class HomeWidgetSync {
       final charBase = TogetherWidgetSize.s42.charFactor;
       final isPixel = visualStyleController.isPixel;
       // Exact decorate bounds; alpha stays clear so the home widget can letterbox.
-      await HomeWidget.renderFlutterWidget(
+      return await HomeWidget.renderFlutterWidget(
         SizedBox(
           width: box.width,
           height: box.height,
@@ -1482,10 +1548,9 @@ abstract final class HomeWidgetSync {
         logicalSize: Size(box.width, box.height),
         pixelRatio: 3,
       );
-      return true;
     } catch (e) {
-      debugPrint('render iOS together card: $e');
-      return false;
+      debugPrint('render together card: $e');
+      return null;
     } finally {
       bgImage?.dispose();
       for (final image in decoded.values) {

@@ -8,9 +8,8 @@ abstract final class QuoteBackgrounds {
   static const List<String> clean = <String>[
     defaultAsset,
     'assets/images/background/clean/clean_background.png',
-    'assets/images/background/clean/clean_background2.png',
-    'assets/images/background/clean/clean_background3.png',
-    'assets/images/background/clean/clean_background4.png',
+    // clean_background2–4 were taken out of the menu; a saved pick of one
+    // falls back to [defaultAsset] in [assetFor].
   ];
 
   static List<String> get current => clean;

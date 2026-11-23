@@ -14,6 +14,7 @@ import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/l10n/locale_controller.dart';
 import 'package:quotation/screens/shop_screen.dart';
 import 'package:quotation/screens/quote_list_screen.dart';
+import 'package:quotation/screens/to_myself_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
@@ -32,7 +33,10 @@ class HomeScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: AppTheme.body.copyWith(color: Colors.white)),
+        content: Text(
+          message,
+          style: AppTheme.body.copyWith(color: Colors.white),
+        ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.ink,
         duration: duration ?? const Duration(seconds: 4),
@@ -48,10 +52,8 @@ class HomeScreen extends StatelessWidget {
     selectionController.selectSubCategory(category.id, sub.id);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => QuoteListScreen(
-          mainCategory: category,
-          subCategory: sub,
-        ),
+        builder: (_) =>
+            QuoteListScreen(mainCategory: category, subCategory: sub),
       ),
     );
   }
@@ -82,7 +84,8 @@ class HomeScreen extends StatelessWidget {
   void _openBubbleDetail(BuildContext context, Quote quote) {
     final located = QuoteRepository.locateQuote(quote.id);
     final main = located?.main ?? selectionController.mainCategory;
-    final sub = located?.sub ??
+    final sub =
+        located?.sub ??
         (selectionController.subCategoryId == null
             ? null
             : QuoteRepository.subById(
@@ -164,11 +167,20 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                    child: CategoryBrowseSection(
-                      onSubcategoryTap: (category, sub) =>
-                          _openSubcategory(context, category, sub),
+                  child: LayoutBuilder(
+                    builder: (context, box) => SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                      child: CategoryBrowseSection(
+                        // Fill the space down to the tab bar.
+                        gridHeight: box.maxHeight - 16,
+                        onSubcategoryTap: (category, sub) =>
+                            _openSubcategory(context, category, sub),
+                        onToMyselfTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const ToMyselfScreen(),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -205,11 +217,7 @@ class _BrandHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          t.brandTitle,
-          textScaler: TextScaler.noScaling,
-          style: _title,
-        ),
+        Text(t.brandTitle, textScaler: TextScaler.noScaling, style: _title),
         const SizedBox(height: 8),
         Text(
           t.brandSubtitle,
@@ -482,8 +490,10 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
     final accent = context.palette.accent;
     final tagCenter = bodyLeft + bodyWidth / 2;
     // Centered under the body; never reaches the bubble's tail.
-    final tagMax =
-        ((boxLeft - _HomeFrame.tailWidth - 2 - tagCenter) * 2).clamp(56.0, width);
+    final tagMax = ((boxLeft - _HomeFrame.tailWidth - 2 - tagCenter) * 2).clamp(
+      56.0,
+      width,
+    );
 
     return SizedBox(
       height: boxHeight,
@@ -594,10 +604,7 @@ class _HomeQuoteCardState extends State<_HomeQuoteCard> {
 /// Quote body on the home card. Always five lines tall; longer quotes
 /// scroll inside the box.
 class _CappedQuoteText extends StatefulWidget {
-  const _CappedQuoteText({
-    required this.message,
-    required this.textWidth,
-  });
+  const _CappedQuoteText({required this.message, required this.textWidth});
 
   final String message;
   final double textWidth;

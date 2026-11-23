@@ -14,6 +14,8 @@ struct TogetherRoom {
   let specKey: String
   /// “투명” theme: card PNG is clear; chrome uses ultraThinMaterial.
   let useGlass: Bool
+  /// Pastel themes: base color (hex) shown when no home screenshot is registered.
+  var tint: String = ""
 
   static func all() -> [TogetherRoom] {
     guard let data = DearlyWidgetStore.string("ddayRoomIndex").data(using: .utf8),
@@ -33,7 +35,8 @@ struct TogetherRoom {
         title: row["title"] as? String ?? "",
         imageKey: imageKey,
         specKey: row["specKey"] as? String ?? "",
-        useGlass: glass
+        useGlass: glass,
+        tint: row["tint"] as? String ?? ""
       )
     }
   }
@@ -101,6 +104,7 @@ struct TogetherEntry: TimelineEntry {
   let card: UIImage?
   let roomId: String
   let useGlass: Bool
+  var tint: String = ""
   /// Room-slot widget whose slot has no room yet: show a short hint.
   var emptySlot: Int? = nil
   /// This widget's room was left: ask the user to remove the widget.
@@ -220,7 +224,8 @@ struct TogetherProvider: AppIntentTimelineProvider {
         date: Date(),
         card: card,
         roomId: room.id,
-        useGlass: room.useGlass
+        useGlass: room.useGlass,
+        tint: room.tint
       )
     }
     // Room-slot widget: its page's room (see TogetherSlots), until one is
@@ -234,7 +239,8 @@ struct TogetherProvider: AppIntentTimelineProvider {
           date: Date(),
           card: card,
           roomId: room.id,
-          useGlass: room.useGlass
+          useGlass: room.useGlass,
+          tint: room.tint
         )
       }
       return TogetherEntry(
@@ -246,7 +252,8 @@ struct TogetherProvider: AppIntentTimelineProvider {
       date: Date(),
       card: DearlyWidgetStore.image(forKey: "togetherCardImage"),
       roomId: DearlyWidgetStore.string("ddayRoomId"),
-      useGlass: glass
+      useGlass: glass,
+      tint: DearlyWidgetStore.string("ddayBgTint")
     )
   }
 }
@@ -272,6 +279,10 @@ struct TogetherWidgetView: View {
             .clipped()
             .blur(radius: 12)
           Color.white.opacity(0.16)
+        } else if let tint = Self.tintColor(entry.tint) {
+          // No home screenshot: a soft base in the theme's own color, not
+          // the white glass plate.
+          tint
         }
         if entry.leftRoom {
           VStack(spacing: 6) {
@@ -313,8 +324,16 @@ struct TogetherWidgetView: View {
     // Screenshot blur already fills the cell. Without a registered photo,
     // every theme gets system glass: a clear container would show iOS's
     // white plate through the see-through parts of the theme.
-    .dearlyWidgetBackground(glass: wallpaper == nil)
+    .dearlyWidgetBackground(glass: wallpaper == nil && Self.tintColor(entry.tint) == nil)
     .widgetURL(launchURL)
+  }
+
+  private static func tintColor(_ hex: String) -> Color? {
+    guard hex.count == 6, let value = UInt32(hex, radix: 16) else { return nil }
+    return Color(
+      red: Double((value >> 16) & 0xFF) / 255,
+      green: Double((value >> 8) & 0xFF) / 255,
+      blue: Double(value & 0xFF) / 255)
   }
 
   /// App-registered home screenshot crop (App Group), top or middle slot.

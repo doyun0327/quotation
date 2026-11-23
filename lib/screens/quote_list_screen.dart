@@ -35,11 +35,15 @@ class QuoteListScreen extends StatefulWidget {
     required this.mainCategory,
     required this.subCategory,
     this.initialIndex = 0,
+    this.multiLineOnly = false,
   });
 
   final MainCategory mainCategory;
   final SubCategory subCategory;
   final int initialIndex;
+
+  /// Opened from "나에게 건네는 말": two-line quotes only.
+  final bool multiLineOnly;
 
   @override
   State<QuoteListScreen> createState() => _QuoteListScreenState();
@@ -57,13 +61,20 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
   String _orderKey = '';
   int _page = 0;
 
+  List<Quote> _sourceQuotes() => widget.multiLineOnly
+      ? QuoteRepository.multiLineQuotesFor(
+          widget.mainCategory.id,
+          widget.subCategory.id,
+        )
+      : QuoteRepository.quotesFor(
+          widget.mainCategory.id,
+          widget.subCategory.id,
+        );
+
   @override
   void initState() {
     super.initState();
-    final source = QuoteRepository.quotesFor(
-      widget.mainCategory.id,
-      widget.subCategory.id,
-    );
+    final source = _sourceQuotes();
     _orderKey = _orderKeyFor(source);
     _order = _shuffled(source);
     _page = _startPage(source);
@@ -197,9 +208,9 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                 Text(
                   t.readerTheme,
                   style: AppTheme.body.copyWith(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w900,
-                    color: palette.accent,
+                    color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -248,43 +259,103 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
                 Text(
                   t.readerCategories,
                   style: AppTheme.body.copyWith(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w900,
-                    color: palette.accent,
+                    color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 8),
-                for (final main in QuoteRepository.categories)
-                  for (final sub in main.subCategories)
-                    ListTile(
-                      contentPadding: const EdgeInsets.only(left: 2),
-                      dense: true,
-                      visualDensity: VisualDensity.compact,
-                      minVerticalPadding: 0,
-                      title: Text(
-                        t.subCategoryTitle(sub.id),
-                        style: AppTheme.body.copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.muted,
+                // Same four entries as the home grid; "나에게 건네는 말"
+                // opens to its categories when tapped.
+                StatefulBuilder(
+                  builder: (context, setSheetState) {
+                    final inGroup = QuoteRepository.toMyselfCategoryIds
+                        .contains(widget.mainCategory.id);
+                    Widget subTile(
+                      MainCategory main,
+                      SubCategory sub, {
+                      bool grouped = false,
+                    }) {
+                      final current = main.id == widget.mainCategory.id &&
+                          sub.id == widget.subCategory.id;
+                      return ListTile(
+                        contentPadding: EdgeInsets.only(left: grouped ? 18 : 2),
+                        dense: true,
+                        visualDensity: VisualDensity.compact,
+                        minVerticalPadding: 0,
+                        title: Text(
+                          t.subCategoryTitle(sub.id),
+                          style: AppTheme.body.copyWith(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.muted,
+                          ),
                         ),
-                      ),
-                      trailing: !membershipController.canAccess(main.id)
-                          ? const AppPixelIcon(
-                              AppGlyph.lock,
+                        trailing: !membershipController.canAccess(main.id)
+                            ? const AppPixelIcon(
+                                AppGlyph.lock,
+                                size: 16,
+                                color: AppColors.muted,
+                              )
+                            : current
+                            ? AppPixelIcon(
+                                AppGlyph.check,
+                                size: 16,
+                                color: palette.accent,
+                              )
+                            : null,
+                        onTap: () => _openCategory(
+                          sheetContext,
+                          main,
+                          sub,
+                          multiLineOnly: grouped,
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ListTile(
+                          contentPadding: const EdgeInsets.only(left: 2),
+                          dense: true,
+                          visualDensity: VisualDensity.compact,
+                          minVerticalPadding: 0,
+                          title: Text(
+                            t.toMyselfTitle,
+                            style: AppTheme.body.copyWith(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: inGroup ? palette.accent : AppColors.muted,
+                            ),
+                          ),
+                          trailing: RotatedBox(
+                            quarterTurns: _toMyselfOpen ? 1 : 0,
+                            child: AppPixelIcon(
+                              AppGlyph.chevronRight,
                               size: 16,
-                              color: AppColors.muted,
-                            )
-                          : main.id == widget.mainCategory.id &&
-                                sub.id == widget.subCategory.id
-                          ? AppPixelIcon(
-                              AppGlyph.check,
-                              size: 16,
-                              color: palette.accent,
-                            )
-                          : null,
-                      onTap: () => _openCategory(sheetContext, main, sub),
-                    ),
+                              color: inGroup ? palette.accent : AppColors.muted,
+                            ),
+                          ),
+                          onTap: () => setSheetState(
+                            () => _toMyselfOpen = !_toMyselfOpen,
+                          ),
+                        ),
+                        if (_toMyselfOpen)
+                          for (final main in QuoteRepository.categories)
+                            if (QuoteRepository.toMyselfCategoryIds
+                                .contains(main.id))
+                              for (final sub in main.subCategories)
+                                subTile(main, sub, grouped: true),
+                        for (final main in QuoteRepository.categories)
+                          if (!QuoteRepository.toMyselfCategoryIds
+                              .contains(main.id))
+                            for (final sub in main.subCategories)
+                              subTile(main, sub),
+                      ],
+                    );
+                  },
+                ),
                 const SizedBox(height: 8),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -313,11 +384,15 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     );
   }
 
+  /// "나에게 건네는 말" folded open in the reader menu.
+  bool _toMyselfOpen = false;
+
   void _openCategory(
     BuildContext sheetContext,
     MainCategory main,
-    SubCategory sub,
-  ) {
+    SubCategory sub, {
+    bool multiLineOnly = false,
+  }) {
     Navigator.of(sheetContext).pop();
     if (!mounted) return;
     if (!membershipController.canAccess(main.id)) {
@@ -332,8 +407,11 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
     final freshSub = QuoteRepository.subById(main.id, sub.id) ?? sub;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (_) =>
-            QuoteListScreen(mainCategory: freshMain, subCategory: freshSub),
+        builder: (_) => QuoteListScreen(
+          mainCategory: freshMain,
+          subCategory: freshSub,
+          multiLineOnly: multiLineOnly,
+        ),
       ),
     );
   }
@@ -445,10 +523,7 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
       builder: (context, _) {
         final t = AppStrings.current;
         final title = t.subCategoryTitle(widget.subCategory.id);
-        final source = QuoteRepository.quotesFor(
-          widget.mainCategory.id,
-          widget.subCategory.id,
-        );
+        final source = _sourceQuotes();
         _syncOrder(source);
         final quotes = _order;
         final categoryTitle = t.mainCategoryTitle(widget.mainCategory.id);

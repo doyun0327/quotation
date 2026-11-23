@@ -7,6 +7,7 @@ import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/billing_controller.dart';
 import 'package:quotation/data/encouragement_notification_scheduler.dart';
 import 'package:quotation/data/membership_controller.dart';
+import 'package:quotation/data/push_trace.dart';
 import 'package:quotation/l10n/app_strings.dart';
 import 'package:quotation/screens/account_deletion_screen.dart';
 import 'package:quotation/screens/legal_screen.dart';
@@ -107,12 +108,17 @@ class SettingsScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          t.settingsTitle,
-                          style: AppTheme.body.copyWith(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: palette.accent,
+                        // Hidden: long-press shows the push trace
+                        // (PushTrace), for checking a friend's iPhone.
+                        GestureDetector(
+                          onLongPress: () => _showPushTrace(context),
+                          child: Text(
+                            t.settingsTitle,
+                            style: AppTheme.body.copyWith(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: palette.accent,
+                            ),
                           ),
                         ),
                       ],
@@ -542,4 +548,40 @@ class _AccountMoreButton extends StatelessWidget {
       ),
     );
   }
+}
+
+
+Future<void> _showPushTrace(BuildContext context) async {
+  final lines = await PushTrace.read();
+  if (!context.mounted) return;
+  await showDialog<void>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Push log'),
+      content: SizedBox(
+        width: double.maxFinite,
+        height: 420,
+        child: SingleChildScrollView(
+          reverse: true,
+          child: SelectableText(
+            lines.isEmpty ? '(empty)' : lines.join('\n'),
+            style: const TextStyle(fontSize: 11, height: 1.35),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await PushTrace.clear();
+            if (ctx.mounted) Navigator.pop(ctx);
+          },
+          child: const Text('Clear'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
 }

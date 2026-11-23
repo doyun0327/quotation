@@ -3,10 +3,56 @@ const {
   onDocumentUpdated,
 } = require('firebase-functions/v2/firestore');
 const { initializeApp } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
+const { getFirestore, FieldPath, FieldValue } = require('firebase-admin/firestore');
 const { getMessaging } = require('firebase-admin/messaging');
 
 initializeApp();
+
+/**
+ * Push tokens of one user. An up-to-date app writes its single current token
+ * under `fcmDevices.{deviceId}` (the id survives a reinstall) and clears the
+ * old `fcmTokens` map, which kept every token a phone ever had: an iPhone
+ * often keeps its APNs token across reinstalls, so old tokens stayed valid
+ * and one phone got the same alert several times. Older app versions still
+ * write `fcmTokens`, so both are read; each token is sent once.
+ */
+function tokensOf(user) {
+  const tokens = new Set();
+  for (const t of Object.values(user.fcmDevices || {})) {
+    if (typeof t === 'string' && t.length > 0) tokens.add(t);
+  }
+  const legacy = user.fcmTokens || {};
+  for (const t of Object.keys(legacy)) {
+    if (legacy[t]) tokens.add(t);
+  }
+  return [...tokens];
+}
+
+/**
+ * Removes dead tokens. `set(..., {merge: true})` with a smaller map never
+ * removed a key (merge keeps fields it is not given), so dead tokens used to
+ * pile up; delete each field explicitly instead.
+ */
+async function pruneTokens(db, byOwner) {
+  for (const [uid, tokens] of byOwner) {
+    const ref = db.collection('users').doc(uid);
+    const data = (await ref.get()).data() || {};
+    const args = [];
+    const legacy = data.fcmTokens || {};
+    for (const token of tokens) {
+      if (token in legacy) args.push(new FieldPath('fcmTokens', token), FieldValue.delete());
+    }
+    for (const [device, token] of Object.entries(data.fcmDevices || {})) {
+      if (tokens.includes(token)) args.push(new FieldPath('fcmDevices', device), FieldValue.delete());
+    }
+    if (args.length === 0) continue;
+    try {
+      await ref.update(...args);
+    } catch (e) {
+      console.warn('prune tokens failed', { uid, message: e.message || '' });
+    }
+  }
+}
 
 function changed(before, after, field = 'layoutNotifyAt') {
   const beforeStamp = before[field] ? JSON.stringify(before[field]) : '';
@@ -96,10 +142,9 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
         continue;
       }
       const locale = NOTICE_TEXT[user.locale] ? user.locale : 'ko';
-      const map = user.fcmTokens || {};
-      perRecipient[uid] = Object.keys(map).filter((t) => map[t]).length;
-      for (const token of Object.keys(map)) {
-        if (!map[token]) continue;
+      const userTokens = tokensOf(user);
+      perRecipient[uid] = userTokens.length;
+      for (const token of userTokens) {
         if (!tokensByLocale.has(locale)) tokensByLocale.set(locale, []);
         tokensByLocale.get(locale).push(token);
         ownerByToken.set(token, uid);
@@ -108,7 +153,7 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
     console.log('together push', {
       roomId,
       actor,
-      kind: refreshOnly ? 'refresh' : 'alert',
+      kind: refreshOnly ? (notify ? 'quiet-edit' : 'refresh') : 'alert',
       tokensByRecipient: perRecipient,
     });
     if (tokensByLocale.size === 0) return;
@@ -119,16 +164,38 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
       const name = actorName || text.friend;
       const title = roomTitle || text.together;
       const body = text.body(name);
+      // A widget edit inside the one-alert-per-minute window: no second
+      // banner, but the widget must still change. iPhone often drops or
+      // delays a background push (priority 5), so send a passive alert
+      // instead: no sound, no banner, it replaces the room's earlier notice
+      // (same collapse id), and content-available wakes the app to redraw.
+      const quietEdit = refreshOnly && notify;
       const message = refreshOnly
         ? {
             tokens,
             data: { type: 'together_refresh', roomId, actorUid: actor },
             android: { priority: 'high' },
-            // Silent background push: wakes the app to redraw, no alert.
-            apns: {
-              headers: { 'apns-push-type': 'background', 'apns-priority': '5' },
-              payload: { aps: { 'content-available': 1 } },
-            },
+            apns: quietEdit
+              ? {
+                  headers: {
+                    'apns-push-type': 'alert',
+                    'apns-priority': '10',
+                    'apns-collapse-id': roomId.slice(0, 64),
+                  },
+                  payload: {
+                    aps: {
+                      alert: { title, body },
+                      'content-available': 1,
+                      'thread-id': roomId,
+                      'interruption-level': 'passive',
+                    },
+                  },
+                }
+              : {
+                  // A friend changed their character: silent redraw.
+                  headers: { 'apns-push-type': 'background', 'apns-priority': '5' },
+                  payload: { aps: { 'content-available': 1 } },
+                },
           }
         : {
             tokens,
@@ -151,6 +218,8 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
               headers: {
                 'apns-push-type': 'alert',
                 'apns-priority': '10',
+                // Later quiet edits of this room replace this notice.
+                'apns-collapse-id': roomId.slice(0, 64),
               },
               payload: {
                 aps: {
@@ -200,19 +269,7 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
       if (!byOwner.has(uid)) byOwner.set(uid, []);
       byOwner.get(uid).push(token);
     }
-    for (const [uid, tokens] of byOwner) {
-      const ref = db.collection('users').doc(uid);
-      const snap = await ref.get();
-      const map = { ...(snap.data()?.fcmTokens || {}) };
-      let dirty = false;
-      for (const token of tokens) {
-        if (map[token]) {
-          delete map[token];
-          dirty = true;
-        }
-      }
-      if (dirty) await ref.set({ fcmTokens: map }, { merge: true });
-    }
+    await pruneTokens(db, byOwner);
   },
 );
 
@@ -275,9 +332,7 @@ async function notifyJoin(roomId, after, joiner) {
     const blocked = Array.isArray(user.blockedUids) ? user.blockedUids : [];
     if (blocked.includes(joiner)) continue;
     const locale = JOIN_TEXT[user.locale] ? user.locale : 'ko';
-    const map = user.fcmTokens || {};
-    for (const token of Object.keys(map)) {
-      if (!map[token]) continue;
+    for (const token of tokensOf(user)) {
       if (!tokensByLocale.has(locale)) tokensByLocale.set(locale, []);
       tokensByLocale.get(locale).push(token);
       ownerByToken.set(token, uid);
@@ -336,16 +391,14 @@ async function notifyJoin(roomId, after, joiner) {
     });
   }
 
+  const byOwner = new Map();
   for (const token of invalid) {
     const uid = ownerByToken.get(token);
     if (!uid) continue;
-    const ref = db.collection('users').doc(uid);
-    const snap = await ref.get();
-    const map = { ...(snap.data()?.fcmTokens || {}) };
-    if (!map[token]) continue;
-    delete map[token];
-    await ref.set({ fcmTokens: map }, { merge: true });
+    if (!byOwner.has(uid)) byOwner.set(uid, []);
+    byOwner.get(uid).push(token);
   }
+  await pruneTokens(db, byOwner);
 }
 
 exports.notifyRoomJoin = onDocumentUpdated(

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,15 +9,18 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:quotation/data/app_check.dart';
+import 'package:quotation/data/crash_reporting.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
 import 'package:quotation/data/dday_controller.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/push_trace.dart';
 import 'package:quotation/data/quote_repository.dart';
 import 'package:quotation/firebase_options.dart';
 import 'package:quotation/l10n/app_strings.dart';
@@ -27,15 +31,23 @@ import 'package:quotation/screens/together_room_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> togetherFcmBackground(RemoteMessage message) async {
+  final watch = Stopwatch()..start();
   WidgetsFlutterBinding.ensureInitialized();
+  _pushLog(
+    'bg start type=${message.data['type']} '
+    'state=${WidgetsBinding.instance.lifecycleState?.name}',
+  );
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Separate isolate: without its own App Check token, the room sync below
   // would be refused once App Check is enforced.
   await activateAppCheck();
+  await CrashReporting.start();
   // This isolate starts with the default language; the notice must follow
   // the language the app uses.
   await localeController.load();
+  _pushLog('bg init done ${watch.elapsedMilliseconds}ms');
   final applied = await _applyTogetherMessage(message);
+  _pushLog('bg applied=$applied ${watch.elapsedMilliseconds}ms');
   if (!applied || _isSilentRefresh(message)) return;
   // iOS shows the APNs alert itself; a local notice here would duplicate it.
   if (defaultTargetPlatform == TargetPlatform.iOS) return;
@@ -55,6 +67,10 @@ const _notificationInit = InitializationSettings(
 );
 
 /// A friend changed their character: redraw the widget, no notice.
+/// Push-to-widget trace. Shows in the device log (Console app, or
+/// `flutter logs`) as "DEARLY_PUSH …", also in release builds.
+void _pushLog(String text) => unawaited(PushTrace.add(text));
+
 bool _isSilentRefresh(RemoteMessage message) =>
     message.data['type'] == 'together_refresh';
 
@@ -70,11 +86,25 @@ Future<bool> _applyTogetherMessage(RemoteMessage message) async {
     // decides whose edits to apply.
     if (!blockedUsersController.ready) await blockedUsersController.load();
     await ddayController.load();
+    // A fresh background isolate has no signed-in user until Firebase Auth
+    // restores the session; pullMemberships() silently returns when
+    // currentUser is still null, so the widget never changed unless the
+    // notification was tapped (which starts the app, and its own sync).
+    if (FirebaseAuth.instance.currentUser == null) {
+      await FirebaseAuth.instance
+          .authStateChanges()
+          .first
+          .timeout(const Duration(seconds: 10), onTimeout: () => null);
+    }
+    _pushLog('auth uid=${FirebaseAuth.instance.currentUser?.uid != null}');
+    if (FirebaseAuth.instance.currentUser == null) return false;
+    // pullMemberships() already ends with HomeWidgetSync.syncDday(); a second
+    // call only doubled the time of a ~30 s background window.
     await DdayCloudSync.pullMemberships();
-    await HomeWidgetSync.syncDday();
+    _pushLog('pullMemberships done');
     return true;
   } catch (e) {
-    debugPrint('together fcm apply: $e');
+    _pushLog('apply failed: $e');
     return false;
   }
 }
@@ -303,6 +333,17 @@ abstract final class TogetherFcm {
         if (user != null) unawaited(_saveToken());
       });
       FirebaseMessaging.onMessage.listen(_showForeground);
+      // iOS background fetch (AppDelegate.performFetch): sync the rooms and
+      // redraw the widgets, as a push would.
+      _deviceIdChannel.setMethodCallHandler((call) async {
+        if (call.method != 'backgroundSync') return null;
+        _pushLog('bg fetch start');
+        final applied = await _applyTogetherMessage(
+          const RemoteMessage(data: {'type': 'together_refresh'}),
+        );
+        _pushLog('bg fetch applied=$applied');
+        return applied;
+      });
       unawaited(_saveToken());
     } catch (e) {
       debugPrint('TogetherFcm.start: $e');
@@ -338,9 +379,16 @@ abstract final class TogetherFcm {
       return;
     }
     try {
+      final deviceId = await _deviceId();
+      if (deviceId == null) return;
+      // One token per phone under a stable device id (fcmDevices). The old
+      // `fcmTokens` map kept every token a phone ever had; an iPhone keeps
+      // its APNs token across reinstalls, so old tokens stayed valid and the
+      // same alert arrived several times. The server reads fcmDevices first.
       await FirebaseFirestore.instance.collection('users').doc(uid).set(
         {
-          'fcmTokens': {token: true},
+          'fcmDevices': {deviceId: token},
+          'fcmTokens': FieldValue.delete(),
           'updatedAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
@@ -348,6 +396,32 @@ abstract final class TogetherFcm {
     } catch (e) {
       debugPrint('TogetherFcm.token: $e');
     }
+  }
+
+  static const _deviceIdChannel = MethodChannel(
+    'com.dearly.quoteswidget/widget_reload',
+  );
+
+  /// iPhone: Keychain id (survives a reinstall). Android: a reinstall makes
+  /// FCM drop the old token anyway, so an id in app storage is enough.
+  static Future<String?> _deviceId() async {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        final id = await _deviceIdChannel.invokeMethod<String>('deviceId');
+        if (id != null && id.isNotEmpty) return id;
+      } catch (e) {
+        debugPrint('deviceId: $e');
+      }
+    }
+    final prefs = await SharedPreferences.getInstance();
+    const key = 'fcm_device_id';
+    var id = prefs.getString(key);
+    if (id == null || id.isEmpty) {
+      final rnd = Random.secure();
+      id = List.generate(16, (_) => rnd.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
+      await prefs.setString(key, id);
+    }
+    return id;
   }
 
   static void _onNotificationTap(NotificationResponse response) {
@@ -512,6 +586,7 @@ abstract final class TogetherFcm {
   }
 
   static Future<void> _showForeground(RemoteMessage message) async {
+    _pushLog('foreground message type=${message.data['type']}');
     final applied = await _applyTogetherMessage(message);
     if (!applied || _isSilentRefresh(message)) return;
     await _showTogetherNotice(message);

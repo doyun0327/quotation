@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:quotation/data/push_trace.dart';
 import 'package:quotation/data/cloud_consent.dart';
 import 'package:quotation/data/blocked_users_controller.dart';
 import 'package:quotation/data/dday_controller.dart';
@@ -271,7 +272,7 @@ class DdayCloudSync {
       }
       await HomeWidgetSync.syncDday();
     } catch (e) {
-      debugPrint('pullMemberships: $e');
+      unawaited(PushTrace.add('pullMemberships failed: $e'));
     }
   }
 

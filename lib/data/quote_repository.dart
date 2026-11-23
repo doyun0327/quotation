@@ -48,6 +48,21 @@ abstract final class QuoteRepository {
     return const <Quote>[];
   }
 
+  /// "나에게 건네는 말": only quotes of two lines or more. A category with
+  /// none in this language (several English and Japanese files are all one
+  /// line) shows every quote rather than an empty deck.
+  static List<Quote> multiLineQuotesFor(String mainId, String subId) {
+    final all = quotesFor(mainId, subId);
+    final multi = [
+      for (final quote in all)
+        if (quote.text.trim().contains('\n')) quote,
+    ];
+    return multi.isEmpty ? all : multi;
+  }
+
+  /// Main categories grouped under "나에게 건네는 말" on the home screen.
+  static const toMyselfCategoryIds = {'daily', 'comfort'};
+
   /// The built-in list only covers a file that failed to load. Its famous
   /// quotes are made up and pinned on real people, so those categories stay
   /// empty instead.

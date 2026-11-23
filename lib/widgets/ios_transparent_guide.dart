@@ -35,7 +35,11 @@ abstract final class IosTransparentGuide {
 
   /// Popup with the capture example and a before/after comparison.
   /// Returns true when a photo was registered.
-  static Future<bool> showIntro(BuildContext context, {String? roomId}) async {
+  static Future<bool> showIntro(
+    BuildContext context, {
+    String? roomId,
+    String? pastelThemeId,
+  }) async {
     final t = AppStrings.current;
     final register = await showDialog<bool>(
       context: context,
@@ -60,7 +64,9 @@ abstract final class IosTransparentGuide {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  t.iosTransparentIntroBody,
+                  pastelThemeId == null
+                      ? t.iosTransparentIntroBody
+                      : t.iosPastelIntroBody,
                   style: AppTheme.body.copyWith(fontSize: 14, height: 1.45),
                 ),
                 const SizedBox(height: 16),
@@ -370,3 +376,5 @@ class IosTransparentSetting extends StatelessWidget {
     }
   }
 }
+
+

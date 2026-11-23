@@ -1,7 +1,7 @@
 name: quotation
 description: "Quotation app"
 publish_to: 'none'
-version: 1.0.18+81
+version: 1.0.20+85
 
 environment:
   sdk: ^3.12.2
@@ -34,7 +34,7 @@ dependencies:
   image_picker: ^1.2.4
   url_launcher: ^6.3.3
   firebase_app_check: ^0.4.9
-
+  firebase_crashlytics: ^5.4.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -51,9 +51,6 @@ flutter:
     - assets/images/
     - assets/images/background/clean/default_background.png
     - assets/images/background/clean/clean_background.png
-    - assets/images/background/clean/clean_background2.png
-    - assets/images/background/clean/clean_background3.png
-    - assets/images/background/clean/clean_background4.png
     - assets/images/background/clean/themed/
     - assets/images/background/pixel/sky.png
     - assets/images/background/pixel/noeul.png

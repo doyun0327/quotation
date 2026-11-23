@@ -548,6 +548,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
     final ok = await IosTransparentGuide.showIntro(
       context,
       roomId: widget.roomId,
+      pastelThemeId: _bgThemeId.startsWith('pastel_') ? _bgThemeId : null,
     );
     if (ok) {
       await _loadIosWallpaper();
@@ -2363,8 +2364,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                         _clearSelection();
                                         setState(() => _bgThemeId = theme.id);
                                         _persist();
-                                        // iPhone: no home photo yet → explain and offer to add.
-                                        if (theme.isNone &&
+                                        // iPhone: transparent or pastel with no home photo
+                                        // yet → explain and offer to add.
+                                        if ((theme.isNone ||
+                                                theme.id.startsWith('pastel_')) &&
                                             IosFakeWallpaper.isIOS &&
                                             _iosWallpaperPath == null) {
                                           await _offerIosFakeWallpaper();
@@ -2404,9 +2407,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                                   },
                                 ),
                               ),
-                              // iPhone, "투명" picked: the home photo + change button.
+                              // iPhone, "투명" or a pastel picked: the home photo + change button.
                               if (IosFakeWallpaper.isIOS &&
-                                  _bgThemeId == TogetherBgTheme.none.id) ...[
+                                  (_bgThemeId == TogetherBgTheme.none.id ||
+                                      _bgThemeId.startsWith('pastel_'))) ...[
                                 const SizedBox(height: 12),
                                 IosTransparentSetting(
                                   photoPath: _iosWallpaperPath,

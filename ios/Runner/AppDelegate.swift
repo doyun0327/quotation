@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import Security
 import WidgetKit
 
 @main
@@ -8,7 +9,53 @@ import WidgetKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    // Lets iOS wake the app now and then to bring the widgets up to date
+    // (performFetch below), besides the pushes.
+    application.setMinimumBackgroundFetchInterval(
+      UIApplication.backgroundFetchIntervalMinimum)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  /// Native side of `com.dearly.quoteswidget/widget_reload`; also used to ask
+  /// Dart for a background sync.
+  private var widgetChannel: FlutterMethodChannel?
+
+  /// iOS woke the app in the background (background fetch; the Simulator
+  /// also delivers content-available pushes this way). Pull friends' room
+  /// edits and redraw the widgets, then tell iOS we are done (≤ 25 s).
+  override func application(
+    _ application: UIApplication,
+    performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+  ) {
+    NSLog("DEARLY_NATIVE performFetch")
+    guard let channel = widgetChannel else {
+      completionHandler(.noData)
+      return
+    }
+    var finished = false
+    let finish = {
+      if finished { return }
+      finished = true
+      completionHandler(.newData)
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 25, execute: finish)
+    channel.invokeMethod("backgroundSync", arguments: nil) { _ in
+      DispatchQueue.main.async(execute: finish)
+    }
+  }
+
+  /// Logs that a push reached the app; Firebase Messaging handles it.
+  override func application(
+    _ application: UIApplication,
+    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+  ) {
+    NSLog("DEARLY_NATIVE push state=\(application.applicationState.rawValue) type=\(userInfo["type"] ?? "-")")
+    super.application(
+      application,
+      didReceiveRemoteNotification: userInfo,
+      fetchCompletionHandler: completionHandler
+    )
   }
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
@@ -33,6 +80,7 @@ import WidgetKit
       name: "com.dearly.quoteswidget/widget_reload",
       binaryMessenger: registrar.messenger()
     )
+    widgetChannel = channel
     channel.setMethodCallHandler { call, result in
       switch call.method {
       case "reloadAll":
@@ -40,12 +88,39 @@ import WidgetKit
           WidgetCenter.shared.reloadAllTimelines()
           result(true)
         }
+      case "deviceId":
+        result(Self.keychainDeviceId())
       case "appVersion":
         result(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)
       default:
         result(FlutterMethodNotImplemented)
       }
     }
+  }
+
+  /// Stable id of this iPhone for the push token map (fcmDevices). Kept in
+  /// the Keychain, which survives deleting and reinstalling the app, so a
+  /// reinstall replaces this phone's token instead of adding a second one.
+  private static func keychainDeviceId() -> String? {
+    let base: [String: Any] = [
+      kSecClass as String: kSecClassGenericPassword,
+      kSecAttrService as String: "com.dearly.quoteswidget.device",
+      kSecAttrAccount as String: "deviceId",
+    ]
+    var query = base
+    query[kSecReturnData as String] = true
+    query[kSecMatchLimit as String] = kSecMatchLimitOne
+    var item: CFTypeRef?
+    if SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
+      let data = item as? Data, let id = String(data: data, encoding: .utf8), !id.isEmpty
+    {
+      return id
+    }
+    let id = UUID().uuidString
+    var add = base
+    add[kSecValueData as String] = Data(id.utf8)
+    add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+    return SecItemAdd(add as CFDictionary, nil) == errSecSuccess ? id : nil
   }
 
   /// A room-slot widget remembers the room it showed so it can say "you left

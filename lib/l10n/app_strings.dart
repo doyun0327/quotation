@@ -162,6 +162,18 @@ class AppStrings {
     'To make the widget transparent, take a screenshot of an empty home screen page with no app icons and add it here.\nWithout it, the transparent background shows as white.',
     'ウィジェットを透明にするには、アプリアイコンのない空のホーム画面をキャプチャして登録してください。\n登録しないと透明の背景は白で表示されます。',
   );
+  String get toMyselfTitle =>
+      _t('나에게 건네는 말', 'Words for me', '自分にかける言葉');
+  String get toMyselfSubtitle => _t(
+    '지금 마음에 필요한 한마디를 골라요',
+    'Pick the words your heart needs now',
+    '今の心に必要なひと言を選んで',
+  );
+  String get iosPastelIntroBody => _t(
+    '투명테마를 먼저 등록해주세요!',
+    'Please set up the transparent theme first!',
+    '先に透明テーマを登録してください！',
+  );
   String get iosTransparentCaptureHint =>
       _t('이렇게 캡처해 주세요!', 'Capture it like this!', 'このようにキャプチャしてください！');
   String get iosTransparentBefore => _t('등록 전', 'Before', '登録前');

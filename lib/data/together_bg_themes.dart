@@ -24,6 +24,24 @@ class TogetherBgTheme {
   /// Cool shade so the glass reads as translucent, not paper white.
   static const iosGlassShade = Color(0x2894A0B0);
 
+  /// iPhone, no home-screenshot registered: the pastel PNGs are mostly
+  /// see-through, so a glass plate behind them looked white. The widget draws
+  /// this soft base color instead. Null for every other theme.
+  static const _iosPastelTints = <String, String>{
+    'pastel_1': 'E3EBF3',
+    'pastel_2': 'F6D9E4',
+    'pastel_3': 'FCE6E6',
+    'pastel_4': 'EFEEEE',
+    'pastel_5': 'EBF4FD',
+    'pastel_6': 'F0F8FD',
+    'pastel_7': 'D7E5D1',
+    'pastel_8': 'F1EFF3',
+    'pastel_9': 'F4EED6',
+    'pastel_10': 'DFE9D6',
+  };
+
+  static String? iosPastelTint(String? themeId) => _iosPastelTints[themeId];
+
   /// Photo picked from the device album. The file path is stored separately.
   static const albumId = 'album';
 

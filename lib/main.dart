@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:quotation/data/app_update_check.dart';
 import 'package:quotation/data/sticker_unlock.dart';
 import 'package:quotation/data/app_check.dart';
+import 'package:quotation/data/crash_reporting.dart';
 import 'package:quotation/ads/ad_consent.dart';
 import 'package:quotation/ads/interstitial_ads.dart';
 import 'package:quotation/data/terms_consent.dart';
@@ -77,6 +78,7 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     await activateAppCheck();
+    await CrashReporting.start();
     FirebaseMessaging.onBackgroundMessage(togetherFcmBackground);
   } catch (e) {
     debugPrint('Firebase.initializeApp: $e');

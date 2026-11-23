@@ -60,12 +60,16 @@ abstract final class CategorySky {
   static Color border(AppPalette palette) =>
       Color.lerp(palette.accent, white, 0.42)!;
 
-  static SkyTone of(String id, AppPalette palette) {
+  static SkyTone of(String id, AppPalette palette) =>
+      ofTint(inverted(id), palette);
+
+  /// [tinted]: the theme-colored card; otherwise the white one.
+  static SkyTone ofTint(bool tinted, AppPalette palette) {
     final accent = palette.accent;
     final soft = palette.accentSoft;
     final line = border(palette);
     final deep = ink(palette);
-    if (!inverted(id)) {
+    if (!tinted) {
       return SkyTone(
         icon: accent,
         shine: white,
