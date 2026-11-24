@@ -54,6 +54,15 @@ struct TogetherRoom {
   /// The card to show: drawn natively from the latest spec, else the PNG
   /// the app drew last time it was open.
   func card() -> UIImage? {
+    // A friend's edit delivered with its picture (notification service
+    // extension) wins while it is newer than the card this phone drew.
+    let key = imageKey.replacingOccurrences(of: "togetherCard_", with: "")
+    let remoteAt = DearlyWidgetStore.int("togetherRemoteCardAt_\(key)")
+    if remoteAt > DearlyWidgetStore.int("togetherSpecAt_\(key)"),
+      let remote = DearlyWidgetStore.image(forKey: "togetherRemoteCard_\(key)")
+    {
+      return remote
+    }
     if !specKey.isEmpty {
       let spec = DearlyWidgetStore.string(specKey)
       if !spec.isEmpty, let image = TogetherCardRenderer.render(json: spec) {

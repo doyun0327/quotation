@@ -856,7 +856,8 @@ abstract final class HomeWidgetSync {
         ddayController.bubblesForRoom(roomId),
       );
 
-  /// What one room's card is drawn from.
+  /// What one room's card is drawn from (the iPhone widgets here, and the
+  /// card sent to friends' iPhones, see [renderRoomCardPng]).
   static _IosRoomCard _cardInputs(DdayItem item, Map<String, Size> hosts) {
     // My character is chosen per room (main-screen pick is the default).
     final meId = ddayController.meCharacterIdForRoom(item.id);
@@ -1116,6 +1117,12 @@ abstract final class HomeWidgetSync {
           );
           if (spec != null) {
             await HomeWidget.saveWidgetData<String>(specKey, spec);
+            // The widget shows a card a friend's edit delivered (notification
+            // service extension) only while it is newer than this spec.
+            await HomeWidget.saveWidgetData<int>(
+              'togetherSpecAt_${base64Url.encode(utf8.encode(item.id)).replaceAll('=', '')}',
+              DateTime.now().millisecondsSinceEpoch,
+            );
           }
         } catch (e) {
           debugPrint('iOS card spec: $e');
@@ -1486,6 +1493,7 @@ abstract final class HomeWidgetSync {
     required String bgAsset,
     required List<TogetherPlaced> placed,
     List<TogetherBubble> bubbles = const [],
+    double pixelRatio = 3,
   }) async {
     if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
       return null;
@@ -1546,7 +1554,7 @@ abstract final class HomeWidgetSync {
         ),
         key: imageKey,
         logicalSize: Size(box.width, box.height),
-        pixelRatio: 3,
+        pixelRatio: pixelRatio,
       );
     } catch (e) {
       debugPrint('render together card: $e');
@@ -1556,6 +1564,46 @@ abstract final class HomeWidgetSync {
       for (final image in decoded.values) {
         image.dispose();
       }
+    }
+  }
+
+  /// Room [roomId]'s card as PNG bytes, drawn like the iPhone widget (iOS or
+  /// Android). Sent with a widget edit so friends' iPhones can show it from
+  /// the notice without opening the app. Null when it cannot be drawn (app
+  /// not on screen, room unknown).
+  static Future<Uint8List?> renderRoomCardPng(String roomId) async {
+    final matches = ddayController.items.where((e) => e.id == roomId);
+    if (matches.isEmpty) return null;
+    final card = _cardInputs(matches.first, await _readHostByRoom());
+    final item = card.item;
+    final path = await _renderTogetherCardFile(
+      imageKey: 'togetherUploadCard',
+      box: card.box,
+      corner: TogetherWidgetSize.defaultCornerDp,
+      label: card.label,
+      meId: card.meId,
+      textColor: ddayController.textColorForRoom(item.id),
+      textScale: card.textScale,
+      textX: ddayController.textOffsetXForRoom(item.id).toDouble(),
+      textY: ddayController.textOffsetYForRoom(item.id).toDouble(),
+      textRotation: ddayController.textRotationForRoom(item.id).toDouble(),
+      textFont: ddayController.textFontForRoom(item.id),
+      bgAsset: WidgetAlbumBackground.resolvedAsset(
+            themeId: ddayController.bgThemeForRoom(item.id),
+            roomId: item.id,
+          ) ??
+          '',
+      placed: card.placed,
+      bubbles: _shownBubbles(item.id),
+      // 2x keeps the picture well under Firestore's 1 MB document limit and
+      // is still sharp on the widget.
+      pixelRatio: 2,
+    );
+    if (path == null) return null;
+    try {
+      return await File(path).readAsBytes();
+    } catch (_) {
+      return null;
     }
   }
 

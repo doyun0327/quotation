@@ -160,6 +160,10 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
   /// (a friend save / apply), so bubble edits do not wipe typed home text.
   String _lastPulledCheer = '';
   bool _applyingRemote = false;
+
+  /// "적용" is running (saving, sending to the room, updating the widget):
+  /// a second tap would send the same edit again.
+  bool _applying = false;
   bool _samsung = false;
   bool _widgetExported = false;
 
@@ -1804,7 +1808,16 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
 
   /// Top-right "적용": share the look with the room and update the widget.
   Future<void> _applyToHome() async {
-    if (_savingCheer || _loggingIn) return;
+    if (_applying || _savingCheer || _loggingIn) return;
+    setState(() => _applying = true);
+    try {
+      await _applyToHomeOnce();
+    } finally {
+      if (mounted) setState(() => _applying = false);
+    }
+  }
+
+  Future<void> _applyToHomeOnce() async {
     // iPhone: the add-widget steps on the first
     // export, and always during the first-use
     // tutorial (it ends with this button).
@@ -2008,7 +2021,7 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                   padding: const EdgeInsets.only(right: 12),
                   child: TextButton(
                     key: _coachApplyKey,
-                    onPressed: (_savingCheer || _loggingIn)
+                    onPressed: (_applying || _savingCheer || _loggingIn)
                         ? null
                         : _applyToHome,
                     style: TextButton.styleFrom(
@@ -2020,16 +2033,32 @@ class _DdayWidgetDecorateScreenState extends State<DdayWidgetDecorateScreen> {
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: Text(
-                      t.ddayDecorateApply,
-                      style: AppTheme.body.copyWith(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: (_savingCheer || _loggingIn)
-                            ? AppColors.muted
-                            : palette.accent,
-                      ),
-                    ),
+                    child: _applying
+                        // Same footprint as the label, so the bar does not shift.
+                        ? SizedBox(
+                            width: 26,
+                            height: 16,
+                            child: Center(
+                              child: SizedBox(
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: palette.accent,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Text(
+                            t.ddayDecorateApply,
+                            style: AppTheme.body.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: (_savingCheer || _loggingIn)
+                                  ? AppColors.muted
+                                  : palette.accent,
+                            ),
+                          ),
                   ),
                 ),
               ],

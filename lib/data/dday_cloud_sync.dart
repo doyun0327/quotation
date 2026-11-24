@@ -16,6 +16,7 @@ import 'package:quotation/data/together_editing.dart';
 import 'package:quotation/data/dday_friend_models.dart';
 import 'package:quotation/data/dday_invite_repository.dart';
 import 'package:quotation/data/home_widget_sync.dart';
+import 'package:quotation/data/widget_card_upload.dart';
 import 'package:quotation/data/together_test_room.dart';
 import 'package:quotation/data/user_profile_sync.dart';
 import 'package:quotation/data/widget_fonts.dart';
@@ -936,6 +937,10 @@ class DdayCloudSync {
       ch = canvas.height;
     }
 
+    // Friends' iPhones show this picture straight from the notice
+    // (notification service extension), even when the app is not running.
+    final cardId =
+        notifyFriends ? await WidgetCardUpload.upload(item.id) : null;
     try {
       await _db.collection('dday_memberships').doc(item.id).set({
         'layoutCanvasW': cw,
@@ -984,6 +989,8 @@ class DdayCloudSync {
         'layoutUpdatedByName': (await UserProfileSync.savedNickname()) ?? '',
         'updatedBy': uid,
         'updatedAt': FieldValue.serverTimestamp(),
+        if (cardId != null) 'widgetCardId': cardId,
+        if (cardId != null) 'widgetCardAt': FieldValue.serverTimestamp(),
         if (notifyFriends) 'layoutNotifyAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {

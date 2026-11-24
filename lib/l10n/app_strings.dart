@@ -394,6 +394,14 @@ class AppStrings {
     'しばらくしてからもう一度お試しください',
   );
 
+  /// Shown while a new room is being made (and saved to the widget).
+  String get ddayCreatingRoom =>
+      _t('방을 만들고 있어요…', 'Making the room…', 'ルームを作成しています…');
+
+  /// Shown while an edited room is being saved.
+  String get ddaySavingRoom =>
+      _t('방을 저장하고 있어요…', 'Saving the room…', 'ルームを保存しています…');
+
   String decorateLockedBy(String name) =>
       _t('$name님이 꾸미는 중이에요!', '$name is decorating!', '$nameさんが編集中です！');
   String decorateLockTaken(String name) => _t(

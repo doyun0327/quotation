@@ -399,7 +399,9 @@ class _QuoteListScreenState extends State<QuoteListScreen> {
       _showPremiumLock();
       return;
     }
-    if (main.id == widget.mainCategory.id && sub.id == widget.subCategory.id) {
+    if (main.id == widget.mainCategory.id &&
+        sub.id == widget.subCategory.id &&
+        widget.multiLineOnly == multiLineOnly) {
       return;
     }
     selectionController.selectSubCategory(main.id, sub.id);
