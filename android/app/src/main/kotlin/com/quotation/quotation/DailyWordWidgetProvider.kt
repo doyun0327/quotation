@@ -191,8 +191,11 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
       // Quote box. The character sits in front of its left part, or with
       // [bubble], stands beside a speech bubble whose tail points at it.
       val stroke = dp(1.4f)
-      val boxTop = stroke
-      val boxBottom = height - stroke
+      // The launcher rounds off the widget's corners, which cuts a border drawn
+      // along the edge: keep the box this far inside.
+      val margin = dp(8f)
+      val boxTop = margin
+      val boxBottom = height - margin
 
       // Character + name tag take three quarters of the box height.
       val tagHeight = dp(22f)
@@ -230,7 +233,7 @@ open class DailyWordWidgetProvider : HomeWidgetProvider() {
         bodyTop = boxBottom - groupHeight
       }
       val bodyRight = bodyLeft + bodyWidth
-      val box = RectF(boxLeft, boxTop, width - stroke, boxBottom)
+      val box = RectF(boxLeft, boxTop, width - margin, boxBottom)
       val fill =
           Paint().apply {
             color = 0xFFFFFFFF.toInt()

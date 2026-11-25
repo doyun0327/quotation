@@ -45,6 +45,9 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<!-- app_links and home_widget handle incoming URLs. -->
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-4752729386590212~5570330297</string>
 	<key>GIDClientID</key>

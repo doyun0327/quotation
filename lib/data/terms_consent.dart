@@ -14,8 +14,10 @@ abstract final class TermsConsent {
   }
 
   static Future<void> accept() async {
-    accepted = true;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_key, true);
+    // Set last: a waiting invite must not open before the terms dialog closes,
+    // or the dialog's pop would close the invite instead.
+    accepted = true;
   }
 }

@@ -75,6 +75,9 @@ struct DailyWordWidgetView: View {
   var entry: DailyWordEntry
 
   private let stroke: CGFloat = 1.4
+  /// The system rounds off the widget's corners, which cuts a border drawn
+  /// along the edge: the box stays this far inside.
+  private let margin: CGFloat = 8
   private let tagHeight: CGFloat = 22
   private let tagGap: CGFloat = 2
   private let tailWidth: CGFloat = 10
@@ -86,8 +89,8 @@ struct DailyWordWidgetView: View {
     GeometryReader { geo in
       let w = max(geo.size.width, 1)
       let h = max(geo.size.height, 1)
-      let boxTop = stroke
-      let boxBottom = h - stroke
+      let boxTop = margin
+      let boxBottom = h - margin
       // Character + name tag take three quarters of the box height.
       let groupHeight = (boxBottom - boxTop) * 0.75
       let bodyHeight = max(groupHeight - tagGap - tagHeight, 24)
@@ -100,7 +103,7 @@ struct DailyWordWidgetView: View {
       let bodyLeft = 2 + (groupWidth - bodyWidth) / 2
       let boxLeft = min(max(2 + groupWidth + 4 + tailWidth, w * 0.2), w * 0.34)
       let bodyTop = boxTop + (boxBottom - boxTop - groupHeight) * 0.6
-      let box = CGRect(x: boxLeft, y: boxTop, width: w - stroke - boxLeft, height: boxBottom - boxTop)
+      let box = CGRect(x: boxLeft, y: boxTop, width: w - margin - boxLeft, height: boxBottom - boxTop)
       let radius: CGFloat = isPixel ? 18 : 22
       let bubble = QuoteBubbleShape(
         box: box, radius: radius, tailWidth: tailWidth,
