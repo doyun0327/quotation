@@ -66,11 +66,11 @@ const _notificationInit = InitializationSettings(
   ),
 );
 
-/// A friend changed their character: redraw the widget, no notice.
 /// Push-to-widget trace. Shows in the device log (Console app, or
 /// `flutter logs`) as "DEARLY_PUSH …", also in release builds.
 void _pushLog(String text) => unawaited(PushTrace.add(text));
 
+/// A friend changed their character: redraw the widget, no notice.
 bool _isSilentRefresh(RemoteMessage message) =>
     message.data['type'] == 'together_refresh';
 
@@ -382,17 +382,26 @@ abstract final class TogetherFcm {
       final deviceId = await _deviceId();
       if (deviceId == null) return;
       // One token per phone under a stable device id (fcmDevices). The old
-      // `fcmTokens` map kept every token a phone ever had; an iPhone keeps
-      // its APNs token across reinstalls, so old tokens stayed valid and the
-      // same alert arrived several times. The server reads fcmDevices first.
+      // `fcmTokens` map may still hold other phones of this account that run
+      // an older app, so only this phone's own tokens leave it (the current
+      // one, and the one it saved last time); the server reads both maps and
+      // sends to each token once.
+      final prefs = await SharedPreferences.getInstance();
+      const lastKey = 'fcm_last_token';
+      final previous = prefs.getString(lastKey);
       await FirebaseFirestore.instance.collection('users').doc(uid).set(
         {
           'fcmDevices': {deviceId: token},
-          'fcmTokens': FieldValue.delete(),
+          'fcmTokens': {
+            token: FieldValue.delete(),
+            if (previous != null && previous.isNotEmpty && previous != token)
+              previous: FieldValue.delete(),
+          },
           'updatedAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
       );
+      await prefs.setString(lastKey, token);
     } catch (e) {
       debugPrint('TogetherFcm.token: $e');
     }

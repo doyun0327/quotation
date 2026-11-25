@@ -585,11 +585,15 @@ class DdayController extends ChangeNotifier {
   int _duoFriendOffsetX = 0;
   int _duoFriendOffsetY = 0;
 
+  /// Favorites first, then the order the rooms were added on this phone, so
+  /// a new room (made or joined) shows at the end. Used to be by title,
+  /// which dropped a new room somewhere in the middle.
   List<DdayItem> get items {
+    final order = {for (var i = 0; i < _items.length; i++) _items[i].id: i};
     final sorted = [..._items];
     sorted.sort((a, b) {
       if (a.favorite != b.favorite) return a.favorite ? -1 : 1;
-      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      return order[a.id]!.compareTo(order[b.id]!);
     });
     return List.unmodifiable(sorted);
   }

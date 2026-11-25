@@ -1,5 +1,6 @@
 const {
   onDocumentCreated,
+  onDocumentDeleted,
   onDocumentUpdated,
 } = require('firebase-functions/v2/firestore');
 const { initializeApp } = require('firebase-admin/app');
@@ -100,6 +101,20 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
     const refresh = changed(before, after, 'widgetRefreshAt');
     if (!notify && !refresh) return;
 
+    // One card per room: the one this edit replaced goes (also in a room
+    // with nobody else to notify).
+    const oldCard = typeof before.widgetCardId === 'string' ? before.widgetCardId : '';
+    if (oldCard && oldCard !== after.widgetCardId) {
+      try {
+        await getFirestore().collection('widget_cards').doc(oldCard).delete();
+      } catch (e) {
+        console.warn('old widget card delete failed', {
+          roomId: event.params.roomId,
+          message: e.message || '',
+        });
+      }
+    }
+
     const actor = after.updatedBy || after.layoutUpdatedBy || '';
     const recipients = [after.hostUid, ...(after.guestUids || [])].filter(
       (uid) => typeof uid === 'string' && uid.length > 0 && uid !== actor,
@@ -127,6 +142,17 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
       after.layoutNotifyAt && typeof after.layoutNotifyAt.toMillis === 'function'
         ? String(after.layoutNotifyAt.toMillis())
         : '';
+    // The editor's app saved the new widget picture (widget_cards/{id}) with
+    // this edit. iPhones fetch it in the notification service extension and
+    // redraw the widget without waking the app.
+    const cardFresh = changed(before, after, 'widgetCardAt');
+    const cardId = cardFresh && typeof after.widgetCardId === 'string'
+      ? after.widgetCardId
+      : '';
+    const cardAt = cardFresh && typeof after.widgetCardAt?.toMillis === 'function'
+      ? String(after.widgetCardAt.toMillis())
+      : '';
+    const cardData = cardId ? { cardId, cardAt } : {};
 
     // Tokens per app language. Anyone who blocked the actor gets nothing:
     // their phone cannot filter an iPhone alert the server already wrote.
@@ -173,7 +199,7 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
       const message = refreshOnly
         ? {
             tokens,
-            data: { type: 'together_refresh', roomId, actorUid: actor },
+            data: { type: 'together_refresh', roomId, actorUid: actor, ...cardData },
             android: { priority: 'high' },
             apns: quietEdit
               ? {
@@ -186,6 +212,7 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
                     aps: {
                       alert: { title, body },
                       'content-available': 1,
+                      'mutable-content': 1,
                       'thread-id': roomId,
                       'interruption-level': 'passive',
                     },
@@ -208,6 +235,7 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
               actorUid: actor,
               title,
               body,
+              ...cardData,
             },
             android: {
               priority: 'high',
@@ -226,6 +254,7 @@ exports.notifyRoomWidgetChange = onDocumentUpdated(
                   alert: { title, body },
                   sound: 'default',
                   'content-available': 1,
+                  'mutable-content': 1,
                   'thread-id': roomId,
                 },
               },
@@ -420,5 +449,51 @@ exports.notifyRoomJoinCreated = onDocumentCreated(
     const joiner = joinedUid({}, after);
     if (!joiner) return;
     await notifyJoin(event.params.roomId, after, joiner);
+  },
+);
+
+// The room went away (its last person left, or the host deleted their
+// account): what is left of it on the server goes too, so a room's title,
+// date and codes do not stay behind. Each part on its own, so one failure
+// does not keep the others.
+exports.removeRoomWidgetCard = onDocumentDeleted(
+  'dday_memberships/{roomId}',
+  async (event) => {
+    const roomId = event.params.roomId;
+    if (roomId === 'together-test-room') return;
+    const db = getFirestore();
+    const removed = {};
+    async function part(name, work) {
+      try {
+        removed[name] = await work();
+      } catch (e) {
+        console.warn('room cleanup failed', { roomId, part: name, message: e.message || '' });
+      }
+    }
+    // The room's widget picture (iPhone notices).
+    await part('widgetCard', async () => {
+      const cardId = event.data?.data()?.widgetCardId;
+      if (typeof cardId !== 'string' || !cardId) return 0;
+      await db.collection('widget_cards').doc(cardId).delete();
+      return 1;
+    });
+    // Title and date.
+    await part('dday', async () => {
+      await db.collection('ddays').doc(roomId).delete();
+      return 1;
+    });
+    // Invite codes: nobody can join a room that is gone.
+    await part('invites', async () => {
+      const snap = await db.collection('dday_invites').where('ddayId', '==', roomId).get();
+      await Promise.all(snap.docs.map((doc) => doc.ref.delete()));
+      return snap.size;
+    });
+    // One-alert-per-minute records ({roomId}_{actor}).
+    await part('throttle', async () => {
+      const snap = await db.collection('notify_throttle').where('roomId', '==', roomId).get();
+      await Promise.all(snap.docs.map((doc) => doc.ref.delete()));
+      return snap.size;
+    });
+    console.log('room cleanup', { roomId, removed });
   },
 );

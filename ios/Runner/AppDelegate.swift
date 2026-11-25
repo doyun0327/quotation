@@ -111,15 +111,22 @@ import WidgetKit
     query[kSecReturnData as String] = true
     query[kSecMatchLimit as String] = kSecMatchLimitOne
     var item: CFTypeRef?
+    // ThisDeviceOnly: a backup restored onto another iPhone must not bring
+    // this id along, or both phones would share one token slot.
+    let accessible = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
     if SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
       let data = item as? Data, let id = String(data: data, encoding: .utf8), !id.isEmpty
     {
+      // Items saved by 1.0.19/1.0.20 used AfterFirstUnlock (backed up).
+      SecItemUpdate(
+        base as CFDictionary,
+        [kSecAttrAccessible as String: accessible] as CFDictionary)
       return id
     }
     let id = UUID().uuidString
     var add = base
     add[kSecValueData as String] = Data(id.utf8)
-    add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+    add[kSecAttrAccessible as String] = accessible
     return SecItemAdd(add as CFDictionary, nil) == errSecSuccess ? id : nil
   }
 

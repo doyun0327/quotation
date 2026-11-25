@@ -14,13 +14,11 @@ service cloud.firestore {
     // any signed-in account, anonymous ones included, which exposed every
     // user's email.
     //
-    // TRANSITION: app versions before the `profiles` split read a friend's
-    // nickname with a single get of users/{uid} while accepting an invite.
-    // Single gets stay open until those versions are gone; listing (the bulk
-    // email leak) is closed now. Later, replace the two lines below with
-    // `allow read: if isSelf(uid);`.
+    // Only the owner reads it now. App versions before the `profiles` split
+    // read a friend's nickname here while accepting an invite; they now fall
+    // back to the saved nickname.
     match /users/{uid} {
-      allow get: if signedIn();
+      allow get: if isSelf(uid);
       allow list: if false;
       allow create, update: if isSelf(uid);
       allow delete: if isSelf(uid);
@@ -45,7 +43,21 @@ service cloud.firestore {
     match /ddays/{ddayId} {
       // Shared test room: any signed-in device (including anonymous) can join.
       allow read, create, update: if signedIn() && ddayId == 'together-test-room';
-      allow read: if signedIn();
+      // The room's owner and members; anyone else only while the room is
+      // open to invite codes (a friend joining reads it first). Listing was
+      // open to every signed-in account, which exposed every room's title
+      // and date. A missing room may be read (the join checks for it).
+      function roomReadable() {
+        let memPath = /databases/$(database)/documents/dday_memberships/$(ddayId);
+        return resource == null
+          || resource.data.get('ownerUid', null) == request.auth.uid
+          || (exists(memPath)
+              && (get(memPath).data.get('hostUid', null) == request.auth.uid
+                  || request.auth.uid in get(memPath).data.get('guestUids', [])
+                  || get(memPath).data.get('inviteOpen', false) == true));
+      }
+      allow get: if signedIn() && roomReadable();
+      allow list: if signedIn() && resource.data.ownerUid == request.auth.uid;
       allow create: if signedIn()
         && request.resource.data.ownerUid == request.auth.uid;
       // Owner edits content; guests may bump status/memberCount on accept.
@@ -62,13 +74,21 @@ service cloud.firestore {
         && (resource.data.ownerUid == request.auth.uid
             || (request.resource.data.ownerUid == request.auth.uid
                 && roomHostIsMe())
-            || request.resource.data.diff(resource.data).affectedKeys()
-                .hasOnly(['status', 'memberCount', 'updatedAt']));
+            || (roomReadable()
+                && request.resource.data.diff(resource.data).affectedKeys()
+                    .hasOnly(['status', 'memberCount', 'updatedAt'])));
       allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
     }
 
     match /dday_invites/{inviteId} {
-      allow read: if signedIn();
+      // Small queries only: a code lookup (limit 3-5), or a friend finding the
+      // room's open code by its host (limit 5; app versions before 1.0.20 ask
+      // for 40). The whole collection used to be listable, handing out every
+      // invited room's id.
+      allow get: if signedIn();
+      allow list: if signedIn()
+        && (resource.data.hostUid == request.auth.uid
+            || request.query.limit <= 40);
       // The host, or a friend already in the room. A friend's code still
       // names the room's real host (joining is checked against it) and
       // records who made it in createdBy.
@@ -135,8 +155,16 @@ service cloud.firestore {
             && !('handoff' in request.resource.data);
       }
 
-      // Join transaction must read the room before the friend is a member.
-      allow get: if signedIn();
+      // Members read their room. Anyone else only while it is open to invite
+      // codes (the join transaction reads it before the friend is a member)
+      // or holds an account-switch handoff (claimed by the new account). It
+      // used to be readable by every signed-in account. A missing room may
+      // be read: creating one checks first.
+      allow get: if signedIn()
+        && (resource == null
+            || isRoomMember()
+            || resource.data.get('inviteOpen', false) == true
+            || resource.data.get('handoff', null) != null);
       allow list: if signedIn() && isRoomMember();
 
       allow create: if signedIn()
@@ -177,11 +205,54 @@ service cloud.firestore {
                 || request.resource.data.get('hostCharacterId', null)
                     == resource.data.get('hostCharacterId', null));
       }
+      // The widget picture a member links (widgetCardId) must be one they
+      // saved for this room: no pointing friends at another room's picture,
+      // or making the Cloud Function delete it as "replaced".
+      function widgetCardKept() {
+        let id = request.resource.data.get('widgetCardId', null);
+        return id == resource.data.get('widgetCardId', null)
+          || (id is string
+              && get(/databases/$(database)/documents/widget_cards/$(id)).data.roomId == ddayId
+              && get(/databases/$(database)/documents/widget_cards/$(id)).data.by == request.auth.uid);
+      }
       allow update: if signedIn()
+        && widgetCardKept()
         && ((isRoomMember() && (keepsHost() || isHost()) && charactersKept())
             || isJoiningSelf()
             || isHandoffClaim());
       allow delete: if signedIn() && resource.data.hostUid == request.auth.uid;
+    }
+
+    // Widget cards: the picture of a room's Together widget, written by the
+    // member who edited it, so friends' iPhones can redraw the widget from
+    // the notice (notification service extension) without opening the app.
+    // The id is random and only travels in the push to the room's members;
+    // a get by that id stays open because the extension cannot sign in.
+    // Old cards are removed by the Cloud Function (Admin SDK).
+    match /widget_cards/{cardId} {
+      function memberOf(roomId) {
+        let room = get(/databases/$(database)/documents/dday_memberships/$(roomId)).data;
+        return room.hostUid == request.auth.uid
+          || request.auth.uid in room.get('guestUids', []);
+      }
+      allow get: if true;
+      allow list: if false;
+      // `expireAt` carries a TTL (firestore.indexes.json): every card goes
+      // within about a week. It must be at most 8 days out, so nobody keeps
+      // a card around forever.
+      allow create: if signedIn()
+        && cardId.matches('^[0-9a-f]{40}$')
+        && request.resource.data.keys().hasOnly(['roomId', 'by', 'card', 'at', 'expireAt'])
+        && request.resource.data.at == request.time
+        && request.resource.data.expireAt is timestamp
+        && request.resource.data.expireAt > request.time
+        && request.resource.data.expireAt < request.time + duration.value(8, 'd')
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.roomId is string
+        && request.resource.data.card is bytes
+        && request.resource.data.card.size() <= 900000
+        && memberOf(request.resource.data.roomId);
+      allow update, delete: if false;
     }
 
     match /content_reports/{reportId} {

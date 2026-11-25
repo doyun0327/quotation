@@ -8,6 +8,7 @@ import 'package:quotation/screens/dday_invite_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/theme/style_text_scale.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 
 class DdayEditScreen extends StatefulWidget {
@@ -22,6 +23,11 @@ class DdayEditScreen extends StatefulWidget {
 class _DdayEditScreenState extends State<DdayEditScreen> {
   late final TextEditingController _titleCtrl;
   late DdayIconKind _icon;
+
+  /// Saving the room and redrawing the widget (takes a few seconds): shows
+  /// "방을 만들고 있어요…" and ignores another tap, which would make the
+  /// room twice.
+  bool _saving = false;
 
   static const _bg = Color(0xFFF3F7FD);
   static const _labelBlue = Color(0xFF4A7FD4);
@@ -45,6 +51,7 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -52,7 +59,16 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
       );
       return;
     }
+    FocusScope.of(context).unfocus();
+    setState(() => _saving = true);
+    try {
+      await _saveRoom(title);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
+  Future<void> _saveRoom(String title) async {
     final existing = widget.existing;
     // Date/repeat are hidden — rooms are cheer spaces, not countdowns.
     final roomDate = DateTime.now();
@@ -65,11 +81,7 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
       );
     } else {
       await ddayController.update(
-        existing.copyWith(
-          title: title,
-          iconId: _icon.id,
-          repeatYearly: false,
-        ),
+        existing.copyWith(title: title, iconId: _icon.id, repeatYearly: false),
       );
     }
     // Write the new/edited room to the home widget right away.
@@ -96,220 +108,291 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
     return ListenableBuilder(
       listenable: localeController,
       builder: (context, _) {
-        return Scaffold(
-          backgroundColor: _bg,
-          body: SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).maybePop(),
-                        icon: const Icon(
-                          Icons.chevron_left_rounded,
-                          size: 28,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              isEdit ? t.ddayEdit : t.ddayAdd,
-                              style: AppTheme.body.copyWith(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                                color: accent,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              t.ddayAddSubtitle,
-                              style: AppTheme.body.copyWith(
-                                fontSize: 13,
-                                color: AppColors.muted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 48),
-                    ],
-                  ),
+        return Stack(
+          children: [
+            _buildScreen(context, t, isEdit, accent),
+            if (_saving)
+              Positioned.fill(
+                child: _savingOverlay(
+                  context,
+                  isEdit ? t.ddaySavingRoom : t.ddayCreatingRoom,
                 ),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-                    children: [
-                      _SectionCard(
-                        iconColor: _mint,
-                        label: t.ddayPickIcon,
-                        labelColor: _labelBlue,
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: DdayIconKind.all.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Same look as the room screen's "방 확인 중…": dimmed page, a card with
+  /// a spinner. It swallows taps so nothing else starts meanwhile.
+  Widget _savingOverlay(BuildContext context, String label) {
+    const ink = Color(0xFF3C4C60);
+    return StyleTextScale.pixelOnly(
+      context,
+      GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {},
+        child: ColoredBox(
+          color: Colors.black.withValues(alpha: 0.35),
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 280),
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: context.palette.accent,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: AppTheme.body.copyWith(
+                      fontFamily: 'Galmuri',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: ink,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScreen(
+    BuildContext context,
+    AppStrings t,
+    bool isEdit,
+    Color accent,
+  ) {
+    return Scaffold(
+      backgroundColor: _bg,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    icon: const Icon(
+                      Icons.chevron_left_rounded,
+                      size: 28,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(
+                          isEdit ? t.ddayEdit : t.ddayAdd,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: accent,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          t.ddayAddSubtitle,
+                          style: AppTheme.body.copyWith(
+                            fontSize: 13,
+                            color: AppColors.muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 48),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+                children: [
+                  _SectionCard(
+                    iconColor: _mint,
+                    label: t.ddayPickIcon,
+                    labelColor: _labelBlue,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: DdayIconKind.all.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                             // 20 icons → four even rows of five.
                             crossAxisCount: 5,
                             mainAxisSpacing: 7,
                             crossAxisSpacing: 7,
                             childAspectRatio: 0.86,
                           ),
-                          itemBuilder: (context, index) {
-                            final kind = DdayIconKind.all[index];
-                            final selected = _icon == kind;
-                            return Material(
-                              color: Colors.white,
-                              elevation: 0,
-                              shadowColor: Colors.transparent,
-                              borderRadius: BorderRadius.circular(12),
-                              child: InkWell(
-                                onTap: () => setState(() => _icon = kind),
+                      itemBuilder: (context, index) {
+                        final kind = DdayIconKind.all[index];
+                        final selected = _icon == kind;
+                        return Material(
+                          color: Colors.white,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            onTap: () => setState(() => _icon = kind),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: selected ? accent : _cardBorder,
-                                      width: selected ? 1.6 : 1,
+                                border: Border.all(
+                                  color: selected ? accent : _cardBorder,
+                                  width: selected ? 1.6 : 1,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  DdayPixelIcon(kind: kind, size: 30),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    AppStrings.current.ddayIconName(kind.id),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTheme.body.copyWith(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w700,
+                                      color: selected
+                                          ? accent
+                                          : AppColors.muted,
                                     ),
                                   ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      DdayPixelIcon(kind: kind, size: 30),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        AppStrings.current.ddayIconName(kind.id),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppTheme.body.copyWith(
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w700,
-                                          color: selected
-                                              ? accent
-                                              : AppColors.muted,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                ],
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      _SectionCard(
-                        iconColor: _pink,
-                        label: t.ddayWhatDay,
-                        labelColor: _labelBlue,
-                        child: TextField(
-                          controller: _titleCtrl,
-                          textInputAction: TextInputAction.done,
-                          style: AppTheme.body.copyWith(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: t.ddayTitlePlaceholder,
-                            hintStyle: AppTheme.body.copyWith(
-                              fontSize: 14,
-                              color: const Color(0xFFB0B8C6),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(color: _cardBorder),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(color: _cardBorder),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide(color: accent, width: 1.4),
                             ),
                           ),
-                        ),
-                      ),
-                      if (widget.existing != null) ...[
-                        const SizedBox(height: 14),
-                        _SectionCard(
-                          iconColor: _pink,
-                          label: t.ddayInviteTitle,
-                          labelColor: _labelBlue,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                t.ddayInviteFriendCount(
-                                  widget.existing!.friendCount,
-                                ),
-                                style: AppTheme.body.copyWith(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: _btnBlue,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute<void>(
-                                      builder: (_) => DdayInviteScreen(
-                                        item: widget.existing!,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.person_add_alt_1_rounded),
-                                label: Text(t.ddayInviteOpen),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 54,
-                    child: FilledButton(
-                      onPressed: _save,
-                      style: FilledButton.styleFrom(
-                        backgroundColor: _btnBlue,
-                        foregroundColor: Colors.white,
-                        shape: const StadiumBorder(),
-                        textStyle: AppTheme.body.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      child: Text(t.ddaySave),
+                        );
+                      },
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 14),
+                  _SectionCard(
+                    iconColor: _pink,
+                    label: t.ddayWhatDay,
+                    labelColor: _labelBlue,
+                    child: TextField(
+                      controller: _titleCtrl,
+                      textInputAction: TextInputAction.done,
+                      style: AppTheme.body.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: t.ddayTitlePlaceholder,
+                        hintStyle: AppTheme.body.copyWith(
+                          fontSize: 14,
+                          color: const Color(0xFFB0B8C6),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(color: _cardBorder),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(color: _cardBorder),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: accent, width: 1.4),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (widget.existing != null) ...[
+                    const SizedBox(height: 14),
+                    _SectionCard(
+                      iconColor: _pink,
+                      label: t.ddayInviteTitle,
+                      labelColor: _labelBlue,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            t.ddayInviteFriendCount(
+                              widget.existing!.friendCount,
+                            ),
+                            style: AppTheme.body.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: _btnBlue,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) =>
+                                      DdayInviteScreen(item: widget.existing!),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.person_add_alt_1_rounded),
+                            label: Text(t.ddayInviteOpen),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+              child: SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: FilledButton(
+                  onPressed: _saving ? null : _save,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _btnBlue,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                    textStyle: AppTheme.body.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  child: Text(t.ddaySave),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -374,4 +457,3 @@ class _SectionCard extends StatelessWidget {
     );
   }
 }
-

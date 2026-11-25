@@ -180,10 +180,12 @@ class DdayInviteRepository {
     // One code per room: reuse any open code naming this room's host,
     // whoever made it (the host's own lookup finds friends' codes the same
     // way), so everyone in the room sees the same code.
+    // Narrowed to this room: a friend may only run small invite queries.
     final existing = await _db
         .collection('dday_invites')
         .where('hostUid', isEqualTo: hostUid)
-        .limit(40)
+        .where('ddayId', isEqualTo: ddayId)
+        .limit(5)
         .get();
     for (final doc in existing.docs) {
       final data = doc.data();
