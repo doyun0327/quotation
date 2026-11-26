@@ -71,6 +71,86 @@ struct TogetherRoom {
     }
     return DearlyWidgetStore.image(forKey: imageKey)
   }
+
+  /// The same card split into layers (tap-to-bounce characters). Only when
+  /// this phone's own spec is the newest source: a friend's delivered
+  /// picture or the old PNG stay one flat image.
+  func layers() -> TogetherCardLayers? {
+    let key = imageKey.replacingOccurrences(of: "togetherCard_", with: "")
+    if DearlyWidgetStore.int("togetherRemoteCardAt_\(key)")
+      > DearlyWidgetStore.int("togetherSpecAt_\(key)")
+    {
+      return nil
+    }
+    guard !specKey.isEmpty else { return nil }
+    let spec = DearlyWidgetStore.string(specKey)
+    return spec.isEmpty ? nil : TogetherCardRenderer.renderLayers(json: spec)
+  }
+}
+
+/// A Together card cut into layers so each character can move on its own.
+struct TogetherCardLayers {
+  struct Sprite {
+    let image: UIImage
+    /// In card points (TogetherCardLayers.size).
+    let rect: CGRect
+    let rotation: CGFloat
+    let sharp: Bool
+  }
+
+  let size: CGSize
+  let base: UIImage
+  let top: UIImage?
+  let chars: [Sprite]
+}
+
+/// Tap on a widget character: it bounces twice (TogetherProvider plays the
+/// hops as a short run of timeline entries). The app does not open.
+struct BounceCharacterIntent: AppIntent {
+  static var title: LocalizedStringResource = "캐릭터 통통"
+  static var isDiscoverable = false
+
+  @Parameter(title: "Room") var roomId: String
+  @Parameter(title: "Character") var index: Int
+
+  init() {}
+
+  init(roomId: String, index: Int) {
+    self.roomId = roomId
+    self.index = index
+  }
+
+  func perform() async throws -> some IntentResult {
+    TogetherBounce.record(roomId: roomId, index: index)
+    return .result()
+  }
+}
+
+enum TogetherBounce {
+  private static let key = "togetherBounce"
+  /// Two light bounces: up a little and straight back down, twice. Each move
+  /// is quick (the spring in TogetherLayeredCard); the steps are 0.2 s apart
+  /// because WidgetKit drops entries closer than that, which used to leave
+  /// one bounce out or the character stuck up. The last step puts it back
+  /// in place again, so it never stays moved.
+  static let hops: [(after: TimeInterval, offset: CGFloat)] = [
+    (0, -6), (0.2, 0), (0.4, -4), (0.6, 0), (1.2, 0),
+  ]
+
+  static func record(roomId: String, index: Int) {
+    let now = Date().timeIntervalSince1970
+    DearlyWidgetStore.defaults.set("\(roomId)|\(index)|\(now)", forKey: key)
+  }
+
+  /// The character of [roomId] tapped in the last moment, and when.
+  static func recent(roomId: String) -> (index: Int, at: Date)? {
+    let parts = (DearlyWidgetStore.defaults.string(forKey: key) ?? "").split(separator: "|")
+    guard parts.count == 3, String(parts[0]) == roomId, let index = Int(parts[1]),
+      let at = Double(parts[2])
+    else { return nil }
+    let date = Date(timeIntervalSince1970: at)
+    return Date().timeIntervalSince(date) < 2 ? (index, date) : nil
+  }
 }
 
 struct TogetherRoomEntity: AppEntity {
@@ -114,6 +194,11 @@ struct TogetherEntry: TimelineEntry {
   let roomId: String
   let useGlass: Bool
   var tint: String = ""
+  /// The card in layers (characters tappable); nil draws [card] flat.
+  var layers: TogetherCardLayers? = nil
+  /// Character bouncing in this entry (-1: none) and how high (points).
+  var bounceIndex: Int = -1
+  var bounceOffset: CGFloat = 0
   /// Room-slot widget whose slot has no room yet: show a short hint.
   var emptySlot: Int? = nil
   /// This widget's room was left: ask the user to remove the widget.
@@ -194,6 +279,21 @@ struct TogetherProvider: AppIntentTimelineProvider {
     await TogetherSlots.forgetUnplaced(keeping: context.isPreview ? nil : slot)
     let entry = makeEntry(for: configuration, preview: context.isPreview)
     let next = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date().addingTimeInterval(3600)
+    // A character was just tapped: play its two bounces as short entries.
+    if !context.isPreview, entry.layers != nil, !entry.roomId.isEmpty,
+      let tap = TogetherBounce.recent(roomId: entry.roomId)
+    {
+      let start = Date()
+      let hops = TogetherBounce.hops.map { hop -> TogetherEntry in
+        let e = entry
+        return TogetherEntry(
+          date: start.addingTimeInterval(hop.after), card: e.card, roomId: e.roomId,
+          useGlass: e.useGlass, tint: e.tint, layers: e.layers,
+          bounceIndex: tap.index, bounceOffset: hop.offset,
+          emptySlot: e.emptySlot, leftRoom: e.leftRoom)
+      }
+      return Timeline(entries: hops, policy: .after(next))
+    }
     return Timeline(entries: [entry], policy: .after(next))
   }
 
@@ -234,7 +334,8 @@ struct TogetherProvider: AppIntentTimelineProvider {
         card: card,
         roomId: room.id,
         useGlass: room.useGlass,
-        tint: room.tint
+        tint: room.tint,
+        layers: room.layers()
       )
     }
     // Room-slot widget: its page's room (see TogetherSlots), until one is
@@ -249,7 +350,8 @@ struct TogetherProvider: AppIntentTimelineProvider {
           card: card,
           roomId: room.id,
           useGlass: room.useGlass,
-          tint: room.tint
+          tint: room.tint,
+          layers: room.layers()
         )
       }
       return TogetherEntry(
@@ -319,6 +421,10 @@ struct TogetherWidgetView: View {
           }
           .multilineTextAlignment(.center)
           .padding()
+        } else if let layers = entry.layers {
+          TogetherLayeredCard(
+            layers: layers, roomId: entry.roomId, bounceIndex: entry.bounceIndex,
+            bounceOffset: entry.bounceOffset, size: geo.size)
         } else if let card = entry.card {
           Image(uiImage: card)
             .resizable()
@@ -447,11 +553,46 @@ struct TogetherRoom5Widget: Widget {
 /// friend's edit, delivered by a background push, reach the widget right
 /// away. CPU only: Core Graphics + Core Text.
 enum TogetherCardRenderer {
+  enum Part { case background, label, chars, stickers, bubbles }
+
   static func render(json: String) -> UIImage? {
+    guard let spec = parse(json) else { return nil }
+    return draw(spec, parts: [.background, .label, .chars, .stickers, .bubbles])
+  }
+
+  /// The card in three layers, so the widget can move each character on its
+  /// own (tap to bounce): background + text, the characters, then stickers
+  /// and speech bubbles on top. Nil when the spec cannot be read.
+  static func renderLayers(json: String) -> TogetherCardLayers? {
+    guard let spec = parse(json), let width = num(spec["w"]), let height = num(spec["h"]),
+      let base = draw(spec, parts: [.background, .label])
+    else { return nil }
+    let top = draw(spec, parts: [.stickers, .bubbles])
+    var sprites: [TogetherCardLayers.Sprite] = []
+    for char in (spec["chars"] as? [[String: Any]]) ?? [] {
+      guard let file = char["file"] as? String,
+        let x = num(char["x"]), let y = num(char["y"]), let w = num(char["w"]), let h = num(char["h"]),
+        let image = loadImage(file, maxPixel: max(w, h) * 3)
+      else { continue }
+      sprites.append(
+        .init(
+          image: UIImage(cgImage: image), rect: CGRect(x: x, y: y, width: w, height: h),
+          rotation: num(char["rot"]) ?? 0, sharp: (char["sharp"] as? Bool) ?? false))
+    }
+    return TogetherCardLayers(
+      size: CGSize(width: width, height: height), base: base, top: top, chars: sprites)
+  }
+
+  private static func parse(_ json: String) -> [String: Any]? {
     guard let data = json.data(using: .utf8),
       let spec = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
       let width = num(spec["w"]), let height = num(spec["h"]), width > 1, height > 1
     else { return nil }
+    return spec
+  }
+
+  private static func draw(_ spec: [String: Any], parts: Set<Part>) -> UIImage? {
+    guard let width = num(spec["w"]), let height = num(spec["h"]) else { return nil }
     let size = CGSize(width: width, height: height)
     let scale: CGFloat = 3
     let format = UIGraphicsImageRendererFormat()
@@ -464,7 +605,7 @@ enum TogetherCardRenderer {
       cg.clip(to: CGRect(origin: .zero, size: size))
 
       // Background.
-      if let bg = spec["bg"] as? [String: Any], let file = bg["file"] as? String,
+      if parts.contains(.background), let bg = spec["bg"] as? [String: Any], let file = bg["file"] as? String,
         let image = loadImage(file, maxPixel: max(width, height) * scale)
       {
         let rect = CGRect(origin: .zero, size: size)
@@ -476,12 +617,12 @@ enum TogetherCardRenderer {
       }
 
       // Cheer text.
-      if let label = spec["label"] as? [String: Any] {
+      if parts.contains(.label), let label = spec["label"] as? [String: Any] {
         drawLabel(label, cg: cg)
       }
 
       // Characters.
-      for char in (spec["chars"] as? [[String: Any]]) ?? [] {
+      for char in parts.contains(.chars) ? (spec["chars"] as? [[String: Any]]) ?? [] : [] {
         guard let file = char["file"] as? String,
           let x = num(char["x"]), let y = num(char["y"]), let w = num(char["w"]), let h = num(char["h"]),
           let image = loadImage(file, maxPixel: max(w, h) * scale)
@@ -493,7 +634,7 @@ enum TogetherCardRenderer {
       }
 
       // Stickers: pictures kept in their own shape, turned around the center.
-      for sticker in (spec["stickers"] as? [[String: Any]]) ?? [] {
+      for sticker in parts.contains(.stickers) ? (spec["stickers"] as? [[String: Any]]) ?? [] : [] {
         guard let file = sticker["file"] as? String,
           let x = num(sticker["x"]), let y = num(sticker["y"]),
           let w = num(sticker["w"]), let h = num(sticker["h"]),
@@ -506,7 +647,7 @@ enum TogetherCardRenderer {
       }
 
       // Speech bubbles.
-      if let bubbles = spec["bubbles"] as? [String: Any] {
+      if parts.contains(.bubbles), let bubbles = spec["bubbles"] as? [String: Any] {
         drawBubbles(bubbles, cg: cg)
       }
     }
@@ -727,5 +868,58 @@ enum TogetherCardRenderer {
       green: CGFloat((v >> 8) & 0xFF) / 255,
       blue: CGFloat(v & 0xFF) / 255,
       alpha: CGFloat((v >> 24) & 0xFF) / 255)
+  }
+}
+
+
+/// The card drawn from its layers, filling the widget like the flat card
+/// (scaledToFill): background, then each character as its own button (tap to
+/// bounce), then stickers and bubbles that let taps through.
+struct TogetherLayeredCard: View {
+  let layers: TogetherCardLayers
+  let roomId: String
+  let bounceIndex: Int
+  let bounceOffset: CGFloat
+  let size: CGSize
+
+  var body: some View {
+    let scale = max(size.width / layers.size.width, size.height / layers.size.height)
+    let drawn = CGSize(width: layers.size.width * scale, height: layers.size.height * scale)
+    let ox = (size.width - drawn.width) / 2
+    let oy = (size.height - drawn.height) / 2
+    ZStack(alignment: .topLeading) {
+      Image(uiImage: layers.base)
+        .resizable()
+        .interpolation(.high)
+        .frame(width: drawn.width, height: drawn.height)
+        .offset(x: ox, y: oy)
+      ForEach(Array(layers.chars.enumerated()), id: \.offset) { pair in
+        let index = pair.offset
+        let sprite = pair.element
+        let r = sprite.rect
+        Button(intent: BounceCharacterIntent(roomId: roomId, index: index)) {
+          Image(uiImage: sprite.image)
+            .resizable()
+            .interpolation(sprite.sharp ? .none : .high)
+            .scaledToFit()
+            .frame(width: r.width * scale, height: r.height * scale)
+            .rotationEffect(.degrees(sprite.rotation))
+        }
+        .buttonStyle(.plain)
+        .position(x: ox + r.midX * scale, y: oy + r.midY * scale)
+        .offset(y: index == bounceIndex ? bounceOffset : 0)
+        .animation(.spring(response: 0.1, dampingFraction: 0.85), value: bounceOffset)
+      }
+      if let top = layers.top {
+        Image(uiImage: top)
+          .resizable()
+          .interpolation(.high)
+          .frame(width: drawn.width, height: drawn.height)
+          .offset(x: ox, y: oy)
+          .allowsHitTesting(false)
+      }
+    }
+    .frame(width: size.width, height: size.height, alignment: .topLeading)
+    .clipped()
   }
 }

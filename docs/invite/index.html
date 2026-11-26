@@ -86,6 +86,20 @@
       // KakaoTalk's in-app browser blocks custom app schemes.
       var isKakao = /KAKAOTALK/i.test(ua);
 
+      // Set on the copy of this page KakaoTalk is asked to open outside.
+      var alreadyExternal = /[?&]ext=1/.test(location.search);
+      function externalUrl() {
+        return location.origin + location.pathname +
+          (location.search ? location.search + '&' : '?') + 'ext=1';
+      }
+      function triedExternal() {
+        try { return sessionStorage.getItem('dearly_ext_' + code) === '1'; }
+        catch (e) { return false; }
+      }
+      function markExternal() {
+        try { sessionStorage.setItem('dearly_ext_' + code, '1'); } catch (e) {}
+      }
+
       function appUrl() {
         var c = encodeURIComponent(code);
         if (isAndroid) {
@@ -136,17 +150,29 @@
         if (!code) return;
         if (fromTap) copyForInstall();
         if (isKakao) {
-          // Reopen this page in the phone's default browser, which can
-          // hand the link to the app (or send to the store).
+          // Android KakaoTalk understands intent:// (app, or Play Store when
+          // it is missing), so no detour through another browser.
+          if (isAndroid) {
+            location.href = appUrl();
+            return;
+          }
+          // iPhone KakaoTalk blocks the app scheme: reopen this page in
+          // Safari once. Some KakaoTalk versions reopen it inside KakaoTalk
+          // again, which used to loop forever (the page kept reloading), so
+          // a page that already went through this stops here and waits for
+          // a tap instead.
+          if (alreadyExternal || (!fromTap && triedExternal())) {
+            if (fromTap) {
+              location.href = appUrl();
+              unlessLeft(1800, goToStore);
+            } else {
+              promptStoreIOS();
+            }
+            return;
+          }
+          markExternal();
           location.href = 'kakaotalk://web/openExternal?url=' +
-            encodeURIComponent(location.href);
-          // Older KakaoTalk ignores openExternal. Android's in-app browser
-          // still understands intent:// (app or Play Store); on iPhone the
-          // app scheme is blocked, so go straight to the App Store.
-          unlessLeft(1500, function () {
-            if (isAndroid) location.href = appUrl();
-            else goToStore();
-          });
+            encodeURIComponent(externalUrl());
           return;
         }
         location.href = appUrl();

@@ -257,7 +257,9 @@ class DdayCloudSync {
     }
   }
 
-  static Future<void> pullMemberships() async {
+  /// [syncWidgets] false skips the home-widget redraw at the end, for a
+  /// caller that redraws itself right after (joining by invite).
+  static Future<void> pullMemberships({bool syncWidgets = true}) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
     try {
@@ -271,7 +273,7 @@ class DdayCloudSync {
         }
         await _applyMembershipDoc(doc.id, doc.data(), uid);
       }
-      await HomeWidgetSync.syncDday();
+      if (syncWidgets) await HomeWidgetSync.syncDday();
     } catch (e) {
       unawaited(PushTrace.add('pullMemberships failed: $e'));
     }

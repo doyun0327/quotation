@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quotation/data/auth_controller.dart';
 import 'package:quotation/data/dday_cloud_sync.dart';
@@ -11,6 +13,7 @@ import 'package:quotation/screens/together_room_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
+import 'package:quotation/widgets/busy_overlay.dart';
 
 /// Guest screen: enter invite code (or prefilled from deep link) and join.
 class DdayAcceptInviteScreen extends StatefulWidget {
@@ -66,9 +69,11 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
       );
       // Joining again cancels an earlier leave still waiting to be retried.
       await DdayCloudSync.cancelPendingLeave(roomId);
-      await DdayCloudSync.pullMemberships();
+      // The widget redraw is the slow part (every room's picture). It runs
+      // once, behind the decorator opening, instead of twice in front of it.
+      await DdayCloudSync.pullMemberships(syncWidgets: false);
       await ddayController.pinForWidget(roomId);
-      await HomeWidgetSync.syncDday();
+      unawaited(HomeWidgetSync.syncDday());
       if (!mounted) return;
       // Straight into the decorator with the tutorial, even for someone
       // who already saw it in another room.
@@ -106,7 +111,15 @@ class _DdayAcceptInviteScreenState extends State<DdayAcceptInviteScreen> {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: localeController,
-      builder: (context, _) => _buildScreen(context),
+      builder: (context, _) => Stack(
+        children: [
+          _buildScreen(context),
+          if (_busy)
+            Positioned.fill(
+              child: BusyOverlay(label: AppStrings.current.ddayJoiningRoom),
+            ),
+        ],
+      ),
     );
   }
 

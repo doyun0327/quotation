@@ -398,6 +398,10 @@ class AppStrings {
   String get ddayCreatingRoom =>
       _t('방을 만들고 있어요…', 'Making the room…', 'ルームを作成しています…');
 
+  /// Shown while joining a room with an invite code.
+  String get ddayJoiningRoom =>
+      _t('방에 들어가고 있어요…', 'Joining the room…', 'ルームに参加しています…');
+
   /// Shown while an edited room is being saved.
   String get ddaySavingRoom =>
       _t('방을 저장하고 있어요…', 'Saving the room…', 'ルームを保存しています…');

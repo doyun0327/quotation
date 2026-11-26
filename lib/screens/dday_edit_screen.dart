@@ -8,7 +8,7 @@ import 'package:quotation/screens/dday_invite_screen.dart';
 import 'package:quotation/theme/app_colors.dart';
 import 'package:quotation/theme/app_palette.dart';
 import 'package:quotation/theme/app_theme.dart';
-import 'package:quotation/theme/style_text_scale.dart';
+import 'package:quotation/widgets/busy_overlay.dart';
 import 'package:quotation/widgets/dday_pixel_icon.dart';
 
 class DdayEditScreen extends StatefulWidget {
@@ -113,66 +113,13 @@ class _DdayEditScreenState extends State<DdayEditScreen> {
             _buildScreen(context, t, isEdit, accent),
             if (_saving)
               Positioned.fill(
-                child: _savingOverlay(
-                  context,
-                  isEdit ? t.ddaySavingRoom : t.ddayCreatingRoom,
+                child: BusyOverlay(
+                  label: isEdit ? t.ddaySavingRoom : t.ddayCreatingRoom,
                 ),
               ),
           ],
         );
       },
-    );
-  }
-
-  /// Same look as the room screen's "방 확인 중…": dimmed page, a card with
-  /// a spinner. It swallows taps so nothing else starts meanwhile.
-  Widget _savingOverlay(BuildContext context, String label) {
-    const ink = Color(0xFF3C4C60);
-    return StyleTextScale.pixelOnly(
-      context,
-      GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {},
-        child: ColoredBox(
-          color: Colors.black.withValues(alpha: 0.35),
-          child: Center(
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 280),
-              margin: const EdgeInsets.symmetric(horizontal: 32),
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 28,
-                    height: 28,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: context.palette.accent,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    style: AppTheme.body.copyWith(
-                      fontFamily: 'Galmuri',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: ink,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 
