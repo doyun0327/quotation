@@ -455,6 +455,8 @@ object DdayWidgetVisuals {
           textSize = BUBBLE_FONT_DP * density
           typeface = custom ?: pixelTypeface(context)
           isAntiAlias = true
+          // Smooth emoji (bitmap glyphs) instead of jagged ones.
+          isFilterBitmap = true
         }
     val metrics = textPaint.fontMetrics
     val fontHeight = metrics.descent - metrics.ascent
@@ -590,7 +592,9 @@ object DdayWidgetVisuals {
           this.textSize = textSizePx
           typeface = face
           isAntiAlias = !pixel
-          isFilterBitmap = !pixel
+          // Emoji are bitmap glyphs: filtered they stay smooth, while the
+          // pixel font (outline glyphs, no anti-aliasing) stays crisp.
+          isFilterBitmap = true
           // Galmuri has no bold face. Faux bold widens glyphs and wraps earlier than Flutter.
           isFakeBoldText = false
           if (!pixel && custom == null) letterSpacing = -0.1f / textSizePx

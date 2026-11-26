@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:characters/characters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -22,7 +23,9 @@ class UserProfileSync {
   /// Public part of my profile. Field names must match firestore.rules.
   static Future<void> _writePublicProfile(String uid, {String? name}) async {
     // The rules cap it at 40; a long Google account name must not fail the write.
-    final shown = (name != null && name.length > 40) ? name.substring(0, 40) : name;
+    final shown = (name != null && name.characters.length > 40)
+        ? name.characters.take(40).toString()
+        : name;
     await _db.collection('profiles').doc(uid).set(
       {
         'characterId': characterController.character.id,

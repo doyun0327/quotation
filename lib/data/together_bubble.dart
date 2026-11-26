@@ -119,7 +119,10 @@ class TogetherBubble {
   /// Single line, capped — the home widget draws it without wrapping.
   static String clean(String raw) {
     final line = raw.replaceAll(RegExp(r'\s*\n\s*'), ' ').trim();
-    return line.length <= maxLength ? line : line.substring(0, maxLength);
+    // Counted in letters as the field counts them (an emoji is one), not
+    // UTF-16 units: cutting by units split emoji in half (shown as �).
+    final letters = line.characters;
+    return letters.length <= maxLength ? line : letters.take(maxLength).toString();
   }
 
   /// [ax]/[ay] map another phone's canvas dp onto this one. [fallbackAuthor]
